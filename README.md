@@ -17,8 +17,11 @@ Open http://localhost:8080/
 
 ## Structure
 
-- `index.html` — home (hero, programs, how it works, about, notify)
+- `index.html` — home (hero, programs, store teaser, how it works, about, notify)
+- `store/index.html` — product catalog (rendered from `js/products.json` via `js/store.js`)
 - `privacy/index.html` — privacy placeholder
 - `styles.css` — shared styles
 - `img/` — book cover assets
 - `icons/logo.svg` — brand mark from companion app
+- `js/products.json` — store catalog data (add books, apps, bundles here)
+- `js/store.js` — renders the store grid; includes a commented hook for future checkout

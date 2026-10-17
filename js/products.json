@@ -1,0 +1,91 @@
+{
+  "products": [
+    {
+      "id": "actm-paperback",
+      "type": "book",
+      "typeLabel": "Paperback",
+      "title": "A Challenge to Move",
+      "description": "Your 22-day roadmap to move better and feel better — a practical guide to building a daily movement habit in just seven minutes.",
+      "note": "Includes access to the interactive 7-minute / 22-day app",
+      "status": "available",
+      "image": {
+        "webp": "/img/book-cover.webp",
+        "jpg": "/img/book-cover.jpg",
+        "width": 625,
+        "height": 1000,
+        "alt": "A Challenge to Move book cover"
+      },
+      "actions": [
+        {
+          "kind": "link",
+          "label": "Buy on Amazon",
+          "href": "https://www.amazon.com/dp/B0HN22P5F4",
+          "variant": "primary",
+          "newTab": true
+        }
+      ]
+    },
+    {
+      "id": "actm-app",
+      "type": "app",
+      "typeLabel": "App",
+      "title": "A Challenge to Move app",
+      "description": "Guided 7-minute workouts with Salim's voice, a 22-day calendar to track your progress, and built-in exercise and rest timers.",
+      "status": "available",
+      "image": {
+        "svg": "/icons/logo.svg",
+        "width": 512,
+        "height": 512,
+        "alt": "A Challenge to Move app icon"
+      },
+      "actions": [
+        {
+          "kind": "link",
+          "label": "Open the app",
+          "href": "https://app.coachsalimheyaime.com/",
+          "variant": "primary",
+          "newTab": true
+        },
+        {
+          "kind": "link",
+          "label": "Try Day 1 free",
+          "href": "https://book.coachsalimheyaime.com/",
+          "variant": "secondary",
+          "newTab": true
+        }
+      ]
+    },
+    {
+      "id": "75-day-app",
+      "type": "app",
+      "typeLabel": "App",
+      "title": "75-Day Challenge",
+      "description": "Salim's long-form discipline challenge in the app — daily movement, nutrition, and mindset tasks, structured day by day.",
+      "status": "coming_soon",
+      "image": {
+        "svg": "/icons/logo.svg",
+        "width": 512,
+        "height": 512,
+        "alt": "75-Day Challenge app (coming soon)"
+      },
+      "notifySubject": "Notify me: 75-Day Challenge",
+      "actions": []
+    },
+    {
+      "id": "whole-food-app",
+      "type": "app",
+      "typeLabel": "App",
+      "title": "30-Day Whole Food Plan",
+      "description": "Eat real, whole food with daily app guidance — simple meals, grocery focus, and habits that last beyond the month.",
+      "status": "coming_soon",
+      "image": {
+        "svg": "/icons/logo.svg",
+        "width": 512,
+        "height": 512,
+        "alt": "30-Day Whole Food Plan app (coming soon)"
+      },
+      "notifySubject": "Notify me: 30-Day Whole Food Plan",
+      "actions": []
+    }
+  ]
+}
