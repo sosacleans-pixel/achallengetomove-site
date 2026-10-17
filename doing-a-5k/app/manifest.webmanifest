@@ -1,0 +1,18 @@
+{
+  "name": "Doing a 5K",
+  "short_name": "Doing a 5K",
+  "description": "Go from walking to your first 5K in 8 to 12 weeks.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fff7e8",
+  "theme_color": "#1e1e1e",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

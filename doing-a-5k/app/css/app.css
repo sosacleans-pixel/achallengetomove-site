@@ -1,0 +1,362 @@
+/* Doing a 5K app — extends site brand */
+
+.app-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--cream);
+}
+
+.app-screen {
+  flex: 1;
+  max-width: 32rem;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 5.5rem;
+  width: 100%;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.app-eyebrow {
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  margin: 0 0 0.35rem;
+}
+
+.app-title {
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
+  margin: 0;
+}
+
+.app-tagline {
+  text-align: center;
+  color: var(--muted);
+  margin: 0 0 1.25rem;
+}
+
+.card {
+  background: var(--paper);
+  border: 3px solid var(--charcoal);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 6px 0 var(--charcoal);
+  margin-bottom: 1rem;
+}
+
+.card-celebrate {
+  border-color: var(--rust);
+  background: linear-gradient(180deg, #fff9ee 0%, var(--paper) 100%);
+}
+
+.field {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.field span,
+.field legend {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.field input[type="text"],
+.field input[type="date"],
+.field textarea {
+  width: 100%;
+  font: inherit;
+  padding: 0.65rem 0.75rem;
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.radio-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.radio-row label {
+  font-weight: 400;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.chip:has(:checked) {
+  border-color: var(--charcoal);
+  background: var(--yellow);
+  font-weight: 700;
+}
+
+.btn-block {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.btn-start {
+  font-size: 1.1rem;
+  padding: 1.15rem 1.4rem;
+}
+
+.today-greet {
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+
+.today-card .today-date {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 0 0 0.25rem;
+}
+
+.today-title {
+  font-size: 1.35rem;
+  margin: 0 0 0.35rem;
+}
+
+.today-summary,
+.today-meta {
+  margin: 0 0 0.35rem;
+  color: var(--muted);
+}
+
+.banner {
+  background: var(--yellow);
+  border: 2px solid var(--charcoal);
+  padding: 0.75rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+}
+
+.app-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  background: var(--charcoal);
+  border-top: 4px solid var(--yellow);
+  padding: 0.35rem 0.5rem calc(0.35rem + env(safe-area-inset-bottom));
+  z-index: 50;
+}
+
+.app-nav-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 253, 248, 0.75);
+  font-family: inherit;
+  font-size: 0.65rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.65rem 0.25rem;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.app-nav-btn.is-active {
+  color: var(--yellow);
+  background: rgba(255, 199, 0, 0.12);
+}
+
+.app-footer {
+  margin-top: 2rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.safety-note {
+  background: var(--paper);
+  border-left: 4px solid var(--rust);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  margin-bottom: 1rem;
+}
+
+.timer-card {
+  text-align: center;
+}
+
+.timer-phase {
+  font-family: Anton, Impact, sans-serif;
+  text-transform: uppercase;
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem;
+}
+
+.timer-countdown {
+  font-size: clamp(3rem, 12vw, 4.5rem);
+  font-weight: 900;
+  line-height: 1;
+  margin: 0 0 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer-next {
+  color: var(--muted);
+  margin: 0 0 1rem;
+}
+
+.progress-bar {
+  height: 10px;
+  background: var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--rust);
+  transition: width 0.2s linear;
+}
+
+.step-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  text-align: left;
+  font-size: 0.85rem;
+  max-height: 8rem;
+  overflow: auto;
+}
+
+.step-preview {
+  padding: 0.35rem 0;
+  color: var(--muted);
+}
+
+.step-preview.is-current {
+  color: var(--charcoal);
+  font-weight: 700;
+}
+
+.timer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.plan-scroll {
+  max-height: calc(100vh - 12rem);
+  overflow: auto;
+}
+
+.plan-week h2 {
+  font-size: 1.1rem;
+  margin-top: 1rem;
+}
+
+.plan-item {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.plan-check {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid var(--charcoal);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  flex-shrink: 0;
+  background: var(--paper);
+}
+
+.plan-item.is-done .plan-check {
+  background: var(--yellow);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.stat {
+  background: var(--paper);
+  border: 2px solid var(--charcoal);
+  border-radius: 12px;
+  padding: 1rem 0.5rem;
+  text-align: center;
+}
+
+.stat-num {
+  display: block;
+  font-family: Anton, sans-serif;
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.check-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  margin: 0.75rem 0;
+  cursor: pointer;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.settings-card h2 {
+  font-size: 1rem;
+  margin-top: 0;
+}
+
+@media (min-width: 768px) {
+  .app-screen {
+    max-width: 36rem;
+    padding-top: 2rem;
+  }
+
+  .stats-grid {
+    gap: 1rem;
+  }
+
+  .stat-num {
+    font-size: 2.25rem;
+  }
+}
