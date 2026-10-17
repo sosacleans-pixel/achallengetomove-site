@@ -1,0 +1,24 @@
+{
+  "name": "30-Day Whole Food Plan",
+  "short_name": "Whole Food",
+  "description": "Personal whole food plan, meal log, and reintroduction guide from A Challenge to Move.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fff7e8",
+  "theme_color": "#1e1e1e",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
