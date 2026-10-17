@@ -60,43 +60,8 @@
 
         <p class="programs-level-hint">75-day tracks: <strong>choose your level</strong> — all-in or adaptive.</p>
 
-        <div class="program-grid program-grid--apps">
-          <article class="program-card program-card--tier">
-            <span class="badge badge-soon">Coming soon</span>
-            <h3>75 All-In</h3>
-            <p class="tagline">All in. No days off.</p>
-            <p class="desc">75 straight days of daily non-negotiables: training, clean eating, hydration, reading, and a progress check-in. Miss a day and you start over.</p>
-            <a class="btn btn-secondary btn-small program-notify" href="mailto:coachsalimheyaime@gmail.com?subject=Notify%20me%3A%2075%20All-In">Notify me</a>
-          </article>
-
-          <article class="program-card program-card--tier">
-            <span class="badge badge-soon">Coming soon</span>
-            <h3>75 Adaptive</h3>
-            <p class="tagline">Show up every day, your way.</p>
-            <p class="desc">75 days of daily movement, better eating, and recovery — adjustable to your schedule and body, with no restart penalty.</p>
-            <a class="btn btn-secondary btn-small program-notify" href="mailto:coachsalimheyaime@gmail.com?subject=Notify%20me%3A%2075%20Adaptive">Notify me</a>
-          </article>
-
-          <article class="program-card program-card--tier">
-            <span class="badge badge-soon">Coming soon</span>
-            <h3>30-Day Whole Food Plan</h3>
-            <p class="desc">Eat real, whole food with app-style daily guidance — simple meals, grocery focus, and habits that stick beyond the month.</p>
-            <a class="btn btn-secondary btn-small program-notify" href="mailto:coachsalimheyaime@gmail.com?subject=Notify%20me%3A%2030-Day%20Whole%20Food%20Plan">Notify me</a>
-          </article>
-
-          <article class="program-card program-card--tier">
-            <span class="badge badge-live">Available now</span>
-            <p class="program-price" aria-label="Price">$4.99</p>
-            <h3>22-Day 7-Minute Workout</h3>
-            <p class="tagline">Build the habit of movement with just 7 minutes a day.</p>
-            <p class="desc">Guided 7-minute workouts, a 22-day calendar, and built-in exercise and rest timers.</p>
-            <p class="program-note">App only. Already have the book? Your app access is included.</p>
-            <div class="card-actions">
-              <a class="btn btn-secondary btn-small" href="https://book.coachsalimheyaime.com/" rel="noopener">Try Day 1 free</a>
-              <!-- TODO: Stripe Payment Link for $4.99 standalone app purchase -->
-              <a class="btn btn-primary btn-small btn-checkout-soon" href="#" aria-disabled="true" title="Checkout coming soon" tabindex="-1">Buy app, $4.99</a>
-            </div>
-          </article>
+        <div id="home-program-grid" class="program-grid program-grid--apps" aria-live="polite">
+          <p class="store-loading">Loading programs…</p>
         </div>
       </div>
     </section>
@@ -194,5 +159,6 @@
       </nav>
     </div>
   </footer>
+  <script src="/js/home-programs.js" defer></script>
 </body>
 </html>

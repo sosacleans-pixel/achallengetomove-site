@@ -25,3 +25,4 @@ Open http://localhost:8080/
 - `icons/logo.svg` — brand mark from companion app
 - `js/products.json` — store catalog data (add books, apps, bundles here)
 - `js/store.js` — renders the store grid; includes a commented hook for future checkout
+- `js/home-programs.js` — renders homepage Programs from `products.json`

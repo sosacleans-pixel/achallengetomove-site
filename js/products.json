@@ -93,6 +93,40 @@
       "actions": []
     },
     {
+      "id": "couch-to-5k",
+      "catalogSection": "programs",
+      "type": "app",
+      "typeLabel": "App",
+      "title": "Couch to 5K",
+      "description": "Go from zero running to your first 5K with walk-run intervals and a progressive plan in the app.",
+      "status": "coming_soon",
+      "image": {
+        "svg": "/icons/logo.svg",
+        "width": 512,
+        "height": 512,
+        "alt": "Couch to 5K app (coming soon)"
+      },
+      "notifySubject": "Notify me: Couch to 5K",
+      "actions": []
+    },
+    {
+      "id": "5k-to-half-marathon",
+      "catalogSection": "programs",
+      "type": "app",
+      "typeLabel": "App",
+      "title": "5K to Half Marathon",
+      "description": "Build from 5K to 13.1 miles with structured runs, strength, and recovery in the app.",
+      "status": "coming_soon",
+      "image": {
+        "svg": "/icons/logo.svg",
+        "width": 512,
+        "height": 512,
+        "alt": "5K to Half Marathon app (coming soon)"
+      },
+      "notifySubject": "Notify me: 5K to Half Marathon",
+      "actions": []
+    },
+    {
       "id": "22-day-workout-app",
       "catalogSection": "programs",
       "type": "app",

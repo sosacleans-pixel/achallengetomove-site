@@ -517,6 +517,19 @@ section {
 
 .program-grid--apps {
   grid-template-columns: 1fr;
+  align-items: stretch;
+}
+
+@media (min-width: 640px) {
+  .program-grid--apps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .program-grid--apps {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .programs-level-hint {
@@ -650,25 +663,32 @@ section {
   height: 100%;
 }
 
-.program-card--tier .program-notify,
-.program-card--tier .card-actions {
-  margin-top: auto;
+.program-card-main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
-.program-card--tier .card-actions {
+.program-card-footer {
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+.program-card-footer .card-actions {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   width: 100%;
 }
 
-@media (min-width: 768px) {
-  .program-card--tier .card-actions {
+@media (min-width: 640px) {
+  .program-card-footer .card-actions {
     flex-direction: row;
     flex-wrap: wrap;
   }
 
-  .program-card--tier .card-actions .btn {
+  .program-card-footer .card-actions .btn {
     flex: 1;
     min-width: 9rem;
   }
@@ -930,11 +950,6 @@ section {
     flex-direction: row;
     flex-wrap: wrap;
     max-width: none;
-  }
-
-  .program-grid--apps {
-    grid-template-columns: repeat(2, 1fr);
-    align-items: stretch;
   }
 
   .book-promo-grid {
