@@ -15,12 +15,16 @@ import {
   startDateFromRace,
   longRunProgressionKm,
   parseDateOnly,
+  resolveHalfPlacement,
+  strengthLevelFromPushUps,
+  COACH_DISCLAIMER,
+  COACH_EFFORT_GUIDE,
+  coachEquipmentSummary,
 } from "./halfPlan.js";
 import {
   defaultStrengthDays,
   strengthDaysValid,
   strengthSessionOverview,
-  strengthLevelFromPushUps,
   equipmentSummary,
 } from "./strength.js";
 import {
@@ -44,13 +48,18 @@ import { StrengthTimer } from "./strength-timer.js";
 
 const E2E = new URLSearchParams(location.search).has("e2e");
 
-const EQUIPMENT_OPTIONS = [
+const EQUIPMENT_OPTIONS_5K = [
   { value: "bodyweight", label: "None / bodyweight" },
   { value: "dumbbells", label: "Dumbbells" },
   { value: "kettlebell", label: "Kettlebell" },
   { value: "bands", label: "Resistance bands" },
   { value: "pullup", label: "Pull-up bar" },
   { value: "bench", label: "Bench or step" },
+];
+const EQUIPMENT_OPTIONS_HALF = [
+  { value: "none", label: "None (bodyweight)" },
+  { value: "dumbbells", label: "Dumbbells" },
+  { value: "kettlebells_essentials", label: "Kettlebells + essentials (step, band, mat)" },
 ];
 
 let state = loadState();
@@ -181,12 +190,21 @@ function strengthDayChips(runDays, selected, count) {
   }).join("");
 }
 
-function equipmentChecks(selected = ["bodyweight"]) {
+function equipmentChecks(selected = ["bodyweight"], goal = "5k") {
+  const opts = goal === "half" ? EQUIPMENT_OPTIONS_HALF : EQUIPMENT_OPTIONS_5K;
   const set = new Set(selected);
-  return EQUIPMENT_OPTIONS.map(
-    (opt) =>
-      `<label class="chip"><input type="checkbox" name="equipment" value="${opt.value}" ${set.has(opt.value) || (opt.value === "bodyweight" && !selected.length) ? "checked" : ""}> ${opt.label}</label>`
-  ).join("");
+  const defaultVal = goal === "half" ? "none" : "bodyweight";
+  return opts
+    .map((opt) => {
+      const checked =
+        set.has(opt.value) ||
+        (opt.value === defaultVal && !selected.length) ||
+        (goal === "half" && opt.value === "none" && selected.includes("bodyweight"));
+      const type = goal === "half" ? "radio" : "checkbox";
+      const inputName = goal === "half" ? "equipmentHalf" : "equipment";
+      return `<label class="chip"><input type="${type}" name="${inputName}" value="${opt.value}" ${checked ? "checked" : ""}> ${opt.label}</label>`;
+    })
+    .join("");
 }
 
 function renderOnboarding() {
@@ -229,14 +247,14 @@ function renderOnboarding() {
         <legend>Preferred run days</legend>
         <div class="chip-row" id="run-day-chips">${dayChecks}</div>
       </fieldset>
-      <fieldset class="field">
+      <fieldset class="field" id="strength-schedule-field">
         <legend>Strength days per week</legend>
         <div class="radio-row">
           <label><input type="radio" name="strengthDays" value="1" checked> 1 day (recommended)</label>
           <label><input type="radio" name="strengthDays" value="2"> 2 days</label>
         </div>
       </fieldset>
-      <fieldset class="field">
+      <fieldset class="field" id="strength-days-field">
         <legend>Strength days (not on run days)</legend>
         <div class="chip-row" id="strength-day-chips">${strengthDayChips(defaultRun, defaultStrength, 1)}</div>
       </fieldset>
@@ -247,20 +265,9 @@ function renderOnboarding() {
           <label><input type="radio" name="level" value="jogLittle"> I can jog a little</label>
         </div>
       </fieldset>
-      <fieldset class="field hidden" id="half-ready-field">
-        <legend>Half marathon readiness</legend>
-        <div class="radio-row">
-          <label><input type="radio" name="halfReady" value="yes" checked> I can run a 5K or about 30 minutes continuously</label>
-          <label><input type="radio" name="halfReady" value="no"> Not yet — I should finish the 5K track first</label>
-        </div>
-        <div class="card card-note hidden" id="half-recommend-card">
-          <p>Build your base with the 5K plan first. You can switch to the half marathon goal anytime from settings.</p>
-          <button type="button" class="btn btn-secondary btn-block" id="switch-to-5k">Switch to 5K goal</button>
-        </div>
-      </fieldset>
       <fieldset class="field">
         <legend>Equipment available</legend>
-        <div class="chip-row" id="equipment-chips">${equipmentChecks()}</div>
+        <div class="chip-row" id="equipment-chips">${equipmentChecks([], "5k")}</div>
       </fieldset>
       <fieldset class="field" id="pushup-test-field">
         <legend>Level test</legend>
@@ -270,6 +277,38 @@ function renderOnboarding() {
         </label>
         <p class="muted" id="strength-level-preview">Strength level: Beginner (under 8 push-ups)</p>
       </fieldset>
+      <fieldset class="field hidden" id="half-base-field">
+        <legend>Running base (half marathon)</legend>
+        <p class="muted">Answer honestly — this picks your <strong>run</strong> plan length. Push-ups pick your strength progression.</p>
+        <label class="check-row">
+          <input type="checkbox" name="base3x4" id="base3x4">
+          <span>I have been running about <strong>3 days per week</strong> for at least the <strong>last 4 weeks</strong>.</span>
+        </label>
+        <label class="check-row">
+          <input type="checkbox" name="base4mi" id="base4mi">
+          <span>I have done a run of at least <strong>4 mi (6.4 km)</strong> in the past month.</span>
+        </label>
+        <label class="check-row">
+          <input type="checkbox" name="base30cont" id="base30cont">
+          <span>I can run <strong>30–40 minutes continuously</strong> at easy effort (full sentences).</span>
+        </label>
+        <fieldset class="field">
+          <legend>Minimum readiness</legend>
+          <div class="radio-row">
+            <label><input type="radio" name="base30rw" value="yes" checked> I can complete <strong>30 minutes</strong> of easy running or run-walk (e.g. 4 min run / 1 min walk)</label>
+            <label><input type="radio" name="base30rw" value="no"> I cannot yet do 30 minutes of run-walk</label>
+          </div>
+        </fieldset>
+        <div class="card card-note hidden" id="half-recommend-card">
+          <p>Finish the 5K track in this app first, then return to the half marathon goal.</p>
+          <button type="button" class="btn btn-secondary btn-block" id="switch-to-5k">Switch to 5K goal</button>
+        </div>
+        <p class="muted" id="half-plan-preview"></p>
+      </fieldset>
+      <details class="card card-note hidden" id="half-disclaimer-details">
+        <summary>Medical disclaimer (required reading)</summary>
+        <p class="disclaimer-text">${COACH_DISCLAIMER}</p>
+      </details>
       <label class="field" id="race-date-field">
         <span>Race day (optional — sets your start date backward)</span>
         <input name="race" type="date" value="">
@@ -303,13 +342,47 @@ function refreshStrengthChips(form) {
   if (el) el.innerHTML = strengthDayChips(runDays, selected, spd);
 }
 
-function getEquipmentFromForm(form) {
+function getEquipmentFromForm(form, goal) {
+  if (goal === "half") {
+    const val = form.querySelector('input[name="equipmentHalf"]:checked')?.value || "none";
+    return [val];
+  }
   const picked = [...form.querySelectorAll('input[name="equipment"]:checked')].map((el) => el.value);
   if (!picked.length) return ["bodyweight"];
   if (picked.includes("bodyweight") && picked.length > 1) {
     return picked.filter((v) => v !== "bodyweight");
   }
   return picked;
+}
+
+function getRunningBaseFromForm(form) {
+  return {
+    threePerWeek4Weeks: Boolean(form.querySelector('[name="base3x4"]')?.checked),
+    recent4Mi: Boolean(form.querySelector('[name="base4mi"]')?.checked),
+    continuous30_40: Boolean(form.querySelector('[name="base30cont"]')?.checked),
+    can30RunWalk: form.querySelector('[name="base30rw"]:checked')?.value === "yes",
+  };
+}
+
+function updateHalfPlanPreview(form) {
+  const pushups = Number(form.querySelector('input[name="pushups"]')?.value ?? 0);
+  const base = getRunningBaseFromForm(form);
+  const placement = resolveHalfPlacement(pushups, base);
+  const el = $("#half-plan-preview", form);
+  if (!el) return;
+  if (!base.can30RunWalk) {
+    el.textContent = "";
+    return;
+  }
+  if (placement.runLevel === "average") {
+    el.textContent =
+      "Your assignment: 12-week Average run plan + Average strength (push-ups 8+ and running base met).";
+  } else if (placement.strengthLevel === "average") {
+    el.textContent =
+      "Your assignment: 16-week Beginner run plan + Average strength (push-ups 8+ but running base not fully met).";
+  } else {
+    el.textContent = "Your assignment: 16-week Beginner run plan + Beginner strength.";
+  }
 }
 
 function updatePushupPreview(form) {
@@ -328,11 +401,17 @@ function syncOnboardingGoal(form) {
   const goal = form.querySelector('input[name="goal"]:checked')?.value || "5k";
   const isHalf = goal === "half";
   $("#five-k-level-field", form)?.classList.toggle("hidden", isHalf);
-  $("#half-ready-field", form)?.classList.toggle("hidden", !isHalf);
+  $("#half-base-field", form)?.classList.toggle("hidden", !isHalf);
+  $("#half-disclaimer-details", form)?.classList.toggle("hidden", !isHalf);
   $("#days-5k-row", form)?.classList.toggle("hidden", isHalf);
   $("#days-half-row", form)?.classList.toggle("hidden", !isHalf);
-  const halfReady = form.querySelector('input[name="halfReady"]:checked')?.value;
-  $("#half-recommend-card", form)?.classList.toggle("hidden", !isHalf || halfReady !== "no");
+  $("#strength-schedule-field", form)?.classList.toggle("hidden", isHalf);
+  $("#strength-days-field", form)?.classList.toggle("hidden", isHalf);
+  const eq = $("#equipment-chips", form);
+  if (eq) eq.innerHTML = equipmentChecks([], goal);
+  const base30 = form.querySelector('[name="base30rw"]:checked')?.value;
+  $("#half-recommend-card", form)?.classList.toggle("hidden", !isHalf || base30 !== "no");
+  if (isHalf) updateHalfPlanPreview(form);
   refreshStrengthChips(form);
 }
 
@@ -342,10 +421,19 @@ function bindOnboarding() {
   updatePushupPreview(form);
   form?.querySelector('input[name="pushups"]')?.addEventListener("input", () => updatePushupPreview(form));
   form?.addEventListener("change", (e) => {
-    if (e.target.name === "goal" || e.target.name === "halfReady") {
+    if (
+      e.target.name === "goal" ||
+      e.target.name === "base30rw" ||
+      e.target.name === "base3x4" ||
+      e.target.name === "base4mi" ||
+      e.target.name === "base30cont"
+    ) {
       syncOnboardingGoal(form);
     }
-    if (e.target.name === "pushups") updatePushupPreview(form);
+    if (e.target.name === "pushups") {
+      updatePushupPreview(form);
+      updateHalfPlanPreview(form);
+    }
     if (e.target.name === "day" || e.target.name === "days" || e.target.name === "daysHalf" || e.target.name === "strengthDays") {
       refreshStrengthChips(form);
     }
@@ -353,66 +441,86 @@ function bindOnboarding() {
       const race = form.querySelector('input[name="race"]')?.value;
       const goal = form.querySelector('input[name="goal"]:checked')?.value || "5k";
       const pushups = Number(form.querySelector('input[name="pushups"]')?.value ?? 0);
-      const strengthLevel = strengthLevelFromPushUps(pushups);
+      const runLevel =
+        goal === "half"
+          ? resolveHalfPlacement(pushups, getRunningBaseFromForm(form)).runLevel
+          : null;
       if (race) {
         const days =
           goal === "half"
             ? Number(form.querySelector('input[name="daysHalf"]:checked')?.value || 3)
             : Number(form.querySelector('input[name="days"]:checked')?.value || 3);
         const weeks =
-          goal === "half" ? weeksForHalfPlan(strengthLevel) : weeksForDaysPerWeek(days);
+          goal === "half" ? weeksForHalfPlan(runLevel || "beginner") : weeksForDaysPerWeek(days);
         form.querySelector('input[name="start"]').value = startDateFromRace(race, weeks);
       }
     }
   });
   $("#switch-to-5k", form)?.addEventListener("click", () => {
     form.querySelector('input[name="goal"][value="5k"]').checked = true;
-    form.querySelector('input[name="halfReady"][value="yes"]').checked = true;
+    const rw = form.querySelector('input[name="base30rw"][value="yes"]');
+    if (rw) rw.checked = true;
     syncOnboardingGoal(form);
   });
   form?.addEventListener("submit", (e) => {
     e.preventDefault();
     const fd = new FormData(form);
     const goal = fd.get("goal") || "5k";
-    if (goal === "half" && fd.get("halfReady") === "no") {
-      alert("Finish the 5K track first, or confirm you can run 30 minutes continuously.");
-      return;
+    const pushups = Number(fd.get("pushups"));
+    const runningBase = getRunningBaseFromForm(form);
+    let runLevel = "beginner";
+    let strengthLevel = strengthLevelFromPushUps(pushups);
+    if (goal === "half") {
+      if (!runningBase.can30RunWalk) {
+        alert("Finish the 5K track first — you need at least 30 minutes of run-walk.");
+        return;
+      }
+      const placement = resolveHalfPlacement(pushups, runningBase);
+      runLevel = placement.runLevel;
+      strengthLevel = placement.strengthLevel;
     }
     const days =
       goal === "half" ? Number(fd.get("daysHalf") || 3) : Number(fd.get("days"));
-    const strengthDaysPerWeek = Number(fd.get("strengthDays"));
+    let strengthDaysPerWeek = Number(fd.get("strengthDays"));
     const level = fd.get("level") || "walk30";
     let startDateISO = fd.get("start");
     const raceDateISO = fd.get("race") || "";
     const name = String(fd.get("name") || "").trim();
-    const strengthLevel = strengthLevelFromPushUps(fd.get("pushups"));
-    const equipment = getEquipmentFromForm(form);
+    const equipment = getEquipmentFromForm(form, goal);
     const preferredDays = getRunDaysFromForm(form);
-    const strengthPreferredDays = [...form.querySelectorAll('input[name="strengthDay"]:checked')].map((el) =>
+    let strengthPreferredDays = [...form.querySelectorAll('input[name="strengthDay"]:checked')].map((el) =>
       Number(el.value)
     );
+    if (goal === "half") {
+      strengthDaysPerWeek = 2;
+      strengthPreferredDays = defaultStrengthDays(preferredDays.slice(0, days), 2);
+    }
     if (preferredDays.length < days) {
       alert(`Pick at least ${days} run days.`);
       return;
     }
-    if (strengthPreferredDays.length < strengthDaysPerWeek) {
+    if (goal !== "half" && strengthPreferredDays.length < strengthDaysPerWeek) {
       alert(`Pick ${strengthDaysPerWeek} strength day(s) on non-run days.`);
       return;
     }
-    if (!strengthDaysValid(preferredDays.slice(0, days), strengthPreferredDays)) {
+    if (
+      goal !== "half" &&
+      !strengthDaysValid(preferredDays.slice(0, days), strengthPreferredDays)
+    ) {
       alert("Strength days must be on different days than your run days.");
       return;
     }
     const units = "mi";
     if (raceDateISO) {
       const weeks =
-        goal === "half" ? weeksForHalfPlan(strengthLevel) : weeksForDaysPerWeek(days);
+        goal === "half" ? weeksForHalfPlan(runLevel) : weeksForDaysPerWeek(days);
       startDateISO = startDateFromRace(raceDateISO, weeks);
     }
     const plan = buildPlan({
       goal,
       daysPerWeek: days,
       level,
+      runLevel,
       strengthLevel,
       preferredDays: preferredDays.slice(0, days),
       startDateISO,
@@ -422,6 +530,8 @@ function bindOnboarding() {
       strengthPreferredDays: strengthPreferredDays.slice(0, strengthDaysPerWeek),
       equipment,
       units,
+      pushups,
+      runningBase: goal === "half" ? runningBase : null,
     });
     setState({
       ...plan,
@@ -639,7 +749,7 @@ function renderStrengthOverview() {
     <div class="card strength-overview-card">
       <span class="strength-badge strength-badge--large" aria-hidden="true">💪</span>
       <h2>${workout.title}</h2>
-      <p class="strength-overview-meta">${equipmentSummary(workout.equipment || state.meta.equipment)} · about 15–20 min · ${overview.phaseLabel} phase</p>
+      <p class="strength-overview-meta">${halfEquipmentLabel(state.meta)} · about 15–20 min · ${overview.phaseLabel} phase</p>
       <div class="strength-outline">
         <p class="strength-outline-block"><strong>Warm-up</strong> · 3 min</p>
         <div class="strength-outline-block">
@@ -877,8 +987,16 @@ function daysUntilRace(meta) {
 }
 
 function goalLabel(meta) {
-  if (meta.goal === "half") return `Half marathon (${formatRaceDistance(meta.units || "mi")})`;
+  if (meta.goal === "half") {
+    const rl = meta.runLevel === "average" ? "Average" : "Beginner";
+    return `Half marathon (${formatRaceDistance(meta.units || "mi")}) · ${rl} run`;
+  }
   return "5K";
+}
+
+function halfEquipmentLabel(meta) {
+  if (meta.goal === "half") return coachEquipmentSummary(meta.equipment);
+  return equipmentSummary(meta.equipment);
 }
 
 function renderPlan() {
@@ -886,15 +1004,31 @@ function renderPlan() {
   const weeks = meta.weeks;
   const runDays = new Set(meta.preferredDays || []);
   const countdown = daysUntilRace(meta);
-  const longRuns = state.longRunProgressionKm || (meta.goal === "half" ? longRunProgressionKm(weeks) : null);
+  const longRuns =
+    state.longRunProgressionKm ||
+    (meta.goal === "half"
+      ? longRunProgressionKm(meta.runLevel || "beginner", meta.daysPerWeek)
+      : null);
   const peakLong =
     longRuns?.length ? Math.max(...longRuns.slice(0, Math.max(0, weeks - 2))) : null;
+  const effortRows = (COACH_EFFORT_GUIDE?.scale || [])
+    .slice(0, 6)
+    .map((r) => `<tr><td>${r.rpe}</td><td>${r.label}</td><td>${r.talk_test}</td></tr>`)
+    .join("");
+  const coachExtras =
+    meta.goal === "half"
+      ? `<details class="plan-effort-guide"><summary>Effort guide (RPE + talk test)</summary>
+      <table class="effort-table"><thead><tr><th>RPE</th><th>Feel</th><th>Talk test</th></tr></thead><tbody>${effortRows}</tbody></table>
+      <p class="muted">${(COACH_EFFORT_GUIDE.notes || []).join(" ")}</p></details>
+      <details><summary>Medical disclaimer</summary><p class="disclaimer-text">${state.coachMeta?.disclaimer || COACH_DISCLAIMER}</p></details>`
+      : "";
   const overview = `
     <div class="card plan-overview-card">
       <h2>Your plan</h2>
       <p><strong>Goal:</strong> ${goalLabel(meta)}</p>
-      <p><strong>Length:</strong> ${weeks} weeks · ${meta.daysPerWeek} run days / week</p>
-      <p><strong>Strength:</strong> ${meta.strengthDaysPerWeek ?? 1} day(s) · ${equipmentSummary(meta.equipment)}</p>
+      <p><strong>Length:</strong> ${weeks} weeks · ${meta.daysPerWeek} run days / week · Strength ${meta.strengthLevel === "average" ? "Average" : "Beginner"}</p>
+      <p><strong>Equipment:</strong> ${halfEquipmentLabel(meta)}</p>
+      ${coachExtras}
       ${
         countdown != null
           ? `<p class="plan-countdown"><strong>Race countdown:</strong> ${countdown} day(s)${meta.raceDateISO ? ` · race ${meta.raceDateISO}` : ""}</p>`
@@ -1091,20 +1225,24 @@ function bindSettings() {
     }
     const meta = state.meta;
     const strengthLevel = meta.strengthLevel || "beginner";
+    const runLevel = meta.runLevel || "beginner";
     const days = goal === "half" ? Math.min(4, meta.daysPerWeek) : meta.daysPerWeek;
     const plan = buildPlan({
       goal,
       daysPerWeek: days,
       level: meta.level || "walk30",
+      runLevel: goal === "half" ? runLevel : undefined,
       strengthLevel,
       preferredDays: meta.preferredDays.slice(0, days),
       startDateISO: meta.startDateISO,
       raceDateISO: meta.raceDateISO || "",
       name: meta.name,
-      strengthDaysPerWeek: meta.strengthDaysPerWeek ?? 1,
+      strengthDaysPerWeek: goal === "half" ? 2 : meta.strengthDaysPerWeek ?? 1,
       strengthPreferredDays: meta.strengthPreferredDays,
-      equipment: meta.equipment || ["bodyweight"],
+      equipment: meta.equipment || (goal === "half" ? ["none"] : ["bodyweight"]),
       units: getSettings(state).units || "mi",
+      pushups: meta.pushups ?? 5,
+      runningBase: meta.runningBase,
     });
     setState({
       ...plan,
@@ -1158,6 +1296,7 @@ window.__doingA5K = {
   weeksForHalfPlan,
   longRunProgressionKm,
   strengthLevelFromPushUps,
+  resolveHalfPlacement,
   loadState,
   resetState,
   nextWorkout,

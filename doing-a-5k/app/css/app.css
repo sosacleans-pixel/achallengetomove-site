@@ -360,6 +360,30 @@
   font-size: 1rem;
 }
 
+.disclaimer-text {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.effort-table {
+  width: 100%;
+  font-size: 0.8rem;
+  border-collapse: collapse;
+  margin: 0.5rem 0;
+}
+
+.effort-table th,
+.effort-table td {
+  border: 1px solid var(--line);
+  padding: 0.35rem 0.4rem;
+  text-align: left;
+}
+
+.plan-effort-guide {
+  margin: 0.75rem 0;
+}
+
 .settings-card h2 {
   font-size: 1rem;
   margin-top: 0;

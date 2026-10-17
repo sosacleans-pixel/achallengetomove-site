@@ -1,27 +1,24 @@
 /**
- * Half marathon training plan (data module — coach can replace this file).
- * Beginner ~16 weeks · Average ~12 weeks · 3 or 4 run days per week.
- * Assumes ability to run ~30 minutes or a 5K continuously.
+ * Coach half-marathon plans (source: data/half-marathon-plan.json).
  */
 
-import {
-  defaultStrengthDays,
-  generateStrengthWorkouts,
-  strengthDaysValid,
-} from "./strength.js";
+import coach from "../data/half-marathon-plan.json" with { type: "json" };
+import { defaultStrengthDays, strengthDaysValid } from "./strength.js";
+import { generateCoachStrengthWorkouts, coachEquipmentSummary } from "./coachStrength.js";
 
-const WARMUP_SEC = 5 * 60;
-const COOLDOWN_SEC = 5 * 60;
-const MI_TO_KM = 1.60934;
+const MI_TO_KM = 1.609344;
+
+export const COACH_DISCLAIMER = coach.disclaimer;
+export const COACH_EFFORT_GUIDE = coach.effort_guide;
+export const COACH_PHASES = coach.phases;
+export const COACH_PREREQUISITES = coach.prerequisites;
 
 export const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const EASY_PACE_MIN_PER_KM = 6.75;
-const LONG_PACE_MIN_PER_KM = 7.25;
-const TEMPO_PACE_MIN_PER_KM = 5.75;
+const RUN_TYPES = new Set(["workout", "strides", "easy", "recovery", "long", "race"]);
 
-export function weeksForHalfPlan(strengthLevel) {
-  return strengthLevel === "beginner" ? 16 : 12;
+export function weeksForHalfPlan(runLevel) {
+  return runLevel === "average" ? 12 : 16;
 }
 
 export function kmToMiles(km) {
@@ -41,154 +38,36 @@ export function formatDistance(km, units = "mi", digits = 1) {
   return `${kmToMiles(km).toFixed(digits)} mi`;
 }
 
-function kmToSeconds(km, paceMinPerKm) {
-  return Math.round(km * paceMinPerKm * 60);
+export function strengthLevelFromPushUps(count) {
+  const n = Number(count);
+  if (Number.isNaN(n) || n < 0) return "beginner";
+  return n >= 8 ? "average" : "beginner";
 }
 
-function withBookends(mainSteps) {
-  return [
-    { type: "walk", label: "Warm-up walk or easy jog", durationSeconds: WARMUP_SEC },
-    ...mainSteps,
-    { type: "walk", label: "Cool-down walk", durationSeconds: COOLDOWN_SEC },
-  ];
-}
-
-/** Build-phase long runs in miles (cutbacks on every 4th week). */
-const LONG_RUN_MILES_10_BUILD = [3, 3.5, 4, 3, 5, 6, 7, 5.5, 8.5, 10];
-const LONG_RUN_MILES_14_BUILD = [
-  3, 3.5, 4, 3, 4.5, 5, 5.5, 4.5, 6, 7, 8, 6.5, 9, 10.5,
-];
-
-/**
- * Long-run distance (km) per week index. Cutbacks every 4th week; 2-week taper at end.
- */
-export function longRunProgressionKm(totalWeeks) {
-  const taperWeeks = 2;
-  const buildWeeks = totalWeeks - taperWeeks;
-  const template = buildWeeks <= 10 ? LONG_RUN_MILES_10_BUILD : LONG_RUN_MILES_14_BUILD;
-  const buildMiles = [];
-  for (let i = 0; i < buildWeeks; i++) {
-    const src = template[Math.min(i, template.length - 1)];
-    buildMiles.push(src);
+/** Running-base + push-ups → run plan level and strength level. */
+export function resolveHalfPlacement(pushups, runningBase) {
+  const strengthLevel = strengthLevelFromPushUps(pushups);
+  if (!runningBase?.can30RunWalk) {
+    return { ok: false, strengthLevel, runLevel: "beginner", reason: "5k-first" };
   }
-  const peakMi = Math.max(...buildMiles);
-  if (peakMi < 10) {
-    const last = buildMiles.length - 1;
-    buildMiles[last] = 10;
-    if (last > 0) buildMiles[last - 1] = Math.max(buildMiles[last - 1], 9);
+  const avgBase =
+    runningBase.threePerWeek4Weeks && runningBase.recent4Mi && runningBase.continuous30_40;
+  const runLevel = pushups >= 8 && avgBase ? "average" : "beginner";
+  return { ok: true, strengthLevel, runLevel };
+}
+
+export function getCoachPlanVariant(runLevel, daysPerWeek) {
+  const id = `${runLevel}-${daysPerWeek}day`;
+  return coach.plans.find((p) => p.id === id) || null;
+}
+
+export function longRunProgressionKm(runLevel, daysPerWeek = 3) {
+  if (typeof runLevel === "number") {
+    const rl = runLevel === 12 ? "average" : "beginner";
+    return longRunProgressionKm(rl, daysPerWeek);
   }
-  const schedule = buildMiles.map(milesToKm);
-  schedule.push(milesToKm(7));
-  schedule.push(milesToKm(4.5));
-  return schedule.slice(0, totalWeeks);
-}
-
-function phaseForWeek(weekIndex, totalWeeks) {
-  const p = weekIndex / Math.max(1, totalWeeks - 1);
-  if (p < 0.35) return "base";
-  if (p < 0.72) return "build";
-  return "peak";
-}
-
-function easyRunSeconds(weekIndex, totalWeeks) {
-  const base = 28 + Math.floor((weekIndex / Math.max(1, totalWeeks - 1)) * 22);
-  return base * 60;
-}
-
-function buildWorkoutSteps(phase, weekIndex) {
-  if (phase === "base") {
-    return [
-      { type: "run", label: "Easy run", durationSeconds: 8 * 60, effort: "easy" },
-      { type: "run", label: "Strides — smooth and quick (RPE 6)", durationSeconds: 20 },
-      { type: "walk", label: "Walk recovery", durationSeconds: 60 },
-      { type: "run", label: "Stride", durationSeconds: 20 },
-      { type: "walk", label: "Walk recovery", durationSeconds: 60 },
-      { type: "run", label: "Stride", durationSeconds: 20 },
-      { type: "walk", label: "Walk recovery", durationSeconds: 60 },
-      { type: "run", label: "Stride", durationSeconds: 20 },
-      { type: "walk", label: "Walk recovery", durationSeconds: 60 },
-      { type: "run", label: "Easy jog home", durationSeconds: 5 * 60, effort: "easy" },
-    ];
-  }
-  if (phase === "build") {
-    const tempoSec = kmToSeconds(2.4, TEMPO_PACE_MIN_PER_KM);
-    return [
-      { type: "run", label: "Easy run", durationSeconds: 10 * 60, effort: "easy" },
-      { type: "run", label: "Tempo — comfortably hard (RPE 7)", durationSeconds: tempoSec, effort: "tempo" },
-      { type: "walk", label: "Recovery walk", durationSeconds: 3 * 60 },
-      { type: "run", label: "Tempo — comfortably hard (RPE 7)", durationSeconds: tempoSec, effort: "tempo" },
-      { type: "run", label: "Easy jog", durationSeconds: 8 * 60, effort: "easy" },
-    ];
-  }
-  const intervalRun = 3 * 60;
-  const recover = 90;
-  const reps = 4 + (weekIndex % 2);
-  const steps = [{ type: "run", label: "Easy run", durationSeconds: 10 * 60, effort: "easy" }];
-  for (let i = 0; i < reps; i++) {
-    steps.push({
-      type: "run",
-      label: `Interval ${i + 1} — hard but controlled (RPE 8)`,
-      durationSeconds: intervalRun,
-      effort: "interval",
-    });
-    steps.push({ type: "walk", label: "Recovery walk or jog", durationSeconds: recover });
-  }
-  steps.push({ type: "run", label: "Easy cool jog", durationSeconds: 8 * 60, effort: "easy" });
-  return steps;
-}
-
-function longRunSteps(distanceKm, isTaper) {
-  const pace = isTaper ? EASY_PACE_MIN_PER_KM : LONG_PACE_MIN_PER_KM;
-  const sec = kmToSeconds(distanceKm, pace);
-  const effort = isTaper ? "easy — keep it conversational" : "easy — conversational (RPE 4–5)";
-  return [
-    {
-      type: "run",
-      label: `Long run · ${distanceKm.toFixed(1)} km target`,
-      durationSeconds: sec,
-      distanceKm,
-      effort,
-    },
-  ];
-}
-
-function easyContinuousSteps(seconds) {
-  return [
-    {
-      type: "run",
-      label: "Easy run — conversational (RPE 4–5)",
-      durationSeconds: seconds,
-      effort: "easy",
-    },
-  ];
-}
-
-function sessionSummary(steps, units) {
-  const main = steps.filter((s) => !s.label.startsWith("Warm-up") && !s.label.startsWith("Cool-down"));
-  const dist = main.find((s) => s.distanceKm)?.distanceKm;
-  if (dist) return `${formatDistance(dist, units)} · easy effort`;
-  const runSec = main.filter((s) => s.type === "run").reduce((a, s) => a + s.durationSeconds, 0);
-  const runMin = Math.round(runSec / 60);
-  const effort = main.find((s) => s.effort)?.effort;
-  if (effort?.includes("tempo")) return `~${runMin} min · tempo & easy`;
-  if (effort === "interval") return `~${runMin} min · intervals`;
-  return `~${runMin} min · easy`;
-}
-
-function weekTemplates(daysPerWeek) {
-  if (daysPerWeek === 3) {
-    return [
-      { role: "easy", title: "Easy run" },
-      { role: "workout", title: "Workout" },
-      { role: "long", title: "Long run" },
-    ];
-  }
-  return [
-    { role: "easy", title: "Easy run" },
-    { role: "easy", title: "Easy run" },
-    { role: "workout", title: "Workout" },
-    { role: "long", title: "Long run" },
-  ];
+  const plan = getCoachPlanVariant(runLevel, daysPerWeek);
+  return plan ? plan.weeks.map((w) => w.long_run_km) : [];
 }
 
 export function parseDateOnly(iso) {
@@ -209,110 +88,203 @@ export function startDateFromRace(raceDateISO, weeks) {
   return formatDateISO(race);
 }
 
+function parseMinutes(text) {
+  if (!text) return 0;
+  const m = String(text).match(/(\d+)\s*min/i);
+  return m ? Number(m[1]) : 0;
+}
+
+function stepsFromRunSession(sess, planVariant, units) {
+  const steps = [];
+  const pace = planVariant.assumed_long_run_pace_min_per_mi || 12;
+  const effort = `RPE ${sess.effort_rpe || "3-4"}`;
+  const talk = sess.talk_test || "";
+
+  const wuMin = sess.warmup_min ?? parseMinutes(sess.warmup) ?? 5;
+  if (wuMin > 0) {
+    steps.push({
+      type: "walk",
+      label: typeof sess.warmup === "string" ? sess.warmup : "Warm-up",
+      durationSeconds: wuMin * 60,
+      effort,
+      talkTest: talk,
+    });
+  }
+
+  if (sess.type === "long" || sess.type === "race") {
+    const km = sess.distance_km ?? milesToKm(sess.distance_mi || 0);
+    const sec = Math.round(km * (pace / MI_TO_KM) * 60);
+    steps.push({
+      type: "run",
+      label:
+        sess.type === "race"
+          ? `Race · ${formatRaceDistance(units)}`
+          : `Long run · ${formatDistance(km, units)}`,
+      durationSeconds: sec,
+      distanceKm: km,
+      effort,
+      talkTest: talk,
+    });
+  } else {
+    const mainMin =
+      sess.main_min ??
+      Math.max(5, (sess.duration_min || 30) - wuMin - (sess.cooldown_min ?? parseMinutes(sess.cooldown) ?? 5));
+    const mainLabel = sess.name
+      ? `${sess.name}: ${sess.main || ""}`
+      : sess.main || sess.type;
+    steps.push({
+      type: sess.type === "workout" || sess.type === "strides" ? "run" : "run",
+      label: mainLabel.trim(),
+      durationSeconds: mainMin * 60,
+      effort,
+      talkTest: talk,
+    });
+  }
+
+  const cdMin = sess.cooldown_min ?? parseMinutes(sess.cooldown) ?? 5;
+  if (cdMin > 0) {
+    steps.push({
+      type: "walk",
+      label: typeof sess.cooldown === "string" ? sess.cooldown : "Cool-down",
+      durationSeconds: cdMin * 60,
+      effort: "3-4",
+      talkTest: "Full sentences",
+    });
+  }
+  return steps;
+}
+
+function runSessionsForWeek(weekData, daysPerWeek) {
+  const runs = weekData.sessions.filter((s) => RUN_TYPES.has(s.type));
+  if (daysPerWeek === 3) return runs.filter((s) => s.type !== "recovery");
+  return runs;
+}
+
+function sessionTitle(sess, weekNum) {
+  if (sess.type === "race") return "Half marathon — race day";
+  if (sess.type === "long") return `Week ${weekNum} · Long run`;
+  if (sess.type === "workout" || sess.type === "strides") {
+    return `Week ${weekNum} · ${sess.name || "Workout"}`;
+  }
+  if (sess.type === "recovery") return `Week ${weekNum} · Recovery run`;
+  return `Week ${weekNum} · Easy run`;
+}
+
+function sessionSummary(sess, units) {
+  if (sess.type === "long" || sess.type === "race") {
+    const km = sess.distance_km ?? milesToKm(sess.distance_mi);
+    return `${formatDistance(km, units)} · RPE ${sess.effort_rpe} · ${sess.talk_test}`;
+  }
+  return `${sess.duration_min || ""} min · RPE ${sess.effort_rpe} · ${sess.talk_test}`;
+}
+
+export function mapEquipmentToCoach(appEquipment = []) {
+  const set = new Set(appEquipment);
+  if (set.has("kettlebells_essentials")) return ["kettlebells_essentials"];
+  if (set.has("kettlebell") || (set.has("bench") && set.has("bands"))) return ["kettlebells_essentials"];
+  if (set.has("dumbbells")) return ["dumbbells"];
+  return ["none"];
+}
+
 export function generateHalfPlan({
   daysPerWeek,
-  strengthLevel,
+  runLevel = "beginner",
+  strengthLevel = "beginner",
   preferredDays,
   startDateISO,
   name,
-  strengthDaysPerWeek = 1,
   strengthPreferredDays,
-  equipment = [],
+  equipment = ["none"],
   units = "mi",
   raceDateISO = "",
+  pushups = 5,
+  runningBase = null,
 }) {
-  const weeks = weeksForHalfPlan(strengthLevel);
-  const longRuns = longRunProgressionKm(weeks);
-  const templates = weekTemplates(daysPerWeek);
+  const planVariant = getCoachPlanVariant(runLevel, daysPerWeek);
+  if (!planVariant) throw new Error("Unknown half plan variant");
+
+  const weeks = planVariant.weeks_total;
+  const longRuns = planVariant.weeks.map((w) => w.long_run_km);
+  const runDays = preferredDays.slice(0, daysPerWeek);
+  const coachEq = mapEquipmentToCoach(equipment);
+
+  let strengthDays = strengthPreferredDays?.length
+    ? strengthPreferredDays.slice(0, 2)
+    : defaultStrengthDays(runDays, 2);
+  if (!strengthDaysValid(runDays, strengthDays)) {
+    strengthDays = defaultStrengthDays(runDays, 2);
+  }
+
   const workouts = [];
   let sessionIndex = 0;
 
-  const runDays = preferredDays.slice(0, daysPerWeek);
-  let strengthDays = strengthPreferredDays?.length
-    ? strengthPreferredDays.slice(0, strengthDaysPerWeek)
-    : defaultStrengthDays(runDays, strengthDaysPerWeek);
-  if (!strengthDaysValid(runDays, strengthDays)) {
-    strengthDays = defaultStrengthDays(runDays, strengthDaysPerWeek);
-  }
-
-  const taperStart = weeks - 2;
-
   for (let w = 0; w < weeks; w++) {
-    const phase = phaseForWeek(w, weeks);
-    const isTaper = w >= taperStart;
-    const longKm = longRuns[w];
-
-    for (let d = 0; d < daysPerWeek; d++) {
-      const tmpl = templates[d];
-      let main;
-      let title = `Week ${w + 1} · ${tmpl.title}`;
-      if (tmpl.role === "long") {
-        main = longRunSteps(longKm, isTaper);
-        title = isTaper ? `Week ${w + 1} · Taper long run` : `Week ${w + 1} · Long run`;
-      } else if (tmpl.role === "workout") {
-        main = isTaper
-          ? easyContinuousSteps(25 * 60)
-          : buildWorkoutSteps(phase, w);
-        title = isTaper ? `Week ${w + 1} · Easy shake-out` : `Week ${w + 1} · ${phase === "base" ? "Strides" : phase === "build" ? "Tempo" : "Intervals"}`;
-      } else {
-        main = easyContinuousSteps(easyRunSeconds(w, weeks));
-      }
-      const steps = withBookends(main);
-      const weekday = preferredDays[d % preferredDays.length];
+    const weekData = planVariant.weeks[w];
+    const runs = runSessionsForWeek(weekData, daysPerWeek);
+    for (let d = 0; d < runs.length; d++) {
+      const sess = runs[d];
+      const steps = stepsFromRunSession(sess, planVariant, units);
       workouts.push({
         id: `half-w${w}-d${d}`,
         kind: "run",
         weekIndex: w,
         dayInWeek: d,
         sessionIndex,
-        weekday,
-        title,
-        summary: sessionSummary(steps, units),
+        weekday: runDays[d % runDays.length],
+        title: sessionTitle(sess, w + 1),
+        summary: sessionSummary(sess, units),
         steps,
-        runRole: tmpl.role,
-        longRunKm: tmpl.role === "long" ? longKm : undefined,
+        runRole: sess.type,
+        longRunKm: sess.type === "long" || sess.type === "race" ? sess.distance_km : undefined,
+        phase: weekData.phase,
+        coachWeek: weekData.week,
+        isCelebration: sess.type === "race",
         isRaceWeek: w === weeks - 1,
       });
       sessionIndex++;
     }
   }
 
-  const last = workouts[workouts.length - 1];
-  if (last) {
-    last.title = "Half marathon — race day";
-    last.summary = `${formatRaceDistance(units)} · trust your training`;
-    last.isCelebration = true;
-  }
-
-  const strengthWorkouts = generateStrengthWorkouts({
-    weeks,
-    strengthDaysPerWeek,
+  const strengthWorkouts = generateCoachStrengthWorkouts({
+    planWeeks: planVariant.weeks,
     strengthPreferredDays: strengthDays,
-    equipment,
     strengthLevel,
+    equipment: coachEq,
+    pushups,
   });
+
+  const maxStrengthSlots = Math.max(1, ...planVariant.weeks.map((wk) => (wk.strength?.includes("B") ? 2 : 1)));
 
   return {
     meta: {
       name: name || "",
       goal: "half",
       daysPerWeek,
+      runLevel,
       strengthLevel,
-      level: strengthLevel,
+      level: runLevel,
       preferredDays: runDays,
       startDateISO,
       raceDateISO: raceDateISO || "",
       weeks,
-      totalSessions: weeks * daysPerWeek,
-      strengthDaysPerWeek,
-      strengthPreferredDays: strengthDays,
-      equipment,
+      totalSessions: workouts.length,
+      strengthDaysPerWeek: maxStrengthSlots,
+      strengthPreferredDays: strengthDays.slice(0, 2),
+      equipment: coachEq,
       units,
+      pushups: Number(pushups) || 0,
+      runningBase,
+      coachPlanId: planVariant.id,
       createdAt: new Date().toISOString(),
     },
     workouts,
     strengthWorkouts,
     longRunProgressionKm: longRuns,
+    coachMeta: {
+      disclaimer: COACH_DISCLAIMER,
+      effortGuide: COACH_EFFORT_GUIDE,
+      phases: COACH_PHASES,
+    },
   };
 }
 
@@ -330,15 +302,17 @@ export function replanHalfFromWeek(state, fromWeekIndex) {
 
   const fresh = generateHalfPlan({
     daysPerWeek: meta.daysPerWeek,
-    strengthLevel: meta.strengthLevel || meta.level || "beginner",
+    runLevel: meta.runLevel || meta.level || "beginner",
+    strengthLevel: meta.strengthLevel || "beginner",
     preferredDays: meta.preferredDays,
     startDateISO: meta.startDateISO,
     name: meta.name,
-    strengthDaysPerWeek: meta.strengthDaysPerWeek ?? 1,
     strengthPreferredDays: meta.strengthPreferredDays,
-    equipment: meta.equipment || [],
+    equipment: meta.equipment || ["none"],
     units: meta.units || "mi",
     raceDateISO: meta.raceDateISO || "",
+    pushups: meta.pushups ?? 5,
+    runningBase: meta.runningBase,
   });
 
   const newTail = fresh.workouts.filter((w) => w.weekIndex >= fromWeekIndex);
@@ -352,14 +326,6 @@ export function replanHalfFromWeek(state, fromWeekIndex) {
 
   const keptStrength = (state.strengthWorkouts || []).filter((w) => w.weekIndex < fromWeekIndex);
   const newStrengthTail = fresh.strengthWorkouts.filter((w) => w.weekIndex >= fromWeekIndex);
-  const strengthCompletedBefore = new Set(
-    (state.strengthCompleted || [])
-      .filter((c) => {
-        const w = (state.strengthWorkouts || []).find((x) => x.id === c.workoutId);
-        return w && w.weekIndex < fromWeekIndex;
-      })
-      .map((c) => c.workoutId)
-  );
 
   return {
     ...state,
@@ -367,9 +333,13 @@ export function replanHalfFromWeek(state, fromWeekIndex) {
     workouts: merged,
     strengthWorkouts: [...keptStrength, ...newStrengthTail],
     longRunProgressionKm: fresh.longRunProgressionKm,
+    coachMeta: fresh.coachMeta,
     completed: (completed || []).filter((c) => completedBefore.has(c.workoutId)),
-    strengthCompleted: (state.strengthCompleted || []).filter((c) =>
-      strengthCompletedBefore.has(c.workoutId)
-    ),
+    strengthCompleted: (state.strengthCompleted || []).filter((c) => {
+      const w = (state.strengthWorkouts || []).find((x) => x.id === c.workoutId);
+      return w && w.weekIndex < fromWeekIndex;
+    }),
   };
 }
+
+export { coachEquipmentSummary };
