@@ -3,17 +3,30 @@
 export const STORAGE_KEY = "wf_plan_v1";
 
 const defaultState = () => ({
-  version: 1,
+  version: 2,
   profile: null,
   foodList: null,
+  mealPlan: null,
   logs: {},
   customFoods: [],
+  groceryScope: "week",
+  groceryWeek: 1,
+  groceryChecked: {},
+  groceryStore: "instacart",
+  kitchenClear: {
+    checked: {},
+    completed: false,
+    skipped: false,
+    celebrated: false,
+    groupIndex: 0,
+  },
   reintro: {
     started: false,
     order: ["eggs", "dairy", "gluten", "soy", "corn", "nuts"],
     tests: {},
     currentGroup: null,
   },
+  shoppingLists: {},
 });
 
 export function loadState() {
@@ -21,7 +34,26 @@ export function loadState() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultState();
     const parsed = JSON.parse(raw);
-    return { ...defaultState(), ...parsed, logs: parsed.logs || {}, customFoods: parsed.customFoods || [] };
+    return {
+      ...defaultState(),
+      ...parsed,
+      logs: parsed.logs || {},
+      customFoods: parsed.customFoods || [],
+      shoppingLists: parsed.shoppingLists || {},
+      mealPlan: parsed.mealPlan || null,
+      groceryScope: parsed.groceryScope || "week",
+      groceryWeek: parsed.groceryWeek || 1,
+      groceryChecked: parsed.groceryChecked || {},
+      groceryStore: parsed.groceryStore || "instacart",
+      kitchenClear: {
+        checked: {},
+        completed: false,
+        skipped: false,
+        celebrated: false,
+        groupIndex: 0,
+        ...(parsed.kitchenClear || {}),
+      },
+    };
   } catch {
     return defaultState();
   }

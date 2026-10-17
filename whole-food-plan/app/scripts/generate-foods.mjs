@@ -50,8 +50,12 @@ function add(
     vegetarian: opts.vegetarian ?? false,
     packaged: opts.packaged ?? false,
     category: opts.category || "other",
+    ...(opts.note ? { note: opts.note } : {}),
   });
 }
+
+const OATS_GF_NOTE =
+  "During the gluten pause, use certified gluten-free oats; regular oats are often cross-contaminated with wheat.";
 
 // Proteins — poultry
 [
@@ -273,20 +277,38 @@ vegLeafy.forEach(([n, s, c, p, cb, f]) =>
   ["Brown rice, cooked", "1/2 cup", 110, 2.5, 23, 0.9],
   ["White rice, cooked", "1/2 cup", 120, 2.5, 26, 0.3],
   ["Quinoa, cooked", "1/2 cup", 110, 4, 20, 2],
-  ["Oats, rolled, dry", "1/2 cup", 150, 5, 27, 3],
-  ["Oatmeal, cooked", "1 cup", 150, 5, 27, 3],
+  [
+    "Certified gluten-free rolled oats, dry",
+    "1/2 cup",
+    150,
+    5,
+    27,
+    3,
+    { note: OATS_GF_NOTE },
+  ],
+  [
+    "Oatmeal, cooked (certified gluten-free oats)",
+    "1 cup",
+    150,
+    5,
+    27,
+    3,
+    { note: OATS_GF_NOTE },
+  ],
   ["Millet, cooked", "1/2 cup", 105, 3, 21, 1],
   ["Buckwheat, cooked", "1/2 cup", 80, 3, 17, 0.6],
   ["Amaranth, cooked", "1/2 cup", 125, 5, 23, 2],
   ["Wild rice, cooked", "1/2 cup", 80, 3, 17, 0.3],
   ["Teff, cooked", "1/2 cup", 125, 5, 25, 1],
-].forEach(([n, s, c, p, cb, f]) =>
+].forEach((row) => {
+  const [n, s, c, p, cb, f, extra] = row;
   add(n, s, c, p, cb, f, {
     category: "grains",
     vegan: true,
     vegetarian: true,
-  })
-);
+    ...(extra || {}),
+  });
+});
 
 // Gluten grains (tagged)
 [

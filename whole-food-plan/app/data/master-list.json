@@ -1,0 +1,1037 @@
+{
+  "version": 1,
+  "eat": [
+    {
+      "id": "meat_0",
+      "label": "Beef",
+      "category": "Meats",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "meat"
+      ]
+    },
+    {
+      "id": "meat_1",
+      "label": "Sirloin",
+      "category": "Meats",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "meat"
+      ]
+    },
+    {
+      "id": "meat_2",
+      "label": "Ground beef (lean)",
+      "category": "Meats",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "meat"
+      ]
+    },
+    {
+      "id": "meat_3",
+      "label": "Bison",
+      "category": "Meats",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "meat"
+      ]
+    },
+    {
+      "id": "meat_4",
+      "label": "Lamb",
+      "category": "Meats",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "meat"
+      ]
+    },
+    {
+      "id": "meat_5",
+      "label": "Venison",
+      "category": "Meats",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "meat"
+      ]
+    },
+    {
+      "id": "pork",
+      "label": "Pork",
+      "category": "Meats",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "meat",
+        "pork"
+      ]
+    },
+    {
+      "id": "poultry_0",
+      "label": "Chicken breast",
+      "category": "Poultry",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "poultry"
+      ]
+    },
+    {
+      "id": "poultry_1",
+      "label": "Chicken thigh",
+      "category": "Poultry",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "poultry"
+      ]
+    },
+    {
+      "id": "poultry_2",
+      "label": "Turkey breast",
+      "category": "Poultry",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "poultry"
+      ]
+    },
+    {
+      "id": "poultry_3",
+      "label": "Ground turkey",
+      "category": "Poultry",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "poultry"
+      ]
+    },
+    {
+      "id": "poultry_4",
+      "label": "Duck",
+      "category": "Poultry",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "poultry"
+      ]
+    },
+    {
+      "id": "fish_0",
+      "label": "Salmon",
+      "category": "Fish",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "fish"
+      ]
+    },
+    {
+      "id": "fish_1",
+      "label": "Cod",
+      "category": "Fish",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "fish"
+      ]
+    },
+    {
+      "id": "fish_2",
+      "label": "Tuna",
+      "category": "Fish",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "fish"
+      ]
+    },
+    {
+      "id": "fish_3",
+      "label": "Trout",
+      "category": "Fish",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "fish"
+      ]
+    },
+    {
+      "id": "fish_4",
+      "label": "Halibut",
+      "category": "Fish",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "fish"
+      ]
+    },
+    {
+      "id": "fish_5",
+      "label": "Sardines",
+      "category": "Fish",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "fish"
+      ]
+    },
+    {
+      "id": "fish_6",
+      "label": "Mackerel",
+      "category": "Fish",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "fish"
+      ]
+    },
+    {
+      "id": "shell_0",
+      "label": "Shrimp",
+      "category": "Seafood",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "shellfish"
+      ]
+    },
+    {
+      "id": "shell_1",
+      "label": "Scallops",
+      "category": "Seafood",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "shellfish"
+      ]
+    },
+    {
+      "id": "shell_2",
+      "label": "Crab",
+      "category": "Seafood",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "shellfish"
+      ]
+    },
+    {
+      "id": "shell_3",
+      "label": "Mussels",
+      "category": "Seafood",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "shellfish"
+      ]
+    },
+    {
+      "id": "shell_4",
+      "label": "Clams",
+      "category": "Seafood",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "shellfish"
+      ]
+    },
+    {
+      "id": "shell_5",
+      "label": "Lobster",
+      "category": "Seafood",
+      "grocerySection": "meat_seafood",
+      "tags": [
+        "animal",
+        "shellfish"
+      ]
+    },
+    {
+      "id": "veg_0",
+      "label": "Spinach",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_1",
+      "label": "Kale",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_2",
+      "label": "Arugula",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_3",
+      "label": "Romaine lettuce",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_4",
+      "label": "Mixed greens",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_5",
+      "label": "Broccoli",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_6",
+      "label": "Cauliflower",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_7",
+      "label": "Brussels sprouts",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_8",
+      "label": "Zucchini",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_9",
+      "label": "Bell peppers",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_10",
+      "label": "Tomatoes",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_11",
+      "label": "Cucumber",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_12",
+      "label": "Carrots",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_13",
+      "label": "Celery",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_14",
+      "label": "Mushrooms",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_15",
+      "label": "Asparagus",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_16",
+      "label": "Green beans",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_17",
+      "label": "Sweet potato",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_18",
+      "label": "Potato",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_19",
+      "label": "Onion",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_20",
+      "label": "Garlic",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_21",
+      "label": "Butternut squash",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_22",
+      "label": "Cabbage",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "veg_23",
+      "label": "Bok choy",
+      "category": "Vegetables",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "vegetable"
+      ]
+    },
+    {
+      "id": "fruit_0",
+      "label": "Apples",
+      "category": "Fruits",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "fruit"
+      ]
+    },
+    {
+      "id": "fruit_1",
+      "label": "Berries",
+      "category": "Fruits",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "fruit"
+      ]
+    },
+    {
+      "id": "fruit_2",
+      "label": "Bananas",
+      "category": "Fruits",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "fruit"
+      ]
+    },
+    {
+      "id": "fruit_3",
+      "label": "Oranges",
+      "category": "Fruits",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "fruit"
+      ]
+    },
+    {
+      "id": "fruit_4",
+      "label": "Grapes",
+      "category": "Fruits",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "fruit"
+      ]
+    },
+    {
+      "id": "fruit_5",
+      "label": "Melon",
+      "category": "Fruits",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "fruit"
+      ]
+    },
+    {
+      "id": "fruit_6",
+      "label": "Pears",
+      "category": "Fruits",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "fruit"
+      ]
+    },
+    {
+      "id": "fruit_7",
+      "label": "Mango",
+      "category": "Fruits",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "fruit"
+      ]
+    },
+    {
+      "id": "fruit_8",
+      "label": "Pineapple",
+      "category": "Fruits",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "fruit"
+      ]
+    },
+    {
+      "id": "fruit_9",
+      "label": "Lemon",
+      "category": "Fruits",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "fruit"
+      ]
+    },
+    {
+      "id": "fruit_10",
+      "label": "Lime",
+      "category": "Fruits",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "fruit"
+      ]
+    },
+    {
+      "id": "avocado",
+      "label": "Avocado",
+      "category": "Healthy fats",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "fruit",
+        "fat"
+      ]
+    },
+    {
+      "id": "olives",
+      "label": "Olives",
+      "category": "Healthy fats",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant",
+        "fat"
+      ]
+    },
+    {
+      "id": "coconut",
+      "label": "Coconut (fresh)",
+      "category": "Healthy fats",
+      "grocerySection": "produce",
+      "tags": [
+        "plant",
+        "fat"
+      ]
+    },
+    {
+      "id": "olive_oil",
+      "label": "Olive oil",
+      "category": "Healthy fats",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant",
+        "fat"
+      ]
+    },
+    {
+      "id": "avocado_oil",
+      "label": "Avocado oil",
+      "category": "Healthy fats",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant",
+        "fat"
+      ]
+    },
+    {
+      "id": "coconut_oil",
+      "label": "Coconut oil",
+      "category": "Healthy fats",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant",
+        "fat"
+      ]
+    },
+    {
+      "id": "seed_0",
+      "label": "Sunflower seeds",
+      "category": "Seeds",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant",
+        "seed"
+      ]
+    },
+    {
+      "id": "seed_1",
+      "label": "Pumpkin seeds",
+      "category": "Seeds",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant",
+        "seed"
+      ]
+    },
+    {
+      "id": "seed_2",
+      "label": "Chia seeds",
+      "category": "Seeds",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant",
+        "seed"
+      ]
+    },
+    {
+      "id": "seed_3",
+      "label": "Flaxseed",
+      "category": "Seeds",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant",
+        "seed"
+      ]
+    },
+    {
+      "id": "seed_4",
+      "label": "Hemp hearts",
+      "category": "Seeds",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant",
+        "seed"
+      ]
+    },
+    {
+      "id": "seed_5",
+      "label": "Sesame seeds",
+      "category": "Seeds",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant",
+        "seed"
+      ]
+    },
+    {
+      "id": "legume_0",
+      "label": "Black beans",
+      "category": "Legumes",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant",
+        "legume"
+      ]
+    },
+    {
+      "id": "legume_1",
+      "label": "Kidney beans",
+      "category": "Legumes",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant",
+        "legume"
+      ]
+    },
+    {
+      "id": "legume_2",
+      "label": "Chickpeas",
+      "category": "Legumes",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant",
+        "legume"
+      ]
+    },
+    {
+      "id": "legume_3",
+      "label": "Lentils",
+      "category": "Legumes",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant",
+        "legume"
+      ]
+    },
+    {
+      "id": "legume_4",
+      "label": "Pinto beans",
+      "category": "Legumes",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant",
+        "legume"
+      ]
+    },
+    {
+      "id": "legume_5",
+      "label": "Green peas",
+      "category": "Legumes",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant",
+        "legume"
+      ]
+    },
+    {
+      "id": "rice",
+      "label": "Brown rice",
+      "category": "Starches",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant",
+        "starch"
+      ]
+    },
+    {
+      "id": "quinoa",
+      "label": "Quinoa",
+      "category": "Starches",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant",
+        "starch"
+      ]
+    },
+    {
+      "id": "gf_oats",
+      "label": "Certified gluten-free rolled oats",
+      "category": "Starches",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant",
+        "starch"
+      ]
+    },
+    {
+      "id": "herb_0",
+      "label": "Basil",
+      "category": "Herbs & spices",
+      "grocerySection": "spices",
+      "tags": [
+        "plant",
+        "spice"
+      ]
+    },
+    {
+      "id": "herb_1",
+      "label": "Cilantro",
+      "category": "Herbs & spices",
+      "grocerySection": "spices",
+      "tags": [
+        "plant",
+        "spice"
+      ]
+    },
+    {
+      "id": "herb_2",
+      "label": "Parsley",
+      "category": "Herbs & spices",
+      "grocerySection": "spices",
+      "tags": [
+        "plant",
+        "spice"
+      ]
+    },
+    {
+      "id": "herb_3",
+      "label": "Rosemary",
+      "category": "Herbs & spices",
+      "grocerySection": "spices",
+      "tags": [
+        "plant",
+        "spice"
+      ]
+    },
+    {
+      "id": "herb_4",
+      "label": "Thyme",
+      "category": "Herbs & spices",
+      "grocerySection": "spices",
+      "tags": [
+        "plant",
+        "spice"
+      ]
+    },
+    {
+      "id": "herb_5",
+      "label": "Cumin",
+      "category": "Herbs & spices",
+      "grocerySection": "spices",
+      "tags": [
+        "plant",
+        "spice"
+      ]
+    },
+    {
+      "id": "herb_6",
+      "label": "Paprika",
+      "category": "Herbs & spices",
+      "grocerySection": "spices",
+      "tags": [
+        "plant",
+        "spice"
+      ]
+    },
+    {
+      "id": "herb_7",
+      "label": "Turmeric",
+      "category": "Herbs & spices",
+      "grocerySection": "spices",
+      "tags": [
+        "plant",
+        "spice"
+      ]
+    },
+    {
+      "id": "herb_8",
+      "label": "Ginger",
+      "category": "Herbs & spices",
+      "grocerySection": "spices",
+      "tags": [
+        "plant",
+        "spice"
+      ]
+    },
+    {
+      "id": "herb_9",
+      "label": "Black pepper",
+      "category": "Herbs & spices",
+      "grocerySection": "spices",
+      "tags": [
+        "plant",
+        "spice"
+      ]
+    },
+    {
+      "id": "vinegar",
+      "label": "Apple cider or wine vinegar",
+      "category": "Pantry",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant"
+      ]
+    },
+    {
+      "id": "coffee",
+      "label": "Coffee",
+      "category": "Drinks",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant",
+        "drink"
+      ]
+    },
+    {
+      "id": "tea",
+      "label": "Tea (unsweetened)",
+      "category": "Drinks",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant",
+        "drink"
+      ]
+    },
+    {
+      "id": "broth_veg",
+      "label": "Vegetable broth",
+      "category": "Pantry",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant"
+      ]
+    },
+    {
+      "id": "broth_chicken",
+      "label": "Chicken broth",
+      "category": "Pantry",
+      "grocerySection": "pantry",
+      "tags": [
+        "animal",
+        "poultry"
+      ]
+    },
+    {
+      "id": "coconut_milk",
+      "label": "Coconut milk (unsweetened)",
+      "category": "Pantry",
+      "grocerySection": "pantry",
+      "tags": [
+        "plant",
+        "fat"
+      ]
+    }
+  ],
+  "skip": [
+    {
+      "id": "dairy",
+      "label": "Dairy",
+      "why": "Paused to notice how you feel without milk-based foods. Reintroduce slowly after Day 30 if you choose.",
+      "examples": "milk, cheese, yogurt, butter, whey"
+    },
+    {
+      "id": "gluten",
+      "label": "Gluten / wheat",
+      "why": "Paused while you focus on whole foods; many people use this break to spot sensitivity. Use certified GF grains when oats or grains are on your Eat list.",
+      "examples": "wheat bread, pasta, most flour (except GF labeled)"
+    },
+    {
+      "id": "soy",
+      "label": "Soy",
+      "why": "Removed for 30 days as a common sensitivity; legumes like lentils and chickpeas stay if they are on your Eat list.",
+      "examples": "tofu, tempeh, soy sauce, edamame"
+    },
+    {
+      "id": "corn",
+      "label": "Corn",
+      "why": "Paused as a frequent additive and sensitivity; choose other starches from your Eat list.",
+      "examples": "corn, corn tortillas, corn starch in packaged foods"
+    },
+    {
+      "id": "eggs",
+      "label": "Eggs",
+      "why": "Paused for the reset period; plant proteins and meats (if you eat them) cover protein needs.",
+      "examples": "whole eggs and dishes made with egg"
+    },
+    {
+      "id": "peanuts",
+      "label": "Peanuts",
+      "why": "Paused with other common triggers; seeds like sunflower or pumpkin can replace crunch and fat.",
+      "examples": "peanuts and peanut butter"
+    },
+    {
+      "id": "tree_nuts",
+      "label": "Tree nuts",
+      "why": "Paused for 30 days; seeds and avocado can fill healthy-fat slots if they are on your Eat list.",
+      "examples": "almonds, walnuts, cashews, and other tree nuts"
+    },
+    {
+      "id": "added_sugar",
+      "label": "Added sugar & sweeteners",
+      "why": "Helps reset taste buds and steady energy; fruit on your Eat list is still welcome.",
+      "examples": "soda, candy, sweeteners, sweetened drinks"
+    },
+    {
+      "id": "alcohol",
+      "label": "Alcohol",
+      "why": "Less is better for sleep and cravings during the reset.",
+      "examples": "wine, beer, spirits"
+    },
+    {
+      "id": "processed",
+      "label": "Processed foods & additives",
+      "why": "Keeps meals close to real ingredients you could cook at home.",
+      "examples": "long ingredient lists, artificial additives, ultra-processed snacks"
+    }
+  ]
+}
