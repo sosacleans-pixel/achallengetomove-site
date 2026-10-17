@@ -1,0 +1,11 @@
+{
+  "name": "whole-food-plan-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "verify": "node tests/verify.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.0"
+  }
+}

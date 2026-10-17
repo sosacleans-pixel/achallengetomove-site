@@ -293,6 +293,100 @@ main.app-main {
   font-size: 1rem;
 }
 
+.macro-step-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem;
+}
+
+.macro-count-badge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  background: var(--bg-soft);
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+}
+
+.macro-picker-actions {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.macro-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.macro-chip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  min-height: 2.5rem;
+  max-width: 100%;
+}
+
+.macro-chip-label {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.macro-chip-meta {
+  font-size: 0.7rem;
+}
+
+.macro-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line);
+}
+
+.macro-tab {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+  background: var(--bg-soft);
+  color: var(--ink-muted);
+}
+
+.macro-tab.on {
+  background: var(--yellow);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.meal-day-macros {
+  margin-top: 0.75rem;
+}
+
+.meal-meta {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 400;
+  margin-top: 0.15rem;
+}
+
+@media (max-width: 420px) {
+  .macro-bar {
+    font-size: 0.72rem;
+  }
+  .macro-bar strong {
+    font-size: 0.9rem;
+  }
+  .macro-chip {
+    flex: 1 1 calc(50% - 0.35rem);
+  }
+}
+
 .progress-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

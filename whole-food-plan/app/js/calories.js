@@ -33,9 +33,9 @@ export function estimateCalorieTarget(p) {
 }
 
 export function macroTargets(calories) {
-  const protein = Math.round((calories * 0.25) / 4);
+  const protein = Math.round((calories * 0.3) / 4);
   const fat = Math.round((calories * 0.3) / 9);
-  const carbs = Math.round((calories - protein * 4 - fat * 9) / 4);
+  const carbs = Math.round((calories * 0.4) / 4);
   return { calories, protein, carbs, fat };
 }
 

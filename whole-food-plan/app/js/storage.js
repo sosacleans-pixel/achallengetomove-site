@@ -2,6 +2,8 @@
 
 export const STORAGE_KEY = "wf_plan_v1";
 
+export const MACRO_PICKER_VERSION = 1;
+
 const defaultState = () => ({
   version: 2,
   profile: null,
@@ -34,7 +36,7 @@ export function loadState() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultState();
     const parsed = JSON.parse(raw);
-    return {
+    const merged = {
       ...defaultState(),
       ...parsed,
       logs: parsed.logs || {},
@@ -54,6 +56,16 @@ export function loadState() {
         ...(parsed.kitchenClear || {}),
       },
     };
+    if (
+      merged.profile?.onboardingComplete &&
+      merged.profile.macroPickerVersion !== MACRO_PICKER_VERSION
+    ) {
+      merged.profile = {
+        ...merged.profile,
+        needsMacroPickerRefresh: true,
+      };
+    }
+    return merged;
   } catch {
     return defaultState();
   }

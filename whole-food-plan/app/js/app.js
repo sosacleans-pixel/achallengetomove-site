@@ -24,7 +24,26 @@ import { resolveSuggestedMeal, getMealWindows, DEFAULT_MEAL_WINDOWS } from "./me
 import { defaultEatSelections, applyDietStyle } from "./masterFood.js";
 import { groceryListText, buildGroceryFromMeal } from "./grocery.js";
 import { initGroceryOrderSheet, openGroceryOrderSheet, GROCERY_STORE_IDS, getGroceryStore } from "./grocerySheet.js";
-import { renderEatChipsPanel, bindEatChips, readEatSelectionsFromDom } from "./eatChipsUi.js";
+import {
+  MACRO_GROUPS,
+  MACRO_PICKER_VERSION,
+  validateMacroGroup,
+} from "./macroGroups.js";
+import {
+  renderMacroPickerPanel,
+  bindMacroPicker,
+  readMacroSelectionsFromDom,
+} from "./macroPickerUi.js";
+const ONBOARDING_STEPS = 10;
+const MACRO_STEP_START = 2;
+
+function isMacroOnboardingStep(step) {
+  return step >= MACRO_STEP_START && step < MACRO_STEP_START + MACRO_GROUPS.length;
+}
+
+function macroGroupForOnboardingStep(step) {
+  return MACRO_GROUPS[step - MACRO_STEP_START]?.id;
+}
 import {
   buildKitchenChecklist,
   kitchenProgress,
@@ -167,6 +186,13 @@ function render() {
     pendingLog = null;
     hideLogActionBar();
   }
+  if (state.profile?.needsMacroPickerRefresh) {
+    state.profile.needsMacroPickerRefresh = false;
+    state.profile.onboardingComplete = false;
+    onboardingStep = MACRO_STEP_START;
+    saveState(state);
+  }
+
   if (!state.profile?.onboardingComplete) {
     main.innerHTML = renderOnboarding();
     bindOnboarding();
@@ -212,7 +238,7 @@ function render() {
 }
 
 function renderOnboarding() {
-  const steps = 6;
+  const steps = ONBOARDING_STEPS;
   const dots = Array.from({ length: steps }, (_, i) =>
     `<span class="${i === onboardingStep ? "on" : ""}"></span>`
   ).join("");
@@ -248,9 +274,11 @@ function renderOnboarding() {
         <input id="ob-intol" value="${escapeAttr((p.intolerances || []).join(", "))}" placeholder="e.g. garlic">
       </div>
     </div>`,
-    masterListData
-      ? renderEatChipsPanel(masterListData, getEatSelections(p), "ob")
-      : `<div class="card"><p class="muted">Loading food list…</p></div>`,
+    ...MACRO_GROUPS.map((g) =>
+      masterListData
+        ? renderMacroPickerPanel(masterListData, getEatSelections(p), g.id, "ob")
+        : `<div class="card"><p class="muted">Loading food list…</p></div>`
+    ),
     `<div class="card">
       <h2>Symptoms to watch</h2>
       <p class="muted">We'll use these in check-ins and reintroduction.</p>
@@ -302,7 +330,7 @@ function renderOnboarding() {
     ${panels[onboardingStep]}
     <div style="display:flex;gap:0.5rem;margin-top:0.5rem">
       ${onboardingStep > 0 ? '<button type="button" class="btn btn-secondary" id="ob-back">Back</button>' : ""}
-      <button type="button" class="btn btn-primary" style="flex:1" id="ob-next">${onboardingStep === steps - 1 ? "Start my plan" : "Continue"}</button>
+      <button type="button" class="btn btn-primary" style="flex:1" id="ob-next">${onboardingStep === steps - 1 ? "Start my plan" : isMacroOnboardingStep(onboardingStep) ? "Next foods" : "Continue"}</button>
     </div>
   `;
 }
@@ -329,7 +357,15 @@ function bindOnboarding() {
       return;
     }
     collectOnboardingStep();
-    if (onboardingStep < 5) {
+    if (isMacroOnboardingStep(onboardingStep)) {
+      const gid = macroGroupForOnboardingStep(onboardingStep);
+      const check = validateMacroGroup(masterListData, draftProfile.eatSelections || getEatSelections(draftProfile), gid);
+      if (!check.ok) {
+        alert(check.message);
+        return;
+      }
+    }
+    if (onboardingStep < ONBOARDING_STEPS - 1) {
       onboardingStep++;
       render();
       return;
@@ -344,15 +380,18 @@ function bindOnboarding() {
   $$("#ob-symptoms .chip").forEach((btn) => {
     btn.addEventListener("click", () => btn.classList.toggle("selected"));
   });
-  const eatPanel = $("#ob-eat-panel");
-  if (eatPanel && masterListData) {
-    bindEatChips(
+  const gidOnStep = isMacroOnboardingStep(onboardingStep) ? macroGroupForOnboardingStep(onboardingStep) : null;
+  const eatPanel = gidOnStep ? $(`#ob-${gidOnStep}-eat-panel`) : null;
+  if (eatPanel && masterListData && gidOnStep) {
+    const gid = gidOnStep;
+    bindMacroPicker(
       eatPanel,
       () => draftProfile.eatSelections || getEatSelections(draftProfile),
       (sel) => {
         draftProfile.eatSelections = sel;
       },
       masterListData,
+      gid,
       () => render()
     );
   }
@@ -381,20 +420,22 @@ function collectOnboardingStep() {
       );
     }
   }
-  if (onboardingStep === 2) {
-    const panel = $("#ob-eat-panel");
+  if (isMacroOnboardingStep(onboardingStep)) {
+    const gid = macroGroupForOnboardingStep(onboardingStep);
+    const panel = $(`#ob-${gid}-eat-panel`);
     if (panel) {
-      draftProfile.eatSelections = readEatSelectionsFromDom(
+      draftProfile.eatSelections = readMacroSelectionsFromDom(
         panel,
         draftProfile.eatSelections || getEatSelections(draftProfile)
       );
     }
   }
-  if (onboardingStep === 3) {
+  const symptomsStep = MACRO_STEP_START + MACRO_GROUPS.length;
+  if (onboardingStep === symptomsStep) {
     draftProfile.symptomsTrack = $$("#ob-symptoms .chip.selected").map((b) => b.dataset.symptom);
     draftProfile.why = $("#ob-why")?.value || "";
   }
-  if (onboardingStep === 4) {
+  if (onboardingStep === symptomsStep + 1) {
     draftProfile.sex = $("#ob-sex")?.value;
     draftProfile.age = Number($("#ob-age")?.value);
     draftProfile.heightCm = Number($("#ob-height")?.value);
@@ -403,7 +444,7 @@ function collectOnboardingStep() {
     draftProfile.goal = $("#ob-goal")?.value;
     draftProfile.calorieTarget = estimateCalorieTarget(draftProfile);
   }
-  if (onboardingStep === 5) {
+  if (onboardingStep === symptomsStep + 2) {
     draftProfile.startDate = $("#ob-start")?.value || dateKey();
     draftProfile.waterGoal = Number($("#ob-water")?.value) || 8;
   }
@@ -419,6 +460,7 @@ function finishOnboarding() {
   };
   state.profile.eatSelections =
     draftProfile.eatSelections || defaultEatSelections(masterListData);
+  state.profile.macroPickerVersion = MACRO_PICKER_VERSION;
   if (!state.kitchenClear) state.kitchenClear = defaultKitchenClear();
   syncPlanAndList();
   onboardingStep = 0;
@@ -694,12 +736,17 @@ function renderMeals() {
   const week = state.groceryWeek || programWeekForDay(dayNum);
   const grocery = buildGroceryFromPlan(state.mealPlan, masterListData, scope, week);
   const labels = grocery.sectionLabels;
+  const dayMealEntries = Object.values(plan?.meals || {})
+    .filter(Boolean)
+    .flatMap((m) => mealLogEntries(m));
+  const dayMacros = sumLogMacros(dayMealEntries);
+  const dayTarget = macroTargets(state.profile.calorieTarget);
 
   const slotHtml = (slot, label) => {
     const m = plan?.meals?.[slot];
     if (!m) return "";
     return `<details class="card meal-card" open>
-      <summary>${label}: ${escapeHtml(m.name)} <span class="meal-meta">~${m.calories} cal · ${m.protein}g protein</span></summary>
+      <summary>${label}: ${escapeHtml(m.name)} <span class="meal-meta">~${m.calories} cal · P ${m.protein}g · C ${m.carbs ?? "—"}g · F ${m.fat ?? "—"}g</span></summary>
       <p><strong>Ingredients</strong></p>
       <ul>${m.ingredients.map((i) => (i === "---" ? "" : `<li>${escapeHtml(i)}</li>`)).join("")}</ul>
       <p><strong>Steps</strong></p>
@@ -737,6 +784,12 @@ function renderMeals() {
         <input type="number" id="meals-day" min="1" max="30" value="${dayNum}">
       </div>
       <p class="muted">${escapeHtml(plan?.themeNote || "")}</p>
+      <div class="macro-bar meal-day-macros">
+        <div><strong>${dayMacros.calories}</strong>cal<span class="muted"> / ${dayTarget.calories}</span></div>
+        <div><strong>${Math.round(dayMacros.protein)}g</strong>P<span class="muted"> / ${dayTarget.protein}g</span></div>
+        <div><strong>${Math.round(dayMacros.carbs)}g</strong>C<span class="muted"> / ${dayTarget.carbs}g</span></div>
+        <div><strong>${Math.round(dayMacros.fat)}g</strong>F<span class="muted"> / ${dayTarget.fat}g</span></div>
+      </div>
     </div>
     ${slotHtml("breakfast", "Breakfast")}
     ${slotHtml("lunch", "Lunch")}
@@ -917,10 +970,13 @@ function renderFoods() {
   const fl = state.foodList;
   const q = sessionStorage.getItem("wf_food_q") || "";
   if (foodsEditMode && masterListData) {
+    const macroPanels = MACRO_GROUPS
+      .map((g) => renderMacroPickerPanel(masterListData, getEatSelections(state.profile), g.id, "edit"))
+      .join("");
     return `
       <h1 class="page-title">Edit my foods</h1>
-      <p class="muted">Changes regenerate your 30-day meal plan.</p>
-      ${renderEatChipsPanel(masterListData, getEatSelections(state.profile), "edit")}
+      <p class="muted">Pick foods by macro group. Changes regenerate your 30-day meal plan.</p>
+      ${macroPanels}
       <button type="button" class="btn btn-primary btn-block" id="save-eat-edit">Save & update plan</button>
       <button type="button" class="btn btn-secondary btn-block" id="cancel-eat-edit">Cancel</button>
     `;
@@ -1439,26 +1495,27 @@ function bindMeals() {
 
 function bindFoods() {
   if (foodsEditMode && masterListData) {
-    const panel = $("#edit-eat-panel");
-    if (panel) {
-      bindEatChips(
+    for (const g of MACRO_GROUPS) {
+      const panel = $(`#edit-${g.id}-eat-panel`);
+      if (!panel) continue;
+      bindMacroPicker(
         panel,
         () => state.profile.eatSelections || getEatSelections(state.profile),
         (sel) => {
           state.profile.eatSelections = sel;
         },
         masterListData,
+        g.id,
         () => render()
       );
     }
     $("#save-eat-edit")?.addEventListener("click", () => {
-      const p = $("#edit-eat-panel");
-      if (p) {
-        state.profile.eatSelections = readEatSelectionsFromDom(
-          p,
-          state.profile.eatSelections || getEatSelections(state.profile)
-        );
+      let sel = state.profile.eatSelections || getEatSelections(state.profile);
+      for (const g of MACRO_GROUPS) {
+        const p = $(`#edit-${g.id}-eat-panel`);
+        if (p) sel = readMacroSelectionsFromDom(p, sel);
       }
+      state.profile.eatSelections = sel;
       foodsEditMode = false;
       syncPlanAndList();
       showToast("Meal plan updated", "on");

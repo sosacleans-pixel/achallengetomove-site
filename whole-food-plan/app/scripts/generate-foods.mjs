@@ -653,6 +653,29 @@ extraProtein.forEach((row) => {
   add(n, s, c, p, cb, f, { category: "protein", tags: extra || [] });
 });
 
+const STARCHY = /sweet potato|potato|yam|plantain|butternut|acorn squash|corn, sweet/i;
+
+function macroGroupForFood(f) {
+  const cat = f.category || "";
+  if (cat === "protein" || cat === "legumes") return "protein";
+  if (cat === "fats") return "fat";
+  if (cat === "grains" || cat === "fruit") {
+    if (f.name === "Avocado") return "fat";
+    return "carbs";
+  }
+  if (cat === "vegetables") {
+    if (STARCHY.test(f.name)) return "carbs";
+    return "vegetables";
+  }
+  if (cat === "pantry" || cat === "beverages") return "flavor";
+  return "flavor";
+}
+
+for (const f of foods) {
+  f.macroGroup = macroGroupForFood(f);
+  if (!f.macrosApproximate) f.macrosApproximate = true;
+}
+
 const output = {
   meta: {
     source:
