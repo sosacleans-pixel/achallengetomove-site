@@ -398,9 +398,54 @@ section {
   margin-bottom: 0.35rem;
 }
 
+.product-tagline {
+  margin: 0 0 0.5rem;
+  font-weight: 900;
+  font-size: 1rem;
+  color: var(--charcoal);
+}
+
 .product-desc {
   margin: 0;
   color: var(--muted);
+}
+
+.product-pair {
+  grid-column: 1 / -1;
+  background: var(--cream);
+  border: 2px solid var(--charcoal);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.product-pair-head {
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.product-pair-title {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+
+.product-pair-lede {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.product-pair-grid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.product-card--compact .product-card-body {
+  flex-direction: column;
+}
+
+.product-card--compact .product-media--app img {
+  width: 72px;
 }
 
 .product-note {
@@ -434,6 +479,40 @@ section {
 .program-grid {
   display: grid;
   gap: 1.5rem;
+}
+
+.program-pair {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.program-pair-head {
+  text-align: center;
+}
+
+.program-pair-title {
+  font-family: Anton, Impact, sans-serif;
+  font-size: clamp(1.5rem, 4.5vw, 2rem);
+  text-transform: uppercase;
+  margin: 0 0 0.35rem;
+  color: var(--charcoal);
+}
+
+.program-pair-lede {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.program-pair-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.program-card--tier .program-notify {
+  margin-top: auto;
+  align-self: flex-start;
 }
 
 .program-card {
@@ -706,6 +785,22 @@ section {
     align-items: center;
   }
 
+  .program-pair {
+    grid-column: span 3;
+  }
+
+  .program-pair-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .program-grid > .program-card:not(.featured):not(.program-card--tier) {
+    grid-column: span 3;
+    max-width: 24rem;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+  }
+
   .program-card.featured .card-top {
     flex: 1 1 280px;
   }
@@ -743,7 +838,7 @@ section {
     flex-shrink: 0;
   }
 
-  .product-grid {
+  .product-pair-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 

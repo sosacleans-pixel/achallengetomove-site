@@ -1,4 +1,10 @@
 {
+  "pairGroups": {
+    "choose-level-75": {
+      "title": "Choose your level",
+      "subtitle": "Two 75-day app programs — same window, different rules."
+    }
+  },
   "products": [
     {
       "id": "actm-paperback",
@@ -30,7 +36,7 @@
       "type": "app",
       "typeLabel": "App",
       "title": "A Challenge to Move app",
-      "description": "Guided 7-minute workouts with Salim's voice, a 22-day calendar to track your progress, and built-in exercise and rest timers.",
+      "description": "Guided 7-minute workouts, a 22-day calendar, and built-in exercise and rest timers.",
       "status": "available",
       "image": {
         "svg": "/icons/logo.svg",
@@ -56,19 +62,39 @@
       ]
     },
     {
-      "id": "75-day-app",
+      "id": "75-focused",
       "type": "app",
       "typeLabel": "App",
-      "title": "75-Day Challenge",
-      "description": "Salim's long-form discipline challenge in the app — daily movement, nutrition, and mindset tasks, structured day by day.",
+      "title": "75 Focused",
+      "tagline": "All in. No days off.",
+      "description": "The strict, all-in track: 75 straight days of daily non-negotiables — training, clean eating, hydration, reading, and a progress check-in. Miss a day and you start over.",
       "status": "coming_soon",
+      "pairGroup": "choose-level-75",
       "image": {
         "svg": "/icons/logo.svg",
         "width": 512,
         "height": 512,
-        "alt": "75-Day Challenge app (coming soon)"
+        "alt": "75 Focused app (coming soon)"
       },
-      "notifySubject": "Notify me: 75-Day Challenge",
+      "notifySubject": "Notify me: 75 Focused",
+      "actions": []
+    },
+    {
+      "id": "75-adaptive",
+      "type": "app",
+      "typeLabel": "App",
+      "title": "75 Adaptive",
+      "tagline": "Show up every day, your way.",
+      "description": "The flexible track: 75 days of daily movement, better eating, and recovery built in — adjustable to your schedule and body, with no restart penalty.",
+      "status": "coming_soon",
+      "pairGroup": "choose-level-75",
+      "image": {
+        "svg": "/icons/logo.svg",
+        "width": 512,
+        "height": 512,
+        "alt": "75 Adaptive app (coming soon)"
+      },
+      "notifySubject": "Notify me: 75 Adaptive",
       "actions": []
     },
     {

@@ -118,9 +118,15 @@
       : "";
     const title = escapeHtml(product.title);
     const desc = escapeHtml(product.description);
+    const tagline = product.tagline
+      ? '<p class="product-tagline">' + escapeHtml(product.tagline) + "</p>"
+      : "";
+    const compact = product._compact ? " product-card--compact" : "";
 
     return (
-      '<article class="product-card" data-product-id="' +
+      '<article class="product-card' +
+      compact +
+      '" data-product-id="' +
       escapeHtml(product.id) +
       '">' +
       statusBadge(product.status) +
@@ -131,6 +137,7 @@
       "<h2>" +
       title +
       "</h2>" +
+      tagline +
       '<p class="product-desc">' +
       desc +
       "</p>" +
@@ -145,6 +152,57 @@
       '<p class="store-error" role="alert">' + escapeHtml(message) + "</p>";
   }
 
+  function renderPairGroup(groupMeta, items) {
+    const title = escapeHtml(groupMeta.title || "Choose your level");
+    const subtitle = groupMeta.subtitle
+      ? '<p class="product-pair-lede">' + escapeHtml(groupMeta.subtitle) + "</p>"
+      : "";
+    const cards = items
+      .map(function (p) {
+        const copy = Object.assign({}, p, { _compact: true });
+        return renderProduct(copy);
+      })
+      .join("");
+    return (
+      '<section class="product-pair" aria-labelledby="pair-' +
+      escapeHtml(items[0].pairGroup) +
+      '">' +
+      '<header class="product-pair-head">' +
+      '<h2 class="product-pair-title" id="pair-' +
+      escapeHtml(items[0].pairGroup) +
+      '">' +
+      title +
+      "</h2>" +
+      subtitle +
+      "</header>" +
+      '<div class="product-pair-grid">' +
+      cards +
+      "</div></section>"
+    );
+  }
+
+  function buildCatalogHtml(products, pairGroups) {
+    const html = [];
+    let i = 0;
+    while (i < products.length) {
+      const product = products[i];
+      if (product.pairGroup) {
+        const groupId = product.pairGroup;
+        const batch = [];
+        while (i < products.length && products[i].pairGroup === groupId) {
+          batch.push(products[i]);
+          i += 1;
+        }
+        const meta = (pairGroups && pairGroups[groupId]) || { title: "Choose your level" };
+        html.push(renderPairGroup(meta, batch));
+      } else {
+        html.push(renderProduct(product));
+        i += 1;
+      }
+    }
+    return html.join("");
+  }
+
   fetch("/js/products.json")
     .then(function (res) {
       if (!res.ok) throw new Error("Could not load product catalog.");
@@ -156,7 +214,7 @@
         showError("No products listed yet. Check back soon.");
         return;
       }
-      grid.innerHTML = products.map(renderProduct).join("");
+      grid.innerHTML = buildCatalogHtml(products, data.pairGroups || {});
     })
     .catch(function () {
       showError("The store catalog could not be loaded. Please refresh the page.");
