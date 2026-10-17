@@ -1341,3 +1341,69 @@ section {
   border-top: 1px solid var(--line);
   padding-top: 1rem;
 }
+
+/* ---------- Gear page ---------- */
+.gear-disclosure {
+  margin: 1rem 0 0;
+  padding: 0.75rem 1rem;
+  background: var(--cream);
+  border-left: 4px solid var(--yellow);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.gear-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 720px) {
+  .gear-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.gear-card .product-actions {
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+.gear-card .product-copy {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.gear-price-note {
+  margin: 0 0 0.5rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.gear-alt {
+  margin: 0.75rem 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.footer-disclosure {
+  flex-basis: 100%;
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.gear-section-lede {
+  margin: -0.5rem 0 1rem;
+}
+
+.gear-safety-note {
+  margin: 0 0 1.25rem;
+}
+
+.gear-safety {
+  margin: 0.75rem 0 0;
+  font-size: 0.9rem;
+  color: var(--charcoal);
+}
