@@ -1,0 +1,30 @@
+{
+  "name": "75-Day Challenge",
+  "short_name": "75 Day",
+  "description": "75 All-In or 75 Adaptive wellness challenge — on your device, from A Challenge to Move.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fff7e8",
+  "theme_color": "#1e1e1e",
+  "icons": [
+    {
+      "src": "./icons/75-all-in-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/75-all-in-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/75-all-in.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
