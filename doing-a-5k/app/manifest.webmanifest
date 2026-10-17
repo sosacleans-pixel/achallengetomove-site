@@ -1,7 +1,7 @@
 {
   "name": "Doing a 5K",
   "short_name": "Doing a 5K",
-  "description": "Go from walking to your first 5K in 8 to 12 weeks.",
+  "description": "Your first 5K, or go further to a half marathon.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

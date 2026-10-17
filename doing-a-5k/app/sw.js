@@ -1,4 +1,4 @@
-const CACHE = "doing-a-5k-v3";
+const CACHE = "doing-a-5k-v4";
 const ASSETS = [
   "./icons/icon.svg",
   "./icons/icon-192.png",
@@ -9,6 +9,7 @@ const ASSETS = [
   "./css/app.css",
   "./js/app.js",
   "./js/plan.js",
+  "./js/halfPlan.js",
   "./js/storage.js",
   "./js/timer.js",
   "./js/strength.js",

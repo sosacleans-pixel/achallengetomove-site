@@ -142,10 +142,30 @@ function phaseForWeek(weekIndex, totalWeeks) {
   return "strong";
 }
 
-function phaseParams(phase) {
-  if (phase === "foundation") return { rounds: 2, repScale: 1, holdScale: 1, pushVariant: "wall" };
-  if (phase === "build") return { rounds: 2, repScale: 1.25, holdScale: 1.2, pushVariant: "incline" };
-  return { rounds: 3, repScale: 1.5, holdScale: 1.4, pushVariant: "knees" };
+function phaseParams(phase, strengthLevel = "beginner") {
+  const avg = strengthLevel === "average";
+  if (phase === "foundation") {
+    return {
+      rounds: avg ? 2 : 2,
+      repScale: avg ? 1.1 : 0.9,
+      holdScale: avg ? 1.1 : 1,
+      pushVariant: avg ? "incline" : "wall",
+    };
+  }
+  if (phase === "build") {
+    return {
+      rounds: 2,
+      repScale: avg ? 1.35 : 1.15,
+      holdScale: avg ? 1.25 : 1.1,
+      pushVariant: avg ? "floor" : "incline",
+    };
+  }
+  return {
+    rounds: avg ? 3 : 2,
+    repScale: avg ? 1.55 : 1.35,
+    holdScale: avg ? 1.45 : 1.25,
+    pushVariant: avg ? "floor" : "knees",
+  };
 }
 
 function reps(base, scale) {
@@ -160,12 +180,92 @@ function pushLabel(variant) {
   if (variant === "wall") return "Wall push-ups";
   if (variant === "incline") return "Incline push-ups (counter)";
   if (variant === "knees") return "Knee push-ups";
+  if (variant === "floor") return "Floor push-ups";
   return "Push-ups";
 }
 
-function exStep(id, { reps: r, holdSeconds, round }) {
-  const ex = EXERCISES[id];
-  const label = id === "pushUps" ? ex.name : ex.name;
+const EQUIPMENT_ALIASES = {
+  squats: {
+    dumbbells: {
+      name: "Goblet squat (dumbbell)",
+      cue: "Hold one dumbbell at your chest, squat with chest tall and knees tracking over toes.",
+      easier: "Lighter weight or bodyweight squats.",
+      harder: "Pause 2 seconds at the bottom.",
+    },
+    kettlebell: {
+      name: "Goblet squat (kettlebell)",
+      cue: "Hold the kettlebell at your chest, sit between your hips, elbows inside knees.",
+      easier: "Lighter bell or bodyweight squats.",
+      harder: "Slow 3-count lowering.",
+    },
+  },
+  reverseLunges: {
+    dumbbells: {
+      name: "Split squat (dumbbells)",
+      cue: "Hold dumbbells at your sides, step back into a lunge, drive up through the front foot.",
+      easier: "Bodyweight only; hold a wall for balance.",
+      harder: "Pause at the bottom each rep.",
+    },
+  },
+  gluteBridges: {
+    kettlebell: {
+      name: "Kettlebell deadlift",
+      cue: "Hinge at hips with bell between feet, flat back, stand tall squeezing glutes.",
+      easier: "Lighter weight or glute bridges on the floor.",
+      harder: "Slow lowering for 3 counts.",
+    },
+  },
+  birdDog: {
+    bands: {
+      name: "Band pull-aparts",
+      cue: "Hold a band at chest height, pull hands apart, squeeze shoulder blades.",
+      easier: "Lighter band or shorter range.",
+      harder: "Pause 2 seconds when arms are wide.",
+    },
+  },
+  superman: {
+    dumbbells: {
+      name: "Dumbbell row",
+      cue: "Hinge forward with flat back, row elbows to ribs, lower with control.",
+      easier: "One arm at a time; support on a bench or chair.",
+      harder: "Pause at the top each rep.",
+    },
+  },
+  stepUps: {
+    bench: {
+      name: "Step-ups (bench or step)",
+      cue: "Use a sturdy bench or step, press through the whole foot, stand tall.",
+      easier: "Lower step height.",
+      harder: "Slow 3-count on the way down.",
+    },
+  },
+};
+
+function hasEquipment(equipment, key) {
+  const set = new Set(equipment || []);
+  if (key === "bodyweight") return set.has("bodyweight") || set.size === 0;
+  return set.has(key);
+}
+
+function resolveExercise(id, equipment) {
+  const base = EXERCISES[id];
+  const map = EQUIPMENT_ALIASES[id];
+  if (!map) return base;
+  if (id === "squats") {
+    if (hasEquipment(equipment, "kettlebell") && map.kettlebell) return map.kettlebell;
+    if (hasEquipment(equipment, "dumbbells") && map.dumbbells) return map.dumbbells;
+  }
+  if (id === "reverseLunges" && hasEquipment(equipment, "dumbbells") && map.dumbbells) return map.dumbbells;
+  if (id === "gluteBridges" && hasEquipment(equipment, "kettlebell") && map.kettlebell) return map.kettlebell;
+  if (id === "birdDog" && hasEquipment(equipment, "bands") && map.bands) return map.bands;
+  if (id === "superman" && hasEquipment(equipment, "dumbbells") && map.dumbbells) return map.dumbbells;
+  if (id === "stepUps" && hasEquipment(equipment, "bench") && map.bench) return map.bench;
+  return base;
+}
+
+function exStep(id, { reps: r, holdSeconds, round, equipment }) {
+  const ex = resolveExercise(id, equipment);
+  const label = ex.name;
   if (holdSeconds) {
     return {
       mode: "timed",
@@ -212,20 +312,22 @@ function cooldownSteps() {
   ];
 }
 
-function circuitA(phase, params) {
+function circuitA(phase, params, equipment) {
   const ids = PHASE_LIBRARY[phase].A;
   const steps = [];
   for (let round = 1; round <= params.rounds; round++) {
     for (const id of ids) {
       if (id === "pushUps") {
-        const step = exStep("pushUps", { reps: reps(8, params.repScale), round });
+        const step = exStep("pushUps", { reps: reps(8, params.repScale), round, equipment });
         step.label = pushLabel(params.pushVariant);
         step.voiceCue = `Next: ${step.label}, ${step.reps} reps`;
         steps.push(step);
       } else if (id === "plank" || id === "wallSit") {
-        steps.push(exStep(id, { holdSeconds: holdSec(id === "wallSit" ? 25 : 20, params.holdScale), round }));
+        steps.push(
+          exStep(id, { holdSeconds: holdSec(id === "wallSit" ? 25 : 20, params.holdScale), round, equipment })
+        );
       } else {
-        steps.push(exStep(id, { reps: reps(10, params.repScale), round }));
+        steps.push(exStep(id, { reps: reps(10, params.repScale), round, equipment }));
       }
       steps.push(restStep(round));
     }
@@ -233,18 +335,18 @@ function circuitA(phase, params) {
   return steps;
 }
 
-function circuitB(phase, params) {
+function circuitB(phase, params, equipment) {
   const ids = PHASE_LIBRARY[phase].B;
   const steps = [];
   for (let round = 1; round <= params.rounds; round++) {
     for (const id of ids) {
       if (id === "plank" || id === "sidePlank" || id === "hollowHold") {
         const base = id === "hollowHold" ? 15 : 20;
-        steps.push(exStep(id, { holdSeconds: holdSec(base, params.holdScale), round }));
+        steps.push(exStep(id, { holdSeconds: holdSec(base, params.holdScale), round, equipment }));
       } else if (id === "superman") {
-        steps.push(exStep(id, { reps: reps(10, params.repScale), round }));
+        steps.push(exStep(id, { reps: reps(10, params.repScale), round, equipment }));
       } else {
-        steps.push(exStep(id, { reps: reps(12, params.repScale), round }));
+        steps.push(exStep(id, { reps: reps(12, params.repScale), round, equipment }));
       }
       steps.push(restStep(round));
     }
@@ -252,10 +354,11 @@ function circuitB(phase, params) {
   return steps;
 }
 
-export function buildStrengthSession(weekIndex, totalWeeks, sessionType) {
+export function buildStrengthSession(weekIndex, totalWeeks, sessionType, options = {}) {
+  const { equipment = [], strengthLevel = "beginner" } = options;
   const phase = phaseForWeek(weekIndex, totalWeeks);
-  const params = phaseParams(phase);
-  const circuit = sessionType === "B" ? circuitB(phase, params) : circuitA(phase, params);
+  const params = phaseParams(phase, strengthLevel);
+  const circuit = sessionType === "B" ? circuitB(phase, params, equipment) : circuitA(phase, params, equipment);
   const steps = [...warmupSteps(), ...circuit, ...cooldownSteps()];
   return { phase, steps };
 }
@@ -281,12 +384,39 @@ export function strengthDaysValid(runDays, strengthDays) {
   return strengthDays.every((d) => !run.has(d));
 }
 
-export function generateStrengthWorkouts({ weeks, strengthDaysPerWeek, strengthPreferredDays }) {
+export function equipmentSummary(equipment = []) {
+  if (!equipment.length || (equipment.length === 1 && equipment[0] === "bodyweight")) {
+    return "Bodyweight only";
+  }
+  const labels = {
+    bodyweight: "Bodyweight",
+    dumbbells: "Dumbbells",
+    kettlebell: "Kettlebell",
+    bands: "Resistance bands",
+    pullup: "Pull-up bar",
+    bench: "Bench or step",
+  };
+  return equipment.map((k) => labels[k] || k).join(", ");
+}
+
+export function strengthLevelFromPushUps(count) {
+  const n = Number(count);
+  if (Number.isNaN(n) || n < 0) return "beginner";
+  return n >= 8 ? "average" : "beginner";
+}
+
+export function generateStrengthWorkouts({
+  weeks,
+  strengthDaysPerWeek,
+  strengthPreferredDays,
+  equipment = [],
+  strengthLevel = "beginner",
+}) {
   const workouts = [];
   for (let w = 0; w < weeks; w++) {
     for (let s = 0; s < strengthDaysPerWeek; s++) {
       const sessionType = s === 0 ? "A" : "B";
-      const { phase, steps } = buildStrengthSession(w, weeks, sessionType);
+      const { phase, steps } = buildStrengthSession(w, weeks, sessionType, { equipment, strengthLevel });
       const focus =
         sessionType === "A"
           ? "Legs, push & core"
@@ -301,6 +431,8 @@ export function generateStrengthWorkouts({ weeks, strengthDaysPerWeek, strengthP
         title: `Strength ${sessionType} · ${focus}`,
         summary: `~15–20 min · ${phase} phase`,
         phase,
+        equipment,
+        strengthLevel,
         steps,
       });
     }
@@ -317,7 +449,7 @@ export function strengthTotalEstimateSeconds(steps) {
 
 /** One-line circuit preview (first round only) for the session overview screen. */
 export function strengthSessionOverview(workout) {
-  const params = phaseParams(workout.phase);
+  const params = phaseParams(workout.phase, workout.strengthLevel || "beginner");
   const seen = new Set();
   const circuit = [];
   for (const s of workout.steps) {

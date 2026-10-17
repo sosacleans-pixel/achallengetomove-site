@@ -341,6 +341,25 @@
   color: var(--muted);
 }
 
+.hidden {
+  display: none !important;
+}
+
+.card-note {
+  margin-top: 0.75rem;
+  padding: 0.85rem;
+  background: #fff9ee;
+}
+
+.plan-overview-card h2 {
+  margin-top: 0;
+  font-size: 1.1rem;
+}
+
+.plan-countdown {
+  font-size: 1rem;
+}
+
 .settings-card h2 {
   font-size: 1rem;
   margin-top: 0;
