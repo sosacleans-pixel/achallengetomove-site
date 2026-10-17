@@ -12,6 +12,8 @@ import {
 import { estimateCalorieTarget, macroTargets, sumLogMacros } from "./calories.js";
 import { buildPersonalFoodList, ELIMINATION_GROUPS } from "./foodList.js";
 import { checkFoodItem } from "./compliance.js";
+import { getPersonalizedDay, buildShoppingList, mealLogEntries, weekForDay } from "./meals.js";
+import { resolveSuggestedMeal, getMealWindows, DEFAULT_MEAL_WINDOWS } from "./mealTime.js";
 
 const HEALTH_NOTE =
   "This program shares general nutrition education. It is not medical advice. Check with your doctor or a registered dietitian before changing how you eat, especially if you are pregnant, take medication, have food allergies, diabetes, kidney disease, a history of disordered eating, or any other health condition.";
@@ -19,21 +21,43 @@ const HEALTH_NOTE =
 let state = loadState();
 let daysData = [];
 let foodsData = [];
+let mealsData = null;
 let onboardingStep = 0;
 let draftProfile = {};
+/** @type {{ food: object, qty: number } | null} */
+let pendingLog = null;
+let mealsViewDay = null;
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
+function getClockNow() {
+  if (typeof window !== "undefined" && window.__WF_MOCK_NOW) {
+    return new Date(window.__WF_MOCK_NOW);
+  }
+  return new Date();
+}
+
+function getSuggestion() {
+  return resolveSuggestedMeal({
+    now: getClockNow(),
+    profile: state.profile,
+    mealsData,
+    logs: state.logs,
+  });
+}
+
 async function loadContent() {
   const base = new URL("../data/", import.meta.url);
-  const [daysRes, foodsRes] = await Promise.all([
+  const [daysRes, foodsRes, mealsRes] = await Promise.all([
     fetch(new URL("days.json", base)),
     fetch(new URL("foods.json", base)),
+    fetch(new URL("meals.json", base)),
   ]);
   daysData = await daysRes.json();
   const foodsJson = await foodsRes.json();
   foodsData = foodsJson.foods || foodsJson;
+  mealsData = await mealsRes.json();
 }
 
 function navigate(hash) {
@@ -75,12 +99,13 @@ function renderNav(active) {
   const links = [
     { hash: "#/today", label: "Today", icon: "☀" },
     { hash: "#/log", label: "Log", icon: "🍽" },
+    { hash: "#/meals", label: "Meals", icon: "🥗" },
     { hash: "#/foods", label: "Foods", icon: "📋" },
     { hash: "#/progress", label: "Progress", icon: "📈" },
     { hash: "#/settings", label: "Settings", icon: "⚙" },
   ];
   if (unlocked) {
-    links.splice(4, 0, { hash: "#/reintro", label: "Reintro", icon: "🔄" });
+    links.splice(5, 0, { hash: "#/reintro", label: "Reintro", icon: "🔄" });
   }
   return `<nav class="bottom-nav" aria-label="App navigation">
     ${links
@@ -95,6 +120,12 @@ function renderNav(active) {
 function render() {
   const main = $("#app-main");
   const route = location.hash || "#/today";
+  const routeBase = route.split("?")[0];
+  document.body.classList.toggle("route-log", routeBase === "#/log");
+  if (routeBase !== "#/log") {
+    pendingLog = null;
+    hideLogActionBar();
+  }
   if (!state.profile?.onboardingComplete) {
     main.innerHTML = renderOnboarding();
     bindOnboarding();
@@ -111,6 +142,9 @@ function render() {
   switch (route.split("?")[0]) {
     case "#/log":
       html = renderLog();
+      break;
+    case "#/meals":
+      html = renderMeals();
       break;
     case "#/foods":
       html = renderFoods();
@@ -308,6 +342,7 @@ function finishOnboarding() {
     ...draftProfile,
     onboardingComplete: true,
     calorieTarget: draftProfile.calorieTarget || estimateCalorieTarget(draftProfile),
+    mealWindows: { ...DEFAULT_MEAL_WINDOWS, ...(draftProfile.mealWindows || {}) },
   };
   state.foodList = buildPersonalFoodList(state.profile, foodsData);
   saveState(state);
@@ -326,8 +361,11 @@ function renderToday() {
   const target = macroTargets(state.profile.calorieTarget);
   const unlocked = reintroUnlocked(state.profile);
 
+  const suggestion = getSuggestion();
+
   return `
     <h1 class="page-title">Today</h1>
+    ${renderSuggestedNowCard(suggestion)}
     <div class="card">
       <p><strong>Day ${dayNum} of 30</strong> · ${escapeHtml(day.theme)}</p>
       <h2>${escapeHtml(day.title)}</h2>
@@ -343,7 +381,10 @@ function renderToday() {
         <div><strong>${Math.round(macros.carbs)}g</strong>C</div>
         <div><strong>${Math.round(macros.fat)}g</strong>F</div>
       </div>
-      <p style="margin-top:0.75rem"><a href="#/log" class="btn btn-primary btn-small">Log a meal</a></p>
+      <p style="margin-top:0.75rem">
+        <a href="#/log" class="btn btn-primary btn-small">Log a meal</a>
+        <a href="#/meals" class="btn btn-secondary btn-small" style="margin-left:0.35rem">Today's meals</a>
+      </p>
     </div>
     <div class="card">
       <h2>Daily check-in</h2>
@@ -366,17 +407,53 @@ function renderCheckInForm(checkIn, key) {
   `;
 }
 
+function mealLabel(meal) {
+  return meal.charAt(0).toUpperCase() + meal.slice(1);
+}
+
+function renderSuggestedNowCard(s) {
+  if (!s?.meal) return "";
+  const ings = (s.meal.ingredients || []).filter((i) => i !== "---").slice(0, 6);
+  return `
+    <div class="card suggested-now-card" id="suggested-now">
+      <p class="suggested-now-label">${escapeHtml(s.heading)} · ${mealLabel(s.slot)}</p>
+      <h2 class="suggested-now-title">${escapeHtml(s.meal.name)}</h2>
+      <p class="meal-meta">~${s.meal.calories} cal · ${s.meal.protein}g protein</p>
+      <ul class="suggested-now-ing">${ings.map((i) => `<li>${escapeHtml(i)}</li>`).join("")}</ul>
+      <div class="suggested-now-actions">
+        <button type="button" class="btn btn-primary suggested-log-meal" data-slot="${s.slot}" data-day="${s.planDay}" data-log-key="${s.logKey}">Log this meal</button>
+        <a class="btn btn-secondary btn-small suggested-see-recipe" href="#/meals" data-day="${s.planDay}">See recipe</a>
+      </div>
+    </div>
+  `;
+}
+
+function logPlannedMeal(slot, dayNum, logKey) {
+  const plan = getPersonalizedDay(mealsData, dayNum, state.profile);
+  const m = plan?.meals?.[slot];
+  if (!m) return null;
+  const items = mealLogEntries(m);
+  let lastComp = { status: "on" };
+  for (const food of items) {
+    lastComp = addFoodEntry(food, { silent: true, meal: slot, logKey }) || lastComp;
+  }
+  return { lastComp, meal: m };
+}
+
 function renderLog() {
-  const key = dateKey();
+  const key = dateKey(getClockNow());
   const log = ensureDayLog(state, key);
   const meals = ["breakfast", "lunch", "dinner", "snack"];
   const macros = sumLogMacros(allEntriesForDay(key));
   const target = macroTargets(state.profile.calorieTarget);
+  const suggestion = getSuggestion();
+  const defaultMeal = suggestion?.slot || "breakfast";
 
   return `
     <h1 class="page-title">Food log</h1>
     <p class="muted">${key}</p>
-    <div class="card macro-bar">
+    ${renderSuggestedNowCard(suggestion)}
+    <div class="card macro-bar" id="log-macro-bar">
       <div><strong>${macros.calories}</strong>Cal / ${target.calories}</div>
       <div><strong>${Math.round(macros.protein)}g</strong>P</div>
       <div><strong>${Math.round(macros.carbs)}g</strong>C</div>
@@ -385,34 +462,202 @@ function renderLog() {
     <div class="card">
       <h2>Add food</h2>
       <div class="field"><label>Meal</label>
-        <select id="log-meal">${meals.map((m) => `<option value="${m}">${m}</option>`).join("")}</select>
+        <select id="log-meal">${meals.map((m) => `<option value="${m}" ${m === defaultMeal ? "selected" : ""}>${mealLabel(m)}</option>`).join("")}</select>
       </div>
-      <div class="field"><label>Search foods</label><input type="search" id="log-search" placeholder="e.g. salmon, rice, apple" autocomplete="off"></div>
+      <div class="field"><label>Search foods</label><input type="search" id="log-search" placeholder="e.g. salmon, rice, apple" autocomplete="off" enterkeyhint="search"></div>
       <div class="search-results hidden" id="log-results"></div>
-      <details style="margin-top:0.75rem">
-        <summary>Custom food</summary>
-        <div class="field"><label>Name</label><input id="custom-name"></div>
-        <div class="field"><label>Calories</label><input type="number" id="custom-cal" min="0"></div>
-        <div class="field"><label>Protein / Carbs / Fat (g)</label>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.35rem">
-            <input type="number" id="custom-p" placeholder="P" min="0" step="0.1">
-            <input type="number" id="custom-c" placeholder="C" min="0" step="0.1">
-            <input type="number" id="custom-f" placeholder="F" min="0" step="0.1">
-          </div>
+      <div id="log-selected-hint" class="muted ${pendingLog ? "" : "hidden"}">${pendingLog ? `Selected: <strong>${escapeHtml(pendingLog.food.name)}</strong> — adjust servings below, then tap Add to ${mealLabel(defaultMeal)}.` : ""}</div>
+    </div>
+    <div class="card">
+      <h2>Custom food</h2>
+      <div class="field"><label>Name</label><input id="custom-name" placeholder="e.g. Homemade soup"></div>
+      <div class="field"><label>Calories</label><input type="number" id="custom-cal" min="0" inputmode="numeric"></div>
+      <div class="field"><label>Protein / Carbs / Fat (g)</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.35rem">
+          <input type="number" id="custom-p" placeholder="P" min="0" step="0.1" inputmode="decimal">
+          <input type="number" id="custom-c" placeholder="C" min="0" step="0.1" inputmode="decimal">
+          <input type="number" id="custom-f" placeholder="F" min="0" step="0.1" inputmode="decimal">
         </div>
-        <label><input type="checkbox" id="custom-packaged"> Packaged / label check</label>
-        <button type="button" class="btn btn-secondary btn-block" id="custom-add">Add custom food</button>
-      </details>
+      </div>
+      <label class="field"><input type="checkbox" id="custom-packaged"> Packaged / label check</label>
+      <button type="button" class="btn btn-primary btn-block" id="custom-log">Log food</button>
     </div>
     ${meals
-      .map((meal) => {
-        const items = log.meals[meal] || [];
-        return `<div class="card"><h2>${meal}</h2>
+      .map((m) => {
+        const items = log.meals[m] || [];
+        return `<div class="card"><h2>${mealLabel(m)}</h2>
           ${items.length ? items.map((e) => renderLogEntry(e)).join("") : '<p class="muted">Nothing logged yet.</p>'}
         </div>`;
       })
       .join("")}
   `;
+}
+
+function renderMeals() {
+  const storedDay = sessionStorage.getItem("wf_meals_day");
+  if (storedDay) {
+    mealsViewDay = Number(storedDay);
+    sessionStorage.removeItem("wf_meals_day");
+  }
+  const dayNum = mealsViewDay ?? programDay(state.profile, getClockNow());
+  const plan = getPersonalizedDay(mealsData, dayNum, state.profile);
+  const week = weekForDay(dayNum);
+  const shopKey = String(week);
+  if (!state.shoppingLists[shopKey]) {
+    state.shoppingLists[shopKey] = buildShoppingList(mealsData, week, state.profile).map((name) => ({
+      name,
+      checked: false,
+    }));
+    saveState(state);
+  }
+  const shop = state.shoppingLists[shopKey];
+
+  const slotHtml = (slot, label) => {
+    const m = plan?.meals?.[slot];
+    if (!m) return "";
+    return `<details class="card meal-card" open>
+      <summary>${label}: ${escapeHtml(m.name)} <span class="meal-meta">~${m.calories} cal · ${m.protein}g protein</span></summary>
+      ${m.portionNote ? `<p class="muted">${escapeHtml(m.portionNote)}</p>` : ""}
+      <p><strong>Ingredients</strong></p>
+      <ul>${m.ingredients.map((i) => (i === "---" ? "" : `<li>${escapeHtml(i)}</li>`)).join("")}</ul>
+      <p><strong>Steps</strong></p>
+      <ol>${m.steps.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ol>
+      <button type="button" class="btn btn-primary btn-small log-meal-btn" data-slot="${slot}" data-day="${dayNum}">Log this meal</button>
+    </details>`;
+  };
+
+  return `
+    <h1 class="page-title">Suggested meals</h1>
+    <div class="card">
+      <div class="field"><label>Program day (1–30)</label>
+        <input type="number" id="meals-day" min="1" max="30" value="${dayNum}">
+      </div>
+      <p class="muted">${escapeHtml(plan?.themeNote || "")}</p>
+    </div>
+    ${slotHtml("breakfast", "Breakfast")}
+    ${slotHtml("lunch", "Lunch")}
+    ${slotHtml("dinner", "Dinner")}
+    ${plan?.meals?.snack ? slotHtml("snack", "Snack") : ""}
+    <div class="card">
+      <h2>Week ${week} shopping list</h2>
+      <p class="muted">From suggested meals for days ${(week - 1) * 7 + 1}–${Math.min(week * 7, 30)}.</p>
+      <ul class="shopping-list">
+        ${shop.map((item, idx) => `<li><input type="checkbox" data-shop-idx="${idx}" ${item.checked ? "checked" : ""}><span>${escapeHtml(item.name)}</span></li>`).join("")}
+      </ul>
+    </div>
+  `;
+}
+
+function showToast(message, type = "on") {
+  const host = $("#toast-host");
+  if (!host) return;
+  const cls = type === "off" ? "toast-off" : type === "check" ? "toast-check" : "toast-on";
+  host.innerHTML = `<div class="toast ${cls}">${escapeHtml(message)}</div>`;
+  window.setTimeout(() => {
+    if (host) host.innerHTML = "";
+  }, 3200);
+}
+
+function hideLogActionBar() {
+  const bar = $("#log-action-bar");
+  if (!bar) return;
+  bar.classList.add("hidden");
+  bar.setAttribute("aria-hidden", "true");
+  bar.innerHTML = "";
+  document.body.classList.remove("route-log-has-pending");
+}
+
+function updateLogActionBar() {
+  const bar = $("#log-action-bar");
+  if (!bar) return;
+  const route = (location.hash || "").split("?")[0];
+  if (route !== "#/log" || !pendingLog) {
+    hideLogActionBar();
+    return;
+  }
+  const meal = $("#log-meal")?.value || "breakfast";
+  bar.classList.remove("hidden");
+  bar.setAttribute("aria-hidden", "false");
+  document.body.classList.add("route-log-has-pending");
+  bar.innerHTML = `
+    <div class="log-action-inner">
+      <div class="log-action-selected">
+        <strong>${escapeHtml(pendingLog.food.name)}</strong>
+        <span class="muted">${escapeHtml(pendingLog.food.serving || "1 serving")}</span>
+      </div>
+      <div class="qty-stepper">
+        <button type="button" id="qty-minus" aria-label="Decrease servings">−</button>
+        <span id="qty-val">${pendingLog.qty}</span>
+        <button type="button" id="qty-plus" aria-label="Increase servings">+</button>
+      </div>
+      <button type="button" class="btn btn-primary btn-block" id="log-commit">Add to ${mealLabel(meal)}</button>
+    </div>
+  `;
+  $("#qty-minus")?.addEventListener("click", () => {
+    pendingLog.qty = Math.max(0.5, pendingLog.qty - 0.5);
+    updateLogActionBar();
+  });
+  $("#qty-plus")?.addEventListener("click", () => {
+    pendingLog.qty = Math.min(5, pendingLog.qty + 0.5);
+    updateLogActionBar();
+  });
+  $("#log-commit")?.addEventListener("click", () => commitPendingLog());
+}
+
+function selectPendingFood(food) {
+  pendingLog = { food: { ...food }, qty: 1 };
+  updateLogActionBar();
+  const hint = $("#log-selected-hint");
+  if (hint) {
+    hint.classList.remove("hidden");
+    hint.innerHTML = `Selected: <strong>${escapeHtml(food.name)}</strong> — adjust servings below, then tap Add.`;
+  }
+  $$(".search-pick").forEach((btn) => {
+    btn.classList.toggle("selected", btn.dataset.foodId === food.id);
+  });
+}
+
+function commitPendingLog() {
+  if (!pendingLog) return;
+  const { food, qty } = pendingLog;
+  const scaled = {
+    ...food,
+    calories: Math.round(food.calories * qty),
+    protein: Math.round(food.protein * qty * 10) / 10,
+    carbs: Math.round((food.carbs || 0) * qty * 10) / 10,
+    fat: Math.round((food.fat || 0) * qty * 10) / 10,
+    serving: qty === 1 ? food.serving || "1 serving" : `${qty} × ${food.serving || "serving"}`,
+  };
+  const comp = addFoodEntry(scaled, { silent: true });
+  pendingLog = null;
+  hideLogActionBar();
+  if ($("#log-search")) $("#log-search").value = "";
+  $("#log-results")?.classList.add("hidden");
+  if (comp) {
+    const msg =
+      comp.status === "on"
+        ? "On plan — logged!"
+        : comp.status === "off"
+          ? `Off plan: ${comp.reason}`
+          : comp.reason;
+    showToast(msg, comp.status);
+  }
+  render();
+}
+
+function refreshLogMacros() {
+  const key = dateKey();
+  const macros = sumLogMacros(allEntriesForDay(key));
+  const target = macroTargets(state.profile.calorieTarget);
+  const bar = $("#log-macro-bar");
+  if (bar) {
+    bar.innerHTML = `
+      <div><strong>${macros.calories}</strong>Cal / ${target.calories}</div>
+      <div><strong>${Math.round(macros.protein)}g</strong>P</div>
+      <div><strong>${Math.round(macros.carbs)}g</strong>C</div>
+      <div><strong>${Math.round(macros.fat)}g</strong>F</div>
+    `;
+  }
 }
 
 function renderLogEntry(e) {
@@ -571,8 +816,19 @@ function renderReintroControls(group, t) {
 }
 
 function renderSettings() {
+  const w = getMealWindows(state.profile);
   return `
     <h1 class="page-title">Settings</h1>
+    <div class="card">
+      <h2>Meal times</h2>
+      <p class="muted">Used for “Suggested now” on Today and Log. Format 24h HH:MM.</p>
+      <div class="field"><label>Breakfast starts</label><input type="time" id="mw-b0" value="${w.breakfastStart}"></div>
+      <div class="field"><label>Breakfast ends / lunch starts</label><input type="time" id="mw-b1" value="${w.breakfastEnd}"></div>
+      <div class="field"><label>Lunch ends / snack starts</label><input type="time" id="mw-l1" value="${w.lunchEnd}"></div>
+      <div class="field"><label>Snack ends / dinner starts</label><input type="time" id="mw-s1" value="${w.snackEnd}"></div>
+      <div class="field"><label>Dinner ends (after = up next breakfast)</label><input type="time" id="mw-d1" value="${w.dinnerEnd}"></div>
+      <button type="button" class="btn btn-primary btn-small" id="mw-save">Save meal times</button>
+    </div>
     <div class="card">
       <h2>Calorie target</h2>
       <div class="field"><label>Daily calories</label><input type="number" id="set-cal" value="${state.profile.calorieTarget}"></div>
@@ -589,9 +845,42 @@ function renderSettings() {
   `;
 }
 
+function bindSuggestedNow() {
+  $$(".suggested-log-meal").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const r = logPlannedMeal(btn.dataset.slot, Number(btn.dataset.day), btn.dataset.logKey);
+      if (!r) return;
+      const msg =
+        r.lastComp.status === "on"
+          ? `Logged ${r.meal.name} — on plan!`
+          : r.lastComp.status === "off"
+            ? `Logged with off-plan items: ${r.lastComp.reason}`
+            : `Logged — ${r.lastComp.reason}`;
+      showToast(msg, r.lastComp.status);
+      render();
+    });
+  });
+  $$(".suggested-see-recipe").forEach((a) => {
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      mealsViewDay = Number(a.dataset.day);
+      sessionStorage.setItem("wf_meals_day", String(mealsViewDay));
+      navigate("#/meals");
+    });
+  });
+}
+
 function bindScreen(route) {
-  if (route === "#/today") bindToday();
-  if (route === "#/log") bindLog();
+  if (route === "#/today") {
+    bindToday();
+    bindSuggestedNow();
+  }
+  if (route === "#/log") {
+    bindLog();
+    bindSuggestedNow();
+    updateLogActionBar();
+  }
+  if (route === "#/meals") bindMeals();
   if (route === "#/foods") bindFoods();
   if (route === "#/reintro") bindReintro();
   if (route === "#/settings") bindSettings();
@@ -617,7 +906,7 @@ function bindToday() {
 function bindLog() {
   const search = $("#log-search");
   const results = $("#log-results");
-  search?.addEventListener("input", () => {
+  const renderHits = () => {
     const q = search.value.trim().toLowerCase();
     if (q.length < 2) {
       results.classList.add("hidden");
@@ -627,16 +916,26 @@ function bindLog() {
     results.innerHTML = hits
       .map(
         (f) =>
-          `<button type="button" data-food-id="${f.id}">${escapeHtml(f.name)} <span class="muted">${f.calories} cal</span></button>`
+          `<div class="search-row">
+            <button type="button" class="search-pick ${pendingLog?.food?.id === f.id ? "selected" : ""}" data-food-id="${f.id}">
+              ${escapeHtml(f.name)} <span class="muted">${f.calories} cal</span>
+            </button>
+            <button type="button" class="btn btn-small btn-secondary search-add" data-food-id="${f.id}">+ Add</button>
+          </div>`
       )
       .join("");
     results.classList.remove("hidden");
-    $$("button[data-food-id]", results).forEach((btn) => {
-      btn.addEventListener("click", () => addFoodById(btn.dataset.foodId));
+    $$(".search-pick, .search-add", results).forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const food = foodsData.find((x) => x.id === btn.dataset.foodId);
+        if (food) selectPendingFood(food);
+      });
     });
-  });
+  };
+  search?.addEventListener("input", renderHits);
+  $("#log-meal")?.addEventListener("change", () => updateLogActionBar());
 
-  $("#custom-add")?.addEventListener("click", () => {
+  $("#custom-log")?.addEventListener("click", () => {
     const food = {
       id: `custom_${Date.now()}`,
       name: $("#custom-name").value.trim(),
@@ -649,7 +948,22 @@ function bindLog() {
       serving: "1 serving",
     };
     if (!food.name) return;
-    addFoodEntry(food);
+    const comp = addFoodEntry(food, { silent: true });
+    if (comp) {
+      const msg =
+        comp.status === "on"
+          ? "On plan — logged!"
+          : comp.status === "off"
+            ? `Off plan: ${comp.reason}`
+            : comp.reason;
+      showToast(msg, comp.status);
+    }
+    $("#custom-name").value = "";
+    $("#custom-cal").value = "";
+    $("#custom-p").value = "";
+    $("#custom-c").value = "";
+    $("#custom-f").value = "";
+    render();
   });
 
   $$(".log-del").forEach((btn) => {
@@ -666,14 +980,9 @@ function bindLog() {
   });
 }
 
-function addFoodById(id) {
-  const food = foodsData.find((f) => f.id === id);
-  if (food) addFoodEntry(food);
-}
-
-function addFoodEntry(food) {
-  const meal = $("#log-meal")?.value || "lunch";
-  const key = dateKey();
+function addFoodEntry(food, opts = {}) {
+  const meal = opts.meal || $("#log-meal")?.value || "lunch";
+  const key = opts.logKey || dateKey(getClockNow());
   const log = ensureDayLog(state, key);
   const comp = checkFoodItem(food, state.profile, state.foodList);
   const entry = {
@@ -691,9 +1000,44 @@ function addFoodEntry(food) {
   };
   log.meals[meal].push(entry);
   saveState(state);
-  $("#log-search").value = "";
-  $("#log-results")?.classList.add("hidden");
-  render();
+  if (!opts.silent) {
+    render();
+  }
+  return comp;
+}
+
+function bindMeals() {
+  $("#meals-day")?.addEventListener("change", () => {
+    mealsViewDay = Number($("#meals-day").value) || 1;
+    render();
+  });
+  $$(".log-meal-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const slot = btn.dataset.slot;
+      const dayNum = Number(btn.dataset.day);
+      const r = logPlannedMeal(slot, dayNum, dateKey(getClockNow()));
+      if (!r) return;
+      const msg =
+        r.lastComp.status === "on"
+          ? `Logged ${r.meal.name} — on plan!`
+          : r.lastComp.status === "off"
+            ? `Logged with off-plan items: ${r.lastComp.reason}`
+            : `Logged — ${r.lastComp.reason}`;
+      showToast(msg, r.lastComp.status);
+      navigate("#/log");
+    });
+  });
+  $$(".shopping-list input[type=checkbox]").forEach((cb) => {
+    cb.addEventListener("change", () => {
+      const week = weekForDay(mealsViewDay ?? programDay(state.profile));
+      const shopKey = String(week);
+      const idx = Number(cb.dataset.shopIdx);
+      if (state.shoppingLists[shopKey]?.[idx]) {
+        state.shoppingLists[shopKey][idx].checked = cb.checked;
+        saveState(state);
+      }
+    });
+  });
 }
 
 function bindFoods() {
@@ -748,6 +1092,17 @@ function bindReintro() {
 }
 
 function bindSettings() {
+  $("#mw-save")?.addEventListener("click", () => {
+    state.profile.mealWindows = {
+      breakfastStart: $("#mw-b0").value || DEFAULT_MEAL_WINDOWS.breakfastStart,
+      breakfastEnd: $("#mw-b1").value || DEFAULT_MEAL_WINDOWS.breakfastEnd,
+      lunchEnd: $("#mw-l1").value || DEFAULT_MEAL_WINDOWS.lunchEnd,
+      snackEnd: $("#mw-s1").value || DEFAULT_MEAL_WINDOWS.snackEnd,
+      dinnerEnd: $("#mw-d1").value || DEFAULT_MEAL_WINDOWS.dinnerEnd,
+    };
+    saveState(state);
+    showToast("Meal times saved", "on");
+  });
   $("#set-cal-save")?.addEventListener("click", () => {
     const v = Number($("#set-cal").value);
     const floor = state.profile.sex === "male" ? 1500 : 1200;

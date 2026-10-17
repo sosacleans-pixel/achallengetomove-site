@@ -14,6 +14,7 @@ const defaultState = () => ({
     tests: {},
     currentGroup: null,
   },
+  shoppingLists: {},
 });
 
 export function loadState() {
@@ -21,7 +22,13 @@ export function loadState() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultState();
     const parsed = JSON.parse(raw);
-    return { ...defaultState(), ...parsed, logs: parsed.logs || {}, customFoods: parsed.customFoods || [] };
+    return {
+      ...defaultState(),
+      ...parsed,
+      logs: parsed.logs || {},
+      customFoods: parsed.customFoods || [],
+      shoppingLists: parsed.shoppingLists || {},
+    };
   } catch {
     return defaultState();
   }
