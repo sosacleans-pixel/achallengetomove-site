@@ -70,7 +70,7 @@
     if (product.status === "coming_soon") {
       const subject = product.notifySubject || "Notify me: new product";
       parts.push(
-        '<a class="btn btn-secondary btn-small" href="' +
+        '<a class="btn btn-primary btn-small" href="' +
           escapeHtml(mailtoNotify(subject)) +
           '">Notify me</a>'
       );

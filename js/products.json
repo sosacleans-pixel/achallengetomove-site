@@ -51,6 +51,7 @@
     {
       "id": "22-day-workout-app",
       "homeFeatured": true,
+      "learnMoreHref": "/22-day-7-minute-workout/",
       "catalogSection": "programs",
       "type": "app",
       "typeLabel": "App",
@@ -90,7 +91,7 @@
       "typeLabel": "App",
       "title": "30-Day Whole Food Plan",
       "tagline": "Reset how you eat in 30 days, one simple step at a time.",
-      "description": "Get your personal food list, log meals with instant feedback, and reintroduce foods to learn what works for your body.",
+      "description": "30 days of whole-food eating with guided reintroduction after, so you learn what works for your body.",
       "learnMoreHref": "/whole-food-plan/",
       "status": "coming_soon",
       "image": {
@@ -123,12 +124,13 @@
     },
     {
       "id": "75-adaptive",
+      "learnMoreHref": "/75-adaptive/",
       "catalogSection": "programs",
       "type": "app",
       "typeLabel": "App",
       "title": "75 Adaptive",
       "tagline": "Show up every day, your way.",
-      "description": "The flexible track: 75 days of daily movement, better eating, and recovery built in — adjustable to your schedule and body, with no restart penalty.",
+      "description": "75 days of daily movement, nutrition and habit tasks flexible to your schedule — no restart if you miss a day.",
       "status": "coming_soon",
       "image": {
         "svg": "/icons/logo.svg",
@@ -141,6 +143,7 @@
     },
     {
       "id": "5k-to-half-marathon",
+      "learnMoreHref": "/5k-to-half-marathon/",
       "catalogSection": "programs",
       "type": "app",
       "typeLabel": "App",
@@ -158,12 +161,13 @@
     },
     {
       "id": "75-all-in",
+      "learnMoreHref": "/75-all-in/",
       "catalogSection": "programs",
       "type": "app",
       "typeLabel": "App",
       "title": "75 All-In",
       "tagline": "All in. No days off.",
-      "description": "The strict, all-in track: 75 straight days of daily non-negotiables — training, clean eating, hydration, reading, and a progress check-in. Miss a day and you start over.",
+      "description": "75 straight days with every daily task completed. Miss a day and you start the 75 days over.",
       "status": "coming_soon",
       "image": {
         "svg": "/icons/logo.svg",
