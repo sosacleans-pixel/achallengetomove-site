@@ -76,20 +76,16 @@
     return '<div class="program-card-footer"><div class="card-actions">' + parts.join("") + "</div></div>";
   }
 
-  function renderFeaturedVisual(product) {
-    const alt = product.image && product.image.alt ? escapeHtml(product.image.alt) : "App icon";
+  function renderFeaturedIcon(product) {
+    const alt = product.image && product.image.alt ? escapeHtml(product.image.alt) : "";
     const src =
       product.image && product.image.svg ? escapeHtml(product.image.svg) : "/icons/logo.svg";
     return (
-      '<div class="program-featured-visual">' +
-      '<div class="phone-mockup">' +
-      '<div class="phone-mockup-screen">' +
-      '<img src="' +
+      '<img class="program-featured-icon" src="' +
       src +
-      '" width="120" height="120" alt="' +
+      '" width="56" height="56" alt="' +
       alt +
-      '" decoding="async">' +
-      "</div></div></div>"
+      '" decoding="async">'
     );
   }
 
@@ -98,36 +94,39 @@
       ? '<p class="tagline">' + escapeHtml(product.tagline) + "</p>"
       : "";
     const price = product.price
-      ? '<span class="program-price program-price--featured">' + escapeHtml(product.price) + "</span>"
+      ? '<span class="program-price-pill">' + escapeHtml(product.price) + "</span>"
       : "";
     const note = product.note
-      ? '<p class="program-note">' + escapeHtml(product.note) + "</p>"
+      ? '<p class="program-note program-note--compact">' + escapeHtml(product.note) + "</p>"
       : "";
+    const actions = renderFooter(product).replace(
+      "card-actions",
+      "card-actions card-actions--featured"
+    );
 
     return (
-      '<article class="program-card program-card--featured" data-program-id="' +
+      '<article class="program-card program-card--tier program-card--featured" data-program-id="' +
       escapeHtml(product.id) +
       '">' +
-      renderFeaturedVisual(product) +
-      '<div class="program-featured-content">' +
-      '<div class="program-featured-head">' +
+      '<div class="program-featured-inner">' +
+      '<div class="program-featured-col program-featured-col--text">' +
       badge(product.status) +
       '<div class="program-featured-title-row">' +
+      renderFeaturedIcon(product) +
       "<h3>" +
       escapeHtml(product.title) +
       "</h3>" +
       price +
-      "</div></div>" +
+      "</div>" +
       tagline +
       '<p class="desc">' +
       escapeHtml(product.description) +
       "</p>" +
+      "</div>" +
+      '<div class="program-featured-col program-featured-col--actions">' +
       note +
-      renderFooter(product).replace(
-        "card-actions",
-        "card-actions card-actions--featured"
-      ) +
-      "</div></article>"
+      actions +
+      "</div></div></article>"
     );
   }
 
@@ -188,13 +187,8 @@
 
       const featuredHtml = featured ? renderFeaturedProgram(featured) : "";
 
-      layout.innerHTML =
-        (featuredHtml
-          ? '<div class="program-featured-wrap" id="home-program-featured">' + featuredHtml + "</div>"
-          : "") +
-        '<div class="program-grid program-grid--apps" id="home-program-grid">' +
-        gridHtml +
-        "</div>";
+      layout.classList.add("program-grid", "program-grid--apps");
+      layout.innerHTML = featuredHtml + gridHtml;
     })
     .catch(function () {
       layout.innerHTML =
