@@ -315,4 +315,33 @@ export function strengthTotalEstimateSeconds(steps) {
   }, 0);
 }
 
+/** One-line circuit preview (first round only) for the session overview screen. */
+export function strengthSessionOverview(workout) {
+  const params = phaseParams(workout.phase);
+  const seen = new Set();
+  const circuit = [];
+  for (const s of workout.steps) {
+    if (s.mode !== "reps" && !(s.mode === "timed" && s.exerciseId)) continue;
+    const key = s.exerciseId || s.label;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const amount = s.reps ? `${s.reps} reps` : `${s.durationSeconds}s hold`;
+    circuit.push({
+      key,
+      label: s.label,
+      amount,
+      description: s.description,
+      easier: s.easier,
+      harder: s.harder,
+    });
+  }
+  const phaseLabel = workout.phase.charAt(0).toUpperCase() + workout.phase.slice(1);
+  return {
+    rounds: params.rounds,
+    phaseLabel,
+    circuit,
+    restSeconds: REST_SEC,
+  };
+}
+
 export { WARMUP_SEC, COOLDOWN_SEC, phaseForWeek };

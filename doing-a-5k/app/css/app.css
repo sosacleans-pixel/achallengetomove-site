@@ -398,11 +398,78 @@
   line-height: 1.4;
 }
 
-.strength-overview-card .strength-preview-list {
+.strength-overview-meta {
+  text-align: center;
+  color: var(--muted);
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+}
+
+.strength-outline {
   text-align: left;
-  margin: 1rem 0;
-  padding-left: 1.25rem;
+  margin-bottom: 1rem;
   font-size: 0.9rem;
+}
+
+.strength-outline-block {
+  margin: 0 0 0.85rem;
+}
+
+.strength-outline-block > p {
+  margin: 0 0 0.35rem;
+}
+
+.strength-overview-card .strength-preview-list {
+  list-style: none;
+  margin: 0.35rem 0 0;
+  padding: 0;
+}
+
+.strength-rest-note {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0.5rem 0 0;
+}
+
+.strength-exercise-item {
+  border-bottom: 1px solid var(--line);
+}
+
+.strength-exercise-btn {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: baseline;
+  text-align: left;
+  padding: 0.55rem 0.25rem;
+  border: none;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+}
+
+.strength-exercise-btn:hover,
+.strength-exercise-btn.is-open {
+  color: var(--rust);
+}
+
+.strength-exercise-amount {
+  font-size: 0.8rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.strength-exercise-detail {
+  padding: 0 0.25rem 0.65rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.strength-exercise-detail p {
+  margin: 0 0 0.35rem;
 }
 
 .stats-grid--secondary {

@@ -8,7 +8,7 @@ import {
   weeksForDaysPerWeek,
   DAY_NAMES,
 } from "./plan.js";
-import { defaultStrengthDays, strengthDaysValid } from "./strength.js";
+import { defaultStrengthDays, strengthDaysValid, strengthSessionOverview } from "./strength.js";
 import {
   loadState,
   saveState,
@@ -463,10 +463,22 @@ function renderStrengthOverview() {
     location.hash = "today";
     return "";
   }
-  const mainSteps = workout.steps.filter((s) => s.mode === "reps" || (s.exerciseId && s.mode === "timed"));
-  const preview = mainSteps
-    .slice(0, 8)
-    .map((s) => `<li>${s.label}${s.reps ? ` · ${s.reps} reps` : s.durationSeconds ? ` · ${s.durationSeconds}s` : ""}</li>`)
+  const overview = strengthSessionOverview(workout);
+  const circuitItems = overview.circuit
+    .map(
+      (ex, i) => `
+      <li class="strength-exercise-item">
+        <button type="button" class="strength-exercise-btn" aria-expanded="false" aria-controls="strength-ex-detail-${i}" id="strength-ex-btn-${i}">
+          <span class="strength-exercise-name">${ex.label}</span>
+          <span class="strength-exercise-amount">${ex.amount}</span>
+        </button>
+        <div class="strength-exercise-detail" id="strength-ex-detail-${i}" hidden>
+          <p>${ex.description}</p>
+          <p><strong>Easier:</strong> ${ex.easier}</p>
+          <p><strong>Harder:</strong> ${ex.harder}</p>
+        </div>
+      </li>`
+    )
     .join("");
 
   return shell(
@@ -474,9 +486,16 @@ function renderStrengthOverview() {
     <div class="card strength-overview-card">
       <span class="strength-badge strength-badge--large" aria-hidden="true">💪</span>
       <h2>${workout.title}</h2>
-      <p>${workout.summary}</p>
-      <p class="muted">Bodyweight only · about 15–20 minutes</p>
-      <ul class="strength-preview-list">${preview}</ul>
+      <p class="strength-overview-meta">Bodyweight only · about 15–20 min · ${overview.phaseLabel} phase</p>
+      <div class="strength-outline">
+        <p class="strength-outline-block"><strong>Warm-up</strong> · 3 min</p>
+        <div class="strength-outline-block">
+          <p><strong>Circuit</strong> · ${overview.rounds} rounds</p>
+          <ul class="strength-preview-list">${circuitItems}</ul>
+          <p class="strength-rest-note">${overview.restSeconds}s rest between exercises</p>
+        </div>
+        <p class="strength-outline-block"><strong>Cool-down stretch</strong> · 2 min</p>
+      </div>
       <button type="button" id="begin-strength" class="btn btn-primary btn-block btn-start">Begin session</button>
       <button type="button" id="back-today" class="btn btn-small btn-block">Back</button>
     </div>
@@ -491,6 +510,15 @@ function renderStrengthOverview() {
 }
 
 function bindStrengthOverview() {
+  document.querySelectorAll(".strength-exercise-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const panel = document.getElementById(btn.getAttribute("aria-controls"));
+      const open = btn.getAttribute("aria-expanded") === "true";
+      btn.setAttribute("aria-expanded", open ? "false" : "true");
+      if (panel) panel.hidden = open;
+      btn.classList.toggle("is-open", !open);
+    });
+  });
   $("#begin-strength")?.addEventListener("click", () => {
     location.hash = "strength-workout";
   });
