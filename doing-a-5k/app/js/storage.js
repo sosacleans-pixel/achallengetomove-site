@@ -22,6 +22,7 @@ export function loadState() {
 function migrate(state) {
   if (!state?.meta) return state;
   if (!state.meta.goal) state.meta.goal = "5k";
+  if (!state.meta.runLevel) state.meta.runLevel = state.meta.goal === "half" ? state.meta.level || "beginner" : state.meta.level;
   if (!state.meta.strengthLevel) state.meta.strengthLevel = "beginner";
   if (!state.meta.equipment) state.meta.equipment = ["bodyweight"];
   if (!state.meta.units) state.meta.units = state.settings?.units || "mi";
