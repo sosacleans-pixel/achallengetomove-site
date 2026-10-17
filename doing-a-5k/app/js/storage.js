@@ -1,6 +1,6 @@
 import { generateStrengthWorkouts, defaultStrengthDays } from "./strength.js";
 
-const STORAGE_KEY = "doing-a-5k-v2";
+const STORAGE_KEY = "doing-a-5k-v3";
 
 export function loadState() {
   try {
@@ -21,6 +21,13 @@ export function loadState() {
 
 function migrate(state) {
   if (!state?.meta) return state;
+  if (!state.meta.goal) state.meta.goal = "5k";
+  if (!state.meta.strengthLevel) state.meta.strengthLevel = "beginner";
+  if (!state.meta.equipment) state.meta.equipment = ["bodyweight"];
+  if (!state.meta.units) state.meta.units = state.settings?.units || "mi";
+  if (!state.meta.raceDateISO) state.meta.raceDateISO = "";
+  if (!state.settings) state.settings = { voice: true, units: state.meta.units };
+  if (!state.settings.units) state.settings.units = state.meta.units;
   if (!state.strengthWorkouts?.length) {
     const weeks = state.meta.weeks;
     const spd = state.meta.strengthDaysPerWeek ?? 1;
@@ -35,6 +42,8 @@ function migrate(state) {
       weeks,
       strengthDaysPerWeek: state.meta.strengthDaysPerWeek,
       strengthPreferredDays: state.meta.strengthPreferredDays,
+      equipment: state.meta.equipment,
+      strengthLevel: state.meta.strengthLevel,
     });
   }
   if (!state.strengthCompleted) state.strengthCompleted = [];
@@ -59,13 +68,17 @@ export function exportState() {
 }
 
 export function getSettings(state) {
-  return state?.settings ?? { voice: true };
+  const base = state?.settings ?? { voice: true, units: "mi" };
+  return { voice: true, units: "mi", ...base };
 }
 
 export function updateSettings(state, patch) {
+  const settings = { ...getSettings(state), ...patch };
+  const meta = { ...state.meta, units: settings.units ?? state.meta.units };
   return {
     ...state,
-    settings: { ...getSettings(state), ...patch },
+    settings,
+    meta,
   };
 }
 

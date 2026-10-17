@@ -9,6 +9,7 @@ import {
   generateStrengthWorkouts,
   strengthDaysValid,
 } from "./strength.js";
+import { generateHalfPlan, replanHalfFromWeek } from "./halfPlan.js";
 
 const WARMUP_SEC = 5 * 60;
 const COOLDOWN_SEC = 5 * 60;
@@ -110,6 +111,10 @@ export function generatePlan({
   name,
   strengthDaysPerWeek = 1,
   strengthPreferredDays,
+  equipment = [],
+  strengthLevel = "beginner",
+  raceDateISO = "",
+  units = "mi",
 }) {
   const weeks = weeksForDaysPerWeek(daysPerWeek);
   const total = totalSessions(daysPerWeek);
@@ -150,19 +155,26 @@ export function generatePlan({
     weeks,
     strengthDaysPerWeek,
     strengthPreferredDays: strengthDays,
+    equipment,
+    strengthLevel,
   });
 
   return {
     meta: {
       name: name || "",
+      goal: "5k",
       daysPerWeek,
       level,
+      strengthLevel,
       preferredDays: runDays,
       startDateISO,
+      raceDateISO: raceDateISO || "",
       weeks,
       totalSessions: total,
       strengthDaysPerWeek,
       strengthPreferredDays: strengthDays,
+      equipment,
+      units,
       createdAt: new Date().toISOString(),
     },
     workouts,
@@ -173,7 +185,17 @@ export function generatePlan({
 /**
  * Rebuild plan from a given week index onward, keeping completed workout ids where possible.
  */
+export function buildPlan(options) {
+  if (options.goal === "half") {
+    return generateHalfPlan(options);
+  }
+  return generatePlan(options);
+}
+
 export function replanFromWeek(state, fromWeekIndex) {
+  if (state.meta?.goal === "half") {
+    return replanHalfFromWeek(state, fromWeekIndex);
+  }
   const { meta, workouts, completed } = state;
   const kept = workouts.filter((w) => w.weekIndex < fromWeekIndex);
   const completedBefore = new Set(
@@ -191,6 +213,10 @@ export function replanFromWeek(state, fromWeekIndex) {
     name: meta.name,
     strengthDaysPerWeek: meta.strengthDaysPerWeek ?? 1,
     strengthPreferredDays: meta.strengthPreferredDays,
+    equipment: meta.equipment || [],
+    strengthLevel: meta.strengthLevel || "beginner",
+    raceDateISO: meta.raceDateISO || "",
+    units: meta.units || "mi",
   });
 
   const newTail = fresh.workouts.filter((w) => w.weekIndex >= fromWeekIndex);
