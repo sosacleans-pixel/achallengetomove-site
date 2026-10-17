@@ -169,6 +169,7 @@ async function main() {
   await page.fill("#log-search", "salmon");
   await page.waitForSelector(".search-add");
   await page.screenshot({ path: `${artifacts}/wf-search-add-button.png`, fullPage: true });
+  await page.screenshot({ path: `${artifacts}/wf-search-row-fixed.png`, fullPage: false });
   await page.click(".search-add");
   await page.click("#log-commit");
   await page.waitForSelector(".toast");

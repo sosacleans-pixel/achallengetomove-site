@@ -101,6 +101,7 @@ export function buildPersonalFoodList(profile, foodsDb) {
       name: food.name,
       serving: food.serving,
       category: food.category,
+      note: food.note || null,
     });
   }
 

@@ -918,7 +918,10 @@ function bindLog() {
         (f) =>
           `<div class="search-row">
             <button type="button" class="search-pick ${pendingLog?.food?.id === f.id ? "selected" : ""}" data-food-id="${f.id}">
-              ${escapeHtml(f.name)} <span class="muted">${f.calories} cal</span>
+              <span class="search-pick-text">
+                <span class="search-pick-name">${escapeHtml(f.name)}</span>
+                <span class="search-pick-cal muted">${f.calories} cal</span>
+              </span>
             </button>
             <button type="button" class="btn btn-small btn-secondary search-add" data-food-id="${f.id}">+ Add</button>
           </div>`
@@ -1047,7 +1050,13 @@ function bindFoods() {
     const q = (input?.value || "").toLowerCase();
     sessionStorage.setItem("wf_food_q", input?.value || "");
     const list = fl.enjoy.filter((f) => !q || f.name.toLowerCase().includes(q)).slice(0, 200);
-    $("#enjoy-list").innerHTML = list.map((f) => `<div>${escapeHtml(f.name)} <span class="muted">(${escapeHtml(f.serving)})</span></div>`).join("") || '<p class="muted">No matches.</p>';
+    $("#enjoy-list").innerHTML =
+      list
+        .map(
+          (f) =>
+            `<div>${escapeHtml(f.name)} <span class="muted">(${escapeHtml(f.serving)})</span>${f.note ? `<div class="muted" style="font-size:0.82rem;margin-top:0.15rem">${escapeHtml(f.note)}</div>` : ""}</div>`
+        )
+        .join("") || '<p class="muted">No matches.</p>';
   };
   input?.addEventListener("input", renderList);
   renderList();

@@ -34,7 +34,46 @@ function meal(id, name, ingredients, steps, calories, protein, opts = {}) {
 }
 
 const breakfasts = [
-  meal("b-oats-berry", "Warm Berry Oats", ["1/2 cup rolled oats", "1 cup water", "1/2 cup blueberries", "1 tbsp sunflower seeds"], ["Simmer oats in water 5 min.", "Top with berries and seeds."], 340, 11, { tags: [], proteinType: "none" }),
+  meal(
+    "b-oats-berry",
+    "Warm Berry Oats",
+    [
+      "1/2 cup certified gluten-free rolled oats",
+      "1 cup water",
+      "1/2 cup blueberries",
+      "1 tbsp sunflower seeds",
+    ],
+    [
+      "Simmer certified gluten-free rolled oats in water 5 min.",
+      "Top with berries and seeds.",
+    ],
+    340,
+    11,
+    {
+      tags: [],
+      proteinType: "none",
+      logItems: [
+        {
+          name: "Certified gluten-free rolled oats, dry",
+          serving: "1/2 cup",
+          calories: 150,
+          protein: 5,
+          carbs: 27,
+          fat: 3,
+          tags: [],
+        },
+        {
+          name: "Warm berry oat bowl (berries & seeds)",
+          serving: "1 serving",
+          calories: 190,
+          protein: 6,
+          carbs: 28,
+          fat: 9,
+          tags: [],
+        },
+      ],
+    }
+  ),
   meal("b-sweet-hash", "Sweet Potato Hash", ["1 medium sweet potato, diced", "1/2 bell pepper", "1 tsp olive oil", "Fresh parsley"], ["Sauté potato in oil until tender.", "Add pepper; season with salt and pepper."], 280, 4, { proteinType: "none" }),
   meal("b-chia", "Chia Pudding Cup", ["3 tbsp chia seeds", "1 cup unsweetened coconut milk", "1/2 cup strawberries"], ["Stir chia and milk; chill overnight.", "Top with sliced strawberries."], 310, 10, { proteinType: "none" }),
   meal("b-rice-bowl", "Savory Rice Bowl", ["1/2 cup cooked brown rice", "1/2 avocado", "1 cup spinach", "Lemon juice"], ["Warm rice with spinach.", "Top with avocado and lemon."], 360, 7, { proteinType: "none" }),
