@@ -1,4 +1,4 @@
-const CACHE = "wf-plan-cache-v3";
+const CACHE = "wf-plan-cache-v4";
 const ASSETS = [
   "./icons/icon.svg",
   "./icons/icon-192.png",
@@ -17,6 +17,14 @@ const ASSETS = [
   "./data/days.json",
   "./data/foods.json",
   "./data/meals.json",
+  "./data/master-list.json",
+  "./js/masterFood.js",
+  "./js/planGenerator.js",
+  "./js/grocery.js",
+  "./js/eatChipsUi.js",
+  "./js/clearKitchen.js",
+  "./js/grocery-links.js",
+  "./js/grocerySheet.js",
   "./manifest.webmanifest",
 ];
 

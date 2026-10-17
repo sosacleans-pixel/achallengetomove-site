@@ -12,8 +12,28 @@ import {
 import { estimateCalorieTarget, macroTargets, sumLogMacros } from "./calories.js";
 import { buildPersonalFoodList, ELIMINATION_GROUPS } from "./foodList.js";
 import { checkFoodItem } from "./compliance.js";
-import { getPersonalizedDay, buildShoppingList, mealLogEntries, weekForDay } from "./meals.js";
+import {
+  generateMealPlan,
+  shuffleMealInPlan,
+  mealLogEntries,
+  getPersonalizedDay,
+  buildGroceryFromPlan,
+  programWeekForDay,
+} from "./meals.js";
 import { resolveSuggestedMeal, getMealWindows, DEFAULT_MEAL_WINDOWS } from "./mealTime.js";
+import { defaultEatSelections, applyDietStyle } from "./masterFood.js";
+import { groceryListText, buildGroceryFromMeal } from "./grocery.js";
+import { initGroceryOrderSheet, openGroceryOrderSheet, GROCERY_STORE_IDS, getGroceryStore } from "./grocerySheet.js";
+import { renderEatChipsPanel, bindEatChips, readEatSelectionsFromDom } from "./eatChipsUi.js";
+import {
+  buildKitchenChecklist,
+  kitchenProgress,
+  isKitchenClearComplete,
+  shouldShowKitchenReminder,
+  defaultKitchenClear,
+  clampGroupIndex,
+  groupProgress,
+} from "./clearKitchen.js";
 
 const HEALTH_NOTE =
   "This program shares general nutrition education. It is not medical advice. Check with your doctor or a registered dietitian before changing how you eat, especially if you are pregnant, take medication, have food allergies, diabetes, kidney disease, a history of disordered eating, or any other health condition.";
@@ -22,8 +42,10 @@ let state = loadState();
 let daysData = [];
 let foodsData = [];
 let mealsData = null;
+let masterListData = null;
 let onboardingStep = 0;
 let draftProfile = {};
+let foodsEditMode = false;
 /** @type {{ food: object, qty: number } | null} */
 let pendingLog = null;
 let mealsViewDay = null;
@@ -42,22 +64,41 @@ function getSuggestion() {
   return resolveSuggestedMeal({
     now: getClockNow(),
     profile: state.profile,
-    mealsData,
+    mealPlan: state.mealPlan,
     logs: state.logs,
   });
 }
 
+function syncPlanAndList() {
+  if (!state.profile || !masterListData) return;
+  state.foodList = buildPersonalFoodList(state.profile, masterListData);
+  state.mealPlan = generateMealPlan(state.profile, mealsData, masterListData);
+  saveState(state);
+}
+
+function ensureMealPlan() {
+  if (state.profile?.onboardingComplete && masterListData && mealsData && !state.mealPlan) {
+    syncPlanAndList();
+  }
+}
+
 async function loadContent() {
   const base = new URL("../data/", import.meta.url);
-  const [daysRes, foodsRes, mealsRes] = await Promise.all([
+  const [daysRes, foodsRes, mealsRes, masterRes] = await Promise.all([
     fetch(new URL("days.json", base)),
     fetch(new URL("foods.json", base)),
     fetch(new URL("meals.json", base)),
+    fetch(new URL("master-list.json", base)),
   ]);
   daysData = await daysRes.json();
   const foodsJson = await foodsRes.json();
   foodsData = foodsJson.foods || foodsJson;
   mealsData = await mealsRes.json();
+  masterListData = await masterRes.json();
+}
+
+function getEatSelections(source) {
+  return source?.eatSelections || defaultEatSelections(masterListData);
 }
 
 function navigate(hash) {
@@ -133,8 +174,9 @@ function render() {
     return;
   }
 
-  if (!state.foodList) {
-    state.foodList = buildPersonalFoodList(state.profile, foodsData);
+  ensureMealPlan();
+  if (!state.foodList && masterListData) {
+    state.foodList = buildPersonalFoodList(state.profile, masterListData);
     saveState(state);
   }
 
@@ -158,6 +200,9 @@ function render() {
     case "#/settings":
       html = renderSettings();
       break;
+    case "#/kitchen-clear":
+      html = renderKitchenClear();
+      break;
     default:
       html = renderToday();
   }
@@ -167,11 +212,14 @@ function render() {
 }
 
 function renderOnboarding() {
-  const steps = 5;
+  const steps = 6;
   const dots = Array.from({ length: steps }, (_, i) =>
     `<span class="${i === onboardingStep ? "on" : ""}"></span>`
   ).join("");
   const p = { ...state.profile, ...draftProfile };
+  if (!draftProfile.eatSelections && masterListData) {
+    draftProfile.eatSelections = defaultEatSelections(masterListData);
+  }
 
   const panels = [
     `<div class="card">
@@ -181,9 +229,9 @@ function renderOnboarding() {
       <label class="field"><input type="checkbox" id="ob-disclaimer" ${p.disclaimerAck ? "checked" : ""}> I understand this is education, not medical advice.</label>
     </div>`,
     `<div class="card">
-      <h2>How you eat now</h2>
+      <h2>Allergies & diet</h2>
       <div class="field">
-        <label>Diet style</label>
+        <label>Default diet style (quick toggles on next step)</label>
         <select id="ob-diet">
           <option value="omnivore" ${p.dietStyle === "omnivore" ? "selected" : ""}>Omnivore</option>
           <option value="pescatarian" ${p.dietStyle === "pescatarian" ? "selected" : ""}>Pescatarian</option>
@@ -192,18 +240,17 @@ function renderOnboarding() {
         </select>
       </div>
       <div class="field">
-        <label>Foods you don't eat (dislikes, religious, etc.) — comma separated</label>
-        <input id="ob-avoid" value="${escapeAttr((p.avoidFoods || []).join(", "))}" placeholder="e.g. pork, shellfish">
-      </div>
-      <div class="field">
-        <label>Allergies (always avoided)</label>
+        <label>Allergies (always on extra avoids)</label>
         <input id="ob-allergies" value="${escapeAttr((p.allergies || []).join(", "))}" placeholder="e.g. dairy, shellfish">
       </div>
       <div class="field">
-        <label>Intolerances or foods that bother you</label>
-        <input id="ob-intol" value="${escapeAttr((p.intolerances || []).join(", "))}" placeholder="e.g. garlic, spicy food">
+        <label>Intolerances (optional)</label>
+        <input id="ob-intol" value="${escapeAttr((p.intolerances || []).join(", "))}" placeholder="e.g. garlic">
       </div>
     </div>`,
+    masterListData
+      ? renderEatChipsPanel(masterListData, getEatSelections(p), "ob")
+      : `<div class="card"><p class="muted">Loading food list…</p></div>`,
     `<div class="card">
       <h2>Symptoms to watch</h2>
       <p class="muted">We'll use these in check-ins and reintroduction.</p>
@@ -282,7 +329,7 @@ function bindOnboarding() {
       return;
     }
     collectOnboardingStep();
-    if (onboardingStep < 4) {
+    if (onboardingStep < 5) {
       onboardingStep++;
       render();
       return;
@@ -297,6 +344,18 @@ function bindOnboarding() {
   $$("#ob-symptoms .chip").forEach((btn) => {
     btn.addEventListener("click", () => btn.classList.toggle("selected"));
   });
+  const eatPanel = $("#ob-eat-panel");
+  if (eatPanel && masterListData) {
+    bindEatChips(
+      eatPanel,
+      () => draftProfile.eatSelections || getEatSelections(draftProfile),
+      (sel) => {
+        draftProfile.eatSelections = sel;
+      },
+      masterListData,
+      () => render()
+    );
+  }
 }
 
 function splitList(val) {
@@ -312,16 +371,30 @@ function collectOnboardingStep() {
   }
   if (onboardingStep === 1) {
     draftProfile.dietStyle = $("#ob-diet")?.value;
-    draftProfile.avoidFoods = splitList($("#ob-avoid")?.value || "");
     draftProfile.allergies = splitList($("#ob-allergies")?.value || "");
     draftProfile.intolerances = splitList($("#ob-intol")?.value || "");
-    draftProfile.bothersome = [];
+    if (masterListData && draftProfile.dietStyle && draftProfile.dietStyle !== "omnivore") {
+      draftProfile.eatSelections = applyDietStyle(
+        draftProfile.eatSelections || defaultEatSelections(masterListData),
+        masterListData,
+        draftProfile.dietStyle
+      );
+    }
   }
   if (onboardingStep === 2) {
+    const panel = $("#ob-eat-panel");
+    if (panel) {
+      draftProfile.eatSelections = readEatSelectionsFromDom(
+        panel,
+        draftProfile.eatSelections || getEatSelections(draftProfile)
+      );
+    }
+  }
+  if (onboardingStep === 3) {
     draftProfile.symptomsTrack = $$("#ob-symptoms .chip.selected").map((b) => b.dataset.symptom);
     draftProfile.why = $("#ob-why")?.value || "";
   }
-  if (onboardingStep === 3) {
+  if (onboardingStep === 4) {
     draftProfile.sex = $("#ob-sex")?.value;
     draftProfile.age = Number($("#ob-age")?.value);
     draftProfile.heightCm = Number($("#ob-height")?.value);
@@ -330,7 +403,7 @@ function collectOnboardingStep() {
     draftProfile.goal = $("#ob-goal")?.value;
     draftProfile.calorieTarget = estimateCalorieTarget(draftProfile);
   }
-  if (onboardingStep === 4) {
+  if (onboardingStep === 5) {
     draftProfile.startDate = $("#ob-start")?.value || dateKey();
     draftProfile.waterGoal = Number($("#ob-water")?.value) || 8;
   }
@@ -344,11 +417,126 @@ function finishOnboarding() {
     calorieTarget: draftProfile.calorieTarget || estimateCalorieTarget(draftProfile),
     mealWindows: { ...DEFAULT_MEAL_WINDOWS, ...(draftProfile.mealWindows || {}) },
   };
-  state.foodList = buildPersonalFoodList(state.profile, foodsData);
-  saveState(state);
+  state.profile.eatSelections =
+    draftProfile.eatSelections || defaultEatSelections(masterListData);
+  if (!state.kitchenClear) state.kitchenClear = defaultKitchenClear();
+  syncPlanAndList();
   onboardingStep = 0;
   draftProfile = {};
-  navigate("#/today");
+  navigate("#/kitchen-clear");
+}
+
+function ensureKitchenState() {
+  if (!state.kitchenClear) state.kitchenClear = defaultKitchenClear();
+}
+
+function renderKitchenClear() {
+  ensureKitchenState();
+  const checklist = buildKitchenChecklist(masterListData, state.profile);
+  const prog = kitchenProgress(state.kitchenClear, checklist);
+  const complete = isKitchenClearComplete(state.kitchenClear, checklist);
+  const celebrated = state.kitchenClear.celebrated || complete;
+  const groupCount = checklist.groups.length;
+  const gi = clampGroupIndex(state.kitchenClear.groupIndex, groupCount);
+  const group = checklist.groups[gi];
+  const gProg = groupProgress(state.kitchenClear, group);
+  const allIds = JSON.stringify(checklist.allItems.map((it) => it.id));
+
+  const clearRows = group.clearItems
+    .map((it) => {
+      const checked = state.kitchenClear.checked[it.id] ? "checked" : "";
+      return `<li><label class="kitchen-check-row"><input type="checkbox" class="kitchen-check" data-id="${escapeAttr(it.id)}" ${checked}><span>${escapeHtml(it.label)}</span></label></li>`;
+    })
+    .join("");
+
+  const labelChips = group.labelChecks
+    .map((it) => {
+      const learned = state.kitchenClear.checked[it.id];
+      return `<button type="button" class="chip kitchen-label-chip ${learned ? "selected learned" : ""}" data-id="${escapeAttr(it.id)}" data-label="${escapeAttr(it.label)}" aria-pressed="${learned ? "true" : "false"}">${learned ? "✓ " : ""}${escapeHtml(it.label)}</button>`;
+    })
+    .join("");
+
+  const groupDots = checklist.groups
+    .map((g, i) => {
+      const gp = groupProgress(state.kitchenClear, g);
+      const done = gp.done >= gp.total && gp.total > 0;
+      return `<span class="kitchen-group-dot ${i === gi ? "on" : ""} ${done ? "done" : ""}" title="${escapeHtml(g.title)}"></span>`;
+    })
+    .join("");
+
+  const tips = checklist.tips.map((t) => `<li>${escapeHtml(t)}</li>`).join("");
+
+  return `
+    <h1 class="page-title">Clear your kitchen</h1>
+    <div class="card kitchen-hero">
+      <p class="kitchen-lead">Set yourself up to win: clear out what might tempt you.</p>
+      <p class="muted">Work through each food group: clear tempting items, then tap what you will watch for on labels.</p>
+      <div class="kitchen-progress-wrap" aria-label="Kitchen clear progress">
+        <div class="kitchen-progress-bar"><div class="kitchen-progress-fill" style="width:${prog.pct}%"></div></div>
+        <p class="muted kitchen-progress-label">${prog.done} of ${prog.total} steps done (all groups)</p>
+      </div>
+      <div class="kitchen-group-dots" aria-hidden="true">${groupDots}</div>
+    </div>
+    ${celebrated ? `<div class="card kitchen-celebrate" id="kitchen-celebrate"><p class="kitchen-celebrate-title">Kitchen cleared!</p><p>You did the prep work — Day 1 will feel easier. Proud of you.</p><a href="#/today" class="btn btn-primary btn-block">Go to Today</a></div>` : ""}
+    <div class="card" id="kitchen-checklist-card" data-all-ids="${escapeAttr(allIds)}">
+      <p class="kitchen-group-step muted">Group ${gi + 1} of ${groupCount}</p>
+      <h2 class="kitchen-group-title">${escapeHtml(group.title)}</h2>
+      <p class="muted kitchen-group-sub">${gProg.done} / ${gProg.total} in this group</p>
+      ${group.keepNote ? `<p class="kitchen-keep-note">${escapeHtml(group.keepNote)}</p>` : ""}
+      <h3>Common items to clear</h3>
+      <ul class="kitchen-list">${clearRows}</ul>
+      <div class="kitchen-label-section">
+        <h3>What to look for on the label</h3>
+        <p class="muted">Tap each line when you know what to watch for — these count toward your progress.</p>
+        <div class="chip-row kitchen-label-row">${labelChips}</div>
+      </div>
+      <div class="kitchen-group-nav">
+        ${gi > 0 ? `<button type="button" class="btn btn-secondary btn-small" id="kitchen-prev-group">Previous group</button>` : ""}
+        ${gi < groupCount - 1 ? `<button type="button" class="btn btn-primary btn-small" id="kitchen-next-group">Next group</button>` : ""}
+      </div>
+      <div class="kitchen-tips">
+        <h3>Tips</h3>
+        <ul>${tips}</ul>
+      </div>
+      <div class="kitchen-actions">
+        ${complete && !state.kitchenClear.completed ? `<button type="button" class="btn btn-primary btn-block" id="kitchen-mark-done">Kitchen cleared!</button>` : ""}
+        ${!complete ? `<button type="button" class="btn btn-secondary btn-block" id="kitchen-skip">I'll do this later</button>` : ""}
+        ${state.kitchenClear.skipped && !complete ? `<a href="#/today" class="btn btn-secondary btn-block">Back to Today</a>` : ""}
+      </div>
+    </div>
+  `;
+}
+
+function renderKitchenTodayBanner() {
+  ensureKitchenState();
+  if (!masterListData || !shouldShowKitchenReminder(state.kitchenClear)) return "";
+  const checklist = buildKitchenChecklist(masterListData, state.profile);
+  if (isKitchenClearComplete(state.kitchenClear, checklist)) {
+    if (!state.kitchenClear.completed) return "";
+  }
+  if (state.kitchenClear.completed) return "";
+
+  const dayNum = programDay(state.profile);
+  const prog = kitchenProgress(state.kitchenClear, checklist);
+  const isDayOne = dayNum === 1;
+  const title = isDayOne ? "Day 1 prep: clear your kitchen" : "Friendly reminder: kitchen prep";
+  const msg = state.kitchenClear.skipped
+    ? "When you have a few minutes, finish clearing temptations so your reset feels easier."
+    : isDayOne
+      ? "Before you dive into meals, set your space up for success."
+      : "You can still finish your kitchen clear checklist anytime.";
+
+  return `
+    <div class="card kitchen-today-banner" id="kitchen-today-banner">
+      <h2>${title}</h2>
+      <p class="muted">${msg}</p>
+      <div class="kitchen-progress-wrap compact">
+        <div class="kitchen-progress-bar"><div class="kitchen-progress-fill" style="width:${prog.pct}%"></div></div>
+        <p class="muted kitchen-progress-label">${prog.done} / ${prog.total}</p>
+      </div>
+      <a href="#/kitchen-clear" class="btn btn-primary btn-small">Open checklist</a>
+    </div>
+  `;
 }
 
 function renderToday() {
@@ -365,6 +553,7 @@ function renderToday() {
 
   return `
     <h1 class="page-title">Today</h1>
+    ${renderKitchenTodayBanner()}
     ${renderSuggestedNowCard(suggestion)}
     <div class="card">
       <p><strong>Day ${dayNum} of 30</strong> · ${escapeHtml(day.theme)}</p>
@@ -429,7 +618,7 @@ function renderSuggestedNowCard(s) {
 }
 
 function logPlannedMeal(slot, dayNum, logKey) {
-  const plan = getPersonalizedDay(mealsData, dayNum, state.profile);
+  const plan = getPersonalizedDay(state.mealPlan, dayNum);
   const m = plan?.meals?.[slot];
   if (!m) return null;
   const items = mealLogEntries(m);
@@ -500,34 +689,49 @@ function renderMeals() {
     sessionStorage.removeItem("wf_meals_day");
   }
   const dayNum = mealsViewDay ?? programDay(state.profile, getClockNow());
-  const plan = getPersonalizedDay(mealsData, dayNum, state.profile);
-  const week = weekForDay(dayNum);
-  const shopKey = String(week);
-  if (!state.shoppingLists[shopKey]) {
-    state.shoppingLists[shopKey] = buildShoppingList(mealsData, week, state.profile).map((name) => ({
-      name,
-      checked: false,
-    }));
-    saveState(state);
-  }
-  const shop = state.shoppingLists[shopKey];
+  const plan = getPersonalizedDay(state.mealPlan, dayNum);
+  const scope = state.groceryScope || "week";
+  const week = state.groceryWeek || programWeekForDay(dayNum);
+  const grocery = buildGroceryFromPlan(state.mealPlan, masterListData, scope, week);
+  const labels = grocery.sectionLabels;
 
   const slotHtml = (slot, label) => {
     const m = plan?.meals?.[slot];
     if (!m) return "";
     return `<details class="card meal-card" open>
       <summary>${label}: ${escapeHtml(m.name)} <span class="meal-meta">~${m.calories} cal · ${m.protein}g protein</span></summary>
-      ${m.portionNote ? `<p class="muted">${escapeHtml(m.portionNote)}</p>` : ""}
       <p><strong>Ingredients</strong></p>
       <ul>${m.ingredients.map((i) => (i === "---" ? "" : `<li>${escapeHtml(i)}</li>`)).join("")}</ul>
       <p><strong>Steps</strong></p>
       <ol>${m.steps.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ol>
-      <button type="button" class="btn btn-primary btn-small log-meal-btn" data-slot="${slot}" data-day="${dayNum}">Log this meal</button>
+      <div style="display:flex;gap:0.35rem;flex-wrap:wrap">
+        <button type="button" class="btn btn-primary btn-small log-meal-btn" data-slot="${slot}" data-day="${dayNum}">Log this meal</button>
+        <button type="button" class="btn btn-secondary btn-small shuffle-meal-btn" data-slot="${slot}" data-day="${dayNum}">Shuffle this meal</button>
+        <button type="button" class="btn btn-secondary btn-small meal-grocery-btn" data-slot="${slot}" data-day="${dayNum}">Get these groceries</button>
+      </div>
     </details>`;
   };
 
+  const bySec = {};
+  for (const item of grocery.items) {
+    if (!bySec[item.section]) bySec[item.section] = [];
+    bySec[item.section].push(item);
+  }
+  const shopHtml = Object.entries(bySec)
+    .map(([sec, items]) => {
+      const title = labels[sec] || sec;
+      const lis = items
+        .map((it) => {
+          const checked = state.groceryChecked?.[it.key] ? "checked" : "";
+          return `<li><input type="checkbox" class="grocery-check" data-key="${escapeAttr(it.key)}" ${checked}><span>${escapeHtml(it.label)}${it.count > 1 ? ` <span class="muted">(×${it.count})</span>` : ""}</span></li>`;
+        })
+        .join("");
+      return `<h3>${escapeHtml(title)}</h3><ul class="shopping-list">${lis}</ul>`;
+    })
+    .join("");
+
   return `
-    <h1 class="page-title">Suggested meals</h1>
+    <h1 class="page-title">Your meal plan</h1>
     <div class="card">
       <div class="field"><label>Program day (1–30)</label>
         <input type="number" id="meals-day" min="1" max="30" value="${dayNum}">
@@ -538,14 +742,48 @@ function renderMeals() {
     ${slotHtml("lunch", "Lunch")}
     ${slotHtml("dinner", "Dinner")}
     ${plan?.meals?.snack ? slotHtml("snack", "Snack") : ""}
-    <div class="card">
-      <h2>Week ${week} shopping list</h2>
-      <p class="muted">From suggested meals for days ${(week - 1) * 7 + 1}–${Math.min(week * 7, 30)}.</p>
-      <ul class="shopping-list">
-        ${shop.map((item, idx) => `<li><input type="checkbox" data-shop-idx="${idx}" ${item.checked ? "checked" : ""}><span>${escapeHtml(item.name)}</span></li>`).join("")}
-      </ul>
+    <div class="card" id="grocery-card">
+      <h2>Grocery list</h2>
+      <div class="chip-row" style="margin-bottom:0.5rem">
+        <button type="button" class="chip grocery-scope ${scope === "week" ? "selected" : ""}" data-scope="week">This week</button>
+        <button type="button" class="chip grocery-scope ${scope === "month" ? "selected" : ""}" data-scope="month">Full month</button>
+      </div>
+      ${scope === "week" ? `<div class="field"><label>Week</label><select id="grocery-week">${[1, 2, 3, 4].map((w) => `<option value="${w}" ${w === week ? "selected" : ""}>Week ${w}</option>`).join("")}</select></div>` : ""}
+      <p class="muted" id="grocery-total">${grocery.totalLines} items · ${scope === "week" ? `Week ${week}` : "Days 1–30"}</p>
+      ${shopHtml}
+      <button type="button" class="btn btn-primary btn-small" id="grocery-get">Get these groceries</button>
+      <button type="button" class="btn btn-secondary btn-small" id="grocery-copy">Share / Copy as text</button>
     </div>
   `;
+}
+
+function openPlanGrocerySheet() {
+  const dayNum = mealsViewDay ?? programDay(state.profile, getClockNow());
+  const scope = state.groceryScope || "week";
+  const week = state.groceryWeek || programWeekForDay(dayNum);
+  const grocery = buildGroceryFromPlan(state.mealPlan, masterListData, scope, week);
+  const subtitle =
+    scope === "month" ? "Full month · paste into any delivery app" : `Week ${week} · paste into any delivery app`;
+  openGroceryOrderSheet({
+    title: "Get these groceries",
+    subtitle,
+    grocery,
+    storeId: state.groceryStore || "instacart",
+  });
+}
+
+function openMealGrocerySheet(slot, dayNum) {
+  const plan = getPersonalizedDay(state.mealPlan, dayNum);
+  const meal = plan?.meals?.[slot];
+  if (!meal) return;
+  const grocery = buildGroceryFromMeal(meal, masterListData);
+  const slotLabel = mealLabel(slot);
+  openGroceryOrderSheet({
+    title: `Groceries for ${slotLabel}`,
+    subtitle: `${meal.name} · Day ${dayNum}`,
+    grocery,
+    storeId: state.groceryStore || "instacart",
+  });
 }
 
 function showToast(message, type = "on") {
@@ -678,22 +916,32 @@ function renderLogEntry(e) {
 function renderFoods() {
   const fl = state.foodList;
   const q = sessionStorage.getItem("wf_food_q") || "";
+  if (foodsEditMode && masterListData) {
+    return `
+      <h1 class="page-title">Edit my foods</h1>
+      <p class="muted">Changes regenerate your 30-day meal plan.</p>
+      ${renderEatChipsPanel(masterListData, getEatSelections(state.profile), "edit")}
+      <button type="button" class="btn btn-primary btn-block" id="save-eat-edit">Save & update plan</button>
+      <button type="button" class="btn btn-secondary btn-block" id="cancel-eat-edit">Cancel</button>
+    `;
+  }
   return `
     <h1 class="page-title">Your food list</h1>
-    <div class="field"><input type="search" id="food-q" value="${escapeAttr(q)}" placeholder="Search enjoy list…"></div>
-    ${(fl.enjoyNotes || []).map((n) => `<p class="muted">${escapeHtml(n)}</p>`).join("")}
+    <p><button type="button" class="btn btn-secondary btn-small" id="edit-my-foods">Edit my foods</button></p>
+    <div class="field"><input type="search" id="food-q" value="${escapeAttr(q)}" placeholder="Search your Eat list…"></div>
     <div class="food-list-group card">
-      <h2>Enjoy</h2>
-      <p class="muted">${fl.enjoy.length} whole foods tailored to you during the 30-day reset.</p>
+      <h2>Eat</h2>
+      <p class="muted">${fl.enjoy.length} foods on your plan.</p>
       <div class="food-list-scroll" id="enjoy-list"></div>
     </div>
+    ${fl.paused?.length ? `<div class="card"><h2>Removed from your Eat list</h2><ul>${fl.paused.map((p) => `<li><strong>${escapeHtml(p.label)}</strong> — ${escapeHtml(p.reason)}</li>`).join("")}</ul></div>` : ""}
     <div class="food-list-group card">
-      <h2>Avoid (30-day pause)</h2>
+      <h2>Skip for 30 days</h2>
       <ul>${fl.avoid.map((a) => `<li><strong>${escapeHtml(a.label)}</strong> — <span class="muted">${escapeHtml(a.detail)}</span></li>`).join("")}</ul>
     </div>
     <div class="food-list-group card">
       <h2>Your extra avoids</h2>
-      ${fl.extraAvoids.length ? `<ul>${fl.extraAvoids.map((e) => `<li><strong>${escapeHtml(e.text)}</strong> — ${escapeHtml(e.reason)}</li>`).join("")}</ul>` : '<p class="muted">None added — update in Settings if needed.</p>'}
+      ${fl.extraAvoids.length ? `<ul>${fl.extraAvoids.map((e) => `<li><strong>${escapeHtml(e.text)}</strong> — ${escapeHtml(e.reason)}</li>`).join("")}</ul>` : '<p class="muted">None — add allergies in Settings.</p>'}
     </div>
   `;
 }
@@ -835,8 +1083,24 @@ function renderSettings() {
       <button type="button" class="btn btn-primary btn-small" id="set-cal-save">Save target</button>
     </div>
     <div class="card">
+      <h2>Grocery ordering</h2>
+      <p class="muted">Choose your preferred store for quick item searches from meal and list sheets.</p>
+      <div class="field">
+        <label>Preferred store</label>
+        <select id="grocery-store-pref">
+          ${GROCERY_STORE_IDS
+            .map(
+              (id) =>
+                `<option value="${id}" ${(state.groceryStore || "instacart") === id ? "selected" : ""}>${escapeHtml(getGroceryStore(id).searchButtonLabel.replace("Search on ", ""))}</option>`
+            )
+            .join("")}
+        </select>
+      </div>
+    </div>
+    <div class="card">
       <h2>Program</h2>
       <div class="field"><label>Start date</label><input type="date" id="set-start" value="${state.profile.startDate}"></div>
+      <button type="button" class="btn btn-secondary btn-small" id="set-edit-foods">Edit my foods</button>
       <button type="button" class="btn btn-secondary btn-small" id="set-regen">Re-run questionnaire</button>
       <button type="button" class="btn btn-secondary btn-small" id="set-export">Export JSON</button>
       <button type="button" class="btn btn-secondary btn-small" id="set-reset">Reset all data</button>
@@ -884,6 +1148,96 @@ function bindScreen(route) {
   if (route === "#/foods") bindFoods();
   if (route === "#/reintro") bindReintro();
   if (route === "#/settings") bindSettings();
+  if (route === "#/kitchen-clear") bindKitchenClear();
+}
+
+function updateKitchenProgressUi(checklist) {
+  const prog = kitchenProgress(state.kitchenClear, checklist);
+  $$(".kitchen-progress-fill").forEach((el) => {
+    el.style.width = `${prog.pct}%`;
+  });
+  const full = $("#kitchen-checklist-card")?.querySelector(".kitchen-progress-label");
+  if (full) full.textContent = `${prog.done} of ${prog.total} steps done (all groups)`;
+}
+
+function bindKitchenClear() {
+  const checklist = buildKitchenChecklist(masterListData, state.profile);
+  const maybeFinish = () => {
+    if (isKitchenClearComplete(state.kitchenClear, checklist)) {
+      state.kitchenClear.completed = true;
+      state.kitchenClear.celebrated = true;
+      state.kitchenClear.skipped = false;
+      saveState(state);
+      render();
+      return true;
+    }
+    return false;
+  };
+
+  const toggleKitchenId = (id, on) => {
+    state.kitchenClear.checked[id] = on;
+    saveState(state);
+    if (!maybeFinish()) {
+      updateKitchenProgressUi(checklist);
+      const gi = clampGroupIndex(state.kitchenClear.groupIndex, checklist.groups.length);
+      const chip = $(`.kitchen-label-chip[data-id="${id}"]`);
+      if (chip) {
+        chip.classList.toggle("selected", on);
+        chip.classList.toggle("learned", on);
+        chip.setAttribute("aria-pressed", on ? "true" : "false");
+        const label = chip.dataset.label || "";
+        chip.textContent = on ? `✓ ${label}` : label;
+      }
+      const sub = $(".kitchen-group-sub");
+      if (sub) {
+        const gProg = groupProgress(state.kitchenClear, checklist.groups[gi]);
+        sub.textContent = `${gProg.done} / ${gProg.total} in this group`;
+      }
+    }
+  };
+
+  $$(".kitchen-check").forEach((cb) => {
+    cb.addEventListener("change", () => toggleKitchenId(cb.dataset.id, cb.checked));
+  });
+
+  $$(".kitchen-label-chip").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.id;
+      const on = !state.kitchenClear.checked[id];
+      toggleKitchenId(id, on);
+    });
+  });
+
+  $("#kitchen-next-group")?.addEventListener("click", () => {
+    state.kitchenClear.groupIndex = clampGroupIndex(
+      (state.kitchenClear.groupIndex || 0) + 1,
+      checklist.groups.length
+    );
+    saveState(state);
+    render();
+  });
+  $("#kitchen-prev-group")?.addEventListener("click", () => {
+    state.kitchenClear.groupIndex = clampGroupIndex(
+      (state.kitchenClear.groupIndex || 0) - 1,
+      checklist.groups.length
+    );
+    saveState(state);
+    render();
+  });
+
+  $("#kitchen-mark-done")?.addEventListener("click", () => {
+    state.kitchenClear.completed = true;
+    state.kitchenClear.celebrated = true;
+    state.kitchenClear.skipped = false;
+    saveState(state);
+    render();
+  });
+
+  $("#kitchen-skip")?.addEventListener("click", () => {
+    state.kitchenClear.skipped = true;
+    saveState(state);
+    navigate("#/today");
+  });
 }
 
 function bindToday() {
@@ -1030,20 +1384,96 @@ function bindMeals() {
       navigate("#/log");
     });
   });
-  $$(".shopping-list input[type=checkbox]").forEach((cb) => {
-    cb.addEventListener("change", () => {
-      const week = weekForDay(mealsViewDay ?? programDay(state.profile));
-      const shopKey = String(week);
-      const idx = Number(cb.dataset.shopIdx);
-      if (state.shoppingLists[shopKey]?.[idx]) {
-        state.shoppingLists[shopKey][idx].checked = cb.checked;
-        saveState(state);
-      }
+  $$(".shuffle-meal-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const dayNum = Number(btn.dataset.day);
+      const slot = btn.dataset.slot;
+      state.mealPlan = shuffleMealInPlan(
+        state.mealPlan,
+        dayNum,
+        slot,
+        state.profile,
+        mealsData,
+        masterListData
+      );
+      saveState(state);
+      render();
     });
+  });
+  $$(".grocery-scope").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.groceryScope = btn.dataset.scope;
+      saveState(state);
+      render();
+    });
+  });
+  $("#grocery-week")?.addEventListener("change", () => {
+    state.groceryWeek = Number($("#grocery-week").value) || 1;
+    saveState(state);
+    render();
+  });
+  $$(".grocery-check").forEach((cb) => {
+    cb.addEventListener("change", () => {
+      state.groceryChecked[cb.dataset.key] = cb.checked;
+      saveState(state);
+    });
+  });
+  $("#grocery-get")?.addEventListener("click", () => openPlanGrocerySheet());
+  $$(".meal-grocery-btn").forEach((btn) => {
+    btn.addEventListener("click", () => openMealGrocerySheet(btn.dataset.slot, Number(btn.dataset.day)));
+  });
+  $("#grocery-copy")?.addEventListener("click", async () => {
+    const dayNum = mealsViewDay ?? programDay(state.profile, getClockNow());
+    const scope = state.groceryScope || "week";
+    const week = state.groceryWeek || programWeekForDay(dayNum);
+    const grocery = buildGroceryFromPlan(state.mealPlan, masterListData, scope, week);
+    const text = groceryListText(grocery, state.groceryChecked);
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast("Grocery list copied", "on");
+    } catch {
+      showToast("Copy failed — try again", "check");
+    }
   });
 }
 
 function bindFoods() {
+  if (foodsEditMode && masterListData) {
+    const panel = $("#edit-eat-panel");
+    if (panel) {
+      bindEatChips(
+        panel,
+        () => state.profile.eatSelections || getEatSelections(state.profile),
+        (sel) => {
+          state.profile.eatSelections = sel;
+        },
+        masterListData,
+        () => render()
+      );
+    }
+    $("#save-eat-edit")?.addEventListener("click", () => {
+      const p = $("#edit-eat-panel");
+      if (p) {
+        state.profile.eatSelections = readEatSelectionsFromDom(
+          p,
+          state.profile.eatSelections || getEatSelections(state.profile)
+        );
+      }
+      foodsEditMode = false;
+      syncPlanAndList();
+      showToast("Meal plan updated", "on");
+      render();
+    });
+    $("#cancel-eat-edit")?.addEventListener("click", () => {
+      foodsEditMode = false;
+      render();
+    });
+    return;
+  }
+  $("#edit-my-foods")?.addEventListener("click", () => {
+    foodsEditMode = true;
+    render();
+  });
   const fl = state.foodList;
   const input = $("#food-q");
   const renderList = () => {
@@ -1123,12 +1553,22 @@ function bindSettings() {
     state.profile.startDate = $("#set-start").value;
     saveState(state);
   });
+  $("#grocery-store-pref")?.addEventListener("change", () => {
+    state.groceryStore = $("#grocery-store-pref").value || "instacart";
+    saveState(state);
+    showToast("Preferred store saved", "on");
+  });
+  $("#set-edit-foods")?.addEventListener("click", () => {
+    foodsEditMode = true;
+    navigate("#/foods");
+  });
   $("#set-regen")?.addEventListener("click", () => {
     if (confirm("This will restart the questionnaire and rebuild your food list. Continue?")) {
       draftProfile = { ...state.profile };
       delete draftProfile.onboardingComplete;
       state.profile = null;
       state.foodList = null;
+      state.mealPlan = null;
       onboardingStep = 0;
       saveState(state);
       render();
@@ -1170,6 +1610,7 @@ function registerSW() {
 
 async function init() {
   await loadContent();
+  initGroceryOrderSheet({ showToast });
   window.addEventListener("hashchange", render);
   registerSW();
   if (!location.hash) location.hash = "#/today";

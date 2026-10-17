@@ -535,6 +535,30 @@ main.app-main {
   min-width: 10rem;
 }
 
+.eat-cat {
+  margin-bottom: 1rem;
+}
+
+.eat-cat h3 {
+  font-size: 0.95rem;
+  font-family: Lato, sans-serif;
+  text-transform: none;
+  margin-bottom: 0.35rem;
+}
+
+.eat-chip-wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  margin: 0.2rem;
+}
+
+.eat-chip-wrap select.eat-reason {
+  font-size: 0.75rem;
+  max-width: 7rem;
+}
+
 @media (min-width: 900px) {
   .log-action-bar {
     max-width: var(--max);
@@ -591,6 +615,309 @@ main.app-main {
 
 .step-dots span.on {
   background: var(--charcoal);
+}
+
+.kitchen-lead {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+
+.kitchen-progress-wrap {
+  margin-top: 1rem;
+}
+
+.kitchen-progress-wrap.compact {
+  margin: 0.5rem 0 0.75rem;
+}
+
+.kitchen-progress-bar {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.kitchen-progress-fill {
+  height: 100%;
+  background: var(--green);
+  transition: width 0.25s ease;
+}
+
+.kitchen-progress-label {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+}
+
+.kitchen-place {
+  margin-top: 1rem;
+}
+
+.kitchen-place h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+}
+
+.kitchen-list {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.kitchen-check-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  padding: 0.35rem 0;
+  cursor: pointer;
+}
+
+.kitchen-check-row input {
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+}
+
+.kitchen-tips {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.kitchen-tips ul {
+  margin: 0.35rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.kitchen-actions {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.kitchen-celebrate {
+  border: 2px solid var(--green);
+  background: #e8f5ee;
+  text-align: center;
+}
+
+.kitchen-celebrate-title {
+  font-family: Anton, sans-serif;
+  font-size: 1.5rem;
+  margin: 0 0 0.35rem;
+  color: var(--green);
+}
+
+.kitchen-today-banner h2 {
+  margin-top: 0;
+  font-size: 1.05rem;
+}
+
+.kitchen-group-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+}
+
+.kitchen-group-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--line);
+}
+
+.kitchen-group-dot.on {
+  background: var(--charcoal);
+  transform: scale(1.15);
+}
+
+.kitchen-group-dot.done {
+  background: var(--green);
+}
+
+.kitchen-group-step {
+  margin: 0 0 0.25rem;
+  font-size: 0.85rem;
+}
+
+.kitchen-group-title {
+  margin: 0 0 0.35rem;
+}
+
+.kitchen-group-sub {
+  margin: 0 0 0.75rem;
+}
+
+.kitchen-keep-note {
+  font-size: 0.92rem;
+  padding: 0.5rem 0.65rem;
+  background: #f5f0e4;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+}
+
+.kitchen-label-section {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.kitchen-label-row {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.kitchen-label-chip {
+  text-align: left;
+  white-space: normal;
+  line-height: 1.35;
+  justify-content: flex-start;
+}
+
+.kitchen-label-chip.learned {
+  border-color: var(--green);
+  background: #e8f5ee;
+}
+
+.kitchen-group-nav {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+body.grocery-sheet-open {
+  overflow: hidden;
+}
+
+.grocery-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.grocery-sheet.hidden {
+  display: none;
+}
+
+.grocery-sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(30, 30, 30, 0.45);
+}
+
+.grocery-sheet-panel {
+  position: relative;
+  width: 100%;
+  max-width: var(--max);
+  max-height: 88dvh;
+  background: var(--paper);
+  border-radius: 16px 16px 0 0;
+  padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom));
+  overflow: auto;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.grocery-sheet-header {
+  padding-right: 2rem;
+}
+
+.grocery-sheet-title {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.grocery-sheet-sub {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+}
+
+.grocery-sheet-close {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.75rem;
+  border: none;
+  background: transparent;
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--charcoal);
+}
+
+.grocery-sheet-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.75rem 0;
+}
+
+.grocery-sheet-section h3 {
+  margin: 0.75rem 0 0.35rem;
+  font-size: 0.95rem;
+}
+
+.grocery-sheet-section ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.grocery-sheet-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.grocery-sheet-item-label {
+  font-weight: 700;
+}
+
+.grocery-item-search {
+  align-self: flex-start;
+}
+
+@media print {
+  body.printing-grocery .app-header,
+  body.printing-grocery .bottom-nav,
+  body.printing-grocery .app-footer,
+  body.printing-grocery .app-main,
+  body.printing-grocery .grocery-sheet-backdrop,
+  body.printing-grocery .grocery-sheet-actions,
+  body.printing-grocery .grocery-sheet-close {
+    display: none !important;
+  }
+
+  body.printing-grocery .grocery-sheet {
+    display: block !important;
+    position: static;
+  }
+
+  body.printing-grocery .grocery-sheet-panel {
+    max-height: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  body.printing-grocery .grocery-item-search {
+    display: none;
+  }
+}
+
+@media (min-width: 900px) {
+  .grocery-sheet {
+    align-items: center;
+  }
+
+  .grocery-sheet-panel {
+    border-radius: 16px;
+    max-height: 85vh;
+  }
 }
 
 @media (min-width: 900px) {
