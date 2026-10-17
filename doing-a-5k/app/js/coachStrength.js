@@ -6,10 +6,16 @@ import coach from "../data/half-marathon-plan.json" with { type: "json" };
 
 const REST_SEC = 45;
 
-function equipmentTier(equipment = []) {
-  const set = new Set(equipment);
-  if (set.has("kettlebells_essentials") || set.has("kettlebell")) return "kettlebell";
-  if (set.has("dumbbells")) return "dumbbell";
+function normalizeEquipment(equipment) {
+  if (equipment?.kit) return equipment;
+  const kit = Array.isArray(equipment) ? equipment[0] || "none" : equipment || "none";
+  return { kit, optional: [] };
+}
+
+function equipmentTier(equipment) {
+  const { kit } = normalizeEquipment(equipment);
+  if (kit === "kettlebells_and_essentials") return "kettlebell";
+  if (kit === "dumbbells") return "dumbbell";
   return "bodyweight";
 }
 
@@ -54,11 +60,18 @@ function dosing(phaseName, strengthLevel) {
   };
 }
 
-function movementFor(pattern, session, tier) {
+function movementFor(pattern, session, tier, optional = []) {
   const m = coach.strength.movements.find((x) => x.pattern === pattern || x.pattern.startsWith(pattern.split(" ")[0]));
   if (!m) return { label: pattern, cue: "" };
   const key = tier === "kettlebell" ? "kettlebell" : tier === "dumbbell" ? "dumbbell" : "bodyweight";
-  return { label: m.pattern, cue: m[key] || m.bodyweight, easier: m.beginner, harder: m.average };
+  let cue = m[key] || m.bodyweight;
+  const opt = new Set(optional);
+  if (m.optional) {
+    if (opt.has("trx") && m.optional.includes("Suspension")) cue = `${cue} Optional: ${m.optional}`;
+    else if (opt.has("pullup_bar") && m.optional.includes("pull-up")) cue = `${cue} Optional: ${m.optional}`;
+    else if (opt.has("foam_roller") && pattern.includes("Hip")) cue = cue;
+  }
+  return { label: m.pattern, cue, easier: m.beginner, harder: m.average };
 }
 
 function parseStrengthSlots(strengthLabel) {
@@ -72,7 +85,9 @@ function parseStrengthSlots(strengthLabel) {
 
 function buildSessionSteps(sessionType, weekPhase, options) {
   const { strengthLevel, equipment, pushups } = options;
-  const tier = equipmentTier(equipment);
+  const eq = normalizeEquipment(equipment);
+  const tier = equipmentTier(eq);
+  const optional = eq.optional || [];
   const dose = dosing(weekPhase, strengthLevel);
   const push = pushupExercise(pushups, strengthLevel);
   const steps = [];
@@ -101,7 +116,7 @@ function buildSessionSteps(sessionType, weekPhase, options) {
           voiceCue: `Push: ${push.exercise}`,
         });
       } else {
-        const mv = movementFor(pat, sessionType, tier);
+        const mv = movementFor(pat, sessionType, tier, optional);
         steps.push({
           mode: "reps",
           label: mv.label,
@@ -165,8 +180,20 @@ export function coachEquipmentSummary(equipment) {
   const map = {
     none: "Bodyweight",
     dumbbells: "Dumbbells",
-    kettlebells_essentials: "Kettlebells + essentials",
+    kettlebells_and_essentials: "Kettlebells + essentials kit",
   };
-  if (!equipment?.length || equipment.includes("none")) return map.none;
-  return equipment.map((e) => map[e] || e).join(", ");
+  const optMap = {
+    foam_roller: "foam roller",
+    pullup_bar: "pull-up bar",
+    trx: "TRX / suspension straps",
+  };
+  const eq = normalizeEquipment(equipment);
+  let label = map[eq.kit] || eq.kit;
+  if (eq.kit === "kettlebells_and_essentials") {
+    label += " (mini-band, long band, step/bench, mat)";
+  }
+  if (eq.optional?.length) {
+    label += ` · Optional: ${eq.optional.map((o) => optMap[o] || o).join(", ")}`;
+  }
+  return label;
 }

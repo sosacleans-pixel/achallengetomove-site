@@ -16,10 +16,15 @@ import {
   longRunProgressionKm,
   parseDateOnly,
   resolveHalfPlacement,
+  resolveRunLevelMethodA,
+  resolveRunLevelMethodB,
   strengthLevelFromPushUps,
   COACH_DISCLAIMER,
   COACH_EFFORT_GUIDE,
+  COACH_ONBOARDING,
+  COACH_PREREQUISITES,
   coachEquipmentSummary,
+  normalizeHalfEquipment,
 } from "./halfPlan.js";
 import {
   defaultStrengthDays,
@@ -58,8 +63,16 @@ const EQUIPMENT_OPTIONS_5K = [
 ];
 const EQUIPMENT_OPTIONS_HALF = [
   { value: "none", label: "None (bodyweight)" },
-  { value: "dumbbells", label: "Dumbbells" },
-  { value: "kettlebells_essentials", label: "Kettlebells + essentials (step, band, mat)" },
+  { value: "dumbbells", label: "Dumbbells (+ essentials kit: mini-band, long band, step/bench, mat)" },
+  {
+    value: "kettlebells_and_essentials",
+    label: "Kettlebells + full essentials kit (dumbbells, bands, step/bench, mat)",
+  },
+];
+const OPTIONAL_EQUIPMENT_HALF = [
+  { value: "foam_roller", label: "Foam roller" },
+  { value: "pullup_bar", label: "Doorway pull-up bar" },
+  { value: "trx", label: "TRX / suspension straps" },
 ];
 
 let state = loadState();
@@ -207,6 +220,13 @@ function equipmentChecks(selected = ["bodyweight"], goal = "5k") {
     .join("");
 }
 
+function optionalEquipmentChecks() {
+  return OPTIONAL_EQUIPMENT_HALF.map(
+    (opt) =>
+      `<label class="chip"><input type="checkbox" name="equipmentOptional" value="${opt.value}"> ${opt.label}</label>`
+  ).join("");
+}
+
 function renderOnboarding() {
   const today = new Date().toISOString().slice(0, 10);
   const defaultRun = [1, 3, 5];
@@ -243,6 +263,83 @@ function renderOnboarding() {
           <label><input type="radio" name="daysHalf" value="4"> 4 days (~16 / ~12 weeks)</label>
         </div>
       </fieldset>
+      <fieldset class="field hidden" id="half-equipment-field">
+        <legend>Equipment</legend>
+        <p class="muted">${COACH_ONBOARDING.equipment_note}</p>
+        <div class="chip-row" id="half-equipment-chips">${equipmentChecks([], "half")}</div>
+        <p class="muted section-mini">Optional extras (unlock pull-up / row / strap options):</p>
+        <div class="chip-row">${optionalEquipmentChecks()}</div>
+      </fieldset>
+      <fieldset class="field" id="five-k-equipment-field">
+        <legend>Equipment available</legend>
+        <div class="chip-row" id="equipment-chips">${equipmentChecks([], "5k")}</div>
+      </fieldset>
+      <fieldset class="field hidden" id="half-run-level-field">
+        <legend>Run level</legend>
+        <p class="muted">${COACH_ONBOARDING.levels_note}</p>
+        <div class="radio-row">
+          <label><input type="radio" name="runLevelMethod" value="a" checked> Continuous-run check</label>
+          <label><input type="radio" name="runLevelMethod" value="b"> Two quick questions (no test)</label>
+        </div>
+        <div id="run-level-method-a">
+          <p class="muted">${COACH_ONBOARDING.run_level.method_a.rules}</p>
+          <label class="field">
+            <span>How many minutes did you run without walking? (stop at first walk or 45 min)</span>
+            <input name="continuousMin" type="number" min="0" max="45" value="25" inputmode="numeric">
+          </label>
+          <label class="check-row">
+            <input type="checkbox" name="can30RunWalk" id="can30RunWalk">
+            <span>I can complete <strong>30 minutes</strong> of run-walk (e.g. 4 min run / 1 min walk).</span>
+          </label>
+          <fieldset class="field">
+            <legend>${COACH_ONBOARDING.run_level.method_a.extra_questions[0]}</legend>
+            <div class="radio-row">
+              <label><input type="radio" name="runs3Days" value="yes"> Yes</label>
+              <label><input type="radio" name="runs3Days" value="no" checked> No</label>
+            </div>
+          </fieldset>
+          <fieldset class="field">
+            <legend>${COACH_ONBOARDING.run_level.method_a.extra_questions[1]}</legend>
+            <div class="radio-row">
+              <label><input type="radio" name="recent4Mi" value="yes"> Yes</label>
+              <label><input type="radio" name="recent4Mi" value="no" checked> No</label>
+            </div>
+          </fieldset>
+        </div>
+        <div id="run-level-method-b" class="hidden">
+          <fieldset class="field">
+            <legend>${COACH_ONBOARDING.run_level.method_b.questions[0].text}</legend>
+            <div class="radio-row">
+              <label><input type="radio" name="continuousRange" value="lt20"> &lt;20 min</label>
+              <label><input type="radio" name="continuousRange" value="m20_39" checked> 20-39 min</label>
+              <label><input type="radio" name="continuousRange" value="m40plus"> 40+ min</label>
+            </div>
+          </fieldset>
+          <fieldset class="field">
+            <legend>${COACH_ONBOARDING.run_level.method_b.questions[1].text}</legend>
+            <div class="radio-row">
+              <label><input type="radio" name="runDaysNow" value="d0_1"> 0-1</label>
+              <label><input type="radio" name="runDaysNow" value="d2"> 2</label>
+              <label><input type="radio" name="runDaysNow" value="d3plus" checked> 3+</label>
+            </div>
+          </fieldset>
+        </div>
+        <div class="card card-note hidden" id="half-recommend-card">
+          <p>${COACH_PREREQUISITES.not_ready[0]}</p>
+          <button type="button" class="btn btn-secondary btn-block" id="switch-to-5k">Switch to 5K goal</button>
+        </div>
+        <p class="muted" id="half-run-level-preview"></p>
+      </fieldset>
+      <fieldset class="field hidden" id="half-strength-level-field">
+        <legend>Strength level</legend>
+        <p class="muted">${COACH_ONBOARDING.strength_level.sets}</p>
+        <label class="field">
+          <span>${COACH_ONBOARDING.strength_level.test.name}</span>
+          <p class="muted">${COACH_ONBOARDING.strength_level.test.rules}</p>
+          <input name="pushupsHalf" type="number" min="0" max="100" value="5" inputmode="numeric">
+        </label>
+        <p class="muted" id="half-strength-level-preview">Strength level: Beginner (0-7 push-ups)</p>
+      </fieldset>
       <fieldset class="field">
         <legend>Preferred run days</legend>
         <div class="chip-row" id="run-day-chips">${dayChecks}</div>
@@ -265,45 +362,13 @@ function renderOnboarding() {
           <label><input type="radio" name="level" value="jogLittle"> I can jog a little</label>
         </div>
       </fieldset>
-      <fieldset class="field">
-        <legend>Equipment available</legend>
-        <div class="chip-row" id="equipment-chips">${equipmentChecks([], "5k")}</div>
-      </fieldset>
       <fieldset class="field" id="pushup-test-field">
-        <legend>Level test</legend>
+        <legend>Level test (strength)</legend>
         <label class="field">
           <span>How many <strong>floor push-ups</strong> (full, from the toes, no knees) can you do in a row with good form?</span>
           <input name="pushups" type="number" min="0" max="100" value="5" inputmode="numeric" required>
         </label>
         <p class="muted" id="strength-level-preview">Strength level: Beginner (under 8 push-ups)</p>
-      </fieldset>
-      <fieldset class="field hidden" id="half-base-field">
-        <legend>Running base (half marathon)</legend>
-        <p class="muted">Answer honestly — this picks your <strong>run</strong> plan length. Push-ups pick your strength progression.</p>
-        <label class="check-row">
-          <input type="checkbox" name="base3x4" id="base3x4">
-          <span>I have been running about <strong>3 days per week</strong> for at least the <strong>last 4 weeks</strong>.</span>
-        </label>
-        <label class="check-row">
-          <input type="checkbox" name="base4mi" id="base4mi">
-          <span>I have done a run of at least <strong>4 mi (6.4 km)</strong> in the past month.</span>
-        </label>
-        <label class="check-row">
-          <input type="checkbox" name="base30cont" id="base30cont">
-          <span>I can run <strong>30–40 minutes continuously</strong> at easy effort (full sentences).</span>
-        </label>
-        <fieldset class="field">
-          <legend>Minimum readiness</legend>
-          <div class="radio-row">
-            <label><input type="radio" name="base30rw" value="yes" checked> I can complete <strong>30 minutes</strong> of easy running or run-walk (e.g. 4 min run / 1 min walk)</label>
-            <label><input type="radio" name="base30rw" value="no"> I cannot yet do 30 minutes of run-walk</label>
-          </div>
-        </fieldset>
-        <div class="card card-note hidden" id="half-recommend-card">
-          <p>Finish the 5K track in this app first, then return to the half marathon goal.</p>
-          <button type="button" class="btn btn-secondary btn-block" id="switch-to-5k">Switch to 5K goal</button>
-        </div>
-        <p class="muted" id="half-plan-preview"></p>
       </fieldset>
       <details class="card card-note hidden" id="half-disclaimer-details">
         <summary>Medical disclaimer (required reading)</summary>
@@ -344,8 +409,9 @@ function refreshStrengthChips(form) {
 
 function getEquipmentFromForm(form, goal) {
   if (goal === "half") {
-    const val = form.querySelector('input[name="equipmentHalf"]:checked')?.value || "none";
-    return [val];
+    const kit = form.querySelector('input[name="equipmentHalf"]:checked')?.value || "none";
+    const optional = [...form.querySelectorAll('input[name="equipmentOptional"]:checked')].map((el) => el.value);
+    return { kit, optional };
   }
   const picked = [...form.querySelectorAll('input[name="equipment"]:checked')].map((el) => el.value);
   if (!picked.length) return ["bodyweight"];
@@ -355,34 +421,59 @@ function getEquipmentFromForm(form, goal) {
   return picked;
 }
 
-function getRunningBaseFromForm(form) {
+function getRunLevelInputFromForm(form) {
+  const method = form.querySelector('input[name="runLevelMethod"]:checked')?.value || "a";
+  if (method === "b") {
+    return {
+      method: "b",
+      runInput: {
+        continuousRange: form.querySelector('input[name="continuousRange"]:checked')?.value || "m20_39",
+        runDays: form.querySelector('input[name="runDaysNow"]:checked')?.value || "d0_1",
+      },
+    };
+  }
   return {
-    threePerWeek4Weeks: Boolean(form.querySelector('[name="base3x4"]')?.checked),
-    recent4Mi: Boolean(form.querySelector('[name="base4mi"]')?.checked),
-    continuous30_40: Boolean(form.querySelector('[name="base30cont"]')?.checked),
-    can30RunWalk: form.querySelector('[name="base30rw"]:checked')?.value === "yes",
+    method: "a",
+    runInput: {
+      continuousMin: form.querySelector('input[name="continuousMin"]')?.value ?? 0,
+      can30RunWalk: Boolean(form.querySelector('[name="can30RunWalk"]')?.checked),
+      runs3Days: form.querySelector('input[name="runs3Days"]:checked')?.value === "yes",
+      recent4Mi: form.querySelector('input[name="recent4Mi"]:checked')?.value === "yes",
+    },
   };
 }
 
-function updateHalfPlanPreview(form) {
-  const pushups = Number(form.querySelector('input[name="pushups"]')?.value ?? 0);
-  const base = getRunningBaseFromForm(form);
-  const placement = resolveHalfPlacement(pushups, base);
-  const el = $("#half-plan-preview", form);
-  if (!el) return;
-  if (!base.can30RunWalk) {
-    el.textContent = "";
-    return;
+function getPushupsFromForm(form, goal) {
+  if (goal === "half") return Number(form.querySelector('input[name="pushupsHalf"]')?.value ?? 0);
+  return Number(form.querySelector('input[name="pushups"]')?.value ?? 0);
+}
+
+function updateHalfRunLevelPreview(form) {
+  const pushups = getPushupsFromForm(form, "half");
+  const { method, runInput } = getRunLevelInputFromForm(form);
+  const placement = resolveHalfPlacement({ method, runInput, pushups });
+  const runEl = $("#half-run-level-preview", form);
+  const strEl = $("#half-strength-level-preview", form);
+  $("#half-recommend-card", form)?.classList.toggle("hidden", placement.ok);
+  if (runEl) {
+    if (!placement.ok) runEl.textContent = "";
+    else {
+      const weeks = placement.runLevel === "average" ? 12 : 16;
+      runEl.textContent = `Run level: ${placement.runLevel === "average" ? "Average" : "Beginner"} (${weeks} weeks)`;
+    }
   }
-  if (placement.runLevel === "average") {
-    el.textContent =
-      "Your assignment: 12-week Average run plan + Average strength (push-ups 8+ and running base met).";
-  } else if (placement.strengthLevel === "average") {
-    el.textContent =
-      "Your assignment: 16-week Beginner run plan + Average strength (push-ups 8+ but running base not fully met).";
-  } else {
-    el.textContent = "Your assignment: 16-week Beginner run plan + Beginner strength.";
+  if (strEl) {
+    strEl.textContent =
+      placement.strengthLevel === "average"
+        ? "Strength level: Average (8+ push-ups)"
+        : "Strength level: Beginner (0-7 push-ups)";
   }
+}
+
+function toggleRunLevelMethod(form) {
+  const method = form.querySelector('input[name="runLevelMethod"]:checked')?.value || "a";
+  $("#run-level-method-a", form)?.classList.toggle("hidden", method !== "a");
+  $("#run-level-method-b", form)?.classList.toggle("hidden", method !== "b");
 }
 
 function updatePushupPreview(form) {
@@ -401,17 +492,21 @@ function syncOnboardingGoal(form) {
   const goal = form.querySelector('input[name="goal"]:checked')?.value || "5k";
   const isHalf = goal === "half";
   $("#five-k-level-field", form)?.classList.toggle("hidden", isHalf);
-  $("#half-base-field", form)?.classList.toggle("hidden", !isHalf);
+  $("#half-equipment-field", form)?.classList.toggle("hidden", !isHalf);
+  $("#five-k-equipment-field", form)?.classList.toggle("hidden", isHalf);
+  $("#half-run-level-field", form)?.classList.toggle("hidden", !isHalf);
+  $("#half-strength-level-field", form)?.classList.toggle("hidden", !isHalf);
+  $("#pushup-test-field", form)?.classList.toggle("hidden", isHalf);
   $("#half-disclaimer-details", form)?.classList.toggle("hidden", !isHalf);
   $("#days-5k-row", form)?.classList.toggle("hidden", isHalf);
   $("#days-half-row", form)?.classList.toggle("hidden", !isHalf);
   $("#strength-schedule-field", form)?.classList.toggle("hidden", isHalf);
   $("#strength-days-field", form)?.classList.toggle("hidden", isHalf);
-  const eq = $("#equipment-chips", form);
-  if (eq) eq.innerHTML = equipmentChecks([], goal);
-  const base30 = form.querySelector('[name="base30rw"]:checked')?.value;
-  $("#half-recommend-card", form)?.classList.toggle("hidden", !isHalf || base30 !== "no");
-  if (isHalf) updateHalfPlanPreview(form);
+  form.querySelector('[name="pushups"]')?.toggleAttribute("required", !isHalf);
+  if (isHalf) {
+    toggleRunLevelMethod(form);
+    updateHalfRunLevelPreview(form);
+  }
   refreshStrengthChips(form);
 }
 
@@ -420,30 +515,32 @@ function bindOnboarding() {
   syncOnboardingGoal(form);
   updatePushupPreview(form);
   form?.querySelector('input[name="pushups"]')?.addEventListener("input", () => updatePushupPreview(form));
+  form?.querySelector('input[name="pushupsHalf"]')?.addEventListener("input", () => updateHalfRunLevelPreview(form));
   form?.addEventListener("change", (e) => {
     if (
       e.target.name === "goal" ||
-      e.target.name === "base30rw" ||
-      e.target.name === "base3x4" ||
-      e.target.name === "base4mi" ||
-      e.target.name === "base30cont"
+      e.target.name === "runLevelMethod" ||
+      e.target.name === "continuousRange" ||
+      e.target.name === "runDaysNow" ||
+      e.target.name === "runs3Days" ||
+      e.target.name === "recent4Mi" ||
+      e.target.name === "can30RunWalk"
     ) {
       syncOnboardingGoal(form);
     }
-    if (e.target.name === "pushups") {
-      updatePushupPreview(form);
-      updateHalfPlanPreview(form);
-    }
+    if (e.target.name === "pushups") updatePushupPreview(form);
+    if (e.target.name === "pushupsHalf") updateHalfRunLevelPreview(form);
+    if (e.target.name === "continuousMin") updateHalfRunLevelPreview(form);
     if (e.target.name === "day" || e.target.name === "days" || e.target.name === "daysHalf" || e.target.name === "strengthDays") {
       refreshStrengthChips(form);
     }
     if (e.target.name === "race") {
       const race = form.querySelector('input[name="race"]')?.value;
       const goal = form.querySelector('input[name="goal"]:checked')?.value || "5k";
-      const pushups = Number(form.querySelector('input[name="pushups"]')?.value ?? 0);
+      const pushups = getPushupsFromForm(form, goal);
       const runLevel =
         goal === "half"
-          ? resolveHalfPlacement(pushups, getRunningBaseFromForm(form)).runLevel
+          ? resolveHalfPlacement({ ...getRunLevelInputFromForm(form), pushups }).runLevel
           : null;
       if (race) {
         const days =
@@ -458,24 +555,26 @@ function bindOnboarding() {
   });
   $("#switch-to-5k", form)?.addEventListener("click", () => {
     form.querySelector('input[name="goal"][value="5k"]').checked = true;
-    const rw = form.querySelector('input[name="base30rw"][value="yes"]');
-    if (rw) rw.checked = true;
     syncOnboardingGoal(form);
   });
   form?.addEventListener("submit", (e) => {
     e.preventDefault();
     const fd = new FormData(form);
     const goal = fd.get("goal") || "5k";
-    const pushups = Number(fd.get("pushups"));
-    const runningBase = getRunningBaseFromForm(form);
+    const pushups = getPushupsFromForm(form, goal);
     let runLevel = "beginner";
     let strengthLevel = strengthLevelFromPushUps(pushups);
+    let runLevelMethod = "a";
+    let runLevelInput = null;
     if (goal === "half") {
-      if (!runningBase.can30RunWalk) {
-        alert("Finish the 5K track first — you need at least 30 minutes of run-walk.");
+      const rl = getRunLevelInputFromForm(form);
+      runLevelMethod = rl.method;
+      runLevelInput = rl.runInput;
+      const placement = resolveHalfPlacement({ method: rl.method, runInput: rl.runInput, pushups });
+      if (!placement.ok) {
+        alert(COACH_PREREQUISITES.not_ready[0]);
         return;
       }
-      const placement = resolveHalfPlacement(pushups, runningBase);
       runLevel = placement.runLevel;
       strengthLevel = placement.strengthLevel;
     }
@@ -531,7 +630,8 @@ function bindOnboarding() {
       equipment,
       units,
       pushups,
-      runningBase: goal === "half" ? runningBase : null,
+      runLevelMethod,
+      runLevelInput,
     });
     setState({
       ...plan,
@@ -995,7 +1095,11 @@ function goalLabel(meta) {
 }
 
 function halfEquipmentLabel(meta) {
-  if (meta.goal === "half") return coachEquipmentSummary(meta.equipment);
+  if (meta.goal === "half") {
+    return coachEquipmentSummary(
+      normalizeHalfEquipment({ kit: meta.equipment, optional: meta.equipmentOptional || [] })
+    );
+  }
   return equipmentSummary(meta.equipment);
 }
 
@@ -1297,6 +1401,8 @@ window.__doingA5K = {
   longRunProgressionKm,
   strengthLevelFromPushUps,
   resolveHalfPlacement,
+  resolveRunLevelMethodA,
+  resolveRunLevelMethodB,
   loadState,
   resetState,
   nextWorkout,

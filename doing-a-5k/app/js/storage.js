@@ -24,7 +24,8 @@ function migrate(state) {
   if (!state.meta.goal) state.meta.goal = "5k";
   if (!state.meta.runLevel) state.meta.runLevel = state.meta.goal === "half" ? state.meta.level || "beginner" : state.meta.level;
   if (!state.meta.strengthLevel) state.meta.strengthLevel = "beginner";
-  if (!state.meta.equipment) state.meta.equipment = ["bodyweight"];
+  if (!state.meta.equipment) state.meta.equipment = state.meta.goal === "half" ? "none" : ["bodyweight"];
+  if (!state.meta.equipmentOptional) state.meta.equipmentOptional = [];
   if (!state.meta.units) state.meta.units = state.settings?.units || "mi";
   if (!state.meta.raceDateISO) state.meta.raceDateISO = "";
   if (!state.settings) state.settings = { voice: true, units: state.meta.units };

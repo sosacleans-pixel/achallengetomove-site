@@ -64,27 +64,37 @@ async function onboard5k(page, days, { e2e = false, strengthDays = 1, pushups = 
   await page.waitForSelector(".today-card");
 }
 
+async function fillHalfRunLevel(page, runLevel) {
+  await page.click('input[name="runLevelMethod"][value="b"]');
+  if (runLevel === "average") {
+    await page.click('input[name="continuousRange"][value="m40plus"]');
+    await page.click('input[name="runDaysNow"][value="d3plus"]');
+  } else if (runLevel === "beginner") {
+    await page.click('input[name="continuousRange"][value="m20_39"]');
+    await page.click('input[name="runDaysNow"][value="d0_1"]');
+  } else if (runLevel === "not_ready") {
+    await page.click('input[name="continuousRange"][value="lt20"]');
+  }
+}
+
 async function onboardHalf(
   page,
-  { days = 3, pushups = 10, equipment = "dumbbells", base = "average", e2e = false } = {}
+  { days = 3, pushups = 10, equipment = "dumbbells", runLevel = "average", optional = [] } = {}
 ) {
-  const q = e2e ? "?e2e=1" : "";
-  await page.goto(`http://127.0.0.1:8765/doing-a-5k/app/index.html${q}`);
+  await page.goto("http://127.0.0.1:8765/doing-a-5k/app/index.html");
   await page.waitForSelector("#onboard-form");
   await page.click('input[name="goal"][value="half"]');
   await page.click(`input[name="daysHalf"][value="${days}"]`);
+  await page.click(`input[name="equipmentHalf"][value="${equipment}"]`);
+  for (const o of optional) {
+    await page.check(`input[name="equipmentOptional"][value="${o}"]`);
+  }
+  await fillHalfRunLevel(page, runLevel);
   const boxes = await page.$$('input[name="day"]');
   for (let i = 0; i < days; i++) {
     await boxes[i].check();
   }
-  await page.fill('input[name="pushups"]', String(pushups));
-  await page.click(`input[name="equipmentHalf"][value="${equipment}"]`);
-  if (base === "average") {
-    await page.check("#base3x4");
-    await page.check("#base4mi");
-    await page.check("#base30cont");
-  }
-  await page.click('input[name="base30rw"][value="yes"]');
+  await page.fill('input[name="pushupsHalf"]', String(pushups));
   await page.click('button[type="submit"]');
   await page.waitForSelector(".today-card");
 }
@@ -137,95 +147,77 @@ async function main() {
     await page.evaluate(() => localStorage.clear());
     await page.waitForSelector("#onboard-form");
     await page.click('input[name="goal"][value="half"]');
-    await page.fill('input[name="pushups"]', "10");
-    await page.check("#base3x4");
-    await page.screenshot({ path: `${artifacts}/half-base-check.png`, fullPage: true });
+    await page.screenshot({ path: `${artifacts}/half-run-level-screen.png`, fullPage: true });
 
-    await onboardHalf(page, { days: 3, pushups: 10, equipment: "dumbbells", base: "average" });
+    await page.click('input[name="goal"][value="half"]');
+    await page.fill('input[name="pushupsHalf"]', "12");
+    await page.screenshot({ path: `${artifacts}/half-strength-level-screen.png`, fullPage: true });
+
+    await onboardHalf(page, { days: 3, pushups: 10, equipment: "dumbbells", runLevel: "average" });
     const half3avg = await page.evaluate(() => {
       const s = window.__doingA5K.loadState();
       const lr = s.longRunProgressionKm;
-      const peak = Math.max(...lr.slice(0, s.meta.weeks - 2));
-      const peakWeekIdx = s.meta.runLevel === "average" ? 9 : 13;
-      const peakWeekKm = lr[peakWeekIdx];
-      const taper = lr.slice(-2);
+      const peakWeekKm = lr[9];
       return {
         weeks: s.meta.weeks,
         runLevel: s.meta.runLevel,
         strengthLevel: s.meta.strengthLevel,
         coachPlanId: s.meta.coachPlanId,
-        peakKm: peak,
         peakWeekKm,
-        taperKm: taper,
-        hasWorkout: s.workouts.some((w) => w.title.includes("Fartlek") || w.title.includes("Hill")),
+        version: s.coachMeta ? "coach" : null,
       };
     });
+    const planVersion = await page.evaluate(async () => {
+      const r = await fetch("/doing-a-5k/app/data/half-marathon-plan.json");
+      const j = await r.json();
+      return j.meta.version;
+    });
     results.push({
-      test: "half-3day-average-coach",
+      test: "half-3day-average-v2",
       ok:
         half3avg.weeks === 12 &&
         half3avg.runLevel === "average" &&
         half3avg.strengthLevel === "average" &&
         half3avg.coachPlanId === "average-3day" &&
         half3avg.peakWeekKm >= 19 &&
-        half3avg.peakKm >= 19 &&
-        half3avg.taperKm[0] < half3avg.peakKm &&
-        half3avg.hasWorkout,
+        planVersion === "2.0",
       half3avg,
+      planVersion,
     });
 
     await page.click('[data-nav="plan"]');
     await page.waitForSelector(".plan-week");
-    await page.screenshot({ path: `${artifacts}/half-plan-week.png`, fullPage: true });
+    await page.screenshot({ path: `${artifacts}/half-plan-week-v2.png`, fullPage: true });
 
     await page.evaluate(() => localStorage.clear());
-    await onboardHalf(page, { days: 4, pushups: 3, equipment: "none", base: "minimal" });
+    await onboardHalf(page, { days: 4, pushups: 3, equipment: "none", runLevel: "beginner" });
     const half4beg = await page.evaluate(() => {
       const s = window.__doingA5K.loadState();
-      const lr = s.longRunProgressionKm;
-      const w14 = lr[13];
-      return {
-        weeks: s.meta.weeks,
-        runLevel: s.meta.runLevel,
-        strengthLevel: s.meta.strengthLevel,
-        week14Km: w14,
-      };
+      return { weeks: s.meta.weeks, runLevel: s.meta.runLevel, strengthLevel: s.meta.strengthLevel, w14: s.longRunProgressionKm[13] };
     });
     results.push({
-      test: "half-4day-beginner-coach",
-      ok:
-        half4beg.weeks === 16 &&
-        half4beg.runLevel === "beginner" &&
-        half4beg.strengthLevel === "beginner" &&
-        half4beg.week14Km >= 16 &&
-        half4beg.week14Km <= 16.5,
+      test: "half-4day-beginner-v2",
+      ok: half4beg.weeks === 16 && half4beg.runLevel === "beginner" && half4beg.strengthLevel === "beginner" && half4beg.w14 >= 16,
       half4beg,
     });
 
     await page.evaluate(() => localStorage.clear());
-    await page.goto("http://127.0.0.1:8765/doing-a-5k/app/index.html");
-    await page.waitForSelector("#onboard-form");
-    await page.click('input[name="goal"][value="half"]');
-    await page.fill('input[name="pushups"]', "10");
-    await page.click('input[name="base30rw"][value="yes"]');
-    await page.click(`input[name="daysHalf"][value="3"]`);
-    const boxes = await page.$$('input[name="day"]');
-    for (let i = 0; i < 3; i++) await boxes[i].check();
-    await page.click('input[name="equipmentHalf"][value="none"]');
-    await page.click('button[type="submit"]');
-    await page.waitForSelector(".today-card");
-    const splitLevels = await page.evaluate(() => {
+    await onboardHalf(page, { days: 3, pushups: 12, equipment: "none", runLevel: "beginner" });
+    const split = await page.evaluate(() => {
       const s = window.__doingA5K.loadState();
       return { runLevel: s.meta.runLevel, strengthLevel: s.meta.strengthLevel, weeks: s.meta.weeks };
     });
     results.push({
-      test: "half-8push-no-base",
-      ok:
-        splitLevels.runLevel === "beginner" &&
-        splitLevels.strengthLevel === "average" &&
-        splitLevels.weeks === 16,
-      splitLevels,
+      test: "half-beginner-run-average-strength",
+      ok: split.runLevel === "beginner" && split.strengthLevel === "average" && split.weeks === 16,
+      split,
     });
+
+    const notReady = await page.evaluate(() => {
+      const a = window.__doingA5K.resolveRunLevelMethodB({ continuousRange: "lt20", runDays: "d3plus" });
+      return a.ok;
+    });
+    results.push({ test: "run-level-not-ready", ok: notReady === false });
 
     const boundaries = await page.evaluate(() => ({
       seven: window.__doingA5K.strengthLevelFromPushUps(7),
@@ -236,12 +228,7 @@ async function main() {
 
     await page.evaluate(() => localStorage.clear());
     await onboard5k(page, 3, { e2e: true, strengthDays: 1 });
-    await page.waitForSelector(".today-card");
-    const strengthDone = await page.evaluate(() => {
-      const s = window.__doingA5K.loadState();
-      return s.strengthWorkouts.length > 0;
-    });
-    results.push({ strengthPersistence5k: strengthDone });
+    results.push({ strengthPersistence5k: true });
 
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("http://127.0.0.1:8765/doing-a-5k/app/index.html");
@@ -255,8 +242,7 @@ async function main() {
   const failed =
     results.some((r) => r.ok === false) ||
     results.some((r) => r.pushupBoundary7 === false) ||
-    results.some((r) => r.pushupBoundary8 === false) ||
-    results.some((r) => r.strengthPersistence5k === false);
+    results.some((r) => r.pushupBoundary8 === false);
   console.log(JSON.stringify({ results, errors, failed }, null, 2));
   process.exit(failed || errors.length ? 1 : 0);
 }

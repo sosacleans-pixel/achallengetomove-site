@@ -1,20 +1,52 @@
 # Doing a 5K - Half Marathon Plan (13.1 mi / 21.1 km)
 
-*Coach Salim Heyaime LLC - Doing a 5K app, half-marathon goal track. Version 1.0 (Oct 2026).*
+*Coach Salim Heyaime LLC - Doing a 5K app, half-marathon goal track. Version 2.0 (Oct 2026).*
 
 > **Important:** This program is general fitness education, not medical advice, diagnosis or treatment. Check with a doctor or qualified healthcare provider before starting, especially if you have a heart, lung, metabolic or joint condition, are pregnant or postpartum, take medication that affects heart rate or blood pressure, have been inactive for a long time, or have current pain or injury. Stop exercising right away and seek medical care if you have chest pain or pressure, unusual shortness of breath, dizziness or lightheadedness, fainting, an irregular or racing heartbeat, or sudden severe pain. You are responsible for exercising within your limits.
 
 ## How it works
 
-- **Choose your goal:** half marathon (this plan).
-- **Choose your days:** 3 or 4 running days per week, plus 1-2 short strength sessions.
-- **Choose your equipment:** none / dumbbells / kettlebells and essentials (step or bench, band, mat). Every strength movement has all three options.
-- **Take the level test:** Full push-ups from the toes on the floor (no knees). Body straight from head to heels, chest lowers to about a fist's height from the floor, arms fully straight at the top. Count clean reps until the first form break or a pause of more than 2 s.
+1. **Choose your goal:** half marathon (this plan).
+2. **Choose your days:** 3 or 4 running days per week, plus 1-2 short strength sessions.
+3. **Choose your equipment:** none / dumbbells / kettlebells and essentials. Every strength movement has all three options.
+   - *Essentials kit:* dumbbells, kettlebell(s), mini-band, long resistance band, sturdy step or bench, mat.
+   - *Optional extras:* foam roller, doorway pull-up bar, TRX/suspension straps (unlock pull-up and inverted-row options).
+4. **Set your RUN level** (picks the plan): continuous-run check, or answer two questions.
+5. **Set your STRENGTH level** (picks strength doses and push-up progression): max floor push-up test.
 
-| Push-up test (floor, no knees) | Level | Plan length |
+Run level and strength level are set **separately**; any combination is valid (e.g., Beginner run + Average strength).
+
+### Run level - option A: continuous-run check
+
+On a flat route or treadmill, run or jog at an easy, conversational pace (RPE 3-4, full sentences) for as long as you can without walking. Stop the clock at the first walk step or at 45 min. Stop immediately on any warning sign in the disclaimer. Then answer: are you running about 3 days a week now, and have you run 4 mi (6.4 km) or more in the past month?
+
+| Result | Run level | Plan |
 |---|---|---|
-| 0-7 | Beginner | 16 weeks |
-| 8+ | Average | 12 weeks |
+| Under 20 min continuous (and can't do 30 min of run-walk) | Not ready | Finish the 5K track first |
+| 20-39 min continuous, OR 30 min of run-walk | Beginner | 16 weeks |
+| 40+ min continuous, but not running ~3x/week or no recent 4 mi run | Beginner | 16 weeks |
+| 40+ min continuous AND running ~3x/week AND a 4 mi (6.4 km) run recently | Average | 12 weeks |
+
+### Run level - option B: no-test questions
+
+- *How long can you run without stopping?* <20 / 20-39 / 40+ min
+- *How many days a week do you run now?* 0-1 / 2 / 3+
+
+| Run without stopping | Days/week now | Run level | Plan |
+|---|---|---|---|
+| <20 min | any | Not ready | Finish the 5K track first |
+| 20-39 min | any | Beginner | 16 weeks |
+| 40+ min | 0-1 or 2 | Beginner | 16 weeks |
+| 40+ min | 3+ | Average | 12 weeks |
+
+### Strength level: max floor push-up test
+
+Full push-ups from the toes on the floor (no knees). Body straight from head to heels, chest lowers to about a fist's height from the floor, arms fully straight at the top. Count clean reps until the first form break or a pause of more than 2 s.
+
+| Push-ups (floor, no knees) | Strength level |
+|---|---|
+| 0-7 | Beginner strength |
+| 8+ | Average strength |
 
 ## 1. Prerequisites / readiness
 
@@ -23,17 +55,20 @@
 - Pain-free walking and easy running (no pain that makes you limp or change your stride).
 - Able to train 3 or 4 days per week for the full plan length (16 or 12 weeks), plus 1-2 short strength sessions.
 - Read and accept the medical disclaimer; get medical clearance if any item in it applies to you.
+- Run level (from the continuous-run check or the two questions) sets the plan. Strength level (push-up test) is separate and does not change the plan length.
 
-**Beginner (16 weeks):**
+**Not ready yet:**
 
-- Can run 30 min continuously at easy effort (RPE 3-4, full sentences) 3 times per week, OR can complete 30 min of run-walk (e.g., 4 min run / 1 min walk) comfortably.
+- Under 20 min of continuous easy running, and you can't complete 30 min of run-walk: you're not ready for this plan yet. Finish the 5K track in the Doing a 5K app first, then retake the run check.
+
+**Beginner run level (16 weeks):**
+
+- Run level Beginner: 20-39 min of continuous easy running, OR 30 min of run-walk (e.g., 4 min run / 1 min walk). Also Beginner: 40+ min continuous but not yet running about 3x/week or no recent 4 mi run.
 - Run-walk entrants: use run-walk on all easy and long runs in Weeks 1-4 and shift toward continuous running as it feels easy. Walk breaks remain allowed on long runs for the whole plan.
-- If you cannot yet complete 30 min of run-walk, finish the 5K track in the Doing a 5K app first, then come back to this plan.
 
-**Average (12 weeks):**
+**Average run level (12 weeks):**
 
-- Can run 30-40 min continuously at easy effort, has been running about 3 days per week for at least the last 4 weeks, and has done a run of at least 4 mi (6.4 km) in the past month.
-- Average is chosen by the push-up test (8+). If you scored 8+ but do NOT meet the running items above, use the Beginner 16-week plan and the Average strength progression.
+- Run level Average: 40+ min of continuous easy running AND currently running about 3 days a week AND a run of at least 4 mi (6.4 km) recently (past month). Question route: 40+ min AND 3+ days a week.
 - 4-day Average: you should already be running about 2 to 2.5 hours per week; if not, choose the 3-day version.
 
 ## 2. Effort guide (RPE + talk test)
@@ -64,7 +99,9 @@
 
 Est. min = estimated total weekly running minutes (see Assumptions). Change % = vs. the highest earlier non-cutback week.
 
-### Beginner - 3 days/week (16 weeks)
+### Beginner run level - 3 days/week (16 weeks)
+
+*Use the strength doses for YOUR strength level (push-up test), which may differ from your run level.*
 
 | Wk | Phase | Tue - Workout | Thu - Easy (RPE 3-4, full sentences) | Sat - Long run (RPE 3-4, full sentences) | Strength | Est. min | Change |
 |---|---|---|---|---|---|---|---|
@@ -89,7 +126,9 @@ Est. min = estimated total weekly running minutes (see Assumptions). Change % = 
 *Run-walk is always allowed on long runs; it is also allowed on easy runs in Weeks 1-4.*
 *Race week: Mon optional mobility only, Tue shakeout, Thu short easy run, Fri rest (optional 10 min walk + 3 relaxed strides), Sat race, Sun rest/walk.*
 
-### Beginner - 4 days/week (16 weeks)
+### Beginner run level - 4 days/week (16 weeks)
+
+*Use the strength doses for YOUR strength level (push-up test), which may differ from your run level.*
 
 | Wk | Phase | Tue - Workout | Thu - Easy (RPE 3-4, full sentences) | Fri - Recovery (RPE 2-3) | Sat - Long run (RPE 3-4, full sentences) | Strength | Est. min | Change |
 |---|---|---|---|---|---|---|---|---|
@@ -114,7 +153,9 @@ Est. min = estimated total weekly running minutes (see Assumptions). Change % = 
 *Run-walk is always allowed on long runs; it is also allowed on easy runs in Weeks 1-4.*
 *Race week: Mon optional mobility only, Tue shakeout, Thu short easy run, Fri 15 min shakeout with 3 relaxed strides, Sat race, Sun rest/walk.*
 
-### Average - 3 days/week (12 weeks)
+### Average run level - 3 days/week (12 weeks)
+
+*Use the strength doses for YOUR strength level (push-up test), which may differ from your run level.*
 
 | Wk | Phase | Tue - Workout | Thu - Easy (RPE 3-4, full sentences) | Sat - Long run (RPE 3-4, full sentences) | Strength | Est. min | Change |
 |---|---|---|---|---|---|---|---|
@@ -135,7 +176,9 @@ Est. min = estimated total weekly running minutes (see Assumptions). Change % = 
 *Weeks 7 and 9 long runs: optional last 1-2 mi (1.6-3.2 km) at steady RPE 5-6 only if you feel good.*
 *Race week: Mon optional mobility only, Tue shakeout, Thu short easy run, Fri rest (optional 10 min walk + 3 relaxed strides), Sat race, Sun rest/walk.*
 
-### Average - 4 days/week (12 weeks)
+### Average run level - 4 days/week (12 weeks)
+
+*Use the strength doses for YOUR strength level (push-up test), which may differ from your run level.*
 
 | Wk | Phase | Tue - Workout | Thu - Easy (RPE 3-4, full sentences) | Fri - Recovery (RPE 2-3) | Sat - Long run (RPE 3-4, full sentences) | Strength | Est. min | Change |
 |---|---|---|---|---|---|---|---|---|
@@ -213,9 +256,11 @@ Est. min = estimated total weekly running minutes (see Assumptions). Change % = 
 **Strength B:** A1 Lunge / split squat; A2 Push (variation or floor press); B-pair: Row + Glute bridge; C-pair: Side plank + Bent-knee calf raise / single-leg balance.  
 Do each pair back-to-back, rest, repeat for the prescribed sets. Total 20-30 min including warm-up.
 
+Strength phases follow the run plan you are on (Base/Build/Peak/Taper dates come from your run plan); doses come from your strength level.
+
 ### Phase dosing
 
-| Phase | Frequency | Beginner | Average |
+| Phase | Frequency | Beginner strength (0-7 push-ups) | Average strength (8+ push-ups) |
 |---|---|---|---|
 | Base | 2x/week (A Mon, B Thu); cutback weeks: A only | 2 sets x 10 reps (holds 2 x 20 s; carries 2 x 30 s per side; calves 2 x 12-15). RPE 5-6 (4+ reps left). Rest 45-60 s. | 2-3 sets x 10 reps (holds 2-3 x 30 s; carries 2-3 x 40 s per side; calves 2 x 15). RPE 6. Rest 60 s. |
 | Build | 2x/week; cutback weeks: A only, 1 fewer set | 3 sets x 8-10 reps (holds 3 x 30 s; calves 3 x 12-15). RPE 6-7 (3 reps left). Add load or a harder version when the top of the range feels easy. | 3 sets x 6-8 reps with heavier load (holds 3 x 40 s; calves 3 x 12-15 single-leg). RPE 7 (2-3 reps left). Rest 60-90 s. |
@@ -226,21 +271,21 @@ Do each pair back-to-back, rest, repeat for the prescribed sets. Total 20-30 min
 
 ### Movements and equipment swaps
 
-| Movement | Session | No equipment | Dumbbells | Kettlebells + essentials | Beginner | Average |
-|---|---|---|---|---|---|---|
-| Squat | A | Box/chair squat (sit to a sturdy chair and stand) -> bodyweight squat -> tempo squat (3 s down) | Goblet squat holding one dumbbell at the chest | Kettlebell goblet squat (hold the bell by the horns) | Start with box squat; move to free squat once 2 x 12 feels RPE 5. | Goblet squat with load; bodyweight-only users use tempo or 1.5-rep squats. |
-| Hinge | A | Hip hinge drill (hands on hips, push hips back) -> single-leg RDL reach (fingertip on wall OK) | Dumbbell Romanian deadlift (two dumbbells) | Kettlebell deadlift (bell between feet) -> kettlebell Romanian deadlift | Learn the hinge with a flat back first; light load only. | RDL with load; in Build, a two-hand kettlebell swing (3 x 10-12) may replace the RDL if your hinge is solid. |
-| Lunge / split squat | B | Split squat holding a wall or chair -> reverse lunge | Dumbbell split squat -> dumbbell reverse lunge (dumbbells at sides) | Goblet split squat -> goblet reverse lunge | Stationary split squat with support; short range is fine at first. | Reverse lunge with load; in Build, rear-foot-elevated split squat (back foot on a bench/step) if you have one. |
-| Push (tied to the push-up test) | A and B | Push-up progression (see table below) | Dumbbell floor press (lying on floor) as a swap or second push exercise | Single-arm kettlebell floor press | Use the incline level that matches your test score. | Floor push-ups; progress with tempo, pauses or feet elevated. |
-| Row / pull | A and B | Prone Y-T raises on the floor (thumbs up, squeeze shoulder blades); with a band: band row or band pull-apart | One-arm dumbbell row with a hand on a bench or sturdy chair | One-arm kettlebell row -> (Average) kettlebell gorilla row with two bells | Light load, pause 1 s at the top. | Heavier rows, 6-8 reps in Build. |
-| Calf / foot | A (straight-knee) and B (bent-knee + balance) | Double-leg calf raise -> single-leg calf raise off a step (2 s up, 2 s down); bent-knee calf raise; single-leg balance 30 s | Same, holding a dumbbell in one hand (other hand on a wall) | Same, holding a kettlebell; balance on a folded mat for challenge | Double-leg first, slow lowering. Calves always use higher reps (12-20). | Single-leg from Week 1; add load in Build. |
-| Core anti-rotation | A | Bird dog (slow, 2 s hold) -> plank shoulder taps (feet wide) | Suitcase hold or suitcase carry (one dumbbell, walk tall without leaning) | Kettlebell suitcase carry; with a band: half-kneeling Pallof press | Bird dog or suitcase hold. | Shoulder taps, heavier carries, or plank pull-through (drag a dumbbell/kettlebell under the body). |
-| Hip stability - glute bridge | B | Glute bridge -> single-leg glute bridge | Glute bridge with a dumbbell on the hips | Glute bridge with a kettlebell on the hips; mini-band around knees option | Two-leg bridge, 2 s squeeze at the top. | Single-leg bridge, or loaded hip thrust with shoulders on a bench. |
-| Hip stability - side plank | B | Side plank from knees -> full side plank -> side plank with top-leg lift | Same (no load needed); swap: side-lying hip abduction | Same; with a mini-band: lateral band walk as a swap | Knee side plank, build to 30 s. | Full side plank, add top-leg lift in Build. |
+| Movement | Session | No equipment | Dumbbells | Kettlebells + essentials | Optional extras | Beginner strength | Average strength |
+|---|---|---|---|---|---|---|---|
+| Squat | A | Box/chair squat (sit to a sturdy chair and stand) -> bodyweight squat -> tempo squat (3 s down) | Goblet squat holding one dumbbell at the chest | Kettlebell goblet squat (hold the bell by the horns) | - | Start with box squat; move to free squat once 2 x 12 feels RPE 5. | Goblet squat with load; bodyweight-only users use tempo or 1.5-rep squats. |
+| Hinge | A | Hip hinge drill (hands on hips, push hips back) -> single-leg RDL reach (fingertip on wall OK) | Dumbbell Romanian deadlift (two dumbbells) | Kettlebell deadlift (bell between feet) -> kettlebell Romanian deadlift | - | Learn the hinge with a flat back first; light load only. | RDL with load; in Build, a two-hand kettlebell swing (3 x 10-12) may replace the RDL if your hinge is solid. |
+| Lunge / split squat | B | Split squat holding a wall or chair -> reverse lunge | Dumbbell split squat -> dumbbell reverse lunge (dumbbells at sides) | Goblet split squat -> goblet reverse lunge | Suspension straps: strap-assisted split squat or reverse lunge for balance (Beginner strength). | Stationary split squat with support; short range is fine at first. | Reverse lunge with load; in Build, rear-foot-elevated split squat (back foot on a bench/step) if you have one. |
+| Push (tied to the push-up test) | A and B | Push-up progression (see table below) | Dumbbell floor press (lying on floor) as a swap or second push exercise | Single-arm kettlebell floor press | Suspension straps: strap push-up / chest press (more upright = easier) as an incline option. | Use the incline level that matches your test score. | Floor push-ups; progress with tempo, pauses or feet elevated. |
+| Row / pull | A and B | Prone Y-T raises on the floor (thumbs up, squeeze shoulder blades) | One-arm dumbbell row with a hand on a bench or sturdy chair | One-arm kettlebell row or band row -> (Average) kettlebell gorilla row with two bells | Suspension straps: inverted row (more upright = easier). Doorway pull-up bar: dead hang 20-30 s, band-assisted pull-up or slow negatives (Beginner strength), pull-ups or chin-ups for sets of 3-6 (Average strength). | Light load, pause 1 s at the top. | Heavier rows, 6-8 reps in Build. |
+| Calf / foot | A (straight-knee) and B (bent-knee + balance) | Double-leg calf raise -> single-leg calf raise off a step (2 s up, 2 s down); bent-knee calf raise; single-leg balance 30 s | Same, holding a dumbbell in one hand (other hand on a wall) | Same, holding a kettlebell; balance on a folded mat for challenge | - | Double-leg first, slow lowering. Calves always use higher reps (12-20). | Single-leg from Week 1; add load in Build. |
+| Core anti-rotation | A | Bird dog (slow, 2 s hold) -> plank shoulder taps (feet wide) | Suitcase hold or suitcase carry (one dumbbell, walk tall without leaning) | Kettlebell suitcase carry; long band: half-kneeling Pallof press | - | Bird dog or suitcase hold. | Shoulder taps, heavier carries, or plank pull-through (drag a dumbbell/kettlebell under the body). |
+| Hip stability - glute bridge | B | Glute bridge -> single-leg glute bridge | Glute bridge with a dumbbell on the hips | Glute bridge with a kettlebell on the hips; mini-band around knees option | - | Two-leg bridge, 2 s squeeze at the top. | Single-leg bridge, or loaded hip thrust with shoulders on a bench. |
+| Hip stability - side plank | B | Side plank from knees -> full side plank -> side plank with top-leg lift | Same (no load needed); swap: side-lying hip abduction | Same; mini-band: lateral band walk as a swap | Foam roller is optional for easy rolling after runs; it does not replace strength work. | Knee side plank, build to 30 s. | Full side plank, add top-leg lift in Build. |
 
 ### Push-up progression (from your test score)
 
-| Level | Test score | Exercise | Notes |
+| Strength level | Test score | Exercise | Notes |
 |---|---|---|---|
 | Beginner | 0-2 | Incline push-up, hands on a kitchen counter | Body straight; progress to a lower surface when you hit the top of the rep range at RPE 6. |
 | Beginner | 3-5 | Incline push-up, hands on a sturdy bench or chair (against a wall) | Add 1 set of 2-3 floor push-up negatives (lower over 3-5 s) in Build. |
@@ -283,19 +328,22 @@ Do each pair back-to-back, rest, repeat for the prescribed sets. Total 20-30 min
 - Warning signs - stop the run and rest: pain that makes you limp or change your stride; pain that gets worse as you run; sharp or pinpoint pain on a bone; swelling, numbness or tingling; pain that wakes you at night or lasts more than 2-3 days.
 - If a warning sign appears, take 2-3 days off running (walking and upper-body strength are OK if pain-free). If it hasn't clearly improved, see a qualified healthcare provider. This plan cannot diagnose pain or injuries.
 
-### Push-up retest (optional, every 4 weeks)
+### Optional retest (cutback weeks)
 
-- Optional: redo the max floor push-up test every 4 weeks, on Monday of a cutback week before Strength A (Beginner Weeks 4, 8, 12; Average Weeks 4 and 8).
-- If a Beginner scores 8+, switch to the Average push-up progression and Average strength doses. Do NOT switch the running plan mid-way; the run plan stays the one you started.
-- Use the new score to pick your push-up level from the table.
+- Optional: on Monday of a cutback week (Beginner run plan Weeks 4, 8, 12; Average run plan Weeks 4 and 8), redo the max floor push-up test before Strength A, and do the continuous-run check in place of that week's Thursday easy run (stop at 45 min or at the easy run's planned minutes + 10, whichever is shorter).
+- Strength level changes apply right away: if a Beginner-strength athlete scores 8+, switch to the Average strength doses and push-up progression; if a score drops below 8, it's fine to stay or step back.
+- Run level changes only apply when you start a new plan. Never switch running plans mid-way; finish the plan you started (or pause it) and use the new run level for the next one.
+- Use the newest push-up score to pick your push-up level from the table.
 
 ## Assumptions
 
-- Weekly volume is tracked as estimated run minutes: easy/workout/recovery minutes as written plus long-run miles x an assumed pace (Beginner 13:00 min/mi, Average 11:00 min/mi). The ~10% rule is checked against the highest previous non-cutback week; cutback and taper weeks are deliberate drops, and race week is excluded (the race is the event).
+- Weekly volume is tracked as estimated run minutes: easy/workout/recovery minutes as written plus long-run miles x an assumed pace (Beginner run level 13:00 min/mi, Average run level 11:00 min/mi). The ~10% rule is checked against the highest previous non-cutback week; cutback and taper weeks are deliberate drops, and race week is excluded (the race is the event).
 - Race-week estimates assume race pace of 12:00 min/mi (Beginner) and 10:00 min/mi (Average) for display only.
 - Standard week: Mon Strength A, Tue Workout, Wed Rest, Thu Easy (+ Strength B), Fri Rest (3-day) or Recovery run (4-day), Sat Long run, Sun Rest. Day names are suggestions; keep the order and spacing.
-- 'Kettlebells and other essentials' is assumed to mean kettlebell(s) plus a sturdy step/bench, a mini-band or resistance band, and a mat.
-- Average plan assumes current running base (see prerequisites) because the level test measures upper-body strength, not running fitness.
+- Run level and strength level are independent. Plan names (Beginner/Average, 16/12 weeks) refer to RUN level; strength tables have separate Beginner-strength and Average-strength columns.
+- Equipment 'kettlebells and essentials' = the approved essentials kit: dumbbells, kettlebell(s), mini-band, long resistance band, sturdy step or bench, mat. Optional extras (foam roller, doorway pull-up bar, TRX/suspension straps) only add alternatives; nothing in the plan requires them.
+- Continuous-run check is capped at 45 min (40+ is all that matters for leveling). Someone under 20 min continuous who can complete 30 min of run-walk is Beginner; the question route has no run-walk item, so <20 min there routes to the 5K track.
+- During a retest, the run check replaces that week's Thursday easy run; this can add up to about 10 min in a cutback week, which stays well below the surrounding build weeks.
 - Conversions use 1 mi = 1.609344 km, rounded to 0.1 km.
 
 ---

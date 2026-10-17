@@ -12,6 +12,7 @@ export const COACH_DISCLAIMER = coach.disclaimer;
 export const COACH_EFFORT_GUIDE = coach.effort_guide;
 export const COACH_PHASES = coach.phases;
 export const COACH_PREREQUISITES = coach.prerequisites;
+export const COACH_ONBOARDING = coach.meta.onboarding;
 
 export const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -44,16 +45,37 @@ export function strengthLevelFromPushUps(count) {
   return n >= 8 ? "average" : "beginner";
 }
 
-/** Running-base + push-ups → run plan level and strength level. */
-export function resolveHalfPlacement(pushups, runningBase) {
-  const strengthLevel = strengthLevelFromPushUps(pushups);
-  if (!runningBase?.can30RunWalk) {
-    return { ok: false, strengthLevel, runLevel: "beginner", reason: "5k-first" };
+/** Method A: continuous-run check + follow-up questions (v2). */
+export function resolveRunLevelMethodA({ continuousMin, can30RunWalk, runs3Days, recent4Mi }) {
+  const mins = Number(continuousMin);
+  if (Number.isNaN(mins) || mins < 0) return { ok: false, runLevel: null };
+  if (mins < 20) {
+    if (!can30RunWalk) return { ok: false, runLevel: null };
+    return { ok: true, runLevel: "beginner" };
   }
-  const avgBase =
-    runningBase.threePerWeek4Weeks && runningBase.recent4Mi && runningBase.continuous30_40;
-  const runLevel = pushups >= 8 && avgBase ? "average" : "beginner";
-  return { ok: true, strengthLevel, runLevel };
+  if (mins < 40) return { ok: true, runLevel: "beginner" };
+  if (runs3Days && recent4Mi) return { ok: true, runLevel: "average" };
+  return { ok: true, runLevel: "beginner" };
+}
+
+/** Method B: two quick questions (v2). */
+export function resolveRunLevelMethodB({ continuousRange, runDays }) {
+  if (continuousRange === "lt20") return { ok: false, runLevel: null };
+  if (continuousRange === "m20_39") return { ok: true, runLevel: "beginner" };
+  if (continuousRange === "m40plus" && runDays === "d3plus") {
+    return { ok: true, runLevel: "average" };
+  }
+  if (continuousRange === "m40plus") return { ok: true, runLevel: "beginner" };
+  return { ok: false, runLevel: null };
+}
+
+export function resolveHalfPlacement({ method, runInput, pushups }) {
+  const strengthLevel = strengthLevelFromPushUps(pushups);
+  const run =
+    method === "b"
+      ? resolveRunLevelMethodB(runInput)
+      : resolveRunLevelMethodA(runInput);
+  return { ...run, strengthLevel };
 }
 
 export function getCoachPlanVariant(runLevel, daysPerWeek) {
@@ -178,12 +200,10 @@ function sessionSummary(sess, units) {
   return `${sess.duration_min || ""} min · RPE ${sess.effort_rpe} · ${sess.talk_test}`;
 }
 
-export function mapEquipmentToCoach(appEquipment = []) {
-  const set = new Set(appEquipment);
-  if (set.has("kettlebells_essentials")) return ["kettlebells_essentials"];
-  if (set.has("kettlebell") || (set.has("bench") && set.has("bands"))) return ["kettlebells_essentials"];
-  if (set.has("dumbbells")) return ["dumbbells"];
-  return ["none"];
+export function normalizeHalfEquipment(equipment) {
+  if (equipment?.kit) return equipment;
+  const kit = Array.isArray(equipment) ? equipment[0] || "none" : "none";
+  return { kit, optional: [] };
 }
 
 export function generateHalfPlan({
@@ -194,7 +214,7 @@ export function generateHalfPlan({
   startDateISO,
   name,
   strengthPreferredDays,
-  equipment = ["none"],
+  equipment = { kit: "none", optional: [] },
   units = "mi",
   raceDateISO = "",
   pushups = 5,
@@ -206,7 +226,7 @@ export function generateHalfPlan({
   const weeks = planVariant.weeks_total;
   const longRuns = planVariant.weeks.map((w) => w.long_run_km);
   const runDays = preferredDays.slice(0, daysPerWeek);
-  const coachEq = mapEquipmentToCoach(equipment);
+  const coachEq = normalizeHalfEquipment(equipment);
 
   let strengthDays = strengthPreferredDays?.length
     ? strengthPreferredDays.slice(0, 2)
@@ -270,7 +290,8 @@ export function generateHalfPlan({
       totalSessions: workouts.length,
       strengthDaysPerWeek: maxStrengthSlots,
       strengthPreferredDays: strengthDays.slice(0, 2),
-      equipment: coachEq,
+      equipment: coachEq.kit,
+      equipmentOptional: coachEq.optional,
       units,
       pushups: Number(pushups) || 0,
       runningBase,
@@ -308,7 +329,10 @@ export function replanHalfFromWeek(state, fromWeekIndex) {
     startDateISO: meta.startDateISO,
     name: meta.name,
     strengthPreferredDays: meta.strengthPreferredDays,
-    equipment: meta.equipment || ["none"],
+    equipment: normalizeHalfEquipment({
+      kit: meta.equipment || meta.equipmentKit || "none",
+      optional: meta.equipmentOptional || [],
+    }),
     units: meta.units || "mi",
     raceDateISO: meta.raceDateISO || "",
     pushups: meta.pushups ?? 5,

@@ -172,17 +172,43 @@ for p in PLANS:
     print(p["id"],[ (w["week"],w["est_total_run_minutes"],w.get("pct_vs_prior_peak_week")) for w in p["weeks"]])
 
 # ---------------- Static content ----------------
+PUSHUP_RULES = "Full push-ups from the toes on the floor (no knees). Body straight from head to heels, chest lowers to about a fist's height from the floor, arms fully straight at the top. Count clean reps until the first form break or a pause of more than 2 s."
+RUNCHECK_RULES = "On a flat route or treadmill, run or jog at an easy, conversational pace (RPE 3-4, full sentences) for as long as you can without walking. Stop the clock at the first walk step or at 45 min. Stop immediately on any warning sign in the disclaimer."
 META = dict(
  program="Doing a 5K - Half Marathon Goal",
  publisher="Coach Salim Heyaime LLC",
  goal_distance=dict(mi=13.1,km=21.1),
- version="1.0", date="2026-10-17",
+ version="2.0", date="2026-10-17",
  onboarding=dict(
+   order=["goal","days_per_week","equipment","run_level","strength_level"],
+   days_per_week_options=[3,4],
    equipment_options=["none","dumbbells","kettlebells_and_essentials"],
-   equipment_essentials_assumed=["sturdy step, box or bench","mini-band or long resistance band","exercise mat"],
-   level_test=dict(name="Max floor push-up test",rules="Full push-ups from the toes on the floor (no knees). Body straight from head to heels, chest lowers to about a fist's height from the floor, arms fully straight at the top. Count clean reps until the first form break or a pause of more than 2 s.",
-      scoring=[dict(range="0-7",level="Beginner",plan_weeks=16),dict(range="8+",level="Average",plan_weeks=12)]),
-   days_per_week_options=[3,4]),
+   equipment_essentials_kit=["dumbbells","kettlebell(s)","mini-band","long resistance band","sturdy step or bench","exercise mat"],
+   equipment_optional=["foam roller","doorway pull-up bar","TRX/suspension straps"],
+   equipment_note="'Kettlebells and essentials' means the full essentials kit. Optional items unlock extra pull-up, inverted-row and assisted options; ask as a separate multi-select.",
+   levels_independent=True,
+   levels_note="Run level and strength level are set separately. Run level picks the plan length (16 or 12 weeks); strength level picks the strength doses and push-up progression. Any combination is valid, e.g. Beginner run + Average strength.",
+   run_level=dict(
+     sets="running plan (Beginner 16 weeks / Average 12 weeks)",
+     method_a=dict(name="Continuous-run check",rules=RUNCHECK_RULES,
+       extra_questions=["Are you currently running about 3 days a week? (yes/no)","Have you run 4 mi (6.4 km) or more in the past month? (yes/no)"],
+       scoring=[
+         dict(result="Under 20 min continuous (and cannot complete 30 min of run-walk)",run_level="Not ready",action="Finish the 5K track in the Doing a 5K app first, then retake the check."),
+         dict(result="20-39 min continuous, OR 30 min of run-walk (e.g., 4 min run / 1 min walk)",run_level="Beginner",plan_weeks=16),
+         dict(result="40+ min continuous AND currently running about 3x/week AND a 4 mi (6.4 km) run recently",run_level="Average",plan_weeks=12),
+         dict(result="40+ min continuous but missing either of the other two",run_level="Beginner",plan_weeks=16)]),
+     method_b=dict(name="No-test questions",
+       questions=[dict(id="continuous_run_min",text="How long can you run without stopping?",options=["<20 min","20-39 min","40+ min"]),
+                  dict(id="run_days_now",text="How many days a week do you run now?",options=["0-1","2","3+"])],
+       scoring=[
+         dict(result="<20 min (any days)",run_level="Not ready",action="Finish the 5K track in the Doing a 5K app first."),
+         dict(result="20-39 min (any days)",run_level="Beginner",plan_weeks=16),
+         dict(result="40+ min AND 0-1 or 2 days",run_level="Beginner",plan_weeks=16),
+         dict(result="40+ min AND 3+ days",run_level="Average",plan_weeks=12)])),
+   strength_level=dict(
+     sets="strength doses and push-up progression (Beginner strength / Average strength)",
+     test=dict(name="Max floor push-up test",rules=PUSHUP_RULES,
+       scoring=[dict(range="0-7",strength_level="Beginner"),dict(range="8+",strength_level="Average")]))),
 )
 DISCLAIMER = ("This program is general fitness education, not medical advice, diagnosis or treatment. Check with a doctor or qualified "
  "healthcare provider before starting, especially if you have a heart, lung, metabolic or joint condition, are pregnant or postpartum, "
@@ -192,12 +218,12 @@ DISCLAIMER = ("This program is general fitness education, not medical advice, di
 PREREQ = dict(
  all=["Pain-free walking and easy running (no pain that makes you limp or change your stride).",
       "Able to train 3 or 4 days per week for the full plan length (16 or 12 weeks), plus 1-2 short strength sessions.",
-      "Read and accept the medical disclaimer; get medical clearance if any item in it applies to you."],
- beginner=["Can run 30 min continuously at easy effort (RPE 3-4, full sentences) 3 times per week, OR can complete 30 min of run-walk (e.g., 4 min run / 1 min walk) comfortably.",
-      "Run-walk entrants: use run-walk on all easy and long runs in Weeks 1-4 and shift toward continuous running as it feels easy. Walk breaks remain allowed on long runs for the whole plan.",
-      "If you cannot yet complete 30 min of run-walk, finish the 5K track in the Doing a 5K app first, then come back to this plan."],
- average=["Can run 30-40 min continuously at easy effort, has been running about 3 days per week for at least the last 4 weeks, and has done a run of at least 4 mi (6.4 km) in the past month.",
-      "Average is chosen by the push-up test (8+). If you scored 8+ but do NOT meet the running items above, use the Beginner 16-week plan and the Average strength progression.",
+      "Read and accept the medical disclaimer; get medical clearance if any item in it applies to you.",
+      "Run level (from the continuous-run check or the two questions) sets the plan. Strength level (push-up test) is separate and does not change the plan length."],
+ not_ready=["Under 20 min of continuous easy running, and you can't complete 30 min of run-walk: you're not ready for this plan yet. Finish the 5K track in the Doing a 5K app first, then retake the run check."],
+ beginner=["Run level Beginner: 20-39 min of continuous easy running, OR 30 min of run-walk (e.g., 4 min run / 1 min walk). Also Beginner: 40+ min continuous but not yet running about 3x/week or no recent 4 mi run.",
+      "Run-walk entrants: use run-walk on all easy and long runs in Weeks 1-4 and shift toward continuous running as it feels easy. Walk breaks remain allowed on long runs for the whole plan."],
+ average=["Run level Average: 40+ min of continuous easy running AND currently running about 3 days a week AND a run of at least 4 mi (6.4 km) recently (past month). Question route: 40+ min AND 3+ days a week.",
       "4-day Average: you should already be running about 2 to 2.5 hours per week; if not, choose the 3-day version."],
 )
 EFFORT = [
@@ -239,18 +265,21 @@ MOVES = [
    bodyweight="Split squat holding a wall or chair -> reverse lunge",
    dumbbell="Dumbbell split squat -> dumbbell reverse lunge (dumbbells at sides)",
    kettlebell="Goblet split squat -> goblet reverse lunge",
+   optional="Suspension straps: strap-assisted split squat or reverse lunge for balance (Beginner strength).",
    beginner="Stationary split squat with support; short range is fine at first.",
    average="Reverse lunge with load; in Build, rear-foot-elevated split squat (back foot on a bench/step) if you have one."),
  dict(pattern="Push (tied to the push-up test)",session="A and B",
    bodyweight="Push-up progression (see table below)",
    dumbbell="Dumbbell floor press (lying on floor) as a swap or second push exercise",
    kettlebell="Single-arm kettlebell floor press",
+   optional="Suspension straps: strap push-up / chest press (more upright = easier) as an incline option.",
    beginner="Use the incline level that matches your test score.",
    average="Floor push-ups; progress with tempo, pauses or feet elevated."),
  dict(pattern="Row / pull",session="A and B",
-   bodyweight="Prone Y-T raises on the floor (thumbs up, squeeze shoulder blades); with a band: band row or band pull-apart",
+   bodyweight="Prone Y-T raises on the floor (thumbs up, squeeze shoulder blades)",
    dumbbell="One-arm dumbbell row with a hand on a bench or sturdy chair",
-   kettlebell="One-arm kettlebell row -> (Average) kettlebell gorilla row with two bells",
+   kettlebell="One-arm kettlebell row or band row -> (Average) kettlebell gorilla row with two bells",
+   optional="Suspension straps: inverted row (more upright = easier). Doorway pull-up bar: dead hang 20-30 s, band-assisted pull-up or slow negatives (Beginner strength), pull-ups or chin-ups for sets of 3-6 (Average strength).",
    beginner="Light load, pause 1 s at the top.",
    average="Heavier rows, 6-8 reps in Build."),
  dict(pattern="Calf / foot",session="A (straight-knee) and B (bent-knee + balance)",
@@ -262,7 +291,7 @@ MOVES = [
  dict(pattern="Core anti-rotation",session="A",
    bodyweight="Bird dog (slow, 2 s hold) -> plank shoulder taps (feet wide)",
    dumbbell="Suitcase hold or suitcase carry (one dumbbell, walk tall without leaning)",
-   kettlebell="Kettlebell suitcase carry; with a band: half-kneeling Pallof press",
+   kettlebell="Kettlebell suitcase carry; long band: half-kneeling Pallof press",
    beginner="Bird dog or suitcase hold.",
    average="Shoulder taps, heavier carries, or plank pull-through (drag a dumbbell/kettlebell under the body)."),
  dict(pattern="Hip stability - glute bridge",session="B",
@@ -274,7 +303,8 @@ MOVES = [
  dict(pattern="Hip stability - side plank",session="B",
    bodyweight="Side plank from knees -> full side plank -> side plank with top-leg lift",
    dumbbell="Same (no load needed); swap: side-lying hip abduction",
-   kettlebell="Same; with a mini-band: lateral band walk as a swap",
+   kettlebell="Same; mini-band: lateral band walk as a swap",
+   optional="Foam roller is optional for easy rolling after runs; it does not replace strength work.",
    beginner="Knee side plank, build to 30 s.",
    average="Full side plank, add top-leg lift in Build."),
 ]
@@ -332,17 +362,20 @@ NOTES = dict(
   "Normal: general muscle soreness that fades within 1-2 days and doesn't change how you run.",
   "Warning signs - stop the run and rest: pain that makes you limp or change your stride; pain that gets worse as you run; sharp or pinpoint pain on a bone; swelling, numbness or tingling; pain that wakes you at night or lasts more than 2-3 days.",
   "If a warning sign appears, take 2-3 days off running (walking and upper-body strength are OK if pain-free). If it hasn't clearly improved, see a qualified healthcare provider. This plan cannot diagnose pain or injuries."],
- pushup_retest=[
-  "Optional: redo the max floor push-up test every 4 weeks, on Monday of a cutback week before Strength A (Beginner Weeks 4, 8, 12; Average Weeks 4 and 8).",
-  "If a Beginner scores 8+, switch to the Average push-up progression and Average strength doses. Do NOT switch the running plan mid-way; the run plan stays the one you started.",
-  "Use the new score to pick your push-up level from the table."],
+ retest=[
+  "Optional: on Monday of a cutback week (Beginner run plan Weeks 4, 8, 12; Average run plan Weeks 4 and 8), redo the max floor push-up test before Strength A, and do the continuous-run check in place of that week's Thursday easy run (stop at 45 min or at the easy run's planned minutes + 10, whichever is shorter).",
+  "Strength level changes apply right away: if a Beginner-strength athlete scores 8+, switch to the Average strength doses and push-up progression; if a score drops below 8, it's fine to stay or step back.",
+  "Run level changes only apply when you start a new plan. Never switch running plans mid-way; finish the plan you started (or pause it) and use the new run level for the next one.",
+  "Use the newest push-up score to pick your push-up level from the table."],
 )
 ASSUMPTIONS = [
- "Weekly volume is tracked as estimated run minutes: easy/workout/recovery minutes as written plus long-run miles x an assumed pace (Beginner 13:00 min/mi, Average 11:00 min/mi). The ~10% rule is checked against the highest previous non-cutback week; cutback and taper weeks are deliberate drops, and race week is excluded (the race is the event).",
+ "Weekly volume is tracked as estimated run minutes: easy/workout/recovery minutes as written plus long-run miles x an assumed pace (Beginner run level 13:00 min/mi, Average run level 11:00 min/mi). The ~10% rule is checked against the highest previous non-cutback week; cutback and taper weeks are deliberate drops, and race week is excluded (the race is the event).",
  "Race-week estimates assume race pace of 12:00 min/mi (Beginner) and 10:00 min/mi (Average) for display only.",
  "Standard week: Mon Strength A, Tue Workout, Wed Rest, Thu Easy (+ Strength B), Fri Rest (3-day) or Recovery run (4-day), Sat Long run, Sun Rest. Day names are suggestions; keep the order and spacing.",
- "'Kettlebells and other essentials' is assumed to mean kettlebell(s) plus a sturdy step/bench, a mini-band or resistance band, and a mat.",
- "Average plan assumes current running base (see prerequisites) because the level test measures upper-body strength, not running fitness.",
+ "Run level and strength level are independent. Plan names (Beginner/Average, 16/12 weeks) refer to RUN level; strength tables have separate Beginner-strength and Average-strength columns.",
+ "Equipment 'kettlebells and essentials' = the approved essentials kit: dumbbells, kettlebell(s), mini-band, long resistance band, sturdy step or bench, mat. Optional extras (foam roller, doorway pull-up bar, TRX/suspension straps) only add alternatives; nothing in the plan requires them.",
+ "Continuous-run check is capped at 45 min (40+ is all that matters for leveling). Someone under 20 min continuous who can complete 30 min of run-walk is Beginner; the question route has no run-walk item, so <20 min there routes to the 5K track.",
+ "During a retest, the run check replaces that week's Thursday easy run; this can add up to about 10 min in a cutback week, which stays well below the surrounding build weeks.",
  "Conversions use 1 mi = 1.609344 km, rounded to 0.1 km.",
 ]
 
@@ -369,15 +402,22 @@ with open("/workspace/doing-a-5k/half-marathon-plan.json","w") as f: json.dump(D
 # ---------------- Markdown ----------------
 L=[]; a=L.append
 a("# Doing a 5K - Half Marathon Plan (13.1 mi / 21.1 km)\n")
-a("*Coach Salim Heyaime LLC - Doing a 5K app, half-marathon goal track. Version 1.0 (Oct 2026).*\n")
+a("*Coach Salim Heyaime LLC - Doing a 5K app, half-marathon goal track. Version 2.0 (Oct 2026).*\n")
 a("> **Important:** "+DISCLAIMER+"\n")
 a("## How it works\n")
-a("- **Choose your goal:** half marathon (this plan).\n- **Choose your days:** 3 or 4 running days per week, plus 1-2 short strength sessions.\n- **Choose your equipment:** none / dumbbells / kettlebells and essentials (step or bench, band, mat). Every strength movement has all three options.\n- **Take the level test:** "+META["onboarding"]["level_test"]["rules"]+"\n")
-a("| Push-up test (floor, no knees) | Level | Plan length |\n|---|---|---|\n| 0-7 | Beginner | 16 weeks |\n| 8+ | Average | 12 weeks |\n")
+a("1. **Choose your goal:** half marathon (this plan).\n2. **Choose your days:** 3 or 4 running days per week, plus 1-2 short strength sessions.\n3. **Choose your equipment:** none / dumbbells / kettlebells and essentials. Every strength movement has all three options.\n   - *Essentials kit:* dumbbells, kettlebell(s), mini-band, long resistance band, sturdy step or bench, mat.\n   - *Optional extras:* foam roller, doorway pull-up bar, TRX/suspension straps (unlock pull-up and inverted-row options).\n4. **Set your RUN level** (picks the plan): continuous-run check, or answer two questions.\n5. **Set your STRENGTH level** (picks strength doses and push-up progression): max floor push-up test.\n")
+a("Run level and strength level are set **separately**; any combination is valid (e.g., Beginner run + Average strength).\n")
+a("### Run level - option A: continuous-run check\n\n"+RUNCHECK_RULES+" Then answer: are you running about 3 days a week now, and have you run 4 mi (6.4 km) or more in the past month?\n")
+a("| Result | Run level | Plan |\n|---|---|---|\n| Under 20 min continuous (and can't do 30 min of run-walk) | Not ready | Finish the 5K track first |\n| 20-39 min continuous, OR 30 min of run-walk | Beginner | 16 weeks |\n| 40+ min continuous, but not running ~3x/week or no recent 4 mi run | Beginner | 16 weeks |\n| 40+ min continuous AND running ~3x/week AND a 4 mi (6.4 km) run recently | Average | 12 weeks |\n")
+a("### Run level - option B: no-test questions\n\n- *How long can you run without stopping?* <20 / 20-39 / 40+ min\n- *How many days a week do you run now?* 0-1 / 2 / 3+\n")
+a("| Run without stopping | Days/week now | Run level | Plan |\n|---|---|---|---|\n| <20 min | any | Not ready | Finish the 5K track first |\n| 20-39 min | any | Beginner | 16 weeks |\n| 40+ min | 0-1 or 2 | Beginner | 16 weeks |\n| 40+ min | 3+ | Average | 12 weeks |\n")
+a("### Strength level: max floor push-up test\n\n"+PUSHUP_RULES+"\n")
+a("| Push-ups (floor, no knees) | Strength level |\n|---|---|\n| 0-7 | Beginner strength |\n| 8+ | Average strength |\n")
 a("## 1. Prerequisites / readiness\n")
 a("**Everyone:**\n"); [a(f"- {x}") for x in PREREQ["all"]]; a("")
-a("**Beginner (16 weeks):**\n"); [a(f"- {x}") for x in PREREQ["beginner"]]; a("")
-a("**Average (12 weeks):**\n"); [a(f"- {x}") for x in PREREQ["average"]]; a("")
+a("**Not ready yet:**\n"); [a(f"- {x}") for x in PREREQ["not_ready"]]; a("")
+a("**Beginner run level (16 weeks):**\n"); [a(f"- {x}") for x in PREREQ["beginner"]]; a("")
+a("**Average run level (12 weeks):**\n"); [a(f"- {x}") for x in PREREQ["average"]]; a("")
 a("## 2. Effort guide (RPE + talk test)\n")
 a("| RPE | Name | Talk test | Used for |\n|---|---|---|---|")
 for e in EFFORT: a(f"| {e['rpe']} | {e['label']} | {e['talk_test']} | {e['used_for']} |")
@@ -391,7 +431,8 @@ def wo_cell(s):
     return f"{s['duration_min']} min - {s['workout_id']} {s['name']}: WU {s['warmup'].split(' min')[0]} / {s['main'].rsplit(' (',1)[0]} / CD {s['cooldown'].split(' min')[0]} (RPE {s['effort_rpe']})"
 for p in PLANS:
     four = p["days_per_week"]==4
-    a(f"### {p['level']} - {p['days_per_week']} days/week ({p['weeks_total']} weeks)\n")
+    a(f"### {p['level']} run level - {p['days_per_week']} days/week ({p['weeks_total']} weeks)\n")
+    a("*Use the strength doses for YOUR strength level (push-up test), which may differ from your run level.*\n")
     hdr="| Wk | Phase | Tue - Workout | Thu - Easy (RPE 3-4, full sentences) |"+(" Fri - Recovery (RPE 2-3) |" if four else "")+" Sat - Long run (RPE 3-4, full sentences) | Strength | Est. min | Change |"
     a(hdr); a("|"+"---|"*(hdr.count("|")-1))
     for wk in p["weeks"]:
@@ -433,16 +474,17 @@ a("## 5. Strength progressions (20-30 min, 1-2x/week)\n")
 a(f"**Placement:** {STRENGTH_SESSIONS['placement']}\n")
 a(f"**Warm-up:** {STRENGTH_SESSIONS['warmup']}\n")
 a(f"**Strength A:** {'; '.join(STRENGTH_SESSIONS['A'])}.  \n**Strength B:** {'; '.join(STRENGTH_SESSIONS['B'])}.  \n{STRENGTH_SESSIONS['format']}\n")
-a("### Phase dosing\n\n| Phase | Frequency | Beginner | Average |\n|---|---|---|---|")
+a("Strength phases follow the run plan you are on (Base/Build/Peak/Taper dates come from your run plan); doses come from your strength level.\n")
+a("### Phase dosing\n\n| Phase | Frequency | Beginner strength (0-7 push-ups) | Average strength (8+ push-ups) |\n|---|---|---|---|")
 for d in DOSE: a(f"| {d['phase']} | {d['frequency']} | {d['beginner']} | {d['average']} |")
 a("\n*RPE in strength = how hard the set feels; RPE 6 is about 4 reps left in the tank, RPE 7 about 3, RPE 8 about 2. Stop a set if form breaks or anything hurts (not just effort).*\n")
-a("### Movements and equipment swaps\n\n| Movement | Session | No equipment | Dumbbells | Kettlebells + essentials | Beginner | Average |\n|---|---|---|---|---|---|---|")
-for m in MOVES: a(f"| {m['pattern']} | {m['session']} | {m['bodyweight']} | {m['dumbbell']} | {m['kettlebell']} | {m['beginner']} | {m['average']} |")
-a("\n### Push-up progression (from your test score)\n\n| Level | Test score | Exercise | Notes |\n|---|---|---|---|")
+a("### Movements and equipment swaps\n\n| Movement | Session | No equipment | Dumbbells | Kettlebells + essentials | Optional extras | Beginner strength | Average strength |\n|---|---|---|---|---|---|---|---|")
+for m in MOVES: a(f"| {m['pattern']} | {m['session']} | {m['bodyweight']} | {m['dumbbell']} | {m['kettlebell']} | {m.get('optional','-')} | {m['beginner']} | {m['average']} |")
+a("\n### Push-up progression (from your test score)\n\n| Strength level | Test score | Exercise | Notes |\n|---|---|---|---|")
 for x in PUSH_PROG: a(f"| {x['level']} | {x['score']} | {x['exercise']} | {x['notes']} |")
 a("")
 a("## 6. Notes\n")
-for title,key in [("Missed workouts","missed_workouts"),("Heat and altitude (Utah)","heat_altitude_utah"),("Fueling basics for long runs","fueling_long_runs"),("Shoes and injury warning signs","shoes_and_warning_signs"),("Push-up retest (optional, every 4 weeks)","pushup_retest")]:
+for title,key in [("Missed workouts","missed_workouts"),("Heat and altitude (Utah)","heat_altitude_utah"),("Fueling basics for long runs","fueling_long_runs"),("Shoes and injury warning signs","shoes_and_warning_signs"),("Optional retest (cutback weeks)","retest")]:
     a(f"### {title}\n"); [a(f"- {x}") for x in NOTES[key]]; a("")
 a("## Assumptions\n"); [a(f"- {x}") for x in ASSUMPTIONS]; a("")
 a("---\n*General education only, not medical advice. Coach Salim Heyaime LLC.*")
