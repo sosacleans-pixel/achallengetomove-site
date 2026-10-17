@@ -3,12 +3,6 @@
     { "id": "book", "title": "Book" },
     { "id": "programs", "title": "Programs" }
   ],
-  "pairGroups": {
-    "choose-level-75": {
-      "title": "Choose your level",
-      "subtitle": "Two 75-day app programs — same window, different rules."
-    }
-  },
   "products": [
     {
       "id": "actm-paperback",
@@ -37,42 +31,37 @@
       ]
     },
     {
-      "id": "75-all-in",
+      "id": "22-day-workout-app",
+      "homeFeatured": true,
       "catalogSection": "programs",
       "type": "app",
       "typeLabel": "App",
-      "title": "75 All-In",
-      "tagline": "All in. No days off.",
-      "description": "The strict, all-in track: 75 straight days of daily non-negotiables — training, clean eating, hydration, reading, and a progress check-in. Miss a day and you start over.",
-      "status": "coming_soon",
-      "pairGroup": "choose-level-75",
+      "title": "22-Day 7-Minute Workout",
+      "tagline": "Build the habit of movement with just 7 minutes a day.",
+      "description": "Guided 7-minute workouts, a 22-day calendar, and built-in exercise and rest timers.",
+      "price": "$4.99",
+      "note": "App only. Already have the book? Your app access is included.",
+      "status": "available",
       "image": {
         "svg": "/icons/logo.svg",
         "width": 512,
         "height": 512,
-        "alt": "75 All-In app (coming soon)"
+        "alt": "22-Day 7-Minute Workout app"
       },
-      "notifySubject": "Notify me: 75 All-In",
-      "actions": []
-    },
-    {
-      "id": "75-adaptive",
-      "catalogSection": "programs",
-      "type": "app",
-      "typeLabel": "App",
-      "title": "75 Adaptive",
-      "tagline": "Show up every day, your way.",
-      "description": "The flexible track: 75 days of daily movement, better eating, and recovery built in — adjustable to your schedule and body, with no restart penalty.",
-      "status": "coming_soon",
-      "pairGroup": "choose-level-75",
-      "image": {
-        "svg": "/icons/logo.svg",
-        "width": 512,
-        "height": 512,
-        "alt": "75 Adaptive app (coming soon)"
-      },
-      "notifySubject": "Notify me: 75 Adaptive",
-      "actions": []
+      "actions": [
+        {
+          "kind": "link",
+          "label": "Try Day 1 free",
+          "href": "https://book.coachsalimheyaime.com/",
+          "variant": "secondary",
+          "newTab": true
+        },
+        {
+          "kind": "checkout_placeholder",
+          "label": "Buy app, $4.99",
+          "variant": "primary"
+        }
+      ]
     },
     {
       "id": "whole-food-app",
@@ -106,6 +95,24 @@
         "alt": "Couch to 5K app (coming soon)"
       },
       "notifySubject": "Notify me: Couch to 5K",
+      "actions": []
+    },
+    {
+      "id": "75-adaptive",
+      "catalogSection": "programs",
+      "type": "app",
+      "typeLabel": "App",
+      "title": "75 Adaptive",
+      "tagline": "Show up every day, your way.",
+      "description": "The flexible track: 75 days of daily movement, better eating, and recovery built in — adjustable to your schedule and body, with no restart penalty.",
+      "status": "coming_soon",
+      "image": {
+        "svg": "/icons/logo.svg",
+        "width": 512,
+        "height": 512,
+        "alt": "75 Adaptive app (coming soon)"
+      },
+      "notifySubject": "Notify me: 75 Adaptive",
       "actions": []
     },
     {
@@ -143,37 +150,22 @@
       "actions": []
     },
     {
-      "id": "22-day-workout-app",
-      "homeFeatured": true,
+      "id": "75-all-in",
       "catalogSection": "programs",
       "type": "app",
       "typeLabel": "App",
-      "title": "22-Day 7-Minute Workout",
-      "tagline": "Build the habit of movement with just 7 minutes a day.",
-      "description": "Guided 7-minute workouts, a 22-day calendar, and built-in exercise and rest timers.",
-      "price": "$4.99",
-      "note": "App only. Already have the book? Your app access is included.",
-      "status": "available",
+      "title": "75 All-In",
+      "tagline": "All in. No days off.",
+      "description": "The strict, all-in track: 75 straight days of daily non-negotiables — training, clean eating, hydration, reading, and a progress check-in. Miss a day and you start over.",
+      "status": "coming_soon",
       "image": {
         "svg": "/icons/logo.svg",
         "width": 512,
         "height": 512,
-        "alt": "22-Day 7-Minute Workout app"
+        "alt": "75 All-In app (coming soon)"
       },
-      "actions": [
-        {
-          "kind": "link",
-          "label": "Try Day 1 free",
-          "href": "https://book.coachsalimheyaime.com/",
-          "variant": "secondary",
-          "newTab": true
-        },
-        {
-          "kind": "checkout_placeholder",
-          "label": "Buy app, $4.99",
-          "variant": "primary"
-        }
-      ]
+      "notifySubject": "Notify me: 75 All-In",
+      "actions": []
     }
   ]
 }

@@ -189,12 +189,12 @@
       const featuredHtml = featured ? renderFeaturedProgram(featured) : "";
 
       layout.innerHTML =
-        '<div class="program-grid program-grid--apps" id="home-program-grid">' +
-        gridHtml +
-        "</div>" +
         (featuredHtml
           ? '<div class="program-featured-wrap" id="home-program-featured">' + featuredHtml + "</div>"
-          : "");
+          : "") +
+        '<div class="program-grid program-grid--apps" id="home-program-grid">' +
+        gridHtml +
+        "</div>";
     })
     .catch(function () {
       layout.innerHTML =
