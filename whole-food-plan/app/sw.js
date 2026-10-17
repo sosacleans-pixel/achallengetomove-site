@@ -1,5 +1,9 @@
-const CACHE = "wf-plan-cache-v1";
+const CACHE = "wf-plan-cache-v2";
 const ASSETS = [
+  "./icons/icon.svg",
+  "./icons/icon-192.png",
+  "./icons/icon-512.png",
+  "./icons/apple-touch-icon.png",
   "./",
   "./index.html",
   "./css/app.css",
@@ -11,9 +15,6 @@ const ASSETS = [
   "./data/days.json",
   "./data/foods.json",
   "./manifest.webmanifest",
-  "./icons/icon.svg",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png",
 ];
 
 self.addEventListener("install", (event) => {

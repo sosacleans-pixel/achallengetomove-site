@@ -1,9 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="30-Day Whole Food Plan">
-  <rect width="512" height="512" rx="96" fill="#1e1e1e"/>
-  <rect x="32" y="32" width="448" height="448" rx="80" fill="#fff7e8"/>
-  <circle cx="256" cy="200" r="88" fill="#ffc700"/>
-  <path fill="#1a7a4c" d="M256 120c-8 28-32 48-60 52 20 4 36 16 44 32 24-20 40-52 16-84z"/>
-  <path fill="#bf3404" d="M200 268c-24 8-40 28-44 52h200c-4-24-20-44-44-52l-56 20-56-20z"/>
-  <rect x="120" y="360" width="272" height="24" rx="12" fill="#1e1e1e" opacity="0.15"/>
-  <text x="256" y="420" text-anchor="middle" font-family="Arial,sans-serif" font-weight="bold" font-size="48" fill="#1e1e1e">30</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <clipPath id="sq"><rect width="1024" height="1024" rx="225" ry="225"/></clipPath>
+  </defs>
+  <g clip-path="url(#sq)">
+    <rect width="1024" height="1024" fill="#bf3404"/>
+
+    <circle cx="512" cy="512" r="318" fill="#fff7e8"/>
+    <circle cx="512" cy="512" r="238" fill="none" stroke="#e6dcc0" stroke-width="22"/>
+    <g transform="translate(14 -10)">
+    <path d="M352 672 C 352 470 480 356 690 336 C 690 548 566 672 352 672 Z" fill="#ffc700" stroke="#1e1e1e" stroke-width="56" stroke-linejoin="round"/>
+    <path d="M300 724 L 352 672 Q 470 560 600 432" fill="none" stroke="#1e1e1e" stroke-width="56" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+  </g>
 </svg>

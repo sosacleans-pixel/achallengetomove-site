@@ -1,5 +1,9 @@
-const CACHE = "doing-a-5k-v1";
+const CACHE = "doing-a-5k-v2";
 const ASSETS = [
+  "./icons/icon.svg",
+  "./icons/icon-192.png",
+  "./icons/icon-512.png",
+  "./icons/apple-touch-icon.png",
   "./",
   "./index.html",
   "./css/app.css",
@@ -8,7 +12,6 @@ const ASSETS = [
   "./js/storage.js",
   "./js/timer.js",
   "./manifest.webmanifest",
-  "./icon.svg",
   "/styles.css",
 ];
 
