@@ -83,7 +83,9 @@
       "type": "app",
       "typeLabel": "App",
       "title": "30-Day Whole Food Plan",
-      "description": "Eat real, whole food with daily app guidance — simple meals, grocery focus, and habits that last beyond the month.",
+      "tagline": "Reset how you eat in 30 days, one simple step at a time.",
+      "description": "Get your personal food list, log meals with instant feedback, and reintroduce foods to learn what works for your body.",
+      "learnMoreHref": "/whole-food-plan/",
       "status": "coming_soon",
       "image": {
         "svg": "/icons/logo.svg",

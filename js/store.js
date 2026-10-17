@@ -74,6 +74,15 @@
           escapeHtml(mailtoNotify(subject)) +
           '">Notify me</a>'
       );
+      if (product.learnMoreHref) {
+        parts.push(
+          '<a class="btn btn-secondary btn-small" href="' +
+            escapeHtml(product.learnMoreHref) +
+            '">Learn more<span class="visually-hidden"> about ' +
+            escapeHtml(product.title) +
+            "</span></a>"
+        );
+      }
     } else if (product.actions && product.actions.length) {
       product.actions.forEach(function (action) {
         if (action.kind === "link") {

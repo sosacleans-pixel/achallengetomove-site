@@ -1235,3 +1235,72 @@ section {
     scroll-behavior: auto !important;
   }
 }
+
+/* Program card: optional "Learn more" link beside Notify me */
+.program-card-footer--with-link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+}
+
+.learn-more-link {
+  font-size: 0.9rem;
+}
+
+/* Product detail page (e.g. /whole-food-plan/) */
+.product-page h1 {
+  margin-bottom: 0.5rem;
+}
+
+.product-page .back-link {
+  display: table;
+}
+
+.product-page .badge {
+  margin-bottom: 1rem;
+}
+
+.product-page-tagline {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--charcoal) !important;
+  margin: 0 0 1.5rem;
+}
+
+.product-page h2 {
+  font-size: clamp(1.5rem, 4.5vw, 2rem);
+  margin: 2rem 0 0.75rem;
+}
+
+.product-page-list {
+  margin: 0 0 1.5rem;
+  padding-left: 1.25rem;
+}
+
+.product-page-list li {
+  margin-bottom: 0.4rem;
+}
+
+.product-page-price {
+  margin: 2rem 0 1.25rem;
+  padding: 1rem 1.25rem;
+  background: var(--paper);
+  border-left: 4px solid var(--yellow);
+  border-radius: 8px;
+  font-weight: 700;
+  color: var(--charcoal) !important;
+}
+
+.product-page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.product-page-disclaimer {
+  font-size: 0.85rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1rem;
+}

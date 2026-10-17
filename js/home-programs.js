@@ -31,11 +31,22 @@
   function renderFooter(product) {
     if (product.status === "coming_soon") {
       const subject = product.notifySubject || "Notify me: new program";
+      const learnMore = product.learnMoreHref
+        ? '<a class="text-link learn-more-link" href="' +
+          escapeHtml(product.learnMoreHref) +
+          '">Learn more<span class="visually-hidden"> about ' +
+          escapeHtml(product.title) +
+          "</span></a>"
+        : "";
       return (
-        '<div class="program-card-footer">' +
+        '<div class="program-card-footer' +
+        (learnMore ? " program-card-footer--with-link" : "") +
+        '">' +
         '<a class="btn btn-secondary btn-small" href="' +
         escapeHtml(mailtoNotify(subject)) +
-        '">Notify me</a></div>'
+        '">Notify me</a>' +
+        learnMore +
+        "</div>"
       );
     }
 
