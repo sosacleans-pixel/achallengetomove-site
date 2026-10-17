@@ -101,10 +101,6 @@
               "</a>"
           );
         } else if (action.kind === "checkout_placeholder") {
-          /*
-           * TODO: Replace with Stripe Payment Link when checkout is live, e.g.
-           * { "kind": "link", "label": "Buy app, $4.99", "href": "https://buy.stripe.com/...", "variant": "primary", "newTab": true }
-           */
           parts.push(
             '<a class="btn btn-primary btn-small btn-checkout-soon" href="#" aria-disabled="true" title="Checkout coming soon" tabindex="-1">' +
               escapeHtml(action.label) +

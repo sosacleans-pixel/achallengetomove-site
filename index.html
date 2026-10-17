@@ -316,12 +316,16 @@
       <div class="wrap notify-inner">
         <h2 id="notify-heading">Get notified when new challenges launch</h2>
         <p>Be the first to know when 75 All-In, 75 Adaptive, the whole-food plan, and new app programs go live.</p>
-        <form class="notify-form" action="mailto:coachsalimheyaime@gmail.com?subject=Notify%20me%3A%20new%20challenges" method="post" enctype="text/plain">
+        <form class="notify-form" id="notify-form" action="https://formsubmit.co/coachsalimheyaime@gmail.com" method="POST" novalidate>
+          <input type="hidden" name="_subject" value="A Challenge to Move: notify me">
+          <input type="hidden" name="_template" value="table">
+          <input type="text" name="_honey" class="notify-honey" tabindex="-1" autocomplete="off" aria-hidden="true">
           <label for="notify-email">Email address</label>
-          <input id="notify-email" name="body" type="email" autocomplete="email" placeholder="you@example.com" required aria-describedby="notify-hint">
+          <input id="notify-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required aria-describedby="notify-hint notify-status">
           <button class="btn btn-primary" type="submit">Notify me</button>
         </form>
-        <p id="notify-hint" class="visually-hidden">Opens your email app with a pre-filled message to Salim.</p>
+        <p id="notify-hint" class="visually-hidden">We'll only use your email to tell you when new challenges launch.</p>
+        <p id="notify-status" class="notify-status" role="status" aria-live="polite" tabindex="-1"></p>
       </div>
     </section>
   </main>
@@ -337,5 +341,6 @@
     </div>
   </footer>
   <script src="/js/home-programs.js" defer></script>
+  <script src="/js/notify.js" defer></script>
 </body>
 </html>

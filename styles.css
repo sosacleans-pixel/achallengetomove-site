@@ -1107,6 +1107,23 @@ section {
   border-color: var(--charcoal);
 }
 
+.notify-honey {
+  display: none !important;
+}
+
+.notify-status {
+  margin-top: 0.75rem;
+  font-weight: 700;
+}
+
+.notify-status:empty {
+  display: none;
+}
+
+.notify-status:focus {
+  outline: none;
+}
+
 .footer {
   background: var(--charcoal);
   color: #ddd;
