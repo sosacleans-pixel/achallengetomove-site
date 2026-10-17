@@ -97,20 +97,22 @@
       "actions": []
     },
     {
-      "id": "couch-to-5k",
+      "id": "doing-a-5k",
       "catalogSection": "programs",
       "type": "app",
       "typeLabel": "App",
-      "title": "Couch to 5K",
-      "description": "Go from zero running to your first 5K with walk-run intervals and a progressive plan in the app.",
+      "title": "Doing a 5K",
+      "tagline": "Go from walking to your first 5K in 8 to 12 weeks.",
+      "description": "Walk-run your way to a 5K finish line with a plan sized to your schedule.",
+      "learnMoreHref": "/doing-a-5k/",
       "status": "coming_soon",
       "image": {
         "svg": "/icons/logo.svg",
         "width": 512,
         "height": 512,
-        "alt": "Couch to 5K app (coming soon)"
+        "alt": "Doing a 5K app (coming soon)"
       },
-      "notifySubject": "Notify me: Couch to 5K",
+      "notifySubject": "Notify me: Doing a 5K",
       "actions": []
     },
     {

@@ -1249,6 +1249,12 @@ section {
 }
 
 /* Product detail page (e.g. /whole-food-plan/) */
+.product-page {
+  /* .page-simple's padding shorthand drops .wrap's side gutters; restore them */
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
 .product-page h1 {
   margin-bottom: 0.5rem;
 }
