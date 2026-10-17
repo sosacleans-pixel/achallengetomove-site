@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /whole-food-plan/app/
+Disallow: /doing-a-5k/app/
+Disallow: /75-day/
+
+Sitemap: https://achallengetomove.com/sitemap.xml

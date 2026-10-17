@@ -42,7 +42,7 @@
         '<div class="program-card-footer' +
         (learnMore ? " program-card-footer--with-link" : "") +
         '">' +
-        '<a class="btn btn-secondary btn-small" href="' +
+        '<a class="btn btn-primary btn-small" href="' +
         escapeHtml(mailtoNotify(subject)) +
         '">Notify me</a>' +
         learnMore +

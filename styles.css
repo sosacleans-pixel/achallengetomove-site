@@ -209,12 +209,26 @@ a {
   color: var(--charcoal);
 }
 
+.hero-subhead {
+  font-size: 1.2rem;
+  line-height: 1.5;
+  color: var(--charcoal);
+  max-width: 40rem;
+  margin: 0 0 1rem;
+  font-weight: 700;
+}
+
 .hero-brand-statement {
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   line-height: 1.55;
   color: var(--muted);
   max-width: 40rem;
   margin: 0 0 1.75rem;
+}
+
+.hero-tertiary {
+  margin: 1rem 0 0;
+  font-size: 0.95rem;
 }
 
 .hub-strip {
