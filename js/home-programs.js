@@ -76,7 +76,62 @@
     return '<div class="program-card-footer"><div class="card-actions">' + parts.join("") + "</div></div>";
   }
 
-  function renderProgram(product, featured) {
+  function renderFeaturedVisual(product) {
+    const alt = product.image && product.image.alt ? escapeHtml(product.image.alt) : "App icon";
+    const src =
+      product.image && product.image.svg ? escapeHtml(product.image.svg) : "/icons/logo.svg";
+    return (
+      '<div class="program-featured-visual">' +
+      '<div class="phone-mockup">' +
+      '<div class="phone-mockup-screen">' +
+      '<img src="' +
+      src +
+      '" width="120" height="120" alt="' +
+      alt +
+      '" decoding="async">' +
+      "</div></div></div>"
+    );
+  }
+
+  function renderFeaturedProgram(product) {
+    const tagline = product.tagline
+      ? '<p class="tagline">' + escapeHtml(product.tagline) + "</p>"
+      : "";
+    const price = product.price
+      ? '<span class="program-price program-price--featured">' + escapeHtml(product.price) + "</span>"
+      : "";
+    const note = product.note
+      ? '<p class="program-note">' + escapeHtml(product.note) + "</p>"
+      : "";
+
+    return (
+      '<article class="program-card program-card--featured" data-program-id="' +
+      escapeHtml(product.id) +
+      '">' +
+      renderFeaturedVisual(product) +
+      '<div class="program-featured-content">' +
+      '<div class="program-featured-head">' +
+      badge(product.status) +
+      '<div class="program-featured-title-row">' +
+      "<h3>" +
+      escapeHtml(product.title) +
+      "</h3>" +
+      price +
+      "</div></div>" +
+      tagline +
+      '<p class="desc">' +
+      escapeHtml(product.description) +
+      "</p>" +
+      note +
+      renderFooter(product).replace(
+        "card-actions",
+        "card-actions card-actions--featured"
+      ) +
+      "</div></article>"
+    );
+  }
+
+  function renderProgram(product) {
     const tagline = product.tagline
       ? '<p class="tagline">' + escapeHtml(product.tagline) + "</p>"
       : "";
@@ -86,14 +141,9 @@
     const note = product.note
       ? '<p class="program-note">' + escapeHtml(product.note) + "</p>"
       : "";
-    const cardClass = featured
-      ? "program-card program-card--featured"
-      : "program-card program-card--tier";
 
     return (
-      '<article class="' +
-      cardClass +
-      '" data-program-id="' +
+      '<article class="program-card program-card--tier" data-program-id="' +
       escapeHtml(product.id) +
       '">' +
       '<div class="program-card-main">' +
@@ -134,11 +184,9 @@
         return !p.homeFeatured;
       });
 
-      const gridHtml = gridPrograms.map(function (p) {
-        return renderProgram(p, false);
-      }).join("");
+      const gridHtml = gridPrograms.map(renderProgram).join("");
 
-      const featuredHtml = featured ? renderProgram(featured, true) : "";
+      const featuredHtml = featured ? renderFeaturedProgram(featured) : "";
 
       layout.innerHTML =
         '<div class="program-grid program-grid--apps" id="home-program-grid">' +
