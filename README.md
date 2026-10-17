@@ -17,7 +17,7 @@ Open http://localhost:8080/
 
 ## Structure
 
-- `index.html` — home (hero, programs 2×2, the book, guides, store teaser, how it works, about, notify)
+- `index.html` — home (hero, programs grid + featured app, the book, store teaser, how it works, about, notify)
 - `store/index.html` — product catalog (rendered from `js/products.json` via `js/store.js`)
 - `privacy/index.html` — privacy placeholder
 - `styles.css` — shared styles

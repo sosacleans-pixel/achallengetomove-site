@@ -1,8 +1,7 @@
 {
   "catalogSections": [
     { "id": "book", "title": "Book" },
-    { "id": "programs", "title": "Programs" },
-    { "id": "guides", "title": "Guides" }
+    { "id": "programs", "title": "Programs" }
   ],
   "pairGroups": {
     "choose-level-75": {
@@ -127,7 +126,25 @@
       "actions": []
     },
     {
+      "id": "hyrox-training",
+      "catalogSection": "programs",
+      "type": "app",
+      "typeLabel": "App",
+      "title": "HYROX Training",
+      "description": "Race-ready training for the 8 stations and the runs — structured progressions you can follow in the gym.",
+      "status": "coming_soon",
+      "image": {
+        "svg": "/icons/logo.svg",
+        "width": 512,
+        "height": 512,
+        "alt": "HYROX Training app (coming soon)"
+      },
+      "notifySubject": "Notify me: HYROX Training",
+      "actions": []
+    },
+    {
       "id": "22-day-workout-app",
+      "homeFeatured": true,
       "catalogSection": "programs",
       "type": "app",
       "typeLabel": "App",
@@ -157,17 +174,6 @@
           "variant": "primary"
         }
       ]
-    },
-    {
-      "id": "hyrox-guide",
-      "catalogSection": "guides",
-      "type": "guide",
-      "typeLabel": "Guide",
-      "title": "HYROX Training Guide",
-      "description": "Race-ready training for the 8 stations and running — structured progressions you can follow in the gym.",
-      "status": "coming_soon",
-      "notifySubject": "Notify me: HYROX Training Guide",
-      "actions": []
     }
   ]
 }

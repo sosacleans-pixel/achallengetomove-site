@@ -1,10 +1,10 @@
 /**
- * Homepage Programs grid — sourced from /js/products.json (catalogSection: programs).
- * Edit titles and copy there; order follows the products array.
+ * Homepage Programs — sourced from /js/products.json (catalogSection: programs).
+ * Coming-soon programs fill the grid; homeFeatured program renders full-width below.
  */
 (function () {
-  const grid = document.getElementById("home-program-grid");
-  if (!grid) return;
+  const layout = document.getElementById("home-programs-layout");
+  if (!layout) return;
 
   const NOTIFY_EMAIL = "coachsalimheyaime@gmail.com";
 
@@ -76,7 +76,7 @@
     return '<div class="program-card-footer"><div class="card-actions">' + parts.join("") + "</div></div>";
   }
 
-  function renderProgram(product) {
+  function renderProgram(product, featured) {
     const tagline = product.tagline
       ? '<p class="tagline">' + escapeHtml(product.tagline) + "</p>"
       : "";
@@ -86,9 +86,14 @@
     const note = product.note
       ? '<p class="program-note">' + escapeHtml(product.note) + "</p>"
       : "";
+    const cardClass = featured
+      ? "program-card program-card--featured"
+      : "program-card program-card--tier";
 
     return (
-      '<article class="program-card program-card--tier" data-program-id="' +
+      '<article class="' +
+      cardClass +
+      '" data-program-id="' +
       escapeHtml(product.id) +
       '">' +
       '<div class="program-card-main">' +
@@ -118,13 +123,33 @@
         return p.catalogSection === "programs";
       });
       if (!programs.length) {
-        grid.innerHTML = '<p class="store-error">Programs could not be loaded.</p>';
+        layout.innerHTML = '<p class="store-error">Programs could not be loaded.</p>';
         return;
       }
-      grid.innerHTML = programs.map(renderProgram).join("");
+
+      const featured = programs.find(function (p) {
+        return p.homeFeatured;
+      });
+      const gridPrograms = programs.filter(function (p) {
+        return !p.homeFeatured;
+      });
+
+      const gridHtml = gridPrograms.map(function (p) {
+        return renderProgram(p, false);
+      }).join("");
+
+      const featuredHtml = featured ? renderProgram(featured, true) : "";
+
+      layout.innerHTML =
+        '<div class="program-grid program-grid--apps" id="home-program-grid">' +
+        gridHtml +
+        "</div>" +
+        (featuredHtml
+          ? '<div class="program-featured-wrap" id="home-program-featured">' + featuredHtml + "</div>"
+          : "");
     })
     .catch(function () {
-      grid.innerHTML =
+      layout.innerHTML =
         '<p class="store-error" role="alert">Programs could not be loaded. Please refresh the page.</p>';
     });
 })();
