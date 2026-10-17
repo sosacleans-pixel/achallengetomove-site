@@ -346,6 +346,73 @@
   margin-top: 0;
 }
 
+.section-mini {
+  font-family: Anton, Impact, sans-serif;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  margin: 1.25rem 0 0.5rem;
+}
+
+.today-card--strength {
+  border-color: var(--rust);
+  background: linear-gradient(180deg, #fff5f0 0%, var(--paper) 100%);
+  position: relative;
+}
+
+.strength-badge {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.strength-badge--large {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.plan-item--strength {
+  background: rgba(191, 52, 4, 0.04);
+  border-radius: 8px;
+  padding-left: 0.25rem;
+}
+
+.plan-check--run,
+.plan-check--strength {
+  font-size: 0.85rem;
+}
+
+.timer-card--strength .progress-fill--strength {
+  background: var(--rust);
+}
+
+.timer-desc {
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin: 0 0 0.75rem;
+  min-height: 2.5rem;
+}
+
+.timer-variant {
+  font-size: 0.75rem;
+  margin: 0 0 0.75rem;
+  line-height: 1.4;
+}
+
+.strength-overview-card .strength-preview-list {
+  text-align: left;
+  margin: 1rem 0;
+  padding-left: 1.25rem;
+  font-size: 0.9rem;
+}
+
+.stats-grid--secondary {
+  margin-top: 0.5rem;
+}
+
+.stats-grid--secondary .stat-num {
+  font-size: 1.35rem;
+}
+
 @media (min-width: 768px) {
   .app-screen {
     max-width: 36rem;

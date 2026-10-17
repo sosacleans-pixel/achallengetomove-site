@@ -4,6 +4,12 @@
  * Every session: 5 min warm-up walk, main block, 5 min cool-down walk.
  */
 
+import {
+  defaultStrengthDays,
+  generateStrengthWorkouts,
+  strengthDaysValid,
+} from "./strength.js";
+
 const WARMUP_SEC = 5 * 60;
 const COOLDOWN_SEC = 5 * 60;
 
@@ -96,11 +102,27 @@ function sessionSummary(steps) {
 /**
  * @returns {{ meta: object, workouts: Workout[] }}
  */
-export function generatePlan({ daysPerWeek, level, preferredDays, startDateISO, name }) {
+export function generatePlan({
+  daysPerWeek,
+  level,
+  preferredDays,
+  startDateISO,
+  name,
+  strengthDaysPerWeek = 1,
+  strengthPreferredDays,
+}) {
   const weeks = weeksForDaysPerWeek(daysPerWeek);
   const total = totalSessions(daysPerWeek);
   const workouts = [];
   let sessionIndex = 0;
+
+  const runDays = preferredDays.slice(0, daysPerWeek);
+  let strengthDays = strengthPreferredDays?.length
+    ? strengthPreferredDays.slice(0, strengthDaysPerWeek)
+    : defaultStrengthDays(runDays, strengthDaysPerWeek);
+  if (!strengthDaysValid(runDays, strengthDays)) {
+    strengthDays = defaultStrengthDays(runDays, strengthDaysPerWeek);
+  }
 
   for (let w = 0; w < weeks; w++) {
     for (let d = 0; d < daysPerWeek; d++) {
@@ -110,6 +132,7 @@ export function generatePlan({ daysPerWeek, level, preferredDays, startDateISO, 
       const weekday = preferredDays[d % preferredDays.length];
       workouts.push({
         id: `w${w}-d${d}`,
+        kind: "run",
         weekIndex: w,
         dayInWeek: d,
         sessionIndex,
@@ -123,18 +146,27 @@ export function generatePlan({ daysPerWeek, level, preferredDays, startDateISO, 
     }
   }
 
+  const strengthWorkouts = generateStrengthWorkouts({
+    weeks,
+    strengthDaysPerWeek,
+    strengthPreferredDays: strengthDays,
+  });
+
   return {
     meta: {
       name: name || "",
       daysPerWeek,
       level,
-      preferredDays,
+      preferredDays: runDays,
       startDateISO,
       weeks,
       totalSessions: total,
+      strengthDaysPerWeek,
+      strengthPreferredDays: strengthDays,
       createdAt: new Date().toISOString(),
     },
     workouts,
+    strengthWorkouts,
   };
 }
 
@@ -157,6 +189,8 @@ export function replanFromWeek(state, fromWeekIndex) {
     preferredDays: meta.preferredDays,
     startDateISO: meta.startDateISO,
     name: meta.name,
+    strengthDaysPerWeek: meta.strengthDaysPerWeek ?? 1,
+    strengthPreferredDays: meta.strengthPreferredDays,
   });
 
   const newTail = fresh.workouts.filter((w) => w.weekIndex >= fromWeekIndex);
@@ -165,11 +199,24 @@ export function replanFromWeek(state, fromWeekIndex) {
     sessionIndex: kept.length + i,
   }))];
 
+  const keptStrength = (state.strengthWorkouts || []).filter((w) => w.weekIndex < fromWeekIndex);
+  const newStrengthTail = fresh.strengthWorkouts.filter((w) => w.weekIndex >= fromWeekIndex);
+  const strengthCompletedBefore = new Set(
+    (state.strengthCompleted || []).filter((c) => {
+      const w = (state.strengthWorkouts || []).find((x) => x.id === c.workoutId);
+      return w && w.weekIndex < fromWeekIndex;
+    }).map((c) => c.workoutId)
+  );
+
   return {
     ...state,
     meta: { ...fresh.meta, replannedFromWeek: fromWeekIndex },
     workouts: merged,
+    strengthWorkouts: [...keptStrength, ...newStrengthTail],
     completed: (completed || []).filter((c) => completedBefore.has(c.workoutId)),
+    strengthCompleted: (state.strengthCompleted || []).filter((c) =>
+      strengthCompletedBefore.has(c.workoutId)
+    ),
   };
 }
 
