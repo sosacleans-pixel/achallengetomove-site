@@ -3,8 +3,8 @@
  * Add new books, apps, or bundles in that file — no HTML edits required.
  */
 (function () {
-  const grid = document.getElementById("product-grid");
-  if (!grid) return;
+  const catalog = document.getElementById("store-catalog");
+  if (!catalog) return;
 
   const NOTIFY_EMAIL = "coachsalimheyaime@gmail.com";
 
@@ -76,30 +76,34 @@
       );
     } else if (product.actions && product.actions.length) {
       product.actions.forEach(function (action) {
-        if (action.kind !== "link") return;
-        const rel = action.newTab ? ' rel="noopener noreferrer"' : "";
-        const target = action.newTab ? ' target="_blank"' : "";
-        parts.push(
-          '<a class="' +
-            btnClass(action.variant) +
-            '" href="' +
-            escapeHtml(action.href) +
-            '"' +
-            target +
-            rel +
-            ">" +
-            escapeHtml(action.label) +
-            "</a>"
-        );
+        if (action.kind === "link") {
+          const rel = action.newTab ? ' rel="noopener noreferrer"' : "";
+          const target = action.newTab ? ' target="_blank"' : "";
+          parts.push(
+            '<a class="' +
+              btnClass(action.variant) +
+              '" href="' +
+              escapeHtml(action.href) +
+              '"' +
+              target +
+              rel +
+              ">" +
+              escapeHtml(action.label) +
+              "</a>"
+          );
+        } else if (action.kind === "checkout_placeholder") {
+          /*
+           * TODO: Replace with Stripe Payment Link when checkout is live, e.g.
+           * { "kind": "link", "label": "Buy app, $4.99", "href": "https://buy.stripe.com/...", "variant": "primary", "newTab": true }
+           */
+          parts.push(
+            '<a class="btn btn-primary btn-small btn-checkout-soon" href="#" aria-disabled="true" title="Checkout coming soon" tabindex="-1">' +
+              escapeHtml(action.label) +
+              "</a>"
+          );
+        }
       });
     }
-
-    /*
-     * FUTURE CHECKOUT: When you add direct sales (e.g. Stripe Payment Link),
-     * push an action like:
-     * { "kind": "link", "label": "Buy", "href": "https://buy.stripe.com/...", "variant": "primary", "newTab": true }
-     * Or render a dedicated checkout button here for products with checkoutUrl set.
-     */
 
     return parts.length ? '<div class="product-actions">' + parts.join("") + "</div>" : "";
   }
@@ -121,11 +125,16 @@
     const tagline = product.tagline
       ? '<p class="product-tagline">' + escapeHtml(product.tagline) + "</p>"
       : "";
+    const price = product.price
+      ? '<p class="product-price">' + escapeHtml(product.price) + "</p>"
+      : "";
     const compact = product._compact ? " product-card--compact" : "";
+    const textOnly = !product.image ? " product-card--text-only" : "";
 
     return (
       '<article class="product-card' +
       compact +
+      textOnly +
       '" data-product-id="' +
       escapeHtml(product.id) +
       '">' +
@@ -134,9 +143,10 @@
       renderImage(product.image) +
       '<div class="product-copy">' +
       typeLabel +
-      "<h2>" +
+      "<h3>" +
       title +
-      "</h2>" +
+      "</h3>" +
+      price +
       tagline +
       '<p class="product-desc">' +
       desc +
@@ -148,7 +158,7 @@
   }
 
   function showError(message) {
-    grid.innerHTML =
+    catalog.innerHTML =
       '<p class="store-error" role="alert">' + escapeHtml(message) + "</p>";
   }
 
@@ -164,24 +174,24 @@
       })
       .join("");
     return (
-      '<section class="product-pair" aria-labelledby="pair-' +
+      '<div class="product-pair" aria-labelledby="pair-' +
       escapeHtml(items[0].pairGroup) +
       '">' +
       '<header class="product-pair-head">' +
-      '<h2 class="product-pair-title" id="pair-' +
+      '<h3 class="product-pair-title" id="pair-' +
       escapeHtml(items[0].pairGroup) +
       '">' +
       title +
-      "</h2>" +
+      "</h3>" +
       subtitle +
       "</header>" +
       '<div class="product-pair-grid">' +
       cards +
-      "</div></section>"
+      "</div></div>"
     );
   }
 
-  function buildCatalogHtml(products, pairGroups) {
+  function buildSectionItemsHtml(products, pairGroups) {
     const html = [];
     let i = 0;
     while (i < products.length) {
@@ -203,19 +213,64 @@
     return html.join("");
   }
 
+  function renderCatalog(data) {
+    const sections = data.catalogSections || [];
+    const allProducts = data.products || [];
+    const pairGroups = data.pairGroups || {};
+
+    if (!allProducts.length) {
+      showError("No products listed yet. Check back soon.");
+      return;
+    }
+
+    const bySection = {};
+    allProducts.forEach(function (p) {
+      const key = p.catalogSection || "programs";
+      if (!bySection[key]) bySection[key] = [];
+      bySection[key].push(p);
+    });
+
+    const order =
+      sections.length > 0
+        ? sections.map(function (s) {
+            return s.id;
+          })
+        : Object.keys(bySection);
+
+    const html = [];
+    order.forEach(function (sectionId) {
+      const items = bySection[sectionId];
+      if (!items || !items.length) return;
+      const meta = sections.find(function (s) {
+        return s.id === sectionId;
+      });
+      const title = meta ? meta.title : sectionId;
+      html.push(
+        '<section class="store-section" id="store-' +
+          escapeHtml(sectionId) +
+          '" aria-labelledby="store-heading-' +
+          escapeHtml(sectionId) +
+          '">' +
+          '<h2 class="store-section-title" id="store-heading-' +
+          escapeHtml(sectionId) +
+          '">' +
+          escapeHtml(title) +
+          "</h2>" +
+          '<div class="store-section-items">' +
+          buildSectionItemsHtml(items, pairGroups) +
+          "</div></section>"
+      );
+    });
+
+    catalog.innerHTML = html.join("");
+  }
+
   fetch("/js/products.json")
     .then(function (res) {
       if (!res.ok) throw new Error("Could not load product catalog.");
       return res.json();
     })
-    .then(function (data) {
-      const products = data.products || [];
-      if (!products.length) {
-        showError("No products listed yet. Check back soon.");
-        return;
-      }
-      grid.innerHTML = buildCatalogHtml(products, data.pairGroups || {});
-    })
+    .then(renderCatalog)
     .catch(function () {
       showError("The store catalog could not be loaded. Please refresh the page.");
     });

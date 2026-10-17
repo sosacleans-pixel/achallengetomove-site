@@ -1,4 +1,9 @@
 {
+  "catalogSections": [
+    { "id": "book", "title": "Book" },
+    { "id": "programs", "title": "Programs" },
+    { "id": "guides", "title": "Guides" }
+  ],
   "pairGroups": {
     "choose-level-75": {
       "title": "Choose your level",
@@ -8,11 +13,12 @@
   "products": [
     {
       "id": "actm-paperback",
+      "catalogSection": "book",
       "type": "book",
       "typeLabel": "Paperback",
-      "title": "A Challenge to Move",
-      "description": "Your 22-day roadmap to move better and feel better — a practical guide to building a daily movement habit in just seven minutes.",
-      "note": "Includes access to the interactive 7-minute / 22-day app",
+      "title": "A Challenge to Move: Your 22-Day Roadmap to Move Better and Feel Better",
+      "description": "Your practical guide to building a daily movement habit in just seven minutes a day — the foundation of the brand.",
+      "note": "Includes the 22-Day 7-Minute Workout app",
       "status": "available",
       "image": {
         "webp": "/img/book-cover.webp",
@@ -32,37 +38,8 @@
       ]
     },
     {
-      "id": "actm-app",
-      "type": "app",
-      "typeLabel": "App",
-      "title": "A Challenge to Move app",
-      "description": "Guided 7-minute workouts, a 22-day calendar, and built-in exercise and rest timers.",
-      "status": "available",
-      "image": {
-        "svg": "/icons/logo.svg",
-        "width": 512,
-        "height": 512,
-        "alt": "A Challenge to Move app icon"
-      },
-      "actions": [
-        {
-          "kind": "link",
-          "label": "Open the app",
-          "href": "https://app.coachsalimheyaime.com/",
-          "variant": "primary",
-          "newTab": true
-        },
-        {
-          "kind": "link",
-          "label": "Try Day 1 free",
-          "href": "https://book.coachsalimheyaime.com/",
-          "variant": "secondary",
-          "newTab": true
-        }
-      ]
-    },
-    {
       "id": "75-all-in",
+      "catalogSection": "programs",
       "type": "app",
       "typeLabel": "App",
       "title": "75 All-In",
@@ -81,6 +58,7 @@
     },
     {
       "id": "75-adaptive",
+      "catalogSection": "programs",
       "type": "app",
       "typeLabel": "App",
       "title": "75 Adaptive",
@@ -99,6 +77,7 @@
     },
     {
       "id": "whole-food-app",
+      "catalogSection": "programs",
       "type": "app",
       "typeLabel": "App",
       "title": "30-Day Whole Food Plan",
@@ -111,6 +90,49 @@
         "alt": "30-Day Whole Food Plan app (coming soon)"
       },
       "notifySubject": "Notify me: 30-Day Whole Food Plan",
+      "actions": []
+    },
+    {
+      "id": "22-day-workout-app",
+      "catalogSection": "programs",
+      "type": "app",
+      "typeLabel": "App",
+      "title": "22-Day 7-Minute Workout",
+      "tagline": "Build the habit of movement with just 7 minutes a day.",
+      "description": "Guided 7-minute workouts, a 22-day calendar, and built-in exercise and rest timers.",
+      "price": "$4.99",
+      "note": "App only. Already have the book? Your app access is included.",
+      "status": "available",
+      "image": {
+        "svg": "/icons/logo.svg",
+        "width": 512,
+        "height": 512,
+        "alt": "22-Day 7-Minute Workout app"
+      },
+      "actions": [
+        {
+          "kind": "link",
+          "label": "Try Day 1 free",
+          "href": "https://book.coachsalimheyaime.com/",
+          "variant": "secondary",
+          "newTab": true
+        },
+        {
+          "kind": "checkout_placeholder",
+          "label": "Buy app, $4.99",
+          "variant": "primary"
+        }
+      ]
+    },
+    {
+      "id": "hyrox-guide",
+      "catalogSection": "guides",
+      "type": "guide",
+      "typeLabel": "Guide",
+      "title": "HYROX Training Guide",
+      "description": "Race-ready training for the 8 stations and running — structured progressions you can follow in the gym.",
+      "status": "coming_soon",
+      "notifySubject": "Notify me: HYROX Training Guide",
       "actions": []
     }
   ]

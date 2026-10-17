@@ -344,9 +344,43 @@ section {
   font-size: 0.95rem;
 }
 
-.product-grid {
-  display: grid;
+.store-catalog {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.store-section-title {
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 3px solid var(--yellow);
+}
+
+.store-section-items {
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
+}
+
+.product-price {
+  font-family: Anton, Impact, sans-serif;
+  font-size: 1.5rem;
+  margin: 0 0 0.35rem;
+  line-height: 1;
+  color: var(--charcoal);
+}
+
+.product-card--text-only .product-card-body {
+  flex-direction: column;
+}
+
+.product-card h3 {
+  font-size: clamp(1.35rem, 4vw, 1.65rem);
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.15;
+  margin-bottom: 0.35rem;
 }
 
 .product-card {
@@ -481,6 +515,106 @@ section {
   gap: 1.5rem;
 }
 
+.program-grid--apps {
+  grid-template-columns: 1fr;
+}
+
+.programs-level-hint {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin: -1rem 0 1.5rem;
+}
+
+.program-price {
+  font-family: Anton, Impact, sans-serif;
+  font-size: 1.75rem;
+  color: var(--charcoal);
+  margin: 0 0 0.35rem;
+  line-height: 1;
+}
+
+.program-note {
+  margin: 0.75rem 0 0;
+  padding: 0.75rem 1rem;
+  background: var(--paper);
+  border-left: 4px solid var(--yellow);
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.btn-checkout-soon {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.book-promo {
+  background: var(--cream);
+  padding: 3.5rem 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.book-promo-grid {
+  display: grid;
+  gap: 2rem;
+  align-items: center;
+  justify-items: center;
+  text-align: center;
+}
+
+.book-promo-cover img {
+  width: min(220px, 60vw);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.22);
+  border-radius: 3px;
+}
+
+.book-promo-copy h2 {
+  font-size: clamp(2rem, 6vw, 2.75rem);
+}
+
+.book-promo-title {
+  font-family: Lato, system-ui, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.35;
+  margin: 0 0 1rem;
+}
+
+.guides {
+  background: var(--paper);
+  padding: 3.5rem 0;
+}
+
+.guide-card {
+  background: var(--cream);
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  padding: 1.5rem;
+  max-width: 36rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.guide-card h3 {
+  font-size: clamp(1.35rem, 4vw, 1.65rem);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.guide-card .desc {
+  margin: 0;
+  color: var(--muted);
+}
+
 .program-pair {
   display: flex;
   flex-direction: column;
@@ -510,9 +644,34 @@ section {
   gap: 1.5rem;
 }
 
-.program-card--tier .program-notify {
+.program-card--tier {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.program-card--tier .program-notify,
+.program-card--tier .card-actions {
   margin-top: auto;
-  align-self: flex-start;
+}
+
+.program-card--tier .card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .program-card--tier .card-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .program-card--tier .card-actions .btn {
+    flex: 1;
+    min-width: 9rem;
+  }
 }
 
 .program-card {
@@ -773,46 +932,19 @@ section {
     max-width: none;
   }
 
-  .program-grid {
-    grid-template-columns: repeat(3, 1fr);
+  .program-grid--apps {
+    grid-template-columns: repeat(2, 1fr);
     align-items: stretch;
   }
 
-  .program-card.featured {
-    grid-column: span 3;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
+  .book-promo-grid {
+    grid-template-columns: auto 1fr;
+    text-align: left;
+    justify-items: start;
   }
 
-  .program-pair {
-    grid-column: span 3;
-  }
-
-  .program-pair-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .program-grid > .program-card:not(.featured):not(.program-card--tier) {
-    grid-column: span 3;
-    max-width: 24rem;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
-  }
-
-  .program-card.featured .card-top {
-    flex: 1 1 280px;
-  }
-
-  .program-card.featured .card-actions {
-    flex-direction: row;
-    flex: 1 1 240px;
-  }
-
-  .program-card.featured .card-actions .btn {
-    width: auto;
-    flex: 1;
+  .program-card--tier .card-actions {
+    flex-direction: column;
   }
 
   .steps {
@@ -864,16 +996,12 @@ section {
 }
 
 @media (min-width: 900px) {
-  .program-card.featured {
-    padding: 2rem 2.25rem;
-  }
-
   .card-cover {
     width: 160px;
   }
 
-  .product-grid {
-    grid-template-columns: 1fr;
+  .book-promo-cover img {
+    width: 260px;
   }
 }
 
