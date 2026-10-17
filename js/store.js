@@ -237,13 +237,39 @@
           })
         : Object.keys(bySection);
 
+    function renderComingSoonSection(meta) {
+      const title = meta.title || meta.id;
+      const blurb = meta.blurb || "Coming soon.";
+      return (
+        '<section class="store-section store-section--soon" id="store-' +
+        escapeHtml(meta.id) +
+        '" aria-labelledby="store-heading-' +
+        escapeHtml(meta.id) +
+        '">' +
+        '<h2 class="store-section-title" id="store-heading-' +
+        escapeHtml(meta.id) +
+        '">' +
+        escapeHtml(title) +
+        "</h2>" +
+        '<div class="store-coming-soon-block">' +
+        '<span class="badge badge-soon">Coming soon</span>' +
+        "<p>" +
+        escapeHtml(blurb) +
+        "</p></div></section>"
+      );
+    }
+
     const html = [];
     order.forEach(function (sectionId) {
-      const items = bySection[sectionId];
-      if (!items || !items.length) return;
       const meta = sections.find(function (s) {
         return s.id === sectionId;
       });
+      const items = bySection[sectionId] || [];
+      if (meta && meta.comingSoon && !items.length) {
+        html.push(renderComingSoonSection(meta));
+        return;
+      }
+      if (!items.length) return;
       const title = meta ? meta.title : sectionId;
       html.push(
         '<section class="store-section" id="store-' +

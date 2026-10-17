@@ -1,7 +1,19 @@
 {
   "catalogSections": [
     { "id": "book", "title": "Book" },
-    { "id": "programs", "title": "Programs" }
+    { "id": "programs", "title": "Programs" },
+    {
+      "id": "supplements",
+      "title": "Supplements",
+      "comingSoon": true,
+      "blurb": "Nutrition support to complement your training — launching here soon."
+    },
+    {
+      "id": "activewear",
+      "title": "Activewear",
+      "comingSoon": true,
+      "blurb": "Gear built for daily movement — launching here soon."
+    }
   ],
   "products": [
     {

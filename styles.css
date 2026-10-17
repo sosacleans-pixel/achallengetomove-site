@@ -195,23 +195,128 @@ a {
   align-items: center;
 }
 
+.hero-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--rust);
+  margin: 0 0 0.75rem;
+}
+
 .hero h1 {
   font-size: clamp(2.4rem, 9vw, 4.5rem);
   color: var(--charcoal);
 }
 
-.hero-lede {
-  font-size: 1.2rem;
-  font-weight: 700;
-  max-width: 36rem;
-  margin: 0 0 1rem;
+.hero-brand-statement {
+  font-size: 1.15rem;
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 40rem;
+  margin: 0 0 1.75rem;
 }
 
-.hero-copy {
-  font-size: 1.1rem;
+.hub-strip {
+  background: var(--charcoal);
+  color: var(--paper);
+  padding: 2rem 0 2.25rem;
+  border-bottom: 4px solid var(--yellow);
+}
+
+.hub-strip-title {
+  font-family: Anton, Impact, sans-serif;
+  font-size: clamp(1.35rem, 4vw, 1.75rem);
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--yellow);
+  margin: 0 0 1.25rem;
+}
+
+.hub-tiles {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.hub-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding: 1.15rem 1.25rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  text-decoration: none;
+  color: inherit;
+  height: 100%;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+a.hub-tile:hover,
+a.hub-tile:focus-visible {
+  border-color: var(--yellow);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hub-tile--static {
+  opacity: 0.92;
+}
+
+.hub-tile-icon {
+  color: var(--yellow);
+  line-height: 0;
+}
+
+.hub-tile-label {
+  font-family: Anton, Impact, sans-serif;
+  font-size: 1.15rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--paper);
+}
+
+.hub-tile-desc {
+  font-size: 0.9rem;
+  color: rgba(255, 253, 248, 0.78);
+  margin: 0;
+  flex-grow: 1;
+}
+
+.hub-tile-badge {
+  margin-top: 0.35rem;
+}
+
+@media (min-width: 640px) {
+  .hub-tiles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .hub-tiles {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.store-coming-soon-block {
+  background: var(--cream);
+  border: 2px dashed var(--line);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.65rem;
+}
+
+.store-coming-soon-block p {
+  margin: 0;
   color: var(--muted);
-  max-width: 34rem;
-  margin: 0 0 1.75rem;
 }
 
 .ctas {
