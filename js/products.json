@@ -1,7 +1,13 @@
 {
   "catalogSections": [
-    { "id": "book", "title": "Book" },
-    { "id": "programs", "title": "Programs" },
+    {
+      "id": "book",
+      "title": "Book"
+    },
+    {
+      "id": "programs",
+      "title": "Programs"
+    },
     {
       "id": "supplements",
       "title": "Supplements",
@@ -148,23 +154,6 @@
         "alt": "5K to Half Marathon app (coming soon)"
       },
       "notifySubject": "Notify me: 5K to Half Marathon",
-      "actions": []
-    },
-    {
-      "id": "hyrox-training",
-      "catalogSection": "programs",
-      "type": "app",
-      "typeLabel": "App",
-      "title": "HYROX Training",
-      "description": "Race-ready training for the 8 stations and the runs — structured progressions you can follow in the gym.",
-      "status": "coming_soon",
-      "image": {
-        "svg": "/icons/logo.svg",
-        "width": 512,
-        "height": 512,
-        "alt": "HYROX Training app (coming soon)"
-      },
-      "notifySubject": "Notify me: HYROX Training",
       "actions": []
     },
     {
