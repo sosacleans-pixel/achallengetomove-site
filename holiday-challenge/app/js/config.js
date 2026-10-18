@@ -24,8 +24,9 @@ export const CONFIG = {
   optionalCheckDay: 15,
   storageKey: "holiday-30-v1",
   // Allow ?date=YYYY-MM-DD (or ?now=YYYY-MM-DDTHH:MM) to override the clock for testing.
-  // Leave true for the preview branch; set false before a public launch if preferred.
-  allowDateOverride: true,
+  // Off for everyone who visits. The automated tests (tests/verify.mjs) turn it on only inside their own
+  // browser by intercepting this file and serving it with `true`; nothing in the shipped app can switch it on.
+  allowDateOverride: false,
   // Contact shown in legal screens (already public on achallengetomove.com/privacy/).
   contactEmail: "coachsalimheyaime@gmail.com",
   business: "Coach Salim Heyaime LLC",

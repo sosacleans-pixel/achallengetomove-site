@@ -1,7 +1,12 @@
 /**
  * Playwright checks for the 30 Days Before X-mas app.
  * Serves the whole site root so the app runs at /holiday-challenge/app/ (same path as production).
- * Env: CHROME=/path/to/chrome (optional), SHOTS=/dir for screenshots (optional).
+ * Env: CHROME=/path/to/chrome (optional), SHOTS=/dir for screenshots (optional),
+ *      HC_TIMEOUT=ms per Playwright action (default 60000; slow boxes can raise it),
+ *      HC_ONLY=1,2,8 to run only some sections (default: all). Section 0 (privacy/network checks) and the
+ *      final "no off-origin requests" / "no JS errors" checks always run.
+ * Date override: CONFIG.allowDateOverride is false in the shipped app. Tests that need ?date= call
+ * newPage(..., { dateOverride: true }), which intercepts js/config.js in that test browser only.
  */
 import { createServer } from "http";
 import { readFileSync, existsSync, mkdirSync, readdirSync, statSync } from "fs";
@@ -14,7 +19,10 @@ const siteRoot = join(appDir, "..", "..");
 let BASE = "";
 const SHOTS = process.env.SHOTS || "";
 if (SHOTS) mkdirSync(SHOTS, { recursive: true });
-const mime = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".png": "image/png", ".svg": "image/svg+xml", ".webmanifest": "application/manifest+json" };
+const mime = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".png": "image/png", ".svg": "image/svg+xml", ".webmanifest": "application/manifest+json", ".woff2": "font/woff2", ".txt": "text/plain" };
+const TIMEOUT = Number(process.env.HC_TIMEOUT) || 60000;
+const ONLY = (process.env.HC_ONLY || "").split(",").map((x) => x.trim()).filter(Boolean);
+const run = (k) => !ONLY.length || ONLY.includes(String(k));
 
 const server = createServer((req, res) => {
   let p = decodeURIComponent(req.url.split("?")[0]);
@@ -26,18 +34,37 @@ const server = createServer((req, res) => {
 });
 await new Promise((r) => server.listen(Number(process.env.PORT) || 0, "127.0.0.1", r));
 BASE = `http://127.0.0.1:${server.address().port}/holiday-challenge/app/`;
+const ORIGIN = new URL(BASE).origin;
 
 const results = [];
 const errors = [];
+const offsite = []; // every request that leaves the app's own origin (must stay empty)
+const sameOrigin = []; // same-origin requests seen (proves the tracker is wired up)
+function trackRequests(ctx, sink = offsite) {
+  ctx.on("request", (r) => {
+    const u = new URL(r.url());
+    if (u.protocol === "data:" || u.protocol === "blob:") return;
+    if (u.origin !== ORIGIN) sink.push(r.url()); else sameOrigin.push(u.pathname);
+  });
+}
+const configSrc = readFileSync(join(appDir, "js", "config.js"), "utf8");
+async function enableDateOverride(ctx) {
+  const body = configSrc.replace(/allowDateOverride:\s*false/, "allowDateOverride: true");
+  if (body === configSrc) throw new Error("could not flip allowDateOverride in the test copy of config.js");
+  await ctx.route("**/holiday-challenge/app/js/config.js", (route) => route.fulfill({ status: 200, contentType: "text/javascript", body }));
+}
 function check(name, cond, extra = "") { results.push([name, !!cond, extra]); console.log(`${cond ? "PASS" : "FAIL"}  ${name}${extra ? "  (" + extra + ")" : ""}`); }
 
 const browser = await chromium.launch(process.env.CHROME ? { executablePath: process.env.CHROME } : {});
 
-async function newPage(mockNow, viewport = { width: 390, height: 844 }, ctxOpts = {}) {
+async function newPage(mockNow, viewport = { width: 390, height: 844 }, { dateOverride = false, ...ctxOpts } = {}) {
   const ctx = await browser.newContext({ viewport, serviceWorkers: "block", ...ctxOpts });
+  ctx.setDefaultTimeout(TIMEOUT);
+  trackRequests(ctx);
+  if (dateOverride) await enableDateOverride(ctx);
   const page = await ctx.newPage();
   page.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));
-  page.on("console", (m) => { if (m.type() === "error" && !/fonts\.(googleapis|gstatic)/.test(m.text() + (m.location()?.url || ""))) errors.push(`console: ${m.text()}`); });
+  page.on("console", (m) => { if (m.type() === "error") errors.push(`console: ${m.text()}`); });
   if (mockNow) await page.addInitScript((iso) => { window.__HC_MOCK_NOW = iso; }, mockNow);
   return { ctx, page };
 }
@@ -72,7 +99,7 @@ async function setup(page) {
 }
 
 // 1. Pre-launch countdown + preview Day 1 + setup
-for (const vp of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+if (run(1)) for (const vp of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
   const { ctx, page } = await newPage("2026-11-10T10:00:00", vp);
   await page.goto(BASE + "index.html");
   await page.waitForSelector("#countdown");
@@ -97,7 +124,7 @@ for (const vp of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
 }
 
 // 2. Day 1
-{
+if (run(2)) {
   const { ctx, page } = await newPage("2026-11-25T08:00:00");
   await seed(page, baseState());
   const t = await page.textContent(".page-title");
@@ -116,7 +143,7 @@ for (const vp of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
 }
 
 // 3. Mid-challenge (Day 15, Dec 9) with history; back-log rule
-{
+if (run(3)) {
   const days = {}; for (let n = 1; n <= 14; n++) if (![4, 9].includes(n)) days[n] = { status: n % 3 ? "core" : "floor", habits: { water: true, steps: true, wind_down: true, breath_1min: true } };
   days[9] = { status: "protected" };
   for (const vp of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
@@ -156,7 +183,7 @@ for (const vp of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
 }
 
 // 4. Late join (Dec 10 = Day 16)
-{
+if (run(4)) {
   const { ctx, page } = await newPage("2026-12-10T09:00:00");
   await page.goto(BASE + "index.html");
   await page.waitForSelector(".late-card");
@@ -177,7 +204,7 @@ for (const vp of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
 }
 
 // 5. Completion (Dec 26)
-for (const vp of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+if (run(5)) for (const vp of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
   const days = {}; for (let n = 1; n <= 30; n++) if (n % 5) days[n] = { status: n % 2 ? "core" : "floor", habits: {} };
   const { ctx, page } = await newPage("2026-12-26T10:00:00", vp);
   await seed(page, baseState({ days, tests: { 1: { pu: 4, sts: 10, bal: 20 }, 30: { pu: 7, sts: 9, bal: 25 } } }));
@@ -188,7 +215,7 @@ for (const vp of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
   await shot(page, `completion-${vp.width}.png`);
   await ctx.close();
 }
-{
+if (run(5)) {
   const days = {}; for (let n = 1; n <= 12; n++) days[n] = { status: "core" }; days[13] = { status: "protected" }; days[14] = { status: "protected" };
   const { ctx, page } = await newPage("2026-12-25T10:00:00");
   await seed(page, baseState({ days }));
@@ -198,9 +225,9 @@ for (const vp of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
   await ctx.close();
 }
 
-// 6. Date-override URL param
-{
-  const { ctx, page } = await newPage(null);
+// 6. Date-override URL param (enabled only in this test browser; see enableDateOverride)
+if (run(6)) {
+  const { ctx, page } = await newPage(null, undefined, { dateOverride: true });
   await page.goto(BASE + "index.html?date=2026-12-01#/day/7");
   await page.waitForSelector(".day-head");
   check("?date= param shows debug ribbon", await page.isVisible("#debug-ribbon"));
@@ -212,10 +239,24 @@ for (const vp of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
   check("?date=clear removes override", !(await page.isVisible("#debug-ribbon")));
   await ctx.close();
 }
+// 6b. Shipped config: visitors can't move the clock with ?date= / ?now=
+if (run(6)) {
+  const { ctx, page } = await newPage(null);
+  await page.goto(BASE + "index.html?date=2026-12-01#/day/7");
+  await page.waitForSelector(".day-head");
+  check("shipped config: ?date= shows no debug ribbon", !(await page.isVisible("#debug-ribbon")));
+  check("shipped config: ?date= not stored", (await page.evaluate(() => sessionStorage.getItem("holiday-30-debug-now"))) === null);
+  await page.goto(BASE + "index.html?now=2026-12-01T08:00#/today");
+  await page.waitForSelector("#app-main > *");
+  check("shipped config: ?now= ignored too", !(await page.isVisible("#debug-ribbon")));
+  await ctx.close();
+}
 
 // 7. Offline reload (service worker allowed)
-{
+if (run(7)) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  ctx.setDefaultTimeout(TIMEOUT);
+  trackRequests(ctx);
   const page = await ctx.newPage();
   page.on("pageerror", (e) => errors.push(`pageerror(offline): ${e.message}`));
   await page.addInitScript(() => { window.__HC_MOCK_NOW = "2026-12-03T09:00:00"; });
@@ -226,11 +267,107 @@ for (const vp of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
   await page.waitForFunction(() => !!navigator.serviceWorker.controller);
   await ctx.setOffline(true);
   await page.reload();
-  await page.waitForSelector(".day-head", { timeout: 5000 }).catch(() => {});
+  await page.waitForSelector(".day-head", { timeout: 15000 }).catch(() => {});
   check("offline reload still renders today's day", /Day 9 of 30/.test((await page.textContent("main")) || ""));
   await page.goto(BASE + "index.html#/moves").catch(() => {});
-  await page.waitForSelector(".move-card", { timeout: 3000 }).catch(() => {});
+  await page.waitForSelector(".move-card", { timeout: 15000 }).catch(() => {});
   check("offline navigation works (Moves)", (await page.locator(".move-card").count()) > 20);
+  const cached = await page.evaluate(async () => { const keys = await caches.keys(); const c = await caches.open("holiday-30-v2"); return { keys, urls: (await c.keys()).map((r) => new URL(r.url).pathname) }; });
+  check("service worker cache is holiday-30-v2", cached.keys.includes("holiday-30-v2"), cached.keys.join(","));
+  check("fonts are in the offline cache", ["anton-v27-latin-400", "lato-v25-latin-400", "lato-v25-latin-700", "lato-v25-latin-900"].every((f) => cached.urls.some((u) => u.endsWith(`/fonts/${f}.woff2`))));
+  await ctx.close();
+}
+
+// 9. Legal screens: every reviewed entry renders; reviewed text fits the phone layout; fonts are local
+if (run(9)) {
+  const { S } = await import(new URL("../js/strings.en.js", import.meta.url).href);
+  const { ctx, page } = await newPage("2026-11-10T10:00:00");
+  const overflow = () => page.evaluate(() => {
+    const vw = document.documentElement.clientWidth;
+    const bad = [];
+    if (document.documentElement.scrollWidth > vw + 1) bad.push(`page ${document.documentElement.scrollWidth}>${vw}`);
+    document.querySelectorAll("#app-main *, .modal *").forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.width && (r.right > vw + 1 || r.left < -1)) bad.push(`${el.tagName.toLowerCase()}.${el.className}: ${(el.textContent || "").trim().slice(0, 40)}`);
+      if (el.scrollWidth > el.clientWidth + 1 && getComputedStyle(el).overflowX === "visible" && el.clientWidth) bad.push(`overflowing ${el.tagName.toLowerCase()}.${el.className}: ${(el.textContent || "").trim().slice(0, 40)}`);
+    });
+    return bad;
+  });
+  for (const [which, arr, n] of [["terms", S.legal.terms, 14], ["privacy", S.legal.privacy, 13], ["refund", S.legal.refund, 4]]) {
+    await page.goto(BASE + `index.html#/legal/${which}`);
+    await page.waitForSelector(`#legal-${which}`);
+    const got = await page.$$eval(`#legal-${which} h2.legal-h`, (hs) => hs.map((h) => [h.textContent, h.nextElementSibling?.textContent || ""]));
+    check(`${which}: ${n} entries in strings, ${n} rendered`, arr.length === n && got.length === n, `strings=${arr.length} rendered=${got.length}`);
+    check(`${which}: every heading and body renders in full`, arr.every(([h, b], i) => got[i] && got[i][0] === h && got[i][1] === b && h.trim() && b.trim()));
+    const o = await overflow();
+    check(`${which}: text fits a 390px screen`, o.length === 0, o.slice(0, 3).join(" | "));
+    await shot(page, `legal-${which}-390.png`);
+  }
+  for (const which of ["disclaimer", "safety"]) {
+    await page.goto(BASE + `index.html#/legal/${which}`);
+    await page.waitForSelector(`#legal-${which}`);
+    const o = await overflow();
+    check(`${which}: text fits a 390px screen`, o.length === 0, o.slice(0, 3).join(" | "));
+  }
+  await page.goto(BASE + "index.html#/legal/refund");
+  await page.waitForSelector("#legal-refund");
+  const refundText = await page.textContent("#legal-refund");
+  check("refund: approved 3-day wording shown exactly", refundText.includes("You can request a full refund within 3 days (72 hours) of purchase by emailing coachsalimheyaime@gmail.com. After that, all sales are final, and your enrollment never expires. Gift purchases: the buyer can request a full refund within 3 days of purchase, as long as the recipient hasn't redeemed the access code. Refunds go to the original payment method."));
+  check("refund: no PENDING tag on the refund window", !S.legal.refund.find(([h]) => h === "Refunds")[1].includes("PENDING"));
+  check("refund: old 7-day / Dec 1 window gone", !/7 days|whichever is later|activat/i.test(JSON.stringify(S.legal)));
+  check("privacy: no longer says fonts come from Google", !/Google Fonts, so Google/.test(JSON.stringify(S.legal.privacy)));
+  // setup screens with every readiness answer Yes (shows all hints and the any-Yes notice)
+  await page.goto(BASE + "index.html#/today");
+  await page.click("#start-setup");
+  let o = await overflow(); check("setup step 1 (18+) fits 390px", o.length === 0, o.slice(0, 3).join(" | "));
+  await page.check("#age-ok"); await page.click("#setup-next");
+  for (let i = 0; i < 6; i++) await page.check(`input[name=q${i}][value=yes]`);
+  const hints = await page.$$eval(".rq-hint", (els) => els.filter((e) => !e.classList.contains("hidden")).length);
+  check("setup step 2: all 6 reviewed hints and the any-Yes notice show", hints === 6 && (await page.isVisible("#anyyes")));
+  o = await overflow(); check("setup step 2 (readiness, all Yes) fits 390px", o.length === 0, o.slice(0, 3).join(" | "));
+  await shot(page, "setup-readiness-yes-390.png");
+  await page.check("#gentle-ack"); await page.click("#setup-next");
+  await page.click("#setup-next"); await page.click("#setup-next");
+  await page.waitForSelector("#terms-ok");
+  o = await overflow(); check("setup step 5 (terms) fits 390px", o.length === 0, o.slice(0, 3).join(" | "));
+  await shot(page, "setup-terms-390.png");
+  await page.check("#terms-ok"); await page.click("#setup-next");
+  await page.waitForSelector("#countdown");
+  // Stop & Log text (day.stopText / stopSigns) in the modal, opened from a live day
+  const { ctx: c2, page: p2 } = await newPage("2026-12-09T10:00:00");
+  await seed(p2, baseState());
+  await p2.click("#stop-log");
+  await p2.waitForSelector(".modal");
+  check("Stop & Log modal shows reviewed 911 text", (await p2.textContent(".modal")).includes(S.day.stopText));
+  o = await p2.evaluate(() => { const vw = document.documentElement.clientWidth; return [...document.querySelectorAll(".modal *")].filter((el) => el.getBoundingClientRect().right > vw + 1).map((el) => el.tagName); });
+  check("Stop & Log modal fits 390px", o.length === 0, o.join(","));
+  await c2.close();
+  // fonts: every weight in use is loaded from the app's own fonts folder
+  await page.goto(BASE + "index.html#/legal/terms");
+  await page.waitForSelector("#legal-terms");
+  const fonts = await page.evaluate(async () => {
+    await Promise.all(["400 16px Anton", "400 16px Lato", "700 16px Lato", "900 16px Lato"].map((f) => document.fonts.load(f)));
+    await document.fonts.ready;
+    return [...document.fonts].map((f) => `${f.family.replace(/"/g, "")} ${f.weight} ${f.status}`);
+  });
+  check("self-hosted Anton 400 and Lato 400/700/900 load", ["Anton 400", "Lato 400", "Lato 700", "Lato 900"].every((f) => fonts.includes(`${f} loaded`)), fonts.join(", "));
+  check("font files requested from the app's fonts folder", ["anton-v27-latin-400", "lato-v25-latin-400", "lato-v25-latin-700", "lato-v25-latin-900"].every((f) => sameOrigin.some((u) => u.endsWith(`/holiday-challenge/app/fonts/${f}.woff2`))));
+  await ctx.close();
+}
+
+// 0. Off-origin tracker self-test: prove a third-party request would be caught (kept out of the real list)
+{
+  const probe = [];
+  const ctx = await browser.newContext({ serviceWorkers: "block" });
+  ctx.setDefaultTimeout(TIMEOUT);
+  trackRequests(ctx, probe);
+  await ctx.route((url) => new URL(url).origin !== ORIGIN, (route) => route.abort());
+  const page = await ctx.newPage();
+  await page.goto(BASE + "index.html");
+  await page.waitForSelector("#app-main > *");
+  await page.evaluate(() => { new Image().src = "https://www.google-analytics.com/g/collect?probe=1"; return fetch("https://example.com/pixel").catch(() => {}); });
+  await page.waitForTimeout(300);
+  check("off-origin tracker catches third-party requests (self-test)", probe.some((u) => u.includes("google-analytics.com")) && probe.some((u) => u.includes("example.com")), probe.join(", "));
   await ctx.close();
 }
 
@@ -245,7 +382,21 @@ for (const vp of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
   const banned = /75 ?hard|75 ?soft|whole ?30|couch to 5k|c25k|workforcewellness|countdown to christmas|25 days of|\$\s?\d/i;
   const m = all.match(banned);
   check("no banned names, no prices", !m, m ? m[0] : "");
-  check("no ad pixels / analytics in app", !/fbq\(|facebook\.net|tiktok|gtag\(|googletagmanager|ga\.js/i.test(all));
+  check("no ad pixels / analytics in app", !/fbq\(|facebook\.net|tiktok|gtag\(|googletagmanager|google-analytics|ga\.js|dataLayer|pixel\.|clarity\.ms|hotjar|segment\.(io|com)/i.test(all));
+  check("no Google Fonts (googleapis / gstatic) references in app", !/googleapis|gstatic/i.test(all));
+  check("no absolute http(s) URLs loaded by app code", !/(src|href)\s*=\s*["']https?:|url\(\s*["']?https?:|import\s*\(?\s*["']https?:|fetch\(\s*["']https?:/i.test(all));
+  check("shipped config has allowDateOverride: false", /allowDateOverride:\s*false/.test(configSrc));
+  const sw = readFileSync(join(appDir, "sw.js"), "utf8");
+  check("sw.js cache name is holiday-30-v2", /const CACHE = "holiday-30-v2"/.test(sw));
+  const assets = [...sw.match(/const ASSETS = \[([\s\S]*?)\];/)[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
+  const runtime = [];
+  const walk3 = (d, rel = "") => readdirSync(d).forEach((f) => { const p = join(d, f); const r = rel + f; if (["node_modules", "tests"].includes(f) || f.startsWith(".")) return; statSync(p).isDirectory() ? walk3(p, r + "/") : /\.(html|css|js|webmanifest|png|svg|woff2)$/.test(f) && f !== "sw.js" && runtime.push("./" + r); });
+  walk3(appDir);
+  const missing = runtime.filter((f) => !assets.includes(f));
+  const ghost = assets.filter((a) => a !== "./" && !existsSync(join(appDir, a)));
+  check("sw.js caches every app file (incl. fonts)", missing.length === 0, missing.join(", "));
+  check("every file sw.js caches exists", ghost.length === 0, ghost.join(", "));
+  check("OFL license files ship with the fonts", existsSync(join(appDir, "fonts", "OFL-Anton.txt")) && existsSync(join(appDir, "fonts", "OFL-Lato.txt")));
   check("no stripe links", !/stripe\.com/i.test(all));
   const sitemap = readFileSync(join(siteRoot, "sitemap.xml"), "utf8");
   check("not in sitemap", !/holiday-challenge/.test(sitemap));
@@ -255,6 +406,8 @@ for (const vp of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
   check("not linked from any other page", !publicHtml.some((f) => /holiday-challenge/.test(readFileSync(f, "utf8"))));
 }
 
+check("tracker saw the app's own requests", sameOrigin.length > 0, `${sameOrigin.length} same-origin requests`);
+check("no request left the app's origin (no GA, gtag, pixels, Google Fonts or other third parties)", offsite.length === 0, offsite.slice(0, 5).join(" | "));
 check("no JS errors across all runs", errors.length === 0, errors.slice(0, 5).join(" | "));
 await browser.close();
 server.close();

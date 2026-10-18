@@ -1,4 +1,4 @@
-const CACHE = "holiday-30-v1";
+const CACHE = "holiday-30-v2";
 const ASSETS = [
   "./",
   "./index.html",
@@ -16,6 +16,10 @@ const ASSETS = [
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/icon-maskable-512.png",
+  "./fonts/anton-v27-latin-400.woff2",
+  "./fonts/lato-v25-latin-400.woff2",
+  "./fonts/lato-v25-latin-700.woff2",
+  "./fonts/lato-v25-latin-900.woff2",
 ];
 
 self.addEventListener("install", (event) => {
