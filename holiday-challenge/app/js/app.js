@@ -391,7 +391,7 @@ function testCompare() {
   if (!a && !b) return `<p class="muted">${esc(S.tests.noTests)}</p>`;
   const rows = [["pu", S.tests.pu], ["sts", S.tests.sts], ["wall", S.tests.wall], ["walk", S.tests.walk], ["bal", S.tests.bal]];
   return `<table class="cmp"><thead><tr><th></th><th>${esc(S.day.dayN(1))}</th><th>${esc(S.day.dayN(30))}</th></tr></thead><tbody>${rows.filter(([k]) => (a && a[k] != null) || (b && b[k] != null) || (k === "pu" && (a?.puSkipped || b?.puSkipped))).map(([k, label]) => {
-    const v1 = a ? (k === "pu" && a.puSkipped ? "—" : a[k]) : null; const v2 = b ? (k === "pu" && b.puSkipped ? "—" : b[k]) : null;
+    const v1 = a ? (k === "pu" && a.puSkipped ? "-" : a[k]) : null; const v2 = b ? (k === "pu" && b.puSkipped ? "-" : b[k]) : null;
     const down = v1 != null && v2 != null && Number(v2) < Number(v1);
     return `<tr><td>${esc(label.split(" (")[0])}</td><td>${esc(v1 ?? "")}</td><td>${down ? esc(S.tests.logged) : esc(v2 ?? "")}${!down && v1 != null && v2 != null && Number(v2) > Number(v1) ? " ⬆" : ""}</td></tr>`;
   }).join("")}</tbody></table>${b ? `<p class="muted small">${esc(S.tests.nice)}</p>` : ""}`;

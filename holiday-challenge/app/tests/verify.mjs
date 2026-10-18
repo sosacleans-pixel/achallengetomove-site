@@ -290,8 +290,8 @@ if (run(7)) {
   await page.goto(BASE + "index.html#/moves").catch(() => {});
   await page.waitForSelector(".move-card", { timeout: 15000 }).catch(() => {});
   check("offline navigation works (Moves)", (await page.locator(".move-card").count()) > 20);
-  const cached = await page.evaluate(async () => { const keys = await caches.keys(); const c = await caches.open("holiday-30-v4"); return { keys, urls: (await c.keys()).map((r) => new URL(r.url).pathname) }; });
-  check("service worker cache is holiday-30-v4", cached.keys.includes("holiday-30-v4"), cached.keys.join(","));
+  const cached = await page.evaluate(async () => { const keys = await caches.keys(); const c = await caches.open("holiday-30-v5"); return { keys, urls: (await c.keys()).map((r) => new URL(r.url).pathname) }; });
+  check("service worker cache is holiday-30-v5", cached.keys.includes("holiday-30-v5"), cached.keys.join(","));
   check("fonts are in the offline cache", ["anton-v27-latin-400", "lato-v25-latin-400", "lato-v25-latin-700", "lato-v25-latin-900"].every((f) => cached.urls.some((u) => u.endsWith(`/fonts/${f}.woff2`))));
   await ctx.close();
 }
@@ -330,7 +330,7 @@ if (run(9)) {
   await page.goto(BASE + "index.html#/legal/refund");
   await page.waitForSelector("#legal-refund");
   const refundText = await page.textContent("#legal-refund");
-  check("refund: approved 3-day wording shown exactly", refundText.includes("You can request a full refund within 3 days (72 hours) of purchase by emailing coachsalimheyaime@gmail.com. After that, all sales are final, and your enrollment never expires; it converts to the self-paced edition after Dec 24. Gift purchases: the buyer can request a full refund within 3 days of purchase, as long as the recipient hasn't redeemed the access code. Refunds go to the original payment method."));
+  check("refund: approved 3-day wording shown exactly", refundText.includes("You can request a full refund within 3 days (72 hours) of purchase by emailing coachsalimheyaime@gmail.com. After that, all sales are final. After Dec 24 the challenge continues as a self-paced edition for the rest of your 12-month Access Period. Gift purchases: the buyer can request a full refund within 3 days of purchase, as long as the recipient hasn't redeemed the access code. Refunds go to the original payment method."));
   check("refund: no PENDING tag on the refund window", !S.legal.refund.find(([h]) => h === "Refunds")[1].includes("PENDING"));
   check("refund: old 7-day / Dec 1 window gone", !/7 days|whichever is later|activat/i.test(JSON.stringify(S.legal)));
   check("privacy: no longer says fonts come from Google", !/Google Fonts, so Google/.test(JSON.stringify(S.legal.privacy)));
@@ -538,7 +538,14 @@ if (run(12)) {
   check("strings.es.js: legal text marked with its review status (reviewed, pending final sign-off)", esSrc.startsWith("// " + STATUS) && esSrc.includes("// ===== " + STATUS + " =====") && !/pending attorney review/.test(esSrc));
   check("legal draft notices show the review status (EN + ES)", EN.legal.draft.includes("reviewed October 18, 2026, pending final sign-off by a Utah attorney") && ES.legal.draft.includes("revisado el 18 de octubre de 2026") && ES.legal.draft.includes("prevalece la versión en inglés"));
   check("reviewed ES release wording in place", ES.legal.terms[3][0] === "EXONERACIÓN DE RESPONSABILIDAD, INCLUIDA LA NEGLIGENCIA" && ES.legal.terms[3][1].includes("ESTA EXONERACIÓN INCLUYE LOS RECLAMOS BASADOS EN LA NEGLIGENCIA DE COACH SALIM HEYAIME LLC") && !/cedes/.test(ES.legal.terms[3][1]) && ES.legal.terms[12][1].includes("prevalece la versión en inglés"));
-  check("ES refund keeps the approved meaning (3 days, final, converts to self-paced after Dec 24)", ES.legal.refund[1][1].includes("dentro de los 3 días (72 horas)") && ES.legal.refund[1][1].includes("se convierte en la edición a tu ritmo después del 24 de diciembre") && ES.legal.refund[1][1].includes("coachsalimheyaime@gmail.com"));
+  check("ES refund keeps the approved meaning (3 days, final, self-paced for the rest of the 12-month Access Period after Dec 24)", ES.legal.refund[1][1].includes("dentro de los 3 días (72 horas)") && ES.legal.refund[1][1].includes("Después del 24 de diciembre, el reto continúa como edición a tu ritmo durante el resto de tu Periodo de acceso de 12 meses.") && ES.legal.refund[1][1].includes("coachsalimheyaime@gmail.com"));
+  check("refund: old 'never expires' line gone (EN + ES)", !/never expires|converts to the self-paced/i.test(JSON.stringify(EN.legal)) && !/nunca vence/i.test(JSON.stringify(ES.legal)));
+  const termsEN = JSON.stringify(EN.legal.terms), termsES = JSON.stringify(ES.legal.terms);
+  check("terms: liability cap is the greater of the amount paid or $50 (EN + ES)", termsEN.includes("is limited to the greater of the amount you paid or $50") && !termsEN.includes("limited to the amount paid") && termsES.includes("la cantidad mayor entre el monto que pagaste o $50"));
+  check("terms: 12-month Access Period + early re-buy stacking sentence (EN + ES)", termsEN.includes("12 months starting on the date of purchase") && termsEN.includes("If you buy again while your access is active, the new 12 months start when the current period ends.") && termsES.includes("Si vuelves a comprar mientras tu acceso sigue activo, los nuevos 12 meses empiezan cuando termina el periodo actual."));
+  const privEN = JSON.stringify(EN.legal.privacy), privES = JSON.stringify(ES.legal.privacy);
+  check("privacy: access records + service providers wording, no 'no sign-in' claim (EN + ES)", privEN.includes("To give you access, we keep your email address and your access dates. Your challenge progress stays on your device. We use Stripe (payments), Supabase (access records), and Resend (email) as service providers.") && !/no sign-in|No accounts/i.test(privEN) && privES.includes("Supabase (registros de acceso)") && !/no tiene inicio de sesión|Sin cuentas/i.test(privES));
+  check("no em dashes in user-facing strings (EN + ES)", !/\u2014/.test(JSON.stringify(EN) + JSON.stringify(ES)) && !readFileSync(join(appDir, "js", "strings.en.js"), "utf8").includes("\u2014") && !readFileSync(join(appDir, "js", "strings.es.js"), "utf8").includes("\u2014"));
   check("'X-mas' spelling in both languages", EN.appName.includes("X-mas") && ES.appName.includes("X-mas") && !/\bXmas\b|X-Mas|X mas/.test(JSON.stringify(EN) + JSON.stringify(ES)));
 
   // browser default + stored choice
@@ -823,7 +830,7 @@ if (run(16)) {
     return (window.dataLayer || []).map((a) => Array.from(a)).filter((a) => a[0] === "event").map((a) => [a[1], a[2]]);
   });
   const root = `${ORIGIN}/`;
-  const neutral = (p) => p && p.page_location === root && p.page_referrer === root && p.page_title === "A Challenge to Move" && !("link_url" in p) && !("link_text" in p) && !("asin" in p) && !("product" in p) && !/22|day|workout|75|utm|stripe|amazon/i.test(JSON.stringify(p).replace(root, ""));
+  const neutral = (p) => p && p.page_location === root && p.page_referrer === root && p.page_title === "A Challenge to Move" && !("link_url" in p) && !("link_text" in p) && !("asin" in p) && !("product" in p) && !/22|day|workout|75|utm|stripe|amazon/i.test(JSON.stringify(p).split(root).join("")); // strip every copy of the origin: a random port like :41475 must not trip the check
   const pb = pev.filter(([n]) => n === "buy_app_click");
   check("buy_app_click from a product page (with query + referrer) sends only neutral params", pb.length === 1 && neutral(pb[0][1]), JSON.stringify(pb));
   const am = pev.filter(([n]) => n === "amazon_click");
@@ -890,7 +897,12 @@ if (run(17)) {
   const files = [];
   const walk = (d) => readdirSync(d).forEach((f) => { const p = join(d, f); if (f === "node_modules" || f === "tests") return; statSync(p).isDirectory() ? walk(p) : /\.(js|html|css|webmanifest)$/.test(f) && files.push(p); });
   walk(appDir);
-  const all = files.map((f) => readFileSync(f, "utf8")).join("\n");
+  const allRaw = files.map((f) => readFileSync(f, "utf8")).join("\n");
+  // The Attorney-required liability cap ("the greater of the amount you paid or $50", EN + ES) is a legal floor,
+  // not a price; it is the only "$" amount allowed. Anything else is still a failure.
+  const CAP_EN = "the greater of the amount you paid or $50", CAP_ES = "el monto que pagaste o $50";
+  check("only the liability cap carries a $ amount (EN + ES)", allRaw.includes(CAP_EN) && allRaw.includes(CAP_ES));
+  const all = allRaw.split(CAP_EN).join("").split(CAP_ES).join("");
   const banned = /75 ?hard|75 ?soft|whole ?30|couch to 5k|c25k|workforcewellness|countdown to christmas|25 days of|\$\s?\d/i;
   const m = all.match(banned);
   check("no banned names, no prices", !m, m ? m[0] : "");
@@ -901,7 +913,7 @@ if (run(17)) {
   check("no absolute http(s) URLs loaded by app code", !/(src|href)\s*=\s*["']https?:|url\(\s*["']?https?:|import\s*\(?\s*["']https?:|fetch\(\s*["']https?:/i.test(all));
   check("shipped config has allowDateOverride: false", /allowDateOverride:\s*false/.test(configSrc));
   const sw = readFileSync(join(appDir, "sw.js"), "utf8");
-  check("sw.js cache name is holiday-30-v4", /const CACHE = "holiday-30-v4"/.test(sw));
+  check("sw.js cache name is holiday-30-v5", /const CACHE = "holiday-30-v5"/.test(sw));
   const assets = [...sw.match(/const ASSETS = \[([\s\S]*?)\];/)[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
   const runtime = [];
   const walk3 = (d, rel = "") => readdirSync(d).forEach((f) => { const p = join(d, f); const r = rel + f; if (["node_modules", "tests"].includes(f) || f.startsWith(".")) return; statSync(p).isDirectory() ? walk3(p, r + "/") : /\.(html|css|js|webmanifest|png|svg|woff2)$/.test(f) && f !== "sw.js" && runtime.push("./" + r); });
