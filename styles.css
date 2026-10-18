@@ -718,6 +718,29 @@ section {
   }
 }
 
+/* Stripe badge under every Stripe buy button (component: .stripe-badge, markup in js/buy-trust.js).
+   Official unmodified SVG from /img/stripe/; sized only, never recolored or cropped. */
+.stripe-badge {
+  margin: 0.6rem 0 0;
+  line-height: 0;
+}
+
+.stripe-badge a {
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.stripe-badge img {
+  display: block;
+  height: 28px;
+  width: auto;
+  max-width: 100%;
+}
+
+.stripe-badge + .buy-refund {
+  margin-top: 0.4rem;
+}
+
 /* Refund line shown under every buy button. */
 .buy-refund {
   margin: 0.6rem 0 0;

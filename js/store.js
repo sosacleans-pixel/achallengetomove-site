@@ -60,10 +60,8 @@
     return "";
   }
 
-  const REFUND_HTML =
-    '<p class="buy-refund"><small>You can request a full refund within 3 days (72 hours) of purchase by emailing ' +
-    '<a class="text-link" href="mailto:coachsalimheyaime@gmail.com?subject=Refund+request">coachsalimheyaime@gmail.com</a>. ' +
-    "After that, all sales are final. Refunds go to the original payment method.</small></p>";
+  /* Stripe badge + refund line from /js/buy-trust.js (shared component). */
+  const BUY_TRUST_HTML = (window.ACTM_BUY_TRUST && window.ACTM_BUY_TRUST.html) || "";
 
   function isBuyAction(action) {
     return (
@@ -143,7 +141,7 @@
 
     if (!parts.length) return "";
     const hasBuy = product.status !== "coming_soon" && (product.actions || []).some(isBuyAction);
-    return '<div class="product-actions">' + parts.join("") + "</div>" + (hasBuy ? REFUND_HTML : "");
+    return '<div class="product-actions">' + parts.join("") + "</div>" + (hasBuy ? BUY_TRUST_HTML : "");
   }
 
   function statusBadge(status) {
