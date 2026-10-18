@@ -109,8 +109,8 @@
       "type": "app",
       "typeLabel": "App",
       "title": "Doing a 5K",
-      "tagline": "Go from walking to your first 5K in 8 to 12 weeks.",
-      "description": "Walk-run your way to a 5K finish line with a plan sized to your schedule.",
+      "tagline": "Go from walking to running a 5K, then keep going to a half marathon.",
+      "description": "Walk-run your way to a 5K finish line, then build to 13.1 miles in the same app, with a plan sized to your schedule.",
       "learnMoreHref": "/doing-a-5k/",
       "status": "coming_soon",
       "image": {
@@ -139,24 +139,6 @@
         "alt": "75 Adaptive app (coming soon)"
       },
       "notifySubject": "Notify me: 75 Adaptive",
-      "actions": []
-    },
-    {
-      "id": "5k-to-half-marathon",
-      "learnMoreHref": "/5k-to-half-marathon/",
-      "catalogSection": "programs",
-      "type": "app",
-      "typeLabel": "App",
-      "title": "5K to Half Marathon",
-      "description": "Build from 5K to 13.1 miles with structured runs, strength, and recovery in the app.",
-      "status": "coming_soon",
-      "image": {
-        "svg": "/icons/logo.svg",
-        "width": 512,
-        "height": 512,
-        "alt": "5K to Half Marathon app (coming soon)"
-      },
-      "notifySubject": "Notify me: 5K to Half Marathon",
       "actions": []
     },
     {
