@@ -1336,6 +1336,19 @@ section {
   margin-bottom: 2rem;
 }
 
+.product-page-refund {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.programs-refund {
+  margin-top: 1.25rem;
+}
+
+.store-refund {
+  margin-top: 0.5rem;
+}
+
 .product-page-disclaimer {
   font-size: 0.85rem;
   border-top: 1px solid var(--line);

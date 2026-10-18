@@ -1161,6 +1161,10 @@ function renderSettings() {
       <button type="button" class="btn btn-secondary btn-block" id="export-btn">Export data (JSON)</button>
       <button type="button" class="btn btn-secondary btn-block" id="reset-btn">Reset all data</button>
     </div>
+    <div class="card settings-card refund-card">
+      <h2>Refunds for Doing a 5K</h2>
+      <p>You can request a full refund within 3 days (72 hours) of purchase by emailing <a href="mailto:coachsalimheyaime@gmail.com?subject=Refund+request">coachsalimheyaime@gmail.com</a>. After that, all sales are final. Refunds go to the original payment method.</p>
+    </div>
     `,
     { title: "Settings" }
   );
