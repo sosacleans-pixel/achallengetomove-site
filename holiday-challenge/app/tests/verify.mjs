@@ -311,7 +311,7 @@ if (run(9)) {
     });
     return bad;
   });
-  for (const [which, arr, n] of [["terms", S.legal.terms, 14], ["privacy", S.legal.privacy, 13], ["refund", S.legal.refund, 4]]) {
+  for (const [which, arr, n] of [["terms", S.legal.terms, 19], ["privacy", S.legal.privacy, 13], ["refund", S.legal.refund, 5]]) {
     await page.goto(BASE + `index.html#/legal/${which}`);
     await page.waitForSelector(`#legal-${which}`);
     const got = await page.$$eval(`#legal-${which} h2.legal-h`, (hs) => hs.map((h) => [h.textContent, h.nextElementSibling?.textContent || ""]));
@@ -331,6 +331,7 @@ if (run(9)) {
   await page.waitForSelector("#legal-refund");
   const refundText = await page.textContent("#legal-refund");
   check("refund: approved 3-day wording shown exactly", refundText.includes("You can request a full refund within 3 days (72 hours) of purchase by emailing coachsalimheyaime@gmail.com. After that, all sales are final. After Dec 24 the challenge continues as a self-paced edition for the rest of your 12-month Access Period. Gift purchases: the buyer can request a full refund within 3 days of purchase, as long as the recipient hasn't redeemed the access code. Refunds go to the original payment method."));
+  check("refund screen shows Attorney section C (refund ends access, dispute suspends) and the redemption-flow gift paragraph", refundText.includes("When a refund is issued, access ends right away and any sign-in links stop working.") && refundText.includes("access is suspended while the dispute is open") && refundText.includes("we email the gift code to the buyer") && !refundText.includes("["));
   check("refund: no PENDING tag on the refund window", !S.legal.refund.find(([h]) => h === "Refunds")[1].includes("PENDING"));
   check("refund: old 7-day / Dec 1 window gone", !/7 days|whichever is later|activat/i.test(JSON.stringify(S.legal)));
   check("privacy: no longer says fonts come from Google", !/Google Fonts, so Google/.test(JSON.stringify(S.legal.privacy)));
@@ -363,6 +364,8 @@ if (run(9)) {
   // fonts: every weight in use is loaded from the app's own fonts folder
   await page.goto(BASE + "index.html#/legal/terms");
   await page.waitForSelector("#legal-terms");
+  const termsText = await page.textContent("#legal-terms");
+  check("terms screen shows B2, B4, B5, B6 and D", ["Your email is your key", "We will email you about 14 days before your access ends.", "Your account and saved progress are kept", "If we discontinue the challenge entirely", "Gift codes can be redeemed for at least 5 years from the date of purchase."].every((t) => termsText.includes(t)));
   const fonts = await page.evaluate(async () => {
     await Promise.all(["400 16px Anton", "400 16px Lato", "700 16px Lato", "900 16px Lato"].map((f) => document.fonts.load(f)));
     await document.fonts.ready;
@@ -537,7 +540,7 @@ if (run(12)) {
   const STATUS = "Spanish legal text reviewed 2026-10-18 (legal-review-es-notes.md); pending final sign-off by a Utah attorney and a native-speaker legal translator";
   check("strings.es.js: legal text marked with its review status (reviewed, pending final sign-off)", esSrc.startsWith("// " + STATUS) && esSrc.includes("// ===== " + STATUS + " =====") && !/pending attorney review/.test(esSrc));
   check("legal draft notices show the review status (EN + ES)", EN.legal.draft.includes("reviewed October 18, 2026, pending final sign-off by a Utah attorney") && ES.legal.draft.includes("revisado el 18 de octubre de 2026") && ES.legal.draft.includes("prevalece la versión en inglés"));
-  check("reviewed ES release wording in place", ES.legal.terms[3][0] === "EXONERACIÓN DE RESPONSABILIDAD, INCLUIDA LA NEGLIGENCIA" && ES.legal.terms[3][1].includes("ESTA EXONERACIÓN INCLUYE LOS RECLAMOS BASADOS EN LA NEGLIGENCIA DE COACH SALIM HEYAIME LLC") && !/cedes/.test(ES.legal.terms[3][1]) && ES.legal.terms[12][1].includes("prevalece la versión en inglés"));
+  check("reviewed ES release wording in place", ES.legal.terms[3][0] === "EXONERACIÓN DE RESPONSABILIDAD, INCLUIDA LA NEGLIGENCIA" && ES.legal.terms[3][1].includes("ESTA EXONERACIÓN INCLUYE LOS RECLAMOS BASADOS EN LA NEGLIGENCIA DE COACH SALIM HEYAIME LLC") && !/cedes/.test(ES.legal.terms[3][1]) && ES.legal.terms.find(([h]) => h === "Otros términos")[1].includes("prevalece la versión en inglés"));
   check("ES refund keeps the approved meaning (3 days, final, self-paced for the rest of the 12-month Access Period after Dec 24)", ES.legal.refund[1][1].includes("dentro de los 3 días (72 horas)") && ES.legal.refund[1][1].includes("Después del 24 de diciembre, el reto continúa como edición a tu ritmo durante el resto de tu Periodo de acceso de 12 meses.") && ES.legal.refund[1][1].includes("coachsalimheyaime@gmail.com"));
   check("refund: old 'never expires' line gone (EN + ES)", !/never expires|converts to the self-paced/i.test(JSON.stringify(EN.legal)) && !/nunca vence/i.test(JSON.stringify(ES.legal)));
   const termsEN = JSON.stringify(EN.legal.terms), termsES = JSON.stringify(ES.legal.terms);
@@ -546,6 +549,29 @@ if (run(12)) {
   const privEN = JSON.stringify(EN.legal.privacy), privES = JSON.stringify(ES.legal.privacy);
   check("privacy: access records + service providers wording, no 'no sign-in' claim (EN + ES)", privEN.includes("To give you access, we keep your email address and your access dates. Your challenge progress stays on your device. We use Stripe (payments), Supabase (access records), and Resend (email) as service providers.") && !/no sign-in|No accounts/i.test(privEN) && privES.includes("Supabase (registros de acceso)") && !/no tiene inicio de sesión|Sin cuentas/i.test(privES));
   check("no em dashes in user-facing strings (EN + ES)", !/\u2014/.test(JSON.stringify(EN) + JSON.stringify(ES)) && !readFileSync(join(appDir, "js", "strings.en.js"), "utf8").includes("\u2014") && !readFileSync(join(appDir, "js", "strings.es.js"), "utf8").includes("\u2014"));
+  // Attorney 12-month-access-terms.md: B2, B4 to B6, C and D, as written ([PRODUCT] = "the challenge"; B4's bracketed drafting note omitted).
+  const ATT = {
+    B2: "Access is linked to the email address used at checkout (or, for gifts, the email used to redeem the code). You sign in with a link sent to that email. Keep that email account secure and don't share sign-in links. We can move access to a new email only after verifying you own the original purchase.",
+    B4: "We will email you about 14 days before your access ends.",
+    B5: "Your account and saved progress are kept, so you can pick up where you left off if you buy again, unless the account is deleted under our inactivity policy (accounts with no sign-in for 24 months are deleted after a 30-day email warning) or you ask us to delete it.",
+    B6: "We may update, improve, or retire parts of the content during the Access Period. If we discontinue the challenge entirely before your Access Period ends, we will give you a prorated refund or equal access to a comparable program, at your choice.",
+    C: "You can request a full refund within 3 days of purchase. When a refund is issued, access ends right away and any sign-in links stop working. Gifts can be refunded within 3 days of purchase only if the gift code has not been redeemed; once redeemed, the gift is non-refundable. If a payment is disputed or charged back, access is suspended while the dispute is open and ends if the dispute is decided in the payer's favor. Nothing here limits any refund right you have under the law.",
+    D: "A gift code gives the recipient 12 months of access, starting on the day they redeem it with their email. Gift codes can be redeemed for at least 5 years from the date of purchase. Gift codes have no cash value and can't be resold, except where the law requires otherwise.",
+  };
+  const tEN = (h) => (EN.legal.terms.find(([x]) => x === h) || [])[1], rEN = (h) => (EN.legal.refund.find(([x]) => x === h) || [])[1];
+  check("Attorney B2 verbatim (Your email is your key)", tEN("Your email is your key") === ATT.B2);
+  check("Attorney B4 verbatim (Reminder), no bracketed drafting note", tEN("Reminder") === ATT.B4 && !/Transactional notice/.test(JSON.stringify(EN.legal)));
+  check("Attorney B5 verbatim (After access ends)", tEN("After access ends") === ATT.B5);
+  check("Attorney B6 verbatim with [PRODUCT] = the challenge (Content changes)", tEN("Content changes") === ATT.B6 && !/\[PRODUCT\]/.test(JSON.stringify(EN.legal)));
+  check("Attorney D verbatim (Gift codes, in Terms)", tEN("Gift codes") === ATT.D);
+  check("Attorney C verbatim (Refunds and access, in Refund policy)", rEN("Refunds and access") === ATT.C);
+  const gEN = rEN("Gift enrollments"), gES = (ES.legal.refund.find(([x]) => x === "Inscripciones de regalo") || [])[1] || "";
+  check("gift paragraph matches the redemption flow (code to buyer, own email, 12 months from redemption, 5 years, 3-day refund only if unredeemed)", ["we email the gift code to the buyer", "redeems the code with their own email address", "12 months of access start on the day they redeem it", "redeemed for 5 years from the date of purchase", "within 3 days (72 hours) of purchase, only if the code hasn't been redeemed"].every((t) => gEN.includes(t)) && !/buyer enters the recipient's email/.test(gEN));
+  check("ES gift paragraph matches the flow too", ["enviamos el código de regalo por correo electrónico a quien lo compró", "con su propio correo electrónico", "12 meses de acceso empiezan el día en que lo canjea", "durante 5 años a partir de la fecha de compra", "solo si el código no se ha canjeado"].every((t) => gES.includes(t)));
+  check("no [PENDING SALIM'S APPROVAL] bracket left on the gift paragraph (EN + ES)", !/PENDING SALIM'S APPROVAL|PENDIENTE DE APROBACIÓN DE SALIM/.test(JSON.stringify(EN.legal) + JSON.stringify(ES.legal)) && !/\[/.test(gEN + gES));
+  const tES = ES.legal.terms.map(([h]) => h), rES = ES.legal.refund.map(([h]) => h);
+  check("ES has the same new sections in the same places", ["Tu correo electrónico es tu llave", "Recordatorio", "Después de que termina el acceso", "Cambios en el contenido", "Códigos de regalo"].every((h, i) => tES[tES.indexOf("Compra") + 1 + i] === h) && rES[rES.indexOf("Reembolsos") + 1] === "Reembolsos y acceso" && EN.legal.terms.length === ES.legal.terms.length && EN.legal.refund.length === ES.legal.refund.length);
+  check("ES keeps the key facts of C and D (immediate end, suspension, 5 years, no cash value)", (ES.legal.refund.find(([x]) => x === "Reembolsos y acceso") || [])[1].includes("el acceso termina de inmediato") && (ES.legal.refund.find(([x]) => x === "Reembolsos y acceso") || [])[1].includes("el acceso se suspende mientras la disputa esté abierta") && (ES.legal.terms.find(([x]) => x === "Códigos de regalo") || [])[1].includes("al menos 5 años") && (ES.legal.terms.find(([x]) => x === "Códigos de regalo") || [])[1].includes("no tienen valor en efectivo"));
   check("'X-mas' spelling in both languages", EN.appName.includes("X-mas") && ES.appName.includes("X-mas") && !/\bXmas\b|X-Mas|X mas/.test(JSON.stringify(EN) + JSON.stringify(ES)));
 
   // browser default + stored choice
