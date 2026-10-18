@@ -1164,6 +1164,9 @@ function renderSettings() {
     <div class="card refund-card">
       <h2>Refunds for the 30-Day Whole Food Plan</h2>
       <p>You can request a full refund within 3 days (72 hours) of purchase by emailing <a href="mailto:coachsalimheyaime@gmail.com?subject=Refund+request">coachsalimheyaime@gmail.com</a>. After that, all sales are final. Refunds go to the original payment method.</p>
+      <p>Purchases include 12 months of app access. If you bought before [GATING DATE], your 12 months start on [GATING DATE]. There is no automatic renewal.</p>
+      <p lang="es">Las compras incluyen 12 meses de acceso a la app. Si compraste antes del [GATING DATE], tus 12 meses empiezan el [GATING DATE]. No hay renovación automática.</p>
+      <p><a href="/purchase-terms/" target="_blank" rel="noopener">Purchase terms</a> · <a href="/purchase-terms/#es" target="_blank" rel="noopener" lang="es" hreflang="es">Términos de compra</a></p>
     </div>
     <p class="health-note">${HEALTH_NOTE}</p>
   `;

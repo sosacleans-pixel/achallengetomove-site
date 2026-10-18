@@ -1,4 +1,4 @@
-const CACHE = "wf-plan-cache-v6";
+const CACHE = "wf-plan-cache-v7";
 const ASSETS = [
   "./icons/icon.svg",
   "./icons/icon-192.png",

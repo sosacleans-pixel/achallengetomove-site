@@ -86,6 +86,7 @@
     },
     {
       "id": "whole-food-app",
+      "accessNote": true,
       "catalogSection": "programs",
       "type": "app",
       "typeLabel": "App",
@@ -120,6 +121,7 @@
     },
     {
       "id": "doing-a-5k",
+      "accessNote": true,
       "catalogSection": "programs",
       "type": "app",
       "typeLabel": "App",

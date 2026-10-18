@@ -62,6 +62,7 @@
 
   /* Stripe badge + refund line from /js/buy-trust.js (shared component). */
   const BUY_TRUST_HTML = (window.ACTM_BUY_TRUST && window.ACTM_BUY_TRUST.html) || "";
+  const ACCESS_NOTE_HTML = (window.ACTM_BUY_TRUST && window.ACTM_BUY_TRUST.accessNoteHtml) || "";
 
   function isBuyAction(action) {
     return (
@@ -141,7 +142,8 @@
 
     if (!parts.length) return "";
     const hasBuy = product.status !== "coming_soon" && (product.actions || []).some(isBuyAction);
-    return '<div class="product-actions">' + parts.join("") + "</div>" + (hasBuy ? BUY_TRUST_HTML : "");
+    return '<div class="product-actions">' + parts.join("") + "</div>" + (hasBuy ? BUY_TRUST_HTML : "") +
+      (hasBuy && product.accessNote ? ACCESS_NOTE_HTML : "");
   }
 
   function statusBadge(status) {

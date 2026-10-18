@@ -741,6 +741,18 @@ section {
   margin-top: 0.4rem;
 }
 
+/* 12-month access note (EN + ES) near the 5K and Whole Food buy buttons. */
+.access-note {
+  margin: 0.6rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.access-note p {
+  margin: 0 0 0.3rem;
+}
+
 /* Refund line shown under every buy button. */
 .buy-refund {
   margin: 0.6rem 0 0;
