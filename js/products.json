@@ -80,7 +80,7 @@
           "label": "Buy app, $4.99",
           "href": "https://buy.stripe.com/6oU3cvauKetj5PcaqZ4ko02",
           "variant": "primary",
-          "newTab": false
+          "newTab": true
         }
       ]
     },
@@ -93,15 +93,30 @@
       "tagline": "Reset how you eat in 30 days, one simple step at a time.",
       "description": "30 days of whole-food eating with guided reintroduction after, so you learn what works for your body.",
       "learnMoreHref": "/whole-food-plan/",
-      "status": "coming_soon",
+      "status": "available",
       "image": {
         "svg": "/icons/logo.svg",
         "width": 512,
         "height": 512,
-        "alt": "30-Day Whole Food Plan app (coming soon)"
+        "alt": "30-Day Whole Food Plan app"
       },
-      "notifySubject": "Notify me: 30-Day Whole Food Plan",
-      "actions": []
+      "actions": [
+        {
+          "kind": "link",
+          "label": "Buy app, $9.99",
+          "href": "https://buy.stripe.com/dRm6oHdGW4SJgtQbv34ko03",
+          "variant": "primary",
+          "newTab": true
+        },
+        {
+          "kind": "link",
+          "label": "Program details",
+          "href": "/whole-food-plan/",
+          "variant": "secondary",
+          "newTab": false
+        }
+      ],
+      "price": "$9.99"
     },
     {
       "id": "doing-a-5k",
@@ -112,34 +127,30 @@
       "tagline": "Go from walking to your first 5K in 8 to 12 weeks.",
       "description": "Walk-run your way to a 5K finish line with a plan sized to your schedule.",
       "learnMoreHref": "/doing-a-5k/",
-      "status": "coming_soon",
+      "status": "available",
       "image": {
         "svg": "/icons/logo.svg",
         "width": 512,
         "height": 512,
-        "alt": "Doing a 5K app (coming soon)"
+        "alt": "Doing a 5K app"
       },
-      "notifySubject": "Notify me: Doing a 5K",
-      "actions": []
-    },
-    {
-      "id": "75-adaptive",
-      "learnMoreHref": "/75-adaptive/",
-      "catalogSection": "programs",
-      "type": "app",
-      "typeLabel": "App",
-      "title": "75 Adaptive",
-      "tagline": "Show up every day, your way.",
-      "description": "75 days of daily movement, nutrition and habit tasks flexible to your schedule — no restart if you miss a day.",
-      "status": "coming_soon",
-      "image": {
-        "svg": "/icons/logo.svg",
-        "width": 512,
-        "height": 512,
-        "alt": "75 Adaptive app (coming soon)"
-      },
-      "notifySubject": "Notify me: 75 Adaptive",
-      "actions": []
+      "actions": [
+        {
+          "kind": "link",
+          "label": "Buy app, $6.99",
+          "href": "https://buy.stripe.com/14A6oH32iclb6TgeHf4ko04",
+          "variant": "primary",
+          "newTab": true
+        },
+        {
+          "kind": "link",
+          "label": "Program details",
+          "href": "/doing-a-5k/",
+          "variant": "secondary",
+          "newTab": false
+        }
+      ],
+      "price": "$6.99"
     },
     {
       "id": "5k-to-half-marathon",
@@ -160,6 +171,72 @@
       "actions": []
     },
     {
+      "id": "5k-2-pack",
+      "catalogSection": "programs",
+      "type": "bundle",
+      "typeLabel": "Bundle",
+      "title": "5K 2-Pack",
+      "tagline": "Both running plans for one price.",
+      "description": "Get Doing a 5K and 5K to Half Marathon together: start with your first 5K, then build to 13.1 miles.",
+      "note": "Includes: Doing a 5K + 5K to Half Marathon.",
+      "price": "$9.99",
+      "status": "checkout_pending",
+      "bundleIncludes": [
+        "doing-a-5k",
+        "5k-to-half-marathon"
+      ],
+      "image": {
+        "svg": "/icons/logo.svg",
+        "width": 512,
+        "height": 512,
+        "alt": "5K 2-Pack: Doing a 5K and 5K to Half Marathon"
+      },
+      "actions": [
+        {
+          "kind": "checkout_pending",
+          "label": "Buy 2-pack, $9.99",
+          "href": "#stripe-link-pending-5k-2pack",
+          "variant": "primary",
+          "pendingNote": "Checkout link pending"
+        }
+      ]
+    },
+    {
+      "id": "75-adaptive",
+      "learnMoreHref": "/75-adaptive/",
+      "catalogSection": "programs",
+      "type": "app",
+      "typeLabel": "App",
+      "title": "75 Adaptive",
+      "tagline": "Show up every day, your way.",
+      "description": "75 days of daily movement, nutrition and habit tasks flexible to your schedule — no restart if you miss a day.",
+      "status": "checkout_pending",
+      "image": {
+        "svg": "/icons/logo.svg",
+        "width": 512,
+        "height": 512,
+        "alt": "75 Adaptive app"
+      },
+      "notifySubject": "Notify me: 75 Adaptive",
+      "actions": [
+        {
+          "kind": "checkout_pending",
+          "label": "Buy app, $9.99",
+          "href": "#stripe-link-pending-75-adaptive",
+          "variant": "primary",
+          "pendingNote": "Checkout link pending"
+        },
+        {
+          "kind": "link",
+          "label": "Program details",
+          "href": "/75-adaptive/",
+          "variant": "secondary",
+          "newTab": false
+        }
+      ],
+      "price": "$9.99"
+    },
+    {
       "id": "75-all-in",
       "learnMoreHref": "/75-all-in/",
       "catalogSection": "programs",
@@ -168,15 +245,31 @@
       "title": "75 All-In",
       "tagline": "All in. No days off.",
       "description": "75 straight days with every daily task completed. Miss a day and you start the 75 days over.",
-      "status": "coming_soon",
+      "status": "checkout_pending",
       "image": {
         "svg": "/icons/logo.svg",
         "width": 512,
         "height": 512,
-        "alt": "75 All-In app (coming soon)"
+        "alt": "75 All-In app"
       },
       "notifySubject": "Notify me: 75 All-In",
-      "actions": []
+      "actions": [
+        {
+          "kind": "checkout_pending",
+          "label": "Buy app, $9.99",
+          "href": "#stripe-link-pending-75-all-in",
+          "variant": "primary",
+          "pendingNote": "Checkout link pending"
+        },
+        {
+          "kind": "link",
+          "label": "Program details",
+          "href": "/75-all-in/",
+          "variant": "secondary",
+          "newTab": false
+        }
+      ],
+      "price": "$9.99"
     }
   ]
 }

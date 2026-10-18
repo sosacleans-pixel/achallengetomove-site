@@ -21,9 +21,39 @@
     return "mailto:" + NOTIFY_EMAIL + "?" + q.toString();
   }
 
+  const REFUND_HTML =
+    '<p class="buy-refund"><small>You can request a full refund within 3 days (72 hours) of purchase by emailing ' +
+    '<a class="text-link" href="mailto:coachsalimheyaime@gmail.com?subject=Refund+request">coachsalimheyaime@gmail.com</a>. ' +
+    "After that, all sales are final. Refunds go to the original payment method.</small></p>";
+
+  function isBuyAction(action) {
+    return (
+      action.kind === "checkout_pending" ||
+      (action.kind === "link" && /^https:\/\/buy\.stripe\.com\//.test(action.href || ""))
+    );
+  }
+
+  /* Placeholder buy button: visibly disabled, not clickable, not a buy.stripe.com link (so no GA hit). */
+  function renderPendingCheckout(action, product, btnCls) {
+    return (
+      '<span class="checkout-pending-wrap">' +
+      '<a class="' + btnCls + ' btn-checkout-soon btn-checkout-pending" href="' +
+      escapeHtml(action.href || "#") +
+      '" data-product="' + escapeHtml(product.id || "") +
+      '" aria-disabled="true" tabindex="-1" title="Checkout link pending">' +
+      escapeHtml(action.label) +
+      "</a>" +
+      '<small class="checkout-pending-note">' + escapeHtml(action.pendingNote || "Checkout link pending") + "</small>" +
+      "</span>"
+    );
+  }
+
   function badge(status) {
     if (status === "coming_soon") {
       return '<span class="badge badge-soon">Coming soon</span>';
+    }
+    if (status === "checkout_pending") {
+      return '<span class="badge badge-soon">Checkout pending</span>';
     }
     return '<span class="badge badge-live">Available now</span>';
   }
@@ -67,11 +97,20 @@
             '" href="' +
             escapeHtml(action.href) +
             '"' +
+            (isBuyAction(action) ? ' data-product="' + escapeHtml(product.id || "") + '"' : "") +
             target +
             rel +
             ">" +
             escapeHtml(action.label) +
             "</a>"
+        );
+      } else if (action.kind === "checkout_pending") {
+        parts.push(
+          renderPendingCheckout(
+            action,
+            product,
+            action.variant === "secondary" ? "btn btn-secondary btn-small" : "btn btn-primary btn-small"
+          )
         );
       } else if (action.kind === "checkout_placeholder") {
         parts.push(
@@ -84,7 +123,14 @@
 
     if (!parts.length) return "";
 
-    return '<div class="program-card-footer"><div class="card-actions">' + parts.join("") + "</div></div>";
+    const hasBuy = product.actions.some(isBuyAction);
+    return (
+      '<div class="program-card-footer"><div class="card-actions">' +
+      parts.join("") +
+      "</div>" +
+      (hasBuy ? REFUND_HTML : "") +
+      "</div>"
+    );
   }
 
   function renderFeaturedIcon(product) {
