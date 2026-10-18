@@ -12,13 +12,13 @@
       "id": "supplements",
       "title": "Supplements",
       "comingSoon": true,
-      "blurb": "Nutrition support to complement your training — launching here soon."
+      "blurb": "Nutrition support to complement your training \u2014 launching here soon."
     },
     {
       "id": "activewear",
       "title": "Activewear",
       "comingSoon": true,
-      "blurb": "Gear built for daily movement — launching here soon."
+      "blurb": "Gear built for daily movement \u2014 launching here soon."
     }
   ],
   "products": [
@@ -28,7 +28,7 @@
       "type": "book",
       "typeLabel": "Paperback",
       "title": "A Challenge to Move: Your 22-Day Roadmap to Move Better and Feel Better",
-      "description": "Your practical guide to building a daily movement habit in just seven minutes a day — the foundation of the brand.",
+      "description": "Your practical guide to building a daily movement habit in just seven minutes a day \u2014 the foundation of the brand.",
       "note": "Includes the 22-Day 7-Minute Workout app",
       "status": "available",
       "image": {
@@ -50,7 +50,6 @@
     },
     {
       "id": "22-day-workout-app",
-      "homeFeatured": true,
       "learnMoreHref": "/22-day-7-minute-workout/",
       "catalogSection": "programs",
       "type": "app",
@@ -81,42 +80,15 @@
           "href": "https://buy.stripe.com/6oU3cvauKetj5PcaqZ4ko02",
           "variant": "primary",
           "newTab": true
-        }
-      ]
-    },
-    {
-      "id": "whole-food-app",
-      "catalogSection": "programs",
-      "type": "app",
-      "typeLabel": "App",
-      "title": "30-Day Whole Food Plan",
-      "tagline": "Reset how you eat in 30 days, one simple step at a time.",
-      "description": "30 days of whole-food eating with guided reintroduction after, so you learn what works for your body.",
-      "learnMoreHref": "/whole-food-plan/",
-      "status": "available",
-      "image": {
-        "svg": "/icons/logo.svg",
-        "width": 512,
-        "height": 512,
-        "alt": "30-Day Whole Food Plan app"
-      },
-      "actions": [
-        {
-          "kind": "link",
-          "label": "Buy app, $9.99",
-          "href": "https://buy.stripe.com/dRm6oHdGW4SJgtQbv34ko03",
-          "variant": "primary",
-          "newTab": true
         },
         {
           "kind": "link",
           "label": "Program details",
-          "href": "/whole-food-plan/",
+          "href": "/22-day-7-minute-workout/",
           "variant": "secondary",
           "newTab": false
         }
-      ],
-      "price": "$9.99"
+      ]
     },
     {
       "id": "doing-a-5k",
@@ -151,6 +123,40 @@
         }
       ],
       "price": "$6.99"
+    },
+    {
+      "id": "whole-food-app",
+      "catalogSection": "programs",
+      "type": "app",
+      "typeLabel": "App",
+      "title": "30-Day Whole Food Plan",
+      "tagline": "Reset how you eat in 30 days, one simple step at a time.",
+      "description": "30 days of whole-food eating with guided reintroduction after, so you learn what works for your body.",
+      "learnMoreHref": "/whole-food-plan/",
+      "status": "available",
+      "image": {
+        "svg": "/icons/logo.svg",
+        "width": 512,
+        "height": 512,
+        "alt": "30-Day Whole Food Plan app"
+      },
+      "actions": [
+        {
+          "kind": "link",
+          "label": "Buy app, $9.99",
+          "href": "https://buy.stripe.com/dRm6oHdGW4SJgtQbv34ko03",
+          "variant": "primary",
+          "newTab": true
+        },
+        {
+          "kind": "link",
+          "label": "Program details",
+          "href": "/whole-food-plan/",
+          "variant": "secondary",
+          "newTab": false
+        }
+      ],
+      "price": "$9.99"
     },
     {
       "id": "5k-to-half-marathon",
@@ -209,7 +215,7 @@
       "typeLabel": "App",
       "title": "75 Adaptive",
       "tagline": "Show up every day, your way.",
-      "description": "75 days of daily movement, nutrition and habit tasks flexible to your schedule — no restart if you miss a day.",
+      "description": "75 days of daily movement, nutrition and habit tasks flexible to your schedule \u2014 no restart if you miss a day.",
       "status": "checkout_pending",
       "image": {
         "svg": "/icons/logo.svg",
