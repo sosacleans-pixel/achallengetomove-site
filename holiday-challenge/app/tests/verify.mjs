@@ -6,7 +6,9 @@
  *      HC_ONLY=1,2,8 to run only some sections (default: all). Section 0 (privacy/network checks) and the
  *      final "no off-origin requests" / "no JS errors" checks always run.
  * Sections: 1-9 live challenge, 10 late-join goal, 11 self-paced edition, 12 Spanish (EN/ES key parity, switch,
- *   390px overflow), 13 Consumer Health Data Privacy Policy (app link + site page + footers).
+ *   390px overflow), 13 Consumer Health Data Privacy Policy page (/privacy/consumer-health-data/, links, sitemap),
+ *   14 bold negligence release, 15 protected days = make-up days after Day 30, 16 no GA on holiday pages / checkout path,
+ *   17 Notify-me unchecked opt-in (FormSubmit stubbed).
  * Date override: CONFIG.allowDateOverride is false in the shipped app. Tests that need ?date= call
  * newPage(..., { dateOverride: true }), which intercepts js/config.js in that test browser only.
  */
@@ -288,8 +290,8 @@ if (run(7)) {
   await page.goto(BASE + "index.html#/moves").catch(() => {});
   await page.waitForSelector(".move-card", { timeout: 15000 }).catch(() => {});
   check("offline navigation works (Moves)", (await page.locator(".move-card").count()) > 20);
-  const cached = await page.evaluate(async () => { const keys = await caches.keys(); const c = await caches.open("holiday-30-v3"); return { keys, urls: (await c.keys()).map((r) => new URL(r.url).pathname) }; });
-  check("service worker cache is holiday-30-v3", cached.keys.includes("holiday-30-v3"), cached.keys.join(","));
+  const cached = await page.evaluate(async () => { const keys = await caches.keys(); const c = await caches.open("holiday-30-v4"); return { keys, urls: (await c.keys()).map((r) => new URL(r.url).pathname) }; });
+  check("service worker cache is holiday-30-v4", cached.keys.includes("holiday-30-v4"), cached.keys.join(","));
   check("fonts are in the offline cache", ["anton-v27-latin-400", "lato-v25-latin-400", "lato-v25-latin-700", "lato-v25-latin-900"].every((f) => cached.urls.some((u) => u.endsWith(`/fonts/${f}.woff2`))));
   await ctx.close();
 }
@@ -532,7 +534,10 @@ if (run(12)) {
   check("program: every display string is translated (exercise names included)", untranslated.length === 0, untranslated.slice(0, 5).join(" | "));
   check("program: Spanish exercise names are sensible", PES.library.SQ.name === "Sentadilla" && PES.library.PU.name === "Flexión de brazos" && PES.library.HG.name === "Bisagra de cadera" && PES.library.RW.name === "Remo");
   const esSrc = readFileSync(join(appDir, "js", "strings.es.js"), "utf8");
-  check("strings.es.js: legal text marked 'Spanish legal text pending attorney review'", /^\/\/ Spanish legal text pending attorney review/.test(esSrc) && /=+ Spanish legal text pending attorney review =+/.test(esSrc));
+  const STATUS = "Spanish legal text reviewed 2026-10-18 (legal-review-es-notes.md); pending final sign-off by a Utah attorney and a native-speaker legal translator";
+  check("strings.es.js: legal text marked with its review status (reviewed, pending final sign-off)", esSrc.startsWith("// " + STATUS) && esSrc.includes("// ===== " + STATUS + " =====") && !/pending attorney review/.test(esSrc));
+  check("legal draft notices show the review status (EN + ES)", EN.legal.draft.includes("reviewed October 18, 2026, pending final sign-off by a Utah attorney") && ES.legal.draft.includes("revisado el 18 de octubre de 2026") && ES.legal.draft.includes("prevalece la versión en inglés"));
+  check("reviewed ES release wording in place", ES.legal.terms[3][0] === "EXONERACIÓN DE RESPONSABILIDAD, INCLUIDA LA NEGLIGENCIA" && ES.legal.terms[3][1].includes("ESTA EXONERACIÓN INCLUYE LOS RECLAMOS BASADOS EN LA NEGLIGENCIA DE COACH SALIM HEYAIME LLC") && !/cedes/.test(ES.legal.terms[3][1]) && ES.legal.terms[12][1].includes("prevalece la versión en inglés"));
   check("ES refund keeps the approved meaning (3 days, final, converts to self-paced after Dec 24)", ES.legal.refund[1][1].includes("dentro de los 3 días (72 horas)") && ES.legal.refund[1][1].includes("se convierte en la edición a tu ritmo después del 24 de diciembre") && ES.legal.refund[1][1].includes("coachsalimheyaime@gmail.com"));
   check("'X-mas' spelling in both languages", EN.appName.includes("X-mas") && ES.appName.includes("X-mas") && !/\bXmas\b|X-Mas|X mas/.test(JSON.stringify(EN) + JSON.stringify(ES)));
 
@@ -633,45 +638,209 @@ if (run(12)) {
   check("ES UI renders with no overflow at 390px (welcome, setup, every legal screen, days, moves, plan, progress, more, done, self-paced)", Object.keys(bad).length === 0, JSON.stringify(bad).slice(0, 400));
 }
 
-// 13. Consumer Health Data Privacy Policy: site section + footers + link from the app's Privacy screen
+// 13. Consumer Health Data Privacy Policy: standalone page + /privacy/ pointer + every footer + the app's Privacy screen
+const CHD_URL = "/privacy/consumer-health-data/";
 if (run(13)) {
   const { CONFIG } = await import(new URL("../js/config.js", import.meta.url).href);
   for (const l of ["en-US", "es-MX"]) {
     const { ctx, page } = await newPage("2026-11-10T10:00:00", undefined, { locale: l });
     await page.goto(BASE + "index.html#/legal/privacy");
     await page.waitForSelector("#chd-link");
-    check(`[${l}] app Privacy screen links the Consumer Health Data Privacy Policy`, (await page.getAttribute("#chd-link", "href")) === "/privacy/#consumer-health-data" && CONFIG.consumerHealthPolicyUrl === "/privacy/#consumer-health-data");
+    check(`[${l}] app Privacy screen links the standalone CHD page`, (await page.getAttribute("#chd-link", "href")) === CHD_URL && CONFIG.consumerHealthPolicyUrl === CHD_URL);
     await ctx.close();
   }
-  const html = readFileSync(join(siteRoot, "privacy", "index.html"), "utf8");
-  const m = html.match(/<h2 id="consumer-health-data">([\s\S]*?)(?=<h2>Questions<\/h2>)/);
-  const sec = m ? m[0].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ") : "";
-  check("site /privacy/: 'Consumer Health Data Privacy Policy' section with id consumer-health-data", /<h2 id="consumer-health-data">Consumer Health Data Privacy Policy<\/h2>/.test(html));
+  const html = readFileSync(join(siteRoot, "privacy", "consumer-health-data", "index.html"), "utf8");
+  const main = (html.match(/<main[\s\S]*?<\/main>/) || [""])[0];
+  const sec = main.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+  check("CHD page: /privacy/consumer-health-data/ with the policy as its h1", /<h1 id="consumer-health-data">Consumer Health Data Privacy Policy<\/h1>/.test(html) && /<link rel="canonical" href="https:\/\/achallengetomove\.com\/privacy\/consumer-health-data\/">/.test(html));
+  check("CHD page: effective date is the [PUBLISH DATE] placeholder", /Effective date: \[PUBLISH DATE\]\./.test(sec) && !/Effective date: October/.test(sec));
+  check("CHD page: styled like /privacy/ (site stylesheet, header, footer, page-simple)", /href="\/styles\.css"/.test(html) && /class="site-header"/.test(html) && /class="wrap page-simple chd-page"/.test(html) && /<footer class="footer">/.test(html));
+  check("CHD page: no Google Analytics", !/ga\.js|gtag|googletagmanager/.test(html));
   const need = [["collects name, email, purchase and gift details via Stripe", /name, your email address and your purchase details/.test(sec) && /gift/.test(sec) && /Stripe/.test(sec)],
     ["purpose: deliver the purchase and access", /deliver your purchase and your access/.test(sec)],
     ["never sold, never used for advertising", /never sell/.test(sec) && /advertising/.test(sec)],
     ["workout and health inputs stay on the device", /saved only in your own browser on your device/.test(sec) && /not sent to us/.test(sec)],
     ["access and delete by emailing coachsalimheyaime@gmail.com", /access/i.test(sec) && /delete/.test(sec) && /coachsalimheyaime@gmail\.com/.test(sec)],
-    ["marketing email only with a separate unchecked opt-in", /separate checkbox that is never checked for you/.test(sec)],
+    ["marketing email only on request; unchecked checkbox", /separate checkbox that is never checked for you/.test(sec)],
     ["applies to Washington, Nevada and similar states", /Washington, Nevada and other states with similar/.test(sec)],
+    ["reviewed sections present (sources, sharing, tracking, rights, appeals, changes)", ["Where the data comes from", "Who we share it with", "Tracking over time and across websites", "Your rights and how to use them", "Appeals.", "Changes to this policy"].every((h) => sec.includes(h))],
     ["business name, no banned contacts", /Coach Salim Heyaime LLC/.test(sec) && !/workforcewellness/i.test(html)]];
-  for (const [n, ok] of need) check(`site /privacy/ CHD section: ${n}`, ok);
+  for (const [n, ok] of need) check(`CHD page: ${n}`, ok);
+  const priv = readFileSync(join(siteRoot, "privacy", "index.html"), "utf8");
+  check("/privacy/: CHD section replaced by a short pointer to the new page", !/id="consumer-health-data"/.test(priv) && /is on its own page: <a class="text-link" href="\/privacy\/consumer-health-data\/">Consumer Health Data Privacy Policy<\/a>/.test(priv) && !/Never sold, never used for advertising/.test(priv));
+  check("sitemap lists /privacy/consumer-health-data/", readFileSync(join(siteRoot, "sitemap.xml"), "utf8").includes("<loc>https://achallengetomove.com/privacy/consumer-health-data/</loc>"));
   const pages = [];
   const walk4 = (d) => readdirSync(d).forEach((f) => { const p = join(d, f); if ([".git", "node_modules", "holiday-challenge"].includes(f)) return; statSync(p).isDirectory() ? walk4(p) : f.endsWith(".html") && pages.push(p); });
   walk4(siteRoot);
   const withFooter = pages.filter((f) => /<nav class="footer-nav"/.test(readFileSync(f, "utf8")));
-  const missing = withFooter.filter((f) => !/<nav class="footer-nav"[\s\S]*?<a href="\/privacy\/#consumer-health-data">Consumer Health Data Privacy Policy<\/a>[\s\S]*?<\/nav>/.test(readFileSync(f, "utf8")));
-  check("every site footer (homepage + shared layout) links the CHD policy", withFooter.length >= 10 && withFooter.some((f) => f === join(siteRoot, "index.html")) && missing.length === 0, missing.map((f) => f.replace(siteRoot, "")).join(", "));
-  // render the site section at 390px (separate request log: the site's own GA4 + Google Fonts are left alone and blocked here)
+  const missing = withFooter.filter((f) => !/<nav class="footer-nav"[\s\S]*?<a href="\/privacy\/consumer-health-data\/">Consumer Health Data Privacy Policy<\/a>[\s\S]*?<\/nav>/.test(readFileSync(f, "utf8")));
+  const oldAnchor = pages.filter((f) => readFileSync(f, "utf8").includes("/privacy/#consumer-health-data"));
+  check("every site footer (homepage, the 10 shared-layout pages, the CHD page) links /privacy/consumer-health-data/", withFooter.length === 12 && withFooter.includes(join(siteRoot, "index.html")) && missing.length === 0 && oldAnchor.length === 0, `footers=${withFooter.length} missing=${missing.map((f) => f.replace(siteRoot, "")).join(",")} old=${oldAnchor.length}`);
   const siteReqs = [];
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: "block" });
   trackRequests(ctx, siteReqs);
   await ctx.route((url) => new URL(url).origin !== ORIGIN, (route) => route.abort());
   const page = await ctx.newPage();
-  await page.goto(`${ORIGIN}/privacy/#consumer-health-data`);
-  await page.waitForSelector("#consumer-health-data");
-  const fit = await page.evaluate(() => { const vw = document.documentElement.clientWidth; return document.documentElement.scrollWidth <= vw + 1; });
-  check("site CHD section fits 390px", fit);
+  await page.goto(`${ORIGIN}/`);
+  await page.waitForLoadState("load");
+  siteReqs.length = 0; // only count what the CHD page itself loads
+  await page.click('footer a[href="/privacy/consumer-health-data/"]');
+  await page.waitForSelector("h1#consumer-health-data");
+  check("homepage footer link opens the CHD page", new URL(page.url()).pathname === CHD_URL);
+  check("CHD page fits 390px", await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1));
+  check("CHD page loads no GA", !siteReqs.some((u) => /googletagmanager|google-analytics/.test(u)) && (await page.evaluate(() => typeof window.gtag)) === "undefined");
+  await ctx.close();
+}
+
+// 14. Bold release: the negligence release renders in bold caps in the Terms and in the setup checkbox (EN + ES)
+if (run(14)) {
+  for (const [l, SS] of [["en-US", (await import(new URL("../js/strings.en.js", import.meta.url).href)).S], ["es-MX", (await import(new URL("../js/strings.es.js", import.meta.url).href)).S]]) {
+    const caps = SS.legal.terms[3][1].match(/[A-ZÁÉÍÓÚÑÜ][A-ZÁÉÍÓÚÑÜ0-9 ,.'\-]{24,}\./)[0];
+    const { ctx, page } = await newPage("2026-11-10T10:00:00", undefined, { locale: l });
+    await page.goto(BASE + "index.html#/legal/terms");
+    await page.waitForSelector("#legal-terms");
+    const strong = await page.$$eval("#legal-terms p strong", (els) => els.map((e) => [e.textContent, getComputedStyle(e).fontWeight]));
+    check(`[${l}] Terms: the negligence release sentence (and only it) is bold caps`, strong.length === 1 && strong[0][0] === caps && Number(strong[0][1]) >= 700 && caps === caps.toUpperCase() && /NEGLIGEN/.test(caps), JSON.stringify(strong));
+    const tags = await page.$$eval("#legal-terms h2.legal-h + p", (ps) => [...new Set(ps.flatMap((p) => [...p.querySelectorAll("*")].map((e) => e.tagName)))]);
+    check(`[${l}] Terms bodies: only <strong> is added (no other markup from strings)`, tags.every((t) => t === "STRONG"), tags.join(","));
+    await page.evaluate(() => { const b = document.querySelector("#legal-terms h2.legal-h + p strong"); if (b) b.scrollIntoView({ block: "center" }); });
+    if (l === "en-US") await shot(page, "terms-bold-release-en-390.png"); else await shot(page, "terms-bold-release-es-390.png");
+    await page.goto(BASE + "index.html#/today");
+    await page.click("#start-setup");
+    await page.check("#age-ok"); await page.click("#setup-next");
+    for (let i = 0; i < 6; i++) await page.check(`input[name=q${i}][value=no]`);
+    await page.click("#setup-next"); await page.click("#setup-next"); await page.click("#setup-next");
+    await page.waitForSelector("#terms-label");
+    const lab = await page.$eval("#terms-label", (e) => [e.tagName, e.textContent, getComputedStyle(e).fontWeight, e.children.length]);
+    check(`[${l}] setup checkbox label is bold, plain text, with NEGLIGENCIA/NEGLIGENCE of the LLC in caps`, lab[0] === "STRONG" && lab[1] === SS.setup.termsLabel && Number(lab[2]) >= 700 && lab[3] === 0 && (l === "en-US" ? lab[1].includes("NEGLIGENCE of Coach Salim Heyaime LLC") : lab[1].includes("NEGLIGENCIA de Coach Salim Heyaime LLC")));
+    const o = await overflowOn(page); check(`[${l}] setup terms step fits 390px`, o.length === 0, o.slice(0, 3).join(" | "));
+    await page.evaluate(() => document.getElementById("terms-label").scrollIntoView({ block: "center" }));
+    if (SHOTS) await page.screenshot({ path: join(SHOTS, `setup-bold-release-${l === "en-US" ? "en" : "es"}-390.png`) });
+    await ctx.close();
+  }
+  const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const em = (t) => esc(t).replace(/([A-ZÁÉÍÓÚÑÜ][A-ZÁÉÍÓÚÑÜ0-9 ,.'\-]{24,}[.])/g, "<strong>$1</strong>");
+  check("bold helper escapes markup first (an injected tag stays text)", em('<IMG SRC=X ONERROR=ALERT(1)> THIS IS A LONG CAPS SENTENCE HERE.') === "&lt;IMG SRC=X ONERROR=ALERT(1)&gt;<strong> THIS IS A LONG CAPS SENTENCE HERE.</strong>" || !/<img/i.test(em('<img src=x onerror=alert(1)> THIS IS A LONG CAPS SENTENCE HERE.')));
+  check("app.js uses the reviewed bold patch on escaped text", /const em = \(t\) => esc\(t\)\.replace\(/.test(readFileSync(join(appDir, "js", "app.js"), "utf8")));
+}
+
+// 15. Protected days: each (up to 7) adds one make-up day after Day 30; nothing "pauses"
+if (run(15)) {
+  const EN = (await import(new URL("../js/strings.en.js", import.meta.url).href)).S;
+  const ES = (await import(new URL("../js/strings.es.js", import.meta.url).href)).S;
+  check("protected-day copy matches the reviewed EN/ES text", EN.self.protectedDay === "Protected day. It doesn't count as missed, and it gives you one extra day after Day 30 to log a make-up day (up to 7 extra days)." && ES.self.protectedDay === "Día protegido. No cuenta como día perdido y te da un día extra después del Día 30 para registrar un día de reposición (hasta 7 días extra)." && EN.day.protectedDay === "Protected day. It doesn't count as missed, and it gives you one extra day after Dec 24 to log a make-up day (up to Dec 31)." && ES.day.protectedDay === "Día protegido. No cuenta como día perdido y te da un día extra después del 24 de diciembre para registrar un día de reposición (hasta el 31 de dic.).");
+  check("no 'pauses your window' copy left (EN/ES)", !/pauses your window|pausa tu periodo/i.test(JSON.stringify(EN) + JSON.stringify(ES)));
+  for (const [l, SS] of [["en-US", EN], ["es-MX", ES]]) {
+    const { ctx, page } = await newPage("2027-01-20T10:00:00", undefined, { locale: l });
+    await seed(page, baseState({ mode: "self", startDate: "2027-01-10", joinedDate: "2027-01-10", days: { 1: { status: "core" }, 5: { status: "protected" } } }));
+    await page.click("#stop-log"); await page.click("#stop-confirm");
+    await page.waitForSelector(".status-card.protected");
+    check(`[${l}] self-paced protected day shows the reviewed copy`, (await page.textContent(".status-card.protected")).includes(SS.self.protectedDay));
+    const o = await overflowOn(page); check(`[${l}] protected-day screen fits 390px`, o.length === 0, o.slice(0, 3).join(" | "));
+    if (SHOTS) { await page.waitForTimeout(3500); await page.evaluate(() => { const c = document.querySelector(".status-card"); if (c) c.scrollIntoView({ block: "center" }); }); }
+    await shot(page, `protected-day-${l === "en-US" ? "en" : "es"}-390.png`);
+    await ctx.close();
+  }
+  const R = await import(new URL("../js/rules.js", import.meta.url).href);
+  const mk = (p) => { const d = {}; for (let n = 1; n <= p; n++) d[n] = { status: "protected" }; return { setupDone: true, mode: "self", startDate: "2027-01-01", joinedDate: "2027-01-01", days: d, makeup: [] }; };
+  check("self-paced: 1 protected day = 1 make-up day after Day 30; 9 protected = 7 (cap)", R.endOf(mk(0)) === "2027-01-30" && R.deadline(mk(0)) === "2027-01-30" && R.deadline(mk(1)) === "2027-01-31" && R.deadline(mk(7)) === "2027-02-06" && R.deadline(mk(9)) === "2027-02-06");
+  // the 30 dated days don't shift: Day 15 is still Jan 15 with protected days before it
+  const st = mk(5); check("protected days don't shift the dated days", R.dateFor(st, 15) === "2027-01-15");
+  // make-up days: one per day, only after Day 30, until the deadline
+  const days = {}; for (let n = 1; n <= 20; n++) days[n] = { status: "core" }; days[21] = { status: "protected" };
+  const { ctx, page } = await newPage("2027-02-01T10:00:00");
+  await seed(page, baseState({ mode: "self", startDate: "2027-01-01", joinedDate: "2027-01-01", days }));
+  await page.waitForSelector(".done-hero");
+  check("1 protected day: no make-up day 2 days after Day 30 (window was Jan 31 only)", !(await page.isVisible("#log-makeup")));
+  await ctx.close();
+  const c2 = await newPage("2027-01-31T10:00:00");
+  await seed(c2.page, baseState({ mode: "self", startDate: "2027-01-01", joinedDate: "2027-01-01", days }));
+  await c2.page.waitForSelector(".done-hero");
+  check("1 protected day: make-up day open on Jan 31, with a warning on the keep-going offer", (await c2.page.isVisible("#log-makeup")) && (await c2.page.isVisible("#keep-going-warn")));
+  await c2.page.click("#log-makeup"); await c2.page.waitForSelector("#done-complete");
+  check("make-up day counts toward the goal", (await c2.page.textContent("#done-complete")).trim() === "21");
+  await c2.ctx.close();
+}
+
+// 16. Site GA: never on holiday pages or the holiday checkout path; buy_app_click has no product param
+if (run(16)) {
+  const holidayHtml = [];
+  const walk5 = (d) => readdirSync(d).forEach((f) => { const p = join(d, f); if (["node_modules", "tests"].includes(f)) return; statSync(p).isDirectory() ? walk5(p) : f.endsWith(".html") && holidayHtml.push(p); });
+  walk5(join(siteRoot, "holiday-challenge"));
+  check("no /holiday-challenge/ page includes GA or gtag", holidayHtml.length > 0 && holidayHtml.every((f) => !/ga\.js|gtag|googletagmanager|google-analytics/.test(readFileSync(f, "utf8"))), holidayHtml.map((f) => f.replace(siteRoot, "")).join(","));
+  const gaSrc = readFileSync(join(siteRoot, "js", "ga.js"), "utf8");
+  check("ga.js: buy_app_click keeps its name and sends no product parameter", /send\('buy_app_click', \{\s*link_url: u\.href,\s*transport_type: 'beacon'\s*\}\)/.test(gaSrc) && !/product:/.test(gaSrc));
+  const reqs = [];
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: "block" });
+  trackRequests(ctx, reqs);
+  await ctx.route((url) => new URL(url).origin !== ORIGIN, (route) => route.abort());
+  const stub = `<!DOCTYPE html><html><head><script src="/js/ga.js"></script></head><body><a id="buy" href="https://buy.stripe.com/test_holiday" data-product="holiday-30-days-before-xmas">Buy</a></body></html>`;
+  const holidayPaths = ["/holiday-challenge/", "/holiday-challenge/app/", "/store/holiday-30-days-before-xmas/", "/buy/holiday/", "/checkout/30-days-before-x-mas/", "/thank-you/holiday/", "/thanks/xmas/", "/30-days-before-x-mas/"];
+  for (const p of holidayPaths) await ctx.route(`${ORIGIN}${p}`, (route) => route.fulfill({ status: 200, contentType: "text/html", body: stub }));
+  const page = await ctx.newPage();
+  const gaHits = () => reqs.filter((u) => /googletagmanager|google-analytics/.test(u)).length;
+  for (const p of holidayPaths) {
+    const before = gaHits();
+    await page.goto(`${ORIGIN}${p}`);
+    await page.waitForLoadState("load");
+    const st = await page.evaluate(() => ({ gtag: typeof window.gtag, dl: (window.dataLayer || []).length }));
+    check(`no GA on ${p}`, gaHits() === before && st.gtag === "undefined" && st.dl === 0);
+  }
+  // the real app page with ga.js injected anyway: still nothing
+  await page.goto(BASE + "index.html"); await page.waitForSelector("#app-main > *");
+  const before = gaHits();
+  await page.addScriptTag({ url: "/js/ga.js" }); await page.waitForTimeout(100);
+  check("ga.js does nothing even if injected into the holiday app", gaHits() === before && (await page.evaluate(() => typeof window.gtag)) === "undefined");
+  // control: GA still loads on the homepage; buy_app_click has no product; holiday links skipped
+  await page.goto(`${ORIGIN}/`); await page.waitForLoadState("load");
+  check("GA unchanged on the homepage (gtag.js requested)", reqs.some((u) => /googletagmanager\.com\/gtag\/js\?id=G-CZNZSJ2290/.test(u)));
+  const events = await page.evaluate(() => {
+    document.addEventListener("click", (e) => e.preventDefault()); // don't leave the page
+    const mk = (href, product, text) => { const a = document.createElement("a"); a.href = href; if (product) a.setAttribute("data-product", product); a.textContent = text; document.body.appendChild(a); a.click(); };
+    mk("https://buy.stripe.com/test_22day", "22-day-workout-app", "Buy app");
+    mk("https://buy.stripe.com/test_holiday", "holiday-30-days-before-xmas", "Buy");
+    mk("https://buy.stripe.com/test_gift", "", "Gift the 30 Days Before X-mas Challenge");
+    const off = document.createElement("a"); off.href = "https://buy.stripe.com/test_off"; off.setAttribute("data-ga", "off"); off.textContent = "Buy"; document.body.appendChild(off); off.click();
+    return (window.dataLayer || []).map((a) => Array.from(a)).filter((a) => a[0] === "event").map((a) => [a[1], a[2]]);
+  });
+  const buys = events.filter(([n]) => n === "buy_app_click");
+  check("buy_app_click sent for a regular product, with no product parameter", buys.length === 1 && buys[0][1].link_url === "https://buy.stripe.com/test_22day" && !("product" in buys[0][1]), JSON.stringify(events));
+  check("holiday buy/gift links and data-ga=off links are not tracked", !events.some(([, p]) => /holiday|gift|off/.test(p?.link_url || "")));
+  const storeSrc = readFileSync(join(siteRoot, "js", "store.js"), "utf8");
+  check("store entries for the holiday product are marked data-ga=off", /product\.analytics === false \|\| \/holiday\|x-\?mas\|30-days-before\/i\.test\(product\.id/.test(storeSrc));
+  await ctx.close();
+}
+
+// 17. Notify-me: explicit unchecked opt-in; nothing is sent to FormSubmit unless it's ticked (network stubbed)
+if (run(17)) {
+  const posts = [];
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: "block" });
+  ctx.setDefaultTimeout(TIMEOUT);
+  await ctx.route((url) => new URL(url).origin !== ORIGIN, (route) => {
+    const u = new URL(route.request().url());
+    if (u.hostname === "formsubmit.co") { posts.push({ url: u.href, method: route.request().method(), body: route.request().postData() }); return route.fulfill({ status: 200, contentType: "application/json", headers: { "Access-Control-Allow-Origin": "*" }, body: JSON.stringify({ success: "true", message: "stub" }) }); }
+    return route.abort();
+  });
+  const page = await ctx.newPage();
+  await page.goto(`${ORIGIN}/#notify`);
+  await page.waitForSelector("#notify-optin");
+  const label = (await page.textContent('label[for="notify-optin"]')).replace(/\s+/g, " ").trim();
+  check("notify form: opt-in checkbox with the exact text, unchecked by default", label === "Email me when it launches and occasional updates from Coach Salim Heyaime LLC. Unsubscribe anytime." && !(await page.isChecked("#notify-optin")) && (await page.getAttribute("#notify-optin", "type")) === "checkbox");
+  await page.fill("#notify-email", "test@example.com");
+  await page.click('#notify-form button[type="submit"]');
+  await page.waitForTimeout(300);
+  check("notify form: without the tick nothing is sent and a message explains the box is needed", posts.length === 0 && /tick the box/i.test(await page.textContent("#notify-status")) && (await page.isVisible("#notify-form")));
+  if (SHOTS) { await page.evaluate(() => document.getElementById("notify").scrollIntoView()); await page.screenshot({ path: join(SHOTS, "notify-optin-unticked-390.png") }); }
+  await page.check("#notify-optin");
+  await page.click('#notify-form button[type="submit"]');
+  await page.waitForSelector("#notify-form", { state: "hidden" });
+  const body = posts[0] ? JSON.parse(posts[0].body) : {};
+  check("notify form: with the tick, one POST to the FormSubmit AJAX endpoint (stubbed) with the consent text", posts.length === 1 && posts[0].method === "POST" && posts[0].url === "https://formsubmit.co/ajax/coachsalimheyaime@gmail.com" && body.email === "test@example.com" && body.consent === "yes: Email me when it launches and occasional updates from Coach Salim Heyaime LLC. Unsubscribe anytime." && !!body.consent_at);
+  check("notify form: thank-you shown after success", /You're on the list/.test(await page.textContent("#notify-status")));
+  await page.reload(); await page.waitForSelector("#notify-optin");
+  await page.evaluate(() => document.getElementById("notify").scrollIntoView());
+  if (SHOTS) await page.screenshot({ path: join(SHOTS, "notify-optin-390.png") });
+  check("notify form fits 390px", await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1));
   await ctx.close();
 }
 
@@ -709,7 +878,7 @@ if (run(13)) {
   check("no absolute http(s) URLs loaded by app code", !/(src|href)\s*=\s*["']https?:|url\(\s*["']?https?:|import\s*\(?\s*["']https?:|fetch\(\s*["']https?:/i.test(all));
   check("shipped config has allowDateOverride: false", /allowDateOverride:\s*false/.test(configSrc));
   const sw = readFileSync(join(appDir, "sw.js"), "utf8");
-  check("sw.js cache name is holiday-30-v3", /const CACHE = "holiday-30-v3"/.test(sw));
+  check("sw.js cache name is holiday-30-v4", /const CACHE = "holiday-30-v4"/.test(sw));
   const assets = [...sw.match(/const ASSETS = \[([\s\S]*?)\];/)[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
   const runtime = [];
   const walk3 = (d, rel = "") => readdirSync(d).forEach((f) => { const p = join(d, f); const r = rel + f; if (["node_modules", "tests"].includes(f) || f.startsWith(".")) return; statSync(p).isDirectory() ? walk3(p, r + "/") : /\.(html|css|js|webmanifest|png|svg|woff2)$/.test(f) && f !== "sw.js" && runtime.push("./" + r); });

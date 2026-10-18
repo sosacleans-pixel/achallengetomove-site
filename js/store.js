@@ -96,6 +96,8 @@
               '" data-product="' +
               escapeHtml(product.id || "") +
               '"' +
+              // products.json "analytics": false (e.g. the holiday challenge) = this link is never sent to GA
+              (product.analytics === false || /holiday|x-?mas|30-days-before/i.test(product.id || "") ? ' data-ga="off"' : "") +
               target +
               rel +
               ">" +

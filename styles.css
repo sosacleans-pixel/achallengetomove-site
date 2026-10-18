@@ -1407,3 +1407,51 @@ section {
   font-size: 0.9rem;
   color: var(--charcoal);
 }
+
+/* Notify-me opt-in checkbox (unchecked by default; required to subscribe) */
+.notify-form .notify-optin {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  width: 100%;
+  font-weight: 400;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+}
+.notify-form .notify-optin input {
+  width: 1.35rem;
+  height: 1.35rem;
+  min-width: 0;
+  flex: 0 0 auto;
+  margin: 0.1rem 0 0;
+  padding: 0;
+  accent-color: var(--charcoal);
+}
+.notify-form .notify-optin input[aria-invalid="true"] {
+  outline: 3px solid var(--rust);
+  outline-offset: 2px;
+}
+
+/* Consumer Health Data Privacy Policy page (same look as /privacy/) */
+.chd-page h3 {
+  margin: 1.75rem 0 0.5rem;
+  font-size: 1.2rem;
+}
+.chd-page ul {
+  padding-left: 1.25rem;
+  margin: 0.5rem 0 1rem;
+}
+.chd-page li {
+  margin-bottom: 0.5rem;
+}
+.chd-page li strong,
+.chd-page p strong {
+  color: var(--charcoal);
+}
+
+/* Success state: hide the form once the email is accepted (display:flex was overriding [hidden]). */
+.notify-form[hidden] {
+  display: none;
+}

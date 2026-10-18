@@ -449,7 +449,7 @@ function viewDone() {
       <div class="stat"><b>${totalPoints(state)}</b><span>${esc(S.progress.points)}</span></div>
       <div class="stat"><b>${badges(state).filter(([, g]) => g).length}</b><span>${esc(S.progress.badges)}</span></div></div></section>
     <section class="card"><h2>${esc(S.tests.cardTitle)}</h2>${testCompare()}</section>
-    ${selfOffer ? `<section class="card self-card" id="keep-going-self-card"><h2>${esc(S.self.keepGoingTitle)}</h2><p>${esc(S.self.keepGoingLead)}</p><button class="btn btn-primary btn-block" id="keep-going-self">${esc(S.self.keepGoingBtn)}</button></section>` : ""}
+    ${selfOffer ? `<section class="card self-card" id="keep-going-self-card"><h2>${esc(S.self.keepGoingTitle)}</h2><p>${esc(S.self.keepGoingLead)}</p>${keepGoing ? `<p class="muted small" id="keep-going-warn">${esc(S.self.keepGoingWarn)}</p>` : ""}<button class="btn btn-primary btn-block" id="keep-going-self">${esc(S.self.keepGoingBtn)}</button></section>` : ""}
     <div class="card book-card"><p>📖 ${esc(D.book)}</p></div>
     <p class="muted small">${esc(D.experiences)}</p>
     <div class="btn-stack"><a class="btn btn-secondary btn-block" href="#/progress">${esc(D.seeProgress)}</a><a class="btn btn-secondary btn-block" href="#/day/30">${esc(S.day.dayN(30))}</a></div>`;
@@ -526,7 +526,9 @@ function downloadICS() { download("30-days-before-xmas-reminders.ics", buildICS(
 function viewLegal(which) {
   const Lg = S.legal;
   const back = `<a class="btn btn-secondary btn-small" href="javascript:history.back()">‹ ${esc(Lg.back)}</a>`;
-  const sections = (arr) => arr.map(([h, p]) => `<h2 class="legal-h">${esc(h)}</h2><p>${esc(p)}</p>`).join("");
+  // Bold any ALL-CAPS sentence (the negligence release), EN and ES. Runs on already-escaped text, so only <strong> is added.
+  const em = (t) => esc(t).replace(/([A-ZÁÉÍÓÚÑÜ][A-ZÁÉÍÓÚÑÜ0-9 ,.'\-]{24,}[.])/g, (m) => `<strong>${m}</strong>`);
+  const sections = (arr) => arr.map(([h, p]) => `<h2 class="legal-h">${esc(h)}</h2><p>${em(p)}</p>`).join("");
   const foot = `<p class="muted small">${esc(Lg.contact(CONFIG.contactEmail))}<br>${esc(Lg.company)}<br>${esc(Lg.updated)}</p>`;
   let body = "";
   if (which === "terms") body = `<h1 class="page-title">${esc(Lg.termsTitle)}</h1><p class="notice">${esc(Lg.draft)}</p>${sections(Lg.terms)}`;
@@ -572,7 +574,7 @@ function viewSetup(step) {
   if (step === 5) body = `<h1 class="page-title">${esc(St.termsTitle)}</h1><form id="setup-form"><div class="card"><p>${esc(St.termsLead)}</p>
       ${S.legal.disclaimer.map((p) => `<p class="small">${esc(p)}</p>`).join("")}
       <p class="legal-links small"><a href="#/legal/safety">${esc(St.readSafety)}</a> · <a href="#/legal/terms">${esc(St.readTerms)}</a> · <a href="#/legal/privacy">${esc(St.readPrivacy)}</a> · <a href="#/legal/refund">${esc(St.readRefund)}</a></p>
-      <label class="check-line big"><input type="checkbox" id="terms-ok" ${draft.terms ? "checked" : ""}> ${esc(St.termsLabel)}</label>
+      <label class="check-line big"><input type="checkbox" id="terms-ok" ${draft.terms ? "checked" : ""}> <strong id="terms-label">${esc(St.termsLabel)}</strong></label>
       <p class="muted small">${esc(S.welcome.purchase)}</p></div>${navBtns(St.finish)}</form>`;
   main.innerHTML = head + body;
   const err = (m) => { const e = $("#setup-err"); e.textContent = m; e.classList.remove("hidden"); };

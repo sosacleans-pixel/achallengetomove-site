@@ -5,6 +5,26 @@
  */
 (function () {
   'use strict';
+
+  /* ---- No GA on the holiday challenge or its checkout path (consumer health data, see /privacy/consumer-health-data/) ----
+     GA (gtag.js, config and every event) is skipped entirely on:
+       - /holiday-challenge/ (landing page, app and anything under it)
+       - any holiday sales, store entry, buy, checkout or thank-you page (paths below), and
+       - any page whose <html> has data-ga="off".
+     Add new holiday checkout/thank-you pages under one of these paths, or mark them data-ga="off". */
+  var NO_GA_PATHS = [
+    /^\/holiday-challenge(\/|$)/i,
+    /^\/(store|buy|checkout|thank-?you|thanks|success|gift)\/(holiday|30-days-before-x-?mas|xmas)/i,
+    /^\/(holiday|30-days-before-x-?mas|xmas)[^/]*(\/|$)/i
+  ];
+  var html = document.documentElement;
+  if ((html && html.getAttribute('data-ga') === 'off') || NO_GA_PATHS.some(function (re) { return re.test(location.pathname); })) {
+    window.gaEvent = function () {};
+    return;
+  }
+  // Holiday buy/checkout links on general pages (e.g. a store entry) are never tracked.
+  var HOLIDAY = /holiday|x-?mas|30-days-before/i;
+
   var GA_ID = 'G-CZNZSJ2290'; // <-- GA4 Measurement ID goes here
 
   if (!/^G-XXXX/i.test(GA_ID)) {
@@ -20,7 +40,8 @@
 
   /* ---- GA4 events (same names and params on every Coach Salim site) ----
      amazon_click  : link to amazon.com / a.co / amzn.to -> link_url, link_text, asin, page_location
-     buy_app_click : link to buy.stripe.com              -> link_url, product
+     buy_app_click : link to buy.stripe.com              -> link_url (no product parameter, site-wide;
+                                                           holiday links and links marked data-ga="off" are not tracked)
      generate_lead : <form data-ga-lead="form_name"> submitted (after the site's own validation)
      No names, emails or other personal data are ever sent. Links keep working as normal:
      we never call preventDefault, and transport_type 'beacon' lets the hit survive navigation. */
@@ -52,9 +73,9 @@
         transport_type: 'beacon'
       });
     } else if (u.hostname === 'buy.stripe.com') {
+      if (a.getAttribute('data-ga') === 'off' || HOLIDAY.test(a.getAttribute('data-product') || '') || HOLIDAY.test(label(a))) return;
       send('buy_app_click', {
         link_url: u.href,
-        product: a.getAttribute('data-product') || label(a),
         transport_type: 'beacon'
       });
     }

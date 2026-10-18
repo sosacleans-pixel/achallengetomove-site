@@ -1,4 +1,5 @@
-/* Notify-me sign-up: posts to FormSubmit via AJAX and shows an inline thank-you. */
+/* Notify-me sign-up: posts to FormSubmit via AJAX and shows an inline thank-you.
+   Consent: the "Email me when it launches..." checkbox starts unchecked, and nothing is sent unless it is ticked. */
 (function () {
   "use strict";
   var form = document.getElementById("notify-form");
@@ -6,6 +7,8 @@
   var email = document.getElementById("notify-email");
   var status = document.getElementById("notify-status");
   var button = form.querySelector('button[type="submit"]');
+  var optin = document.getElementById("notify-optin");
+  var OPTIN_TEXT = optin ? (optin.parentNode.textContent || "").replace(/\s+/g, " ").trim() : "";
   var ENDPOINT = "https://formsubmit.co/ajax/coachsalimheyaime@gmail.com";
 
   function say(msg) {
@@ -21,9 +24,18 @@
       return;
     }
     email.removeAttribute("aria-invalid");
+    if (!optin || !optin.checked) {
+      optin && optin.setAttribute("aria-invalid", "true");
+      say("Please tick the box above to get notified. We only add your email when the box is ticked.");
+      optin && optin.focus();
+      return;
+    }
+    optin.removeAttribute("aria-invalid");
     var honey = form.querySelector('input[name="_honey"]');
     var payload = {
       email: email.value.trim(),
+      consent: "yes: " + OPTIN_TEXT,
+      consent_at: new Date().toISOString(),
       _subject: "A Challenge to Move: notify me",
       _template: "table",
       _honey: honey ? honey.value : ""

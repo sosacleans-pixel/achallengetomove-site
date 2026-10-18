@@ -96,7 +96,8 @@ export function target(s) {
   return lateJoinTarget(joinDay(s));
 }
 
-/** Last date a make-up day can be logged. Live: Dec 24 + protected days, capped at Dec 31.
+/** Last date a make-up day can be logged. Each protected day adds one make-up day after Day 30 (nothing pauses).
+ *  Live: Dec 24 + protected days, capped at Dec 31.
  *  Self-paced: Day 30 + protected days, capped at CONFIG.selfPaced.extendDays extra days. */
 export function deadline(s) {
   const p = counts(s).protected;

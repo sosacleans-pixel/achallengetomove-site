@@ -2,7 +2,8 @@
 // Program content (days, moves) lives in program.en.js. Spanish lives in strings.es.js and program.es.js
 // with the same keys; js/i18n.js picks the language (tests/verify.mjs checks every key exists in both).
 // Functions are used where a value needs a number or name inserted.
-// LEGAL-REVIEWED DRAFT (2026-10-18): drop-in replacement for strings.en.js with the same keys and structure.
+// LEGAL-REVIEWED DRAFT (2026-10-18; Spanish pass + release/protected-day edits in legal-review-es-notes.md).
+// Pending final sign-off by a Utah attorney (Release, liability cap, venue) before launch.
 // Not legal advice. Items marked [PENDING ...] must be resolved and the brackets removed before launch.
 // See ../../legal-review-notes.md (repo root) for the change log.
 
@@ -58,12 +59,13 @@ export const S = {
     setupNote: "Self-paced edition: your Day 1 is the day you finish setup. You get 30 days from there.",
     window: (a, b) => `Self-paced · your 30 days: ${a} to ${b}`,
     planLead: "Day 1 is your start date, and each week is 7 days from there. ⚑ = flex day.",
-    protectedDay: "Protected day. It pauses your window and adds a day to finish (up to 7 extra days).",
+    protectedDay: "Protected day. It doesn't count as missed, and it gives you one extra day after Day 30 to log a make-up day (up to 7 extra days).",
     doneTitle: "You finished your 30 days.",
     restart: "You can start a new self-paced round whenever you're ready.",
     keepGoingTitle: "Keep going, self-paced",
     keepGoingLead: "Start a new self-paced round: Day 1 is today, and you get 30 days from there. Your results so far stay saved on this device.",
     keepGoingBtn: "Keep going self-paced",
+    keepGoingWarn: "Starting a new round ends any make-up days you have left.",
     pickRetest: "Pick your retest day now (Day 28, 29 or 30).",
     retestMove: "The retest can move up to 2 days earlier, or up to 3 days after Day 30. Moving it doesn't affect completion.",
     focus: {
@@ -120,7 +122,7 @@ export const S = {
     termsTitle: "Safety and terms",
     termsLead: "Please read the Safety section, the Terms (including the Assumption of Risk and Release), the Refund policy and the Privacy policy before Day 1.",
     readSafety: "Read Safety", readTerms: "Read the Terms", readPrivacy: "Privacy", readRefund: "Refund policy",
-    termsLabel: "I am 18 or older. I have read the Safety section and agree to the Terms, including the Assumption of Risk and the Release of Liability, which covers claims based on Coach Salim Heyaime LLC's negligence.",
+    termsLabel: "I am 18 or older. I have read the Safety section and agree to the Terms, including the Assumption of Risk and the Release of Liability, which covers claims based on the NEGLIGENCE of Coach Salim Heyaime LLC.",
     termsRequired: "Please tick the box to continue.",
     ageRequired: "Please confirm you are 18 or older.",
     ackRequired: "Please confirm you understand.",
@@ -148,7 +150,7 @@ export const S = {
     stopText: "Stop and rest today. If you have chest pain, trouble breathing, fainting or other severe symptoms, call 911 (or your local emergency number) now. If symptoms don't go away, contact a healthcare provider.",
     stopSigns: "Stop right away if you have: chest pain, pressure or tightness (or pain spreading to the arm, jaw, neck or back); unusual shortness of breath that doesn't settle with rest; dizziness, light-headedness, fainting or confusion; an irregular or racing heartbeat; sharp, stabbing or joint pain; numbness, tingling or loss of coordination; nausea or vomiting during effort.",
     stopConfirm: "Mark today protected",
-    protectedDay: "Protected day. It pauses your window and adds a day to finish (up to Dec 31).",
+    protectedDay: "Protected day. It doesn't count as missed, and it gives you one extra day after Dec 24 to log a make-up day (up to Dec 31).",
     protectedReason: "Other reasons a day can be protected: illness, injury, travel, caregiving, bereavement, life happens.",
     markProtected: "Mark protected (life happens)",
     completeCore: "Complete: core session ✓", completeFloor: "Complete: floor version ✓",
@@ -311,7 +313,7 @@ export const S = {
 
   legal: {
     back: "Back",
-    draft: "DRAFT pending attorney review. Not legal advice.",
+    draft: "DRAFT reviewed October 18, 2026, pending final sign-off by a Utah attorney. Not legal advice.",
     safetyTitle: "Safety (read before Day 1)",
     disclaimerTitle: "Disclaimer",
     disclaimer: [

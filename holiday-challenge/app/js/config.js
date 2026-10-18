@@ -19,11 +19,11 @@ export const CONFIG = {
     after: "2026-12-24", // first open after this local date = self-paced only
     days: 30,
     offerChoice: true, // show "start self-paced" on the welcome screen before and during the live window
-    extendDays: 7, // protected days extend a self-paced window one day each, up to this many days
+    extendDays: 7, // each protected day (up to 7) adds one make-up day after Day 30 (the 30 dated days never pause or shift)
   },
   // Book rule: 22 complete days in the 30-day window (holiday-30-day-challenge.md, Grace rule).
   requiredDays: 22,
-  // Protected days (Stop & Log, illness, travel...) extend the window one day each, up to this date.
+  // Live: each protected day (Stop & Log, illness, travel...) adds one make-up day after Dec 24, up to this date.
   extendUntil: "2026-12-31",
   // Back-log yesterday until this local hour (12 = 11:59 AM).
   backlogUntilHour: 12,
@@ -45,6 +45,6 @@ export const CONFIG = {
   contactEmail: "coachsalimheyaime@gmail.com",
   business: "Coach Salim Heyaime LLC",
   // Site page linked from the app's Privacy screen (same origin as the app).
-  consumerHealthPolicyUrl: "/privacy/#consumer-health-data",
+  consumerHealthPolicyUrl: "/privacy/consumer-health-data/",
   // No prices are shown anywhere in the app (checkout shows the price). No pixels, analytics or geofencing.
 };
