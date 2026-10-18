@@ -664,9 +664,14 @@ if (run(13)) {
     ["marketing email only on request; unchecked checkbox", /separate checkbox that is never checked for you/.test(sec)],
     ["applies to Washington, Nevada and similar states", /Washington, Nevada and other states with similar/.test(sec)],
     ["reviewed sections present (sources, sharing, tracking, rights, appeals, changes)", ["Where the data comes from", "Who we share it with", "Tracking over time and across websites", "Your rights and how to use them", "Appeals.", "Changes to this policy"].every((h) => sec.includes(h))],
+    ["Notify-me statement is exactly the attorney's sentence", sec.includes("Notify-me signups join our marketing list only if you tick the opt-in box.")],
+    ["GA statement is exactly the attorney's sentence", sec.includes("GA records that a checkout button was clicked, but not which product.")],
+    ["nothing contradicts the opt-in form or the neutral buy click", !/by submitting the Notify-me form|including which product|use it only to tell you when new challenges/i.test(sec)],
     ["business name, no banned contacts", /Coach Salim Heyaime LLC/.test(sec) && !/workforcewellness/i.test(html)]];
   for (const [n, ok] of need) check(`CHD page: ${n}`, ok);
   const priv = readFileSync(join(siteRoot, "privacy", "index.html"), "utf8");
+  const privText = priv.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+  check("/privacy/ agrees with the CHD page (opt-in; checkout click without product)", privText.includes("Notify-me signups join our marketing list only if you tick the opt-in box.") && privText.includes("GA records that a checkout button was clicked, but not which product.") && !/use it only to tell you when new challenges|Stripe checkout, or sign up to be notified \(which link/i.test(privText));
   check("/privacy/: CHD section replaced by a short pointer to the new page", !/id="consumer-health-data"/.test(priv) && /is on its own page: <a class="text-link" href="\/privacy\/consumer-health-data\/">Consumer Health Data Privacy Policy<\/a>/.test(priv) && !/Never sold, never used for advertising/.test(priv));
   check("sitemap lists /privacy/consumer-health-data/", readFileSync(join(siteRoot, "sitemap.xml"), "utf8").includes("<loc>https://achallengetomove.com/privacy/consumer-health-data/</loc>"));
   const pages = [];
@@ -769,7 +774,7 @@ if (run(16)) {
   walk5(join(siteRoot, "holiday-challenge"));
   check("no /holiday-challenge/ page includes GA or gtag", holidayHtml.length > 0 && holidayHtml.every((f) => !/ga\.js|gtag|googletagmanager|google-analytics/.test(readFileSync(f, "utf8"))), holidayHtml.map((f) => f.replace(siteRoot, "")).join(","));
   const gaSrc = readFileSync(join(siteRoot, "js", "ga.js"), "utf8");
-  check("ga.js: buy_app_click keeps its name and sends no product parameter", /send\('buy_app_click', \{\s*link_url: u\.href,\s*transport_type: 'beacon'\s*\}\)/.test(gaSrc) && !/product:/.test(gaSrc));
+  check("ga.js: buy_app_click keeps its name and sends only neutral params (no product, no link_url)", /send\('buy_app_click', neutralBuyParams\(\)\)/.test(gaSrc) && !/product:/.test(gaSrc) && !/neutralBuyParams\(\) \{[^}]*link_url/.test(gaSrc));
   const reqs = [];
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: "block" });
   trackRequests(ctx, reqs);
@@ -804,8 +809,26 @@ if (run(16)) {
     return (window.dataLayer || []).map((a) => Array.from(a)).filter((a) => a[0] === "event").map((a) => [a[1], a[2]]);
   });
   const buys = events.filter(([n]) => n === "buy_app_click");
-  check("buy_app_click sent for a regular product, with no product parameter", buys.length === 1 && buys[0][1].link_url === "https://buy.stripe.com/test_22day" && !("product" in buys[0][1]), JSON.stringify(events));
-  check("holiday buy/gift links and data-ga=off links are not tracked", !events.some(([, p]) => /holiday|gift|off/.test(p?.link_url || "")));
+  check("buy_app_click sent once for a regular product, with no product parameter", buys.length === 1 && !("product" in buys[0][1]), JSON.stringify(events));
+  check("holiday buy/gift links and data-ga=off links are not tracked", buys.length === 1 && !JSON.stringify(events).includes("holiday"));
+  // From a product page with a query string: the buy click must not name the product anywhere
+  // (no link_url/link_text, and page_location/page_title/page_referrer replaced by the neutral root).
+  await page.goto(`${ORIGIN}/22-day-7-minute-workout/?utm_content=22-day-app&product=22day`, { referer: `${ORIGIN}/75-all-in/` }); await page.waitForLoadState("load");
+  const pev = await page.evaluate(() => {
+    document.addEventListener("click", (e) => e.preventDefault());
+    const add = (href, attrs, text) => { const a = document.createElement("a"); a.href = href; for (const k in attrs) a.setAttribute(k, attrs[k]); a.textContent = text; document.body.appendChild(a); a.click(); };
+    add("https://buy.stripe.com/test_22day?client_reference_id=22-day-app", { "data-product": "22-day-workout-app" }, "Buy the 22-Day 7-Minute Workout app");
+    add("https://www.amazon.com/dp/B0HN22P5F4", { "data-ga-buy": "app" }, "Get the 22-Day app on Amazon");
+    add("https://www.amazon.com/dp/B0HN22P5F4", {}, "Buy paperback on Amazon");
+    return (window.dataLayer || []).map((a) => Array.from(a)).filter((a) => a[0] === "event").map((a) => [a[1], a[2]]);
+  });
+  const root = `${ORIGIN}/`;
+  const neutral = (p) => p && p.page_location === root && p.page_referrer === root && p.page_title === "A Challenge to Move" && !("link_url" in p) && !("link_text" in p) && !("asin" in p) && !("product" in p) && !/22|day|workout|75|utm|stripe|amazon/i.test(JSON.stringify(p).replace(root, ""));
+  const pb = pev.filter(([n]) => n === "buy_app_click");
+  check("buy_app_click from a product page (with query + referrer) sends only neutral params", pb.length === 1 && neutral(pb[0][1]), JSON.stringify(pb));
+  const am = pev.filter(([n]) => n === "amazon_click");
+  check("amazon_click on a buy-the-app link is neutral too", am.length === 2 && neutral(am[0][1]), JSON.stringify(am[0]));
+  check("amazon_click on a book link is unchanged (link_url, link_text, asin, page_location)", am.length === 2 && am[1][1].link_url === "https://www.amazon.com/dp/B0HN22P5F4" && am[1][1].asin === "B0HN22P5F4" && am[1][1].link_text === "Buy paperback on Amazon" && /22-day-7-minute-workout/.test(am[1][1].page_location), JSON.stringify(am[1]));
   const storeSrc = readFileSync(join(siteRoot, "js", "store.js"), "utf8");
   check("store entries for the holiday product are marked data-ga=off", /product\.analytics === false \|\| \/holiday\|x-\?mas\|30-days-before\/i\.test\(product\.id/.test(storeSrc));
   await ctx.close();

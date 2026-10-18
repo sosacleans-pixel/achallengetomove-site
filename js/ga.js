@@ -40,8 +40,14 @@
 
   /* ---- GA4 events (same names and params on every Coach Salim site) ----
      amazon_click  : link to amazon.com / a.co / amzn.to -> link_url, link_text, asin, page_location
-     buy_app_click : link to buy.stripe.com              -> link_url (no product parameter, site-wide;
-                                                           holiday links and links marked data-ga="off" are not tracked)
+     buy_app_click : link to buy.stripe.com              -> NOTHING that names the product (site-wide): no link_url,
+                                                           no link text, and page_location / page_title / page_referrer
+                                                           are overridden with the neutral site root, so neither the
+                                                           page path nor a query string can reveal which app it was.
+                                                           Holiday links and links marked data-ga="off" are not tracked.
+                                                           An Amazon link that buys an app (data-ga-buy="app") is sent
+                                                           as amazon_click with the same neutral params; Amazon book
+                                                           and gear clicks are unchanged.
      generate_lead : <form data-ga-lead="form_name"> submitted (after the site's own validation)
      No names, emails or other personal data are ever sent. Links keep working as normal:
      we never call preventDefault, and transport_type 'beacon' lets the hit survive navigation. */
@@ -56,6 +62,12 @@
     return t.replace(/\s+/g, ' ').trim().slice(0, 100);
   }
   var AMAZON = /(^|\.)(amazon\.com|a\.co|amzn\.to)$/i;
+  // Params for buy-the-app clicks: GA records THAT a checkout button was clicked, never which product.
+  // gtag attaches the current page URL/title/referrer to every hit by default; these overrides replace them.
+  function neutralBuyParams() {
+    var root = location.origin + '/';
+    return { page_location: root, page_referrer: root, page_title: 'A Challenge to Move', transport_type: 'beacon' };
+  }
 
   // One delegated listener (capture phase, so other handlers can't swallow it).
   document.addEventListener('click', function (e) {
@@ -63,7 +75,10 @@
     if (!a) return;
     var u;
     try { u = new URL(a.href, location.href); } catch (err) { return; }
-    if (AMAZON.test(u.hostname)) {
+    if (AMAZON.test(u.hostname) && a.getAttribute('data-ga-buy') === 'app') {
+      if (a.getAttribute('data-ga') === 'off') return;
+      send('amazon_click', neutralBuyParams());
+    } else if (AMAZON.test(u.hostname)) {
       var m = u.pathname.match(/\/dp\/([A-Z0-9]{10})(?:[/?]|$)/i);
       send('amazon_click', {
         link_url: u.href,
@@ -74,10 +89,7 @@
       });
     } else if (u.hostname === 'buy.stripe.com') {
       if (a.getAttribute('data-ga') === 'off' || HOLIDAY.test(a.getAttribute('data-product') || '') || HOLIDAY.test(label(a))) return;
-      send('buy_app_click', {
-        link_url: u.href,
-        transport_type: 'beacon'
-      });
+      send('buy_app_click', neutralBuyParams());
     }
   }, true);
 
