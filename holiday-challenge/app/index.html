@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="./css/app.css">
 </head>
 <body>
-  <!-- Hidden app: noindex, not linked from public pages, not in sitemap. No ad pixels or analytics (health-adjacent data stays on device). -->
+  <!-- Hidden app: noindex, not linked from public pages, not in sitemap. No ad pixels, analytics, location tracking or geofencing (health-adjacent data stays on device). -->
   <a class="skip-link" href="#app-main">Skip to content</a>
   <div id="debug-ribbon" class="debug-ribbon hidden" role="status"></div>
   <header class="app-header">
@@ -24,8 +24,8 @@
       <a class="app-brand" href="#/today">
         <img src="./icons/icon-192.png" width="36" height="36" alt="">
         <div>
-          <div class="app-brand-title">30 Days Before X-mas</div>
-          <p class="app-brand-sub">A Challenge to Move</p>
+          <div class="app-brand-title" id="brand-title">30 Days Before X-mas</div>
+          <p class="app-brand-sub" id="brand-sub">A Challenge to Move</p>
         </div>
       </a>
     </div>
@@ -34,7 +34,7 @@
   <div id="toast-host" class="toast-host" aria-live="polite"></div>
   <nav id="bottom-nav" class="bottom-nav hidden" aria-label="Main"></nav>
   <footer class="app-footer">
-    <p>&copy; 2026 Coach Salim Heyaime LLC · General wellness education. Not medical advice.</p>
+    <p id="app-footer-text">&copy; 2026 Coach Salim Heyaime LLC · General wellness education. Not medical advice.</p>
   </footer>
   <script type="module" src="./js/app.js"></script>
 </body>

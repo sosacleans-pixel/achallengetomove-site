@@ -653,3 +653,21 @@ fieldset { min-width: 0; }
 main.app-main:focus { outline: none; }
 .cal-dot.st-future, .cal-dot.st-open { background: var(--paper); border: 1px solid var(--line); }
 .cal-dot.st-open.is-today { background: #fff3c4; }
+
+/* ---------- language switch (EN / ES) ---------- */
+.lang-switch { display: flex; align-items: center; justify-content: flex-end; gap: 0.4rem; margin: 0 0 0.75rem; flex-wrap: wrap; }
+.card .lang-switch { justify-content: flex-start; margin: 0; }
+.lang-label { font-size: 0.85rem; color: var(--muted); margin-right: 0.15rem; }
+.lang-btn { min-width: 3rem; min-height: 2.5rem; padding: 0.35rem 0.75rem; border: 2px solid var(--charcoal); border-radius: 999px; background: var(--paper); color: var(--charcoal); font: inherit; font-weight: 900; letter-spacing: 0.04em; cursor: pointer; }
+.lang-btn.is-active { background: var(--charcoal); color: var(--yellow); }
+.lang-btn:focus-visible { outline: 3px solid var(--rust); outline-offset: 2px; }
+
+/* ---------- self-paced ---------- */
+.self-card { border-left: 6px solid var(--green); }
+.self-choice .btn { margin-top: 0.5rem; }
+.chd { margin-top: 1.25rem; padding-top: 0.75rem; border-top: 1px solid var(--line); }
+.chd-link { font-weight: 700; color: var(--rust); }
+
+/* long Spanish words must wrap instead of overflowing on a 390px screen */
+.app-main, .card, .btn, .tab, .stat span, .badge, .plan-item, .chip, .field span, legend { overflow-wrap: anywhere; hyphens: auto; }
+.nowrap { white-space: nowrap; }

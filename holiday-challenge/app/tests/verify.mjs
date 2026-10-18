@@ -5,6 +5,8 @@
  *      HC_TIMEOUT=ms per Playwright action (default 60000; slow boxes can raise it),
  *      HC_ONLY=1,2,8 to run only some sections (default: all). Section 0 (privacy/network checks) and the
  *      final "no off-origin requests" / "no JS errors" checks always run.
+ * Sections: 1-9 live challenge, 10 late-join goal, 11 self-paced edition, 12 Spanish (EN/ES key parity, switch,
+ *   390px overflow), 13 Consumer Health Data Privacy Policy (app link + site page + footers).
  * Date override: CONFIG.allowDateOverride is false in the shipped app. Tests that need ?date= call
  * newPage(..., { dateOverride: true }), which intercepts js/config.js in that test browser only.
  */
@@ -53,12 +55,26 @@ async function enableDateOverride(ctx) {
   if (body === configSrc) throw new Error("could not flip allowDateOverride in the test copy of config.js");
   await ctx.route("**/holiday-challenge/app/js/config.js", (route) => route.fulfill({ status: 200, contentType: "text/javascript", body }));
 }
+// Every element inside the app's main area, modal, header and bottom nav must fit the viewport (no sideways overflow).
+async function overflowOn(page) {
+  return page.evaluate(() => {
+    const vw = document.documentElement.clientWidth;
+    const bad = [];
+    if (document.documentElement.scrollWidth > vw + 1) bad.push(`page ${document.documentElement.scrollWidth}>${vw}`);
+    document.querySelectorAll("#app-main *, .modal *, .app-header *, .bottom-nav *, .app-footer *").forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.width && (r.right > vw + 1 || r.left < -1)) bad.push(`${el.tagName.toLowerCase()}.${el.className}: ${(el.textContent || "").trim().slice(0, 40)}`);
+      if (el.scrollWidth > el.clientWidth + 1 && getComputedStyle(el).overflowX === "visible" && el.clientWidth) bad.push(`overflowing ${el.tagName.toLowerCase()}.${el.className}: ${(el.textContent || "").trim().slice(0, 40)}`);
+    });
+    return bad;
+  });
+}
 function check(name, cond, extra = "") { results.push([name, !!cond, extra]); console.log(`${cond ? "PASS" : "FAIL"}  ${name}${extra ? "  (" + extra + ")" : ""}`); }
 
 const browser = await chromium.launch(process.env.CHROME ? { executablePath: process.env.CHROME } : {});
 
 async function newPage(mockNow, viewport = { width: 390, height: 844 }, { dateOverride = false, ...ctxOpts } = {}) {
-  const ctx = await browser.newContext({ viewport, serviceWorkers: "block", ...ctxOpts });
+  const ctx = await browser.newContext({ viewport, serviceWorkers: "block", locale: "en-US", ...ctxOpts });
   ctx.setDefaultTimeout(TIMEOUT);
   trackRequests(ctx);
   if (dateOverride) await enableDateOverride(ctx);
@@ -272,8 +288,8 @@ if (run(7)) {
   await page.goto(BASE + "index.html#/moves").catch(() => {});
   await page.waitForSelector(".move-card", { timeout: 15000 }).catch(() => {});
   check("offline navigation works (Moves)", (await page.locator(".move-card").count()) > 20);
-  const cached = await page.evaluate(async () => { const keys = await caches.keys(); const c = await caches.open("holiday-30-v2"); return { keys, urls: (await c.keys()).map((r) => new URL(r.url).pathname) }; });
-  check("service worker cache is holiday-30-v2", cached.keys.includes("holiday-30-v2"), cached.keys.join(","));
+  const cached = await page.evaluate(async () => { const keys = await caches.keys(); const c = await caches.open("holiday-30-v3"); return { keys, urls: (await c.keys()).map((r) => new URL(r.url).pathname) }; });
+  check("service worker cache is holiday-30-v3", cached.keys.includes("holiday-30-v3"), cached.keys.join(","));
   check("fonts are in the offline cache", ["anton-v27-latin-400", "lato-v25-latin-400", "lato-v25-latin-700", "lato-v25-latin-900"].every((f) => cached.urls.some((u) => u.endsWith(`/fonts/${f}.woff2`))));
   await ctx.close();
 }
@@ -312,7 +328,7 @@ if (run(9)) {
   await page.goto(BASE + "index.html#/legal/refund");
   await page.waitForSelector("#legal-refund");
   const refundText = await page.textContent("#legal-refund");
-  check("refund: approved 3-day wording shown exactly", refundText.includes("You can request a full refund within 3 days (72 hours) of purchase by emailing coachsalimheyaime@gmail.com. After that, all sales are final, and your enrollment never expires. Gift purchases: the buyer can request a full refund within 3 days of purchase, as long as the recipient hasn't redeemed the access code. Refunds go to the original payment method."));
+  check("refund: approved 3-day wording shown exactly", refundText.includes("You can request a full refund within 3 days (72 hours) of purchase by emailing coachsalimheyaime@gmail.com. After that, all sales are final, and your enrollment never expires; it converts to the self-paced edition after Dec 24. Gift purchases: the buyer can request a full refund within 3 days of purchase, as long as the recipient hasn't redeemed the access code. Refunds go to the original payment method."));
   check("refund: no PENDING tag on the refund window", !S.legal.refund.find(([h]) => h === "Refunds")[1].includes("PENDING"));
   check("refund: old 7-day / Dec 1 window gone", !/7 days|whichever is later|activat/i.test(JSON.stringify(S.legal)));
   check("privacy: no longer says fonts come from Google", !/Google Fonts, so Google/.test(JSON.stringify(S.legal.privacy)));
@@ -355,6 +371,310 @@ if (run(9)) {
   await ctx.close();
 }
 
+
+// 10. Late joins (DECIDED): allowed, goal = ceil(22/30 x days remaining); a Day 1 start = 22 of 30
+if (run(10)) {
+  const { CONFIG } = await import(new URL("../js/config.js", import.meta.url).href);
+  const R = await import(new URL("../js/rules.js", import.meta.url).href);
+  check("config: late joins allowed, proportional goal, 22 of 30", CONFIG.lateJoin === true && CONFIG.lateJoinTarget === "proportional" && CONFIG.requiredDays === 22);
+  const expect = { 1: 22, 2: 22, 8: 17, 16: 11, 23: 6, 29: 2, 30: 1 };
+  const got = Object.fromEntries(Object.keys(expect).map((j) => [j, R.lateJoinTarget(Number(j))]));
+  check("late-join goal = ceil(22 * daysLeft / 30)", Object.entries(expect).every(([j, v]) => got[j] === v && v === Math.ceil((22 * (31 - j)) / 30) || (Number(j) === 1 && got[j] === 22)), JSON.stringify(got));
+  const { ctx, page } = await newPage("2026-12-23T09:00:00");
+  await page.goto(BASE + "index.html");
+  await page.waitForSelector(".late-card");
+  check("late join on Dec 23 is open (Day 29, 2 days left)", /Day 29/.test(await page.textContent(".late-card")) && /2 days left/.test(await page.textContent(".late-card")));
+  await setup(page);
+  await page.goto(BASE + "index.html#/progress");
+  await page.waitForSelector(".ring");
+  check("late join on Day 29: goal is 2", /\/ 2\b/.test(await page.textContent(".ring")));
+  await ctx.close();
+}
+
+// 11. Self-paced edition (after Dec 24, or by choice): Day 1 = own start date, 30 days, no fixed calendar
+if (run(11)) {
+  const { S } = await import(new URL("../js/strings.en.js", import.meta.url).href);
+  const { CONFIG } = await import(new URL("../js/config.js", import.meta.url).href);
+  check("config: self-paced on, after Dec 24, 30 days", CONFIG.selfPaced.enabled && CONFIG.selfPaced.after === "2026-12-24" && CONFIG.selfPaced.days === 30);
+  // a. first open after Dec 24
+  {
+    const { ctx, page } = await newPage("2026-12-28T09:00:00");
+    await page.goto(BASE + "index.html");
+    await page.waitForSelector("#self-start-card");
+    check("first open Dec 28: self-paced start card, no live setup button", (await page.isVisible("#start-self")) && !(await page.isVisible("#start-setup")) && !(await page.isVisible("#countdown")));
+    await shot(page, "self-paced-start-390.png");
+    await page.click("#start-self");
+    await page.waitForSelector("#self-setup-note");
+    check("self-paced setup explains Day 1 = today", (await page.textContent("#self-setup-note")) === S.self.setupNote);
+    await page.check("#age-ok"); await page.click("#setup-next");
+    for (let i = 0; i < 6; i++) await page.check(`input[name=q${i}][value=no]`);
+    await page.click("#setup-next"); await page.fill("#pu-now", "9"); await page.click("#setup-next"); await page.click("#setup-next");
+    await page.check("#terms-ok"); await page.click("#setup-next");
+    await page.waitForSelector(".day-head");
+    const st = await page.evaluate(() => JSON.parse(localStorage.getItem("holiday-30-v1")));
+    check("self-paced state saved: mode self, start Dec 28", st.mode === "self" && st.startDate === "2026-12-28" && st.joinedDate === "2026-12-28");
+    const kick = await page.textContent(".day-head .kicker");
+    check("self-paced Day 1 is today (Mon, Dec 28)", /Day 1 of 30/.test(kick) && /Dec 28/.test(kick) && /Baseline test/.test(await page.textContent(".page-title")), kick.trim());
+    check("self-paced Day 1 can be logged", await page.isVisible("#log-core"));
+    await page.goto(BASE + "index.html#/day/2");
+    await page.waitForSelector(".day-head");
+    const d2 = await page.textContent("main");
+    check("self-paced Day 2 is Dec 29, no Thanksgiving calendar text", /Dec 29/.test(d2) && !/Thanksgiving|Nov 26/.test(d2));
+    await page.goto(BASE + "index.html#/day/30");
+    await page.waitForSelector(".day-head");
+    const d30 = await page.textContent("main");
+    check("self-paced Day 30 is Jan 26, no Christmas Eve dates", /Jan 26/.test(d30) && !/Dec 2[2-7]|Christmas Eve/.test(d30));
+    await page.goto(BASE + "index.html#/plan");
+    await page.waitForSelector(".plan-item");
+    check("self-paced plan: 30 days, none 'before you joined', own-calendar lead", (await page.locator(".plan-item").count()) === 30 && (await page.locator(".plan-item.st-before").count()) === 0 && (await page.textContent("main")).includes(S.self.planLead));
+    await page.goto(BASE + "index.html#/progress");
+    await page.waitForSelector(".ring");
+    check("self-paced goal is 22 of 30", /\/ 22\b/.test(await page.textContent(".ring")));
+    const ics = await page.evaluate(() => window.__HC.buildICS());
+    check("self-paced reminders: 30 events from Dec 28 to Jan 26", (ics.match(/BEGIN:VEVENT/g) || []).length === 30 && /DTSTART:20261228T/.test(ics) && /DTSTART:20270126T/.test(ics) && !/DTSTART:20261125T/.test(ics));
+    await ctx.close();
+  }
+  // b. choosing self-paced before the live window
+  {
+    const { ctx, page } = await newPage("2026-11-10T10:00:00");
+    await page.goto(BASE + "index.html");
+    await page.waitForSelector("#countdown");
+    check("pre-launch welcome offers 'start self-paced' alongside the live setup", (await page.isVisible("#start-self")) && (await page.isVisible("#start-setup")));
+    await page.click("#start-self");
+    await page.check("#age-ok"); await page.click("#setup-next");
+    for (let i = 0; i < 6; i++) await page.check(`input[name=q${i}][value=no]`);
+    await page.click("#setup-next"); await page.click("#setup-next"); await page.click("#setup-next");
+    await page.check("#terms-ok"); await page.click("#setup-next");
+    await page.waitForSelector(".day-head");
+    const st = await page.evaluate(() => JSON.parse(localStorage.getItem("holiday-30-v1")));
+    check("chose self-paced on Nov 10: Day 1 is Nov 10, no countdown", st.mode === "self" && st.startDate === "2026-11-10" && /Day 1 of 30/.test(await page.textContent(".day-head")) && !(await page.isVisible("#countdown")));
+    await ctx.close();
+  }
+  // c. mid-run day numbering follows the user's own start date
+  {
+    const { ctx, page } = await newPage("2027-01-24T10:00:00");
+    await seed(page, baseState({ mode: "self", startDate: "2027-01-10", joinedDate: "2027-01-10", days: { 1: { status: "core" }, 2: { status: "floor" } } }));
+    const head = await page.textContent(".day-head");
+    check("self-paced started Jan 10: Jan 24 is Day 15", /Day 15 of 30/.test(head) && /Jan 24/.test(head));
+    await page.goto(BASE + "index.html#/progress");
+    await page.waitForSelector("#complete-count");
+    check("self-paced progress counts its own days", (await page.textContent("#complete-count")).trim() === "2");
+    await ctx.close();
+  }
+  // d. existing live user past Dec 24: completion summary first, then the option to keep going self-paced
+  {
+    const days = {}; for (let n = 1; n <= 30; n++) if (n % 5) days[n] = { status: "core", habits: {} };
+    const { ctx, page } = await newPage("2026-12-26T10:00:00");
+    await seed(page, baseState({ days, tests: { 1: { pu: 4 } } }));
+    await page.waitForSelector(".done-hero");
+    const order = await page.evaluate(() => { const a = document.querySelector("#done-complete"); const b = document.querySelector("#keep-going-self-card"); return !!(a && b && (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING)); });
+    check("live user on Dec 26 sees the completion summary, then 'keep going self-paced'", (await page.textContent("#done-complete")).trim() === "24" && order);
+    await shot(page, "self-paced-keep-going-390.png");
+    await page.click("#keep-going-self");
+    await page.waitForSelector(".day-head");
+    const st = await page.evaluate(() => JSON.parse(localStorage.getItem("holiday-30-v1")));
+    check("keep going: new self-paced run from Dec 26, live results kept in history", st.mode === "self" && st.startDate === "2026-12-26" && Object.keys(st.days).length === 0 && st.history.length === 1 && st.history[0].mode === "live" && Object.keys(st.history[0].days).length === 24 && st.setup.terms === true);
+    check("keep going: today is self-paced Day 1", /Day 1 of 30/.test(await page.textContent(".day-head")) && (await page.isVisible("#log-core")));
+    await ctx.close();
+  }
+  // e. self-paced finish + protected-day extension (capped at 7 extra days)
+  {
+    const days = {}; for (let n = 1; n <= 20; n++) days[n] = { status: "core" }; days[21] = { status: "protected" }; days[22] = { status: "protected" };
+    const { ctx, page } = await newPage("2027-02-01T10:00:00");
+    await seed(page, baseState({ mode: "self", startDate: "2027-01-01", joinedDate: "2027-01-01", days }));
+    await page.waitForSelector(".done-hero");
+    check("self-paced run past Day 30 shows its own finish title", (await page.textContent(".done-hero")).includes(S.self.doneTitle) && !/Christmas Eve/.test(await page.textContent(".done-hero")));
+    check("self-paced protected days open make-up logging (Jan 30 + 2 days)", await page.isVisible("#log-makeup"));
+    check("self-paced finish offers another self-paced round", await page.isVisible("#keep-going-self"));
+    await ctx.close();
+    const R = await import(new URL("../js/rules.js", import.meta.url).href);
+    const many = {}; for (let n = 1; n <= 12; n++) many[n] = { status: "protected" };
+    check("self-paced extension capped at 7 days", R.deadline({ setupDone: true, mode: "self", startDate: "2027-01-01", joinedDate: "2027-01-01", days: many, makeup: [] }) === "2027-02-06");
+  }
+}
+
+// 12. Spanish: every key in both languages, EN/ES switch, browser default, no overflow at 390px
+if (run(12)) {
+  const EN = (await import(new URL("../js/strings.en.js", import.meta.url).href)).S;
+  const ES = (await import(new URL("../js/strings.es.js", import.meta.url).href)).S;
+  const PEN = (await import(new URL("../js/program.en.js", import.meta.url).href)).PROGRAM;
+  const PES = (await import(new URL("../js/program.es.js", import.meta.url).href)).PROGRAM;
+  const diffs = [];
+  const sample = [3, 5];
+  const cmp = (a, b, p) => {
+    if (typeof a !== typeof b) return diffs.push(`${p}: ${typeof a} vs ${typeof b}`);
+    if (typeof a === "function") {
+      if (a.length !== b.length) diffs.push(`${p}: arity ${a.length} vs ${b.length}`);
+      const out = b(...sample.slice(0, Math.max(1, b.length)).map((x) => (p.includes("window") || p.includes("extension") || p.includes("keepGoingWeek") || p.includes("debugRibbon") || p.includes("contact") ? "X" : x)));
+      if (typeof out !== "string" || !out.trim()) diffs.push(`${p}: ES function returns empty`);
+      return;
+    }
+    if (Array.isArray(a)) { if (!Array.isArray(b) || a.length !== b.length) diffs.push(`${p}: length ${a.length} vs ${b?.length}`); return a.forEach((v, i) => cmp(v, b?.[i], `${p}[${i}]`)); }
+    if (a && typeof a === "object") { for (const k of new Set([...Object.keys(a), ...Object.keys(b || {})])) { if (!(k in a)) diffs.push(`${p}.${k}: only in ES`); else if (!b || !(k in b)) diffs.push(`${p}.${k}: missing in ES`); else cmp(a[k], b[k], `${p}.${k}`); } return; }
+    if (typeof a === "string" && typeof b === "string" && a.trim() && !b.trim()) diffs.push(`${p}: empty in ES`);
+  };
+  cmp(EN, ES, "S");
+  check("strings: every EN key exists in ES and vice versa (same shape, same list lengths)", diffs.length === 0, diffs.slice(0, 5).join(" | "));
+  check("strings: ES bundle is marked lang es", EN.lang === "en" && ES.lang === "es");
+  const pd = [];
+  const KEEP = new Set(["id", "version", "date", "wd", "cat", "week", "start", "end"]);
+  const cmpP = (a, b, p, key, idx) => {
+    if (typeof a !== typeof b || Array.isArray(a) !== Array.isArray(b)) return pd.push(`${p}: type`);
+    if (Array.isArray(a)) { if (a.length !== b.length) pd.push(`${p}: length`); return a.forEach((v, i) => cmpP(v, b[i], `${p}[${i}]`, key, i)); }
+    if (a && typeof a === "object") { for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) { if (k === "lang") continue; if (!(k in a) || !(k in b)) pd.push(`${p}.${k}: key`); else cmpP(a[k], b[k], `${p}.${k}`, k, -1); } return; }
+    if ((KEEP.has(key) || idx === 0) && a !== b) pd.push(`${p}: code/date changed`);
+  };
+  cmpP(PEN, PES, "PROGRAM", "", -1);
+  check("program: ES has the same days, levels, blocks, library keys, codes and dates as EN", pd.length === 0 && PES.days.length === 30 && Object.keys(PES.library).length === Object.keys(PEN.library).length, pd.slice(0, 5).join(" | "));
+  const untranslated = [];
+  const walkT = (a, b, key, idx) => { if (typeof a === "string") { if (!KEEP.has(key) && idx !== 0 && a === b && /[a-z]{4,}/i.test(a) && !/^(RPE|TEST-)/.test(a)) untranslated.push(a); } else if (Array.isArray(a)) a.forEach((v, i) => walkT(v, b[i], key, i)); else if (a && typeof a === "object") for (const k in a) walkT(a[k], b[k], k, -1); };
+  walkT(PEN, PES, "", -1);
+  check("program: every display string is translated (exercise names included)", untranslated.length === 0, untranslated.slice(0, 5).join(" | "));
+  check("program: Spanish exercise names are sensible", PES.library.SQ.name === "Sentadilla" && PES.library.PU.name === "Flexión de brazos" && PES.library.HG.name === "Bisagra de cadera" && PES.library.RW.name === "Remo");
+  const esSrc = readFileSync(join(appDir, "js", "strings.es.js"), "utf8");
+  check("strings.es.js: legal text marked 'Spanish legal text pending attorney review'", /^\/\/ Spanish legal text pending attorney review/.test(esSrc) && /=+ Spanish legal text pending attorney review =+/.test(esSrc));
+  check("ES refund keeps the approved meaning (3 days, final, converts to self-paced after Dec 24)", ES.legal.refund[1][1].includes("dentro de los 3 días (72 horas)") && ES.legal.refund[1][1].includes("se convierte en la edición a tu ritmo después del 24 de diciembre") && ES.legal.refund[1][1].includes("coachsalimheyaime@gmail.com"));
+  check("'X-mas' spelling in both languages", EN.appName.includes("X-mas") && ES.appName.includes("X-mas") && !/\bXmas\b|X-Mas|X mas/.test(JSON.stringify(EN) + JSON.stringify(ES)));
+
+  // browser default + stored choice
+  {
+    const { ctx, page } = await newPage("2026-11-10T10:00:00", undefined, { locale: "es-MX" });
+    await page.goto(BASE + "index.html");
+    await page.waitForSelector("#countdown");
+    check("browser in Spanish (es-MX): app opens in Spanish", (await page.getAttribute("html", "lang")) === "es" && (await page.textContent(".hero-title")) === ES.welcome.title);
+    check("welcome has the EN/ES switch", (await page.isVisible('#lang-welcome [data-lang="en"]')) && (await page.isVisible('#lang-welcome [data-lang="es"]')));
+    await shot(page, "es-welcome-390.png");
+    await page.click('#lang-welcome [data-lang="en"]');
+    check("switch to EN on the welcome screen", (await page.textContent(".hero-title")) === EN.welcome.title && (await page.getAttribute("html", "lang")) === "en");
+    await page.reload(); await page.waitForSelector(".hero-title");
+    check("EN choice is stored on the device and beats the browser language", (await page.textContent(".hero-title")) === EN.welcome.title && (await page.evaluate(() => localStorage.getItem("holiday-30-lang"))) === "en");
+    await ctx.close();
+  }
+  {
+    const { ctx, page } = await newPage("2026-11-10T10:00:00", undefined, { locale: "en-US" });
+    await page.goto(BASE + "index.html");
+    await page.waitForSelector(".hero-title");
+    check("browser in English: app opens in English", (await page.getAttribute("html", "lang")) === "en" && (await page.textContent(".hero-title")) === EN.welcome.title);
+    await page.goto(BASE + "index.html#/more");
+    await page.waitForSelector("#lang-settings");
+    await page.click('#lang-settings [data-lang="es"]');
+    check("switch to ES in More > Settings", (await page.textContent(".page-title")) === ES.more.title && (await page.textContent("#bottom-nav")).includes(ES.nav.today));
+    await ctx.close();
+  }
+
+  // ES screens at 390px: no overflow anywhere
+  const bad = {};
+  const note = async (page, name) => { const o = await overflowOn(page); if (o.length) bad[name] = o.slice(0, 3); };
+  {
+    const { ctx, page } = await newPage("2026-11-10T10:00:00", undefined, { locale: "es-MX" });
+    await page.goto(BASE + "index.html"); await page.waitForSelector("#countdown"); await note(page, "welcome-pre");
+    await page.click("#start-setup"); await page.waitForSelector("#age-ok"); await note(page, "setup-1");
+    await page.check("#age-ok"); await page.click("#setup-next");
+    for (let i = 0; i < 6; i++) await page.check(`input[name=q${i}][value=yes]`);
+    await note(page, "setup-2-all-yes");
+    await page.check("#gentle-ack"); await page.click("#setup-next"); await page.waitForSelector("#pu-now"); await note(page, "setup-3");
+    await page.click("#setup-next"); await page.waitForSelector("input[name=eq]"); await note(page, "setup-4");
+    await page.click("#setup-next"); await page.waitForSelector("#terms-ok"); await page.click("#setup-next"); await note(page, "setup-5-error");
+    for (const w of ["disclaimer", "safety", "terms", "refund", "privacy"]) {
+      await page.goto(BASE + `index.html#/legal/${w}`); await page.waitForSelector(`#legal-${w}`); await note(page, `legal-${w}`);
+      if (w === "refund") await shot(page, "es-refund-390.png");
+    }
+    const refund = await page.goto(BASE + "index.html#/legal/refund").then(() => page.waitForSelector("#legal-refund")).then(() => page.textContent("#legal-refund"));
+    check("ES refund screen renders the Spanish policy", refund.includes(ES.legal.refund[1][1]) && refund.includes(ES.legal.refundTitle));
+    await page.goto(BASE + "index.html#/moves"); await page.waitForSelector(".move-card");
+    await page.$$eval("details", (ds) => ds.forEach((d) => (d.open = true))); await note(page, "moves-all-open");
+    await page.goto(BASE + "index.html#/plan"); await page.waitForSelector(".plan-item"); await note(page, "plan-visitor");
+    await ctx.close();
+  }
+  {
+    const days = {}; for (let n = 1; n <= 14; n++) days[n] = { status: n % 3 ? "core" : "floor", habits: { water: true } }; days[9] = { status: "protected" };
+    const { ctx, page } = await newPage("2026-12-09T10:00:00", undefined, { locale: "es-MX" });
+    await seed(page, baseState({ days, busyDays: [3], setup: { age: true, readiness: [true, false, false, false, false, false], gentleAck: true, terms: true }, tests: { 1: { pu: 5, sts: 10 } } }));
+    const kick = await page.textContent(".day-head .kicker");
+    check("ES day screen: Spanish program text and Spanish date", /Día 15 de 30/.test(kick) && /dic/.test(kick) && (await page.textContent(".page-title")).includes("Fuerza A"), kick.trim());
+    await note(page, "day15-core");
+    await shot(page, "es-day15-390.png");
+    await page.click('.tab[data-tab="floor"]'); await note(page, "day15-floor");
+    for (const n of [1, 2, 7, 13, 14, 21, 28, 30]) {
+      await page.goto(BASE + `index.html#/day/${n}`); await page.waitForSelector(".day-head");
+      await page.$$eval("details", (ds) => ds.forEach((d) => (d.open = true))); await note(page, `day${n}`);
+      await page.click('.tab[data-tab="floor"]'); await note(page, `day${n}-floor`);
+    }
+    await page.goto(BASE + "index.html#/day/14"); await page.waitForSelector(".day-head"); await note(page, "day14-logged");
+    await page.goto(BASE + "index.html#/day/15"); await page.waitForSelector(".day-head");
+    await page.click("#log-core"); await page.waitForSelector("#rpe-input"); await page.check("#pain-input"); await note(page, "day15-feel");
+    await page.click("#undo-day"); await page.waitForSelector("#stop-log"); await page.click("#stop-log"); await page.waitForSelector(".modal"); await note(page, "stop-modal");
+    await page.click("#stop-cancel");
+    await page.goto(BASE + "index.html#/progress"); await page.waitForSelector("#complete-count"); await note(page, "progress");
+    await page.goto(BASE + "index.html#/plan"); await page.waitForSelector(".plan-item"); await note(page, "plan");
+    await page.goto(BASE + "index.html#/more"); await page.waitForSelector("#settings-form"); await note(page, "more");
+    await ctx.close();
+  }
+  {
+    const { ctx, page } = await newPage("2026-12-10T09:00:00", undefined, { locale: "es-MX" });
+    await page.goto(BASE + "index.html"); await page.waitForSelector(".late-card"); await note(page, "welcome-late");
+    check("ES late-join card", /Día 16/.test(await page.textContent(".late-card")) && /quedan 15 días/.test(await page.textContent(".late-card")));
+    await ctx.close();
+  }
+  {
+    const { ctx, page } = await newPage("2026-12-28T09:00:00", undefined, { locale: "es-MX" });
+    await page.goto(BASE + "index.html"); await page.waitForSelector("#self-start-card"); await note(page, "welcome-self");
+    await shot(page, "es-self-paced-start-390.png");
+    await ctx.close();
+  }
+  {
+    const days = {}; for (let n = 1; n <= 30; n++) if (n % 5) days[n] = { status: "core", habits: {} };
+    const { ctx, page } = await newPage("2026-12-26T10:00:00", undefined, { locale: "es-MX" });
+    await seed(page, baseState({ days, tests: { 1: { pu: 4, sts: 10 }, 30: { pu: 7, sts: 9 } } }));
+    await page.waitForSelector(".done-hero"); await note(page, "done-live-keep-going");
+    await page.click("#keep-going-self"); await page.waitForSelector(".day-head"); await note(page, "self-day1");
+    await ctx.close();
+  }
+  check("ES UI renders with no overflow at 390px (welcome, setup, every legal screen, days, moves, plan, progress, more, done, self-paced)", Object.keys(bad).length === 0, JSON.stringify(bad).slice(0, 400));
+}
+
+// 13. Consumer Health Data Privacy Policy: site section + footers + link from the app's Privacy screen
+if (run(13)) {
+  const { CONFIG } = await import(new URL("../js/config.js", import.meta.url).href);
+  for (const l of ["en-US", "es-MX"]) {
+    const { ctx, page } = await newPage("2026-11-10T10:00:00", undefined, { locale: l });
+    await page.goto(BASE + "index.html#/legal/privacy");
+    await page.waitForSelector("#chd-link");
+    check(`[${l}] app Privacy screen links the Consumer Health Data Privacy Policy`, (await page.getAttribute("#chd-link", "href")) === "/privacy/#consumer-health-data" && CONFIG.consumerHealthPolicyUrl === "/privacy/#consumer-health-data");
+    await ctx.close();
+  }
+  const html = readFileSync(join(siteRoot, "privacy", "index.html"), "utf8");
+  const m = html.match(/<h2 id="consumer-health-data">([\s\S]*?)(?=<h2>Questions<\/h2>)/);
+  const sec = m ? m[0].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ") : "";
+  check("site /privacy/: 'Consumer Health Data Privacy Policy' section with id consumer-health-data", /<h2 id="consumer-health-data">Consumer Health Data Privacy Policy<\/h2>/.test(html));
+  const need = [["collects name, email, purchase and gift details via Stripe", /name, your email address and your purchase details/.test(sec) && /gift/.test(sec) && /Stripe/.test(sec)],
+    ["purpose: deliver the purchase and access", /deliver your purchase and your access/.test(sec)],
+    ["never sold, never used for advertising", /never sell/.test(sec) && /advertising/.test(sec)],
+    ["workout and health inputs stay on the device", /saved only in your own browser on your device/.test(sec) && /not sent to us/.test(sec)],
+    ["access and delete by emailing coachsalimheyaime@gmail.com", /access/i.test(sec) && /delete/.test(sec) && /coachsalimheyaime@gmail\.com/.test(sec)],
+    ["marketing email only with a separate unchecked opt-in", /separate checkbox that is never checked for you/.test(sec)],
+    ["applies to Washington, Nevada and similar states", /Washington, Nevada and other states with similar/.test(sec)],
+    ["business name, no banned contacts", /Coach Salim Heyaime LLC/.test(sec) && !/workforcewellness/i.test(html)]];
+  for (const [n, ok] of need) check(`site /privacy/ CHD section: ${n}`, ok);
+  const pages = [];
+  const walk4 = (d) => readdirSync(d).forEach((f) => { const p = join(d, f); if ([".git", "node_modules", "holiday-challenge"].includes(f)) return; statSync(p).isDirectory() ? walk4(p) : f.endsWith(".html") && pages.push(p); });
+  walk4(siteRoot);
+  const withFooter = pages.filter((f) => /<nav class="footer-nav"/.test(readFileSync(f, "utf8")));
+  const missing = withFooter.filter((f) => !/<nav class="footer-nav"[\s\S]*?<a href="\/privacy\/#consumer-health-data">Consumer Health Data Privacy Policy<\/a>[\s\S]*?<\/nav>/.test(readFileSync(f, "utf8")));
+  check("every site footer (homepage + shared layout) links the CHD policy", withFooter.length >= 10 && withFooter.some((f) => f === join(siteRoot, "index.html")) && missing.length === 0, missing.map((f) => f.replace(siteRoot, "")).join(", "));
+  // render the site section at 390px (separate request log: the site's own GA4 + Google Fonts are left alone and blocked here)
+  const siteReqs = [];
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: "block" });
+  trackRequests(ctx, siteReqs);
+  await ctx.route((url) => new URL(url).origin !== ORIGIN, (route) => route.abort());
+  const page = await ctx.newPage();
+  await page.goto(`${ORIGIN}/privacy/#consumer-health-data`);
+  await page.waitForSelector("#consumer-health-data");
+  const fit = await page.evaluate(() => { const vw = document.documentElement.clientWidth; return document.documentElement.scrollWidth <= vw + 1; });
+  check("site CHD section fits 390px", fit);
+  await ctx.close();
+}
+
 // 0. Off-origin tracker self-test: prove a third-party request would be caught (kept out of the real list)
 {
   const probe = [];
@@ -384,10 +704,12 @@ if (run(9)) {
   check("no banned names, no prices", !m, m ? m[0] : "");
   check("no ad pixels / analytics in app", !/fbq\(|facebook\.net|tiktok|gtag\(|googletagmanager|google-analytics|ga\.js|dataLayer|pixel\.|clarity\.ms|hotjar|segment\.(io|com)/i.test(all));
   check("no Google Fonts (googleapis / gstatic) references in app", !/googleapis|gstatic/i.test(all));
+  check("no geolocation / geofencing APIs in app code", !/navigator\.geolocation|getCurrentPosition|watchPosition|geofence\s*\(|GeofencingRequest/i.test(all));
+  check("no price shown anywhere in the app (no $ amounts, no 9.99)", !/\$\s?\d|9[.,]99|USD/.test(all));
   check("no absolute http(s) URLs loaded by app code", !/(src|href)\s*=\s*["']https?:|url\(\s*["']?https?:|import\s*\(?\s*["']https?:|fetch\(\s*["']https?:/i.test(all));
   check("shipped config has allowDateOverride: false", /allowDateOverride:\s*false/.test(configSrc));
   const sw = readFileSync(join(appDir, "sw.js"), "utf8");
-  check("sw.js cache name is holiday-30-v2", /const CACHE = "holiday-30-v2"/.test(sw));
+  check("sw.js cache name is holiday-30-v3", /const CACHE = "holiday-30-v3"/.test(sw));
   const assets = [...sw.match(/const ASSETS = \[([\s\S]*?)\];/)[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
   const runtime = [];
   const walk3 = (d, rel = "") => readdirSync(d).forEach((f) => { const p = join(d, f); const r = rel + f; if (["node_modules", "tests"].includes(f) || f.startsWith(".")) return; statSync(p).isDirectory() ? walk3(p, r + "/") : /\.(html|css|js|webmanifest|png|svg|woff2)$/.test(f) && f !== "sw.js" && runtime.push("./" + r); });

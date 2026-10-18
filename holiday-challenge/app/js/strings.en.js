@@ -1,6 +1,6 @@
 // ALL user-facing English text for the app lives here (UI, safety, legal).
-// Program content (days, moves) lives in program.en.js. For Spanish, copy this file to
-// strings.es.js, translate the values (keep the keys) and switch the import in app.js.
+// Program content (days, moves) lives in program.en.js. Spanish lives in strings.es.js and program.es.js
+// with the same keys; js/i18n.js picks the language (tests/verify.mjs checks every key exists in both).
 // Functions are used where a value needs a number or name inserted.
 // LEGAL-REVIEWED DRAFT (2026-10-18): drop-in replacement for strings.en.js with the same keys and structure.
 // Not legal advice. Items marked [PENDING ...] must be resolved and the brackets removed before launch.
@@ -16,6 +16,9 @@ export const S = {
   dates: "Wed, Nov 25 to Thu, Dec 24, 2026",
   footer: "© 2026 Coach Salim Heyaime LLC · General wellness education. Not medical advice.",
   debugRibbon: (d) => `Test date: ${d} · add ?date=clear to the URL to reset`,
+
+  langSwitch: { label: "Language", en: "EN", es: "ES", enName: "English", esName: "Español" },
+  ui: { skip: "Skip to content", noscript: "Please turn on JavaScript to use this app.", prevDay: "Previous day", nextDay: "Next day", pageTitle: "30 Days Before X-mas | A Challenge to Move" },
 
   nav: { today: "Today", plan: "Plan", progress: "Progress", moves: "Moves", more: "More" },
 
@@ -43,6 +46,32 @@ export const S = {
     lateClosed: "Joining after Day 1 isn't open for this challenge.",
     postTitle: "This season's challenge has wrapped up.",
     postLead: "The 30 days ran Nov 25 to Dec 24, 2026.",
+  },
+
+  self: {
+    label: "Self-paced edition",
+    welcomeTitle: "Start the self-paced edition",
+    welcomeLead: "Day 1 is the day you start. You get 30 days from there, on your own schedule, with no fixed calendar. Finish = 22 complete days out of 30.",
+    startBtn: "Start self-paced",
+    choiceLead: "Prefer your own schedule? In the self-paced edition, Day 1 is the day you start and you get 30 days from there.",
+    choiceBtn: "Start self-paced instead",
+    setupNote: "Self-paced edition: your Day 1 is the day you finish setup. You get 30 days from there.",
+    window: (a, b) => `Self-paced · your 30 days: ${a} to ${b}`,
+    planLead: "Day 1 is your start date, and each week is 7 days from there. ⚑ = flex day.",
+    protectedDay: "Protected day. It pauses your window and adds a day to finish (up to 7 extra days).",
+    doneTitle: "You finished your 30 days.",
+    restart: "You can start a new self-paced round whenever you're ready.",
+    keepGoingTitle: "Keep going, self-paced",
+    keepGoingLead: "Start a new self-paced round: Day 1 is today, and you get 30 days from there. Your results so far stay saved on this device.",
+    keepGoingBtn: "Keep going self-paced",
+    pickRetest: "Pick your retest day now (Day 28, 29 or 30).",
+    retestMove: "The retest can move up to 2 days earlier, or up to 3 days after Day 30. Moving it doesn't affect completion.",
+    focus: {
+      2: "Flex day: move a little, enjoy a lot. The floor version counts in full.",
+      28: "Recovery before the finish. Pick your retest day now (Day 28, 29 or 30).",
+      30: "Day 30 flex + retest. Compare to Day 1 and celebrate showing up.",
+    },
+    holidayFloor: ["Day 2 Floor", "Moved on Day 2, any version."],
   },
 
   setup: {
@@ -263,6 +292,7 @@ export const S = {
   more: {
     title: "More",
     settings: "Settings",
+    language: "Language",
     level: "Level", equipment: "Equipment", busy: "Busiest days", reminder: "Reminder time",
     saveSettings: "Save settings",
     calendarBtn: "Add daily reminders to my calendar (.ics)",
@@ -317,16 +347,16 @@ export const S = {
     refundTitle: "Refund policy",
     refund: [
       ["One-time purchase", "A Challenge to Move: 30 Days Before X-mas Challenge is a one-time purchase. No subscription, no auto-renew, no recurring charges."],
-      ["Refunds", "You can request a full refund within 3 days (72 hours) of purchase by emailing coachsalimheyaime@gmail.com. After that, all sales are final, and your enrollment never expires. Gift purchases: the buyer can request a full refund within 3 days of purchase, as long as the recipient hasn't redeemed the access code. Refunds go to the original payment method."],
+      ["Refunds", "You can request a full refund within 3 days (72 hours) of purchase by emailing coachsalimheyaime@gmail.com. After that, all sales are final, and your enrollment never expires; it converts to the self-paced edition after Dec 24. Gift purchases: the buyer can request a full refund within 3 days of purchase, as long as the recipient hasn't redeemed the access code. Refunds go to the original payment method."],
       ["How to ask", "Email the address below from, or including, the email you used at checkout, and tell us you'd like a refund. Your bank or card issuer may take several business days to post it."],
       ["Gift enrollments", "[PENDING SALIM'S APPROVAL] A gift enrollment is a seat in the challenge for one recipient: the buyer enters the recipient's email and the recipient gets an access code to redeem. Gift refunds follow the Refunds section above. It is not a dollar-value gift card and can't be exchanged for cash."],
     ],
     privacyTitle: "Privacy policy (this app)",
     privacy: [
       ["Who we are", "This app is provided by Coach Salim Heyaime LLC, a Utah limited liability company. This policy covers this challenge app. Our website, achallengetomove.com, has its own privacy policy at achallengetomove.com/privacy/."],
-      ["What stays on your device", "Everything you enter in this app (age confirmation, readiness answers, level, check-offs, test results, effort and pain flags, habits, steps you type, check-in notes and settings) is saved only in your browser's local storage on this device. It is not sent to us or to anyone else, and we can't see it, recover it or move it to another device."],
+      ["What stays on your device", "Everything you enter in this app (age confirmation, readiness answers, level, check-offs, test results, effort and pain flags, habits, steps you type, check-in notes, settings and language choice) is saved only in your browser's local storage on this device. It is not sent to us or to anyone else, and we can't see it, recover it or move it to another device."],
       ["No accounts, no uploads", "The app has no sign-in and does not send your challenge data to any server. It does not connect to, sync with or upload data from wearables, phones or health apps. Steps are optional and typed by you."],
-      ["No ad pixels or analytics in the app", "This app has no advertising pixels, no advertising or tracking cookies and no analytics. We don't sell your personal information or share it for advertising. (Our website, where you buy the challenge, uses Google Analytics as described in the website's privacy policy.)"],
+      ["No ad pixels or analytics in the app", "This app has no advertising pixels, no advertising or tracking cookies, no analytics and no location tracking or geofencing. We don't sell your personal information or share it for advertising. (Our website, where you buy the challenge, uses Google Analytics as described in the website's privacy policy.)"],
       ["Loading the app and fonts", "Like any website, the app's files are delivered by our web host, which receives standard technical information (such as your IP address and browser type) when the files load. The app's fonts are served from the same web host as the app, so no requests go to Google Fonts or any other third party. No challenge data is included. After the first visit, the app's files are stored on your device so it works offline."],
       ["Calendar reminders and data downloads", "If you download the reminder calendar file or a copy of your data, it is created on your device and stays with you. If you import the calendar file into a calendar app, that app's own privacy policy applies."],
       ["Deleting your data", "Use More → Delete all my data on this device, or clear this site's data in your browser. Deleted data can't be recovered. You can download a copy of your data at any time first."],
@@ -337,11 +367,13 @@ export const S = {
       ["Changes to this policy", "We may update this policy. The \"Last updated\" date below shows the current version."],
       ["Questions and requests", "For any privacy question, or to ask us to access or delete the email address and purchase information we hold about you (subject to records we must keep by law), contact Coach Salim Heyaime LLC at the email below."],
     ],
+    chdLead: "Your name, email, purchase and gift details are covered by the Consumer Health Data Privacy Policy on our website.",
+    chdLink: "Consumer Health Data Privacy Policy",
     contact: (e) => `Contact: ${e}`,
     company: "Coach Salim Heyaime LLC · a Utah limited liability company · Salt Lake County, Utah · achallengetomove.com",
     updated: "Last updated: October 18, 2026 (preview).",
   },
 
   toast: { saved: "Saved", logged: "Nice. Day logged.", undone: "Undone", protected: "Rest well. Day protected." },
-  calendar: { summary: "30 Days Before X-mas: today's session", busy: "Busy day? The floor version counts in full.", normal: "Core session or the floor version. Both count." },
+  calendar: { summary: "30 Days Before X-mas: today's session", busy: "Busy day? The floor version counts in full.", normal: "Core session or the floor version. Both count.", reminder: "Reminder" },
 };

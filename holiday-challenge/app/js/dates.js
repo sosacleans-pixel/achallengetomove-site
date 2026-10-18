@@ -51,7 +51,8 @@ export function diffDays(a, b) {
   return Math.round((parseKey(b) - parseKey(a)) / 86400000);
 }
 
-/** Program day number (1-30) for a date key, or 0 before start, 31+ after end. */
+/** Live-challenge day number (1-30) for a date key, or 0 before start, 31+ after end.
+ *  Self-paced runs use rules.js dayNum(state, key), which counts from the user's own start date. */
 export function dayNumberFor(k) {
   return diffDays(CONFIG.start, k) + 1;
 }
@@ -76,6 +77,10 @@ export function countdown(n = now()) {
   return { days, hours, mins, ms };
 }
 
+let LOCALE = "en-US";
+/** Set the locale used by fmtDate (i18n.js: "en-US" or "es-419"). */
+export function setLocale(l) { LOCALE = l; }
+
 export function fmtDate(k, opts = { weekday: "short", month: "short", day: "numeric" }) {
-  return parseKey(k).toLocaleDateString("en-US", opts);
+  return parseKey(k).toLocaleDateString(LOCALE, opts);
 }

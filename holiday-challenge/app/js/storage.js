@@ -7,6 +7,9 @@ export function defaultState() {
     createdAt: new Date().toISOString(),
     setupDone: false,
     joinedDate: null,
+    mode: "live", // "live" (Nov 25 - Dec 24) or "self" (self-paced: Day 1 = startDate)
+    startDate: null,
+    history: [], // earlier runs (e.g. the live challenge before keeping going self-paced)
     setup: { age: false, readiness: [], gentleAck: false, terms: false, termsAt: null },
     level: "b",
     equipment: "none",

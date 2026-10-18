@@ -1,4 +1,4 @@
-const CACHE = "holiday-30-v2";
+const CACHE = "holiday-30-v3";
 const ASSETS = [
   "./",
   "./index.html",
@@ -8,8 +8,11 @@ const ASSETS = [
   "./js/dates.js",
   "./js/rules.js",
   "./js/storage.js",
+  "./js/i18n.js",
   "./js/strings.en.js",
+  "./js/strings.es.js",
   "./js/program.en.js",
+  "./js/program.es.js",
   "./manifest.webmanifest",
   "./icons/icon.svg",
   "./icons/icon-180.png",
