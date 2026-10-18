@@ -80,7 +80,7 @@
           "label": "Buy app, $4.99",
           "href": "https://buy.stripe.com/6oU3cvauKetj5PcaqZ4ko02",
           "variant": "primary",
-          "newTab": false
+          "newTab": true
         }
       ]
     },
