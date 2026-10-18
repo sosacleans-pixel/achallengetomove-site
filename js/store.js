@@ -60,6 +60,31 @@
     return "";
   }
 
+  /* Stripe badge + refund line from /js/buy-trust.js (shared component). */
+  const BUY_TRUST_HTML = (window.ACTM_BUY_TRUST && window.ACTM_BUY_TRUST.html) || "";
+
+  function isBuyAction(action) {
+    return (
+      action.kind === "checkout_pending" ||
+      (action.kind === "link" && /^https:\/\/buy\.stripe\.com\//.test(action.href || ""))
+    );
+  }
+
+  /* Placeholder buy button: visibly disabled, not clickable, not a buy.stripe.com link (so no GA hit). */
+  function renderPendingCheckout(action, product, btnCls) {
+    return (
+      '<span class="checkout-pending-wrap">' +
+      '<a class="' + btnCls + ' btn-checkout-soon btn-checkout-pending" href="' +
+      escapeHtml(action.href || "#") +
+      '" data-product="' + escapeHtml(product.id || "") +
+      '" aria-disabled="true" tabindex="-1" title="Checkout link pending">' +
+      escapeHtml(action.label) +
+      "</a>" +
+      '<small class="checkout-pending-note">' + escapeHtml(action.pendingNote || "Checkout link pending") + "</small>" +
+      "</span>"
+    );
+  }
+
   function btnClass(variant) {
     return variant === "secondary" ? "btn btn-secondary btn-small" : "btn btn-primary btn-small";
   }
@@ -102,6 +127,8 @@
               escapeHtml(action.label) +
               "</a>"
           );
+        } else if (action.kind === "checkout_pending") {
+          parts.push(renderPendingCheckout(action, product, btnClass(action.variant)));
         } else if (action.kind === "checkout_placeholder") {
           parts.push(
             '<a class="btn btn-primary btn-small btn-checkout-soon" href="#" aria-disabled="true" title="Checkout coming soon" tabindex="-1">' +
@@ -112,12 +139,17 @@
       });
     }
 
-    return parts.length ? '<div class="product-actions">' + parts.join("") + "</div>" : "";
+    if (!parts.length) return "";
+    const hasBuy = product.status !== "coming_soon" && (product.actions || []).some(isBuyAction);
+    return '<div class="product-actions">' + parts.join("") + "</div>" + (hasBuy ? BUY_TRUST_HTML : "");
   }
 
   function statusBadge(status) {
     if (status === "coming_soon") {
       return '<span class="badge badge-soon">Coming soon</span>';
+    }
+    if (status === "checkout_pending") {
+      return '<span class="badge badge-soon">Checkout pending</span>';
     }
     return '<span class="badge badge-live">Available</span>';
   }

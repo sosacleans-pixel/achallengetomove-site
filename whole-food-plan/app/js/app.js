@@ -1161,6 +1161,10 @@ function renderSettings() {
       <button type="button" class="btn btn-secondary btn-small" id="set-export">Export JSON</button>
       <button type="button" class="btn btn-secondary btn-small" id="set-reset">Reset all data</button>
     </div>
+    <div class="card refund-card">
+      <h2>Refunds for the 30-Day Whole Food Plan</h2>
+      <p>You can request a full refund within 3 days (72 hours) of purchase by emailing <a href="mailto:coachsalimheyaime@gmail.com?subject=Refund+request">coachsalimheyaime@gmail.com</a>. After that, all sales are final. Refunds go to the original payment method.</p>
+    </div>
     <p class="health-note">${HEALTH_NOTE}</p>
   `;
 }

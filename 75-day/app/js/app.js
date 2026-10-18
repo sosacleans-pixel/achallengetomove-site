@@ -1132,7 +1132,11 @@ function renderSettings() {
     </form>
     <button type="button" class="btn btn-secondary btn-block" id="export-json">Export JSON</button>
     ${state.mode === "adaptive" ? `<button type="button" class="btn btn-secondary btn-block" id="switch-all-in">Switch to All-In</button>` : ""}
-    <button type="button" class="btn btn-secondary btn-block" id="reset-app">Reset all data</button>`;
+    <button type="button" class="btn btn-secondary btn-block" id="reset-app">Reset all data</button>
+    <div class="card refund-card">
+      <h2>Refunds for the 75-Day Challenge</h2>
+      <p>You can request a full refund within 3 days (72 hours) of purchase by emailing <a href="mailto:coachsalimheyaime@gmail.com?subject=Refund+request">coachsalimheyaime@gmail.com</a>. After that, all sales are final. Refunds go to the original payment method.</p>
+    </div>`;
 }
 
 function bindSettings() {
