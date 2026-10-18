@@ -43,6 +43,8 @@
         });
       })
       .then(function () {
+        // GA4: sign_up only after FormSubmit confirms success (no email or other personal data sent).
+        if (typeof window.gtag === "function") window.gtag("event", "sign_up", { method: "notify_form" });
         form.hidden = true;
         say("Thank you! You're on the list. We'll email you when new challenges launch.");
         status.focus();

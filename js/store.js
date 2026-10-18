@@ -93,6 +93,8 @@
               btnClass(action.variant) +
               '" href="' +
               escapeHtml(action.href) +
+              '" data-product="' +
+              escapeHtml(product.id || "") +
               '"' +
               target +
               rel +
