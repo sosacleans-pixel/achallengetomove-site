@@ -5,7 +5,7 @@
  */
 (function () {
   'use strict';
-  var GA_ID = 'G-XXXXXXXXXX'; // <-- GA4 Measurement ID goes here
+  var GA_ID = 'G-CZNZSJ2290'; // <-- GA4 Measurement ID goes here
 
   if (!/^G-XXXX/i.test(GA_ID)) {
     window.dataLayer = window.dataLayer || [];
