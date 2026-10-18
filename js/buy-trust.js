@@ -14,14 +14,24 @@
     '<p class="buy-refund"><small>You can request a full refund within 3 days (72 hours) of purchase by emailing ' +
     '<a class="text-link" href="mailto:coachsalimheyaime@gmail.com?subject=Refund+request">coachsalimheyaime@gmail.com</a>. ' +
     "After that, all sales are final. Refunds go to the original payment method.</small></p>";
+  /* Purchase terms + Health and safety links (EN + ES), under every buy button. */
+  var LEGAL_HTML =
+    "<p class=\"buy-legal\"><small><a class=\"text-link\" href=\"/purchase-terms/\">Purchase terms</a> · <a class=\"text-link\" href=\"/health-safety/\">Health and safety</a> · <a class=\"text-link\" href=\"/purchase-terms/#es\" lang=\"es\" hreflang=\"es\">Términos de compra</a> · <a class=\"text-link\" href=\"/health-safety/#es\" lang=\"es\" hreflang=\"es\">Salud y seguridad</a></small></p>";
   /* 12-month access note (EN + ES) for apps sold with 12 months of access (products.json "accessNote": true). */
   var ACCESS_NOTE_HTML =
-    "<div class=\"access-note\"><p><small>Purchases include 12 months of app access. If you bought before [GATING DATE], your 12 months start on [GATING DATE]. There is no automatic renewal.</small></p><p lang=\"es\"><small>Las compras incluyen 12 meses de acceso a la app. Si compraste antes del [GATING DATE], tus 12 meses empiezan el [GATING DATE]. No hay renovación automática.</small></p><p><small><a class=\"text-link\" href=\"/purchase-terms/\">Purchase terms</a> · <a class=\"text-link\" href=\"/purchase-terms/#es\" lang=\"es\" hreflang=\"es\">Términos de compra</a></small></p></div>";
+    "<div class=\"access-note\"><p><small>Purchases include 12 months of app access. If you bought before [GATING DATE], your 12 months start on [GATING DATE]. There is no automatic renewal.</small></p><p lang=\"es\"><small>Las compras incluyen 12 meses de acceso a la app. Si compraste antes del [GATING DATE], tus 12 meses empiezan el [GATING DATE]. No hay renovación automática.</small></p></div>";
+  /* Price line (EN + ES) for apps sold with 12 months of access (products.json "priceLine"). Attorney-approved wording. */
+  function esc(t) { return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function priceLineHtml(priceLine, cls) {
+    return '<p class="' + cls + ' price-line">' + esc(priceLine.en) + '</p><p class="price-line price-line--es" lang="es">' + esc(priceLine.es) + "</p>";
+  }
   window.ACTM_BUY_TRUST = {
+    priceLineHtml: priceLineHtml,
     stripeBadgeHtml: STRIPE_BADGE_HTML,
     refundHtml: REFUND_HTML,
     accessNoteHtml: ACCESS_NOTE_HTML,
     /* Badge + refund line, to place directly after the element holding the buy button. */
-    html: STRIPE_BADGE_HTML + REFUND_HTML
+    legalHtml: LEGAL_HTML,
+    html: STRIPE_BADGE_HTML + REFUND_HTML + LEGAL_HTML
   };
 })();

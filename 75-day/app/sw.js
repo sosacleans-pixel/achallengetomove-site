@@ -1,5 +1,6 @@
-const CACHE = "seventy-five-v2";
+const CACHE = "seventy-five-v3";
 const ASSETS = [
+  "/js/health-ack.js",
   "./",
   "./index.html",
   "./css/app.css",

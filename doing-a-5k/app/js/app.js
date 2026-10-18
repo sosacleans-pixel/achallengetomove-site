@@ -1164,9 +1164,11 @@ function renderSettings() {
     <div class="card settings-card refund-card">
       <h2>Refunds for Doing a 5K</h2>
       <p>You can request a full refund within 3 days (72 hours) of purchase by emailing <a href="mailto:coachsalimheyaime@gmail.com?subject=Refund+request">coachsalimheyaime@gmail.com</a>. After that, all sales are final. Refunds go to the original payment method.</p>
+      <p>$6.99 one-time payment. Includes 12 months of access. No subscription.</p>
+      <p lang="es">$6.99 pago único. Incluye 12 meses de acceso. Sin suscripción.</p>
       <p>Purchases include 12 months of app access. If you bought before [GATING DATE], your 12 months start on [GATING DATE]. There is no automatic renewal.</p>
       <p lang="es">Las compras incluyen 12 meses de acceso a la app. Si compraste antes del [GATING DATE], tus 12 meses empiezan el [GATING DATE]. No hay renovación automática.</p>
-      <p><a href="/purchase-terms/" target="_blank" rel="noopener">Purchase terms</a> · <a href="/purchase-terms/#es" target="_blank" rel="noopener" lang="es" hreflang="es">Términos de compra</a></p>
+      <p><a href="/purchase-terms/" target="_blank" rel="noopener">Purchase terms</a> · <a href="/health-safety/" target="_blank" rel="noopener">Health and safety</a> · <a href="/purchase-terms/#es" target="_blank" rel="noopener" lang="es" hreflang="es">Términos de compra</a> · <a href="/health-safety/#es" target="_blank" rel="noopener" lang="es" hreflang="es">Salud y seguridad</a></p>
     </div>
     `,
     { title: "Settings" }

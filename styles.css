@@ -752,6 +752,27 @@ section {
 .access-note p {
   margin: 0 0 0.3rem;
 }
+/* Full price line (EN + ES) replacing the bare price on 5K / Whole Food cards. */
+.price-line {
+  font-family: Lato, system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.35;
+  margin: 0 0 0.2rem;
+  color: var(--charcoal);
+}
+.price-line--es {
+  font-weight: 400;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.buy-legal {
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
 
 /* Refund line shown under every buy button. */
 .buy-refund {
@@ -1355,6 +1376,12 @@ section {
 
 .learn-more-link {
   font-size: 0.9rem;
+}
+
+/* App Terms and Health and safety pages: restore .wrap's side gutters, like .product-page. */
+.legal-page {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
 }
 
 /* Product detail page (e.g. /whole-food-plan/) */

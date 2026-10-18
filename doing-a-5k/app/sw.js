@@ -1,5 +1,6 @@
-const CACHE = "doing-a-5k-v7";
+const CACHE = "doing-a-5k-v8";
 const ASSETS = [
+  "/js/health-ack.js",
   "./icons/icon.svg",
   "./icons/icon-192.png",
   "./icons/icon-512.png",

@@ -32,6 +32,9 @@
   }
 
   /* Placeholder buy button: visibly disabled, not clickable, not a buy.stripe.com link (so no GA hit). */
+  const ACCESS_NOTE_HTML = (window.ACTM_BUY_TRUST && window.ACTM_BUY_TRUST.accessNoteHtml) || "";
+  const PRICE_LINE = window.ACTM_BUY_TRUST && window.ACTM_BUY_TRUST.priceLineHtml;
+
   function renderPendingCheckout(action, product, btnCls) {
     return (
       '<span class="checkout-pending-wrap">' +
@@ -127,6 +130,7 @@
       parts.join("") +
       "</div>" +
       (hasBuy ? BUY_TRUST_HTML : "") +
+      (hasBuy && product.accessNote ? ACCESS_NOTE_HTML : "") +
       "</div>"
     );
   }
@@ -148,7 +152,9 @@
     const tagline = product.tagline
       ? '<p class="tagline">' + escapeHtml(product.tagline) + "</p>"
       : "";
-    const price = product.price
+    const price = product.priceLine && PRICE_LINE
+      ? '<div class="program-price-pill-line">' + PRICE_LINE(product.priceLine, "program-price") + "</div>"
+      : product.price
       ? '<span class="program-price-pill">' + escapeHtml(product.price) + "</span>"
       : "";
     const note = product.note
@@ -189,7 +195,9 @@
     const tagline = product.tagline
       ? '<p class="tagline">' + escapeHtml(product.tagline) + "</p>"
       : "";
-    const price = product.price
+    const price = product.priceLine && PRICE_LINE
+      ? PRICE_LINE(product.priceLine, "program-price")
+      : product.price
       ? '<p class="program-price" aria-label="Price">' + escapeHtml(product.price) + "</p>"
       : "";
     const note = product.note

@@ -4,6 +4,11 @@ import { readFileSync, existsSync, statSync, mkdirSync } from "fs";
 import { join, extname } from "path";
 import { fileURLToPath } from "url";
 
+// Existing flows start after the one-time Health and safety screen (/js/health-ack.js), which is tested on its own.
+const HS_VERSION = readFileSync(new URL("../../../js/health-ack.js", import.meta.url), "utf8").match(/VERSION = "([^"]+)"/)[1];
+const seedHealthAck = ([key, version]) => { try { localStorage.setItem(key, JSON.stringify({ version, at: "test" })); } catch (e) {} };
+
+
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const root = join(__dirname, "..");
 const repoRoot = join(root, "../..");
@@ -108,6 +113,7 @@ async function main() {
   try {
     for (const days of [3, 4, 5]) {
       const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    await ctx.addInitScript(seedHealthAck, ["actm.healthAck.doing-a-5k", HS_VERSION]);
       const page = await ctx.newPage();
       attachErrors(page);
       await page.goto("http://127.0.0.1:8765/doing-a-5k/app/index.html");
@@ -130,6 +136,7 @@ async function main() {
     }
 
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    await ctx.addInitScript(seedHealthAck, ["actm.healthAck.doing-a-5k", HS_VERSION]);
     const page = await ctx.newPage();
     attachErrors(page);
 

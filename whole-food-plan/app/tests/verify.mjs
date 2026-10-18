@@ -7,6 +7,11 @@ import { join, extname } from "path";
 import { fileURLToPath } from "url";
 import { chromium } from "playwright";
 
+// Existing flows start after the one-time Health and safety screen (/js/health-ack.js), which is tested on its own.
+const HS_VERSION = readFileSync(new URL("../../../js/health-ack.js", import.meta.url), "utf8").match(/VERSION = "([^"]+)"/)[1];
+const seedHealthAck = ([key, version]) => { try { localStorage.setItem(key, JSON.stringify({ version, at: "test" })); } catch (e) {} };
+
+
 const root = join(fileURLToPath(import.meta.url), "..", "..");
 const port = 8765;
 const artifacts = "/opt/cursor/artifacts";
@@ -28,8 +33,10 @@ const mime = {
 function serve(req, res) {
   let path = req.url.split("?")[0];
   if (path === "/") path = "/index.html";
-  const file = join(root, path.replace(/^\//, ""));
-  if (!file.startsWith(root) || !existsSync(file)) {
+  // The app loads the site-wide /js/health-ack.js; serve it from the site root like production.
+  const base = path === "/js/health-ack.js" ? join(root, "..", "..") : root;
+  const file = join(base, path.replace(/^\//, ""));
+  if (!file.startsWith(base) || !existsSync(file)) {
     res.writeHead(404);
     res.end("not found");
     return;
@@ -175,6 +182,7 @@ async function main() {
   }
 
   const page = await chromium.launch().then((b) => b.newPage({ viewport: { width: 390, height: 844 } }));
+  await page.addInitScript(seedHealthAck, ["actm.healthAck.whole-food-plan", HS_VERSION]);
   await track(page);
 
   const morning = "2026-06-15T08:00:00";

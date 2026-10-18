@@ -87,6 +87,10 @@
     {
       "id": "whole-food-app",
       "accessNote": true,
+      "priceLine": {
+        "en": "$9.99 one-time payment. Includes 12 months of access. No subscription.",
+        "es": "$9.99 pago único. Incluye 12 meses de acceso. Sin suscripción."
+      },
       "catalogSection": "programs",
       "type": "app",
       "typeLabel": "App",
@@ -122,6 +126,10 @@
     {
       "id": "doing-a-5k",
       "accessNote": true,
+      "priceLine": {
+        "en": "$6.99 one-time payment. Includes 12 months of access. No subscription.",
+        "es": "$6.99 pago único. Incluye 12 meses de acceso. Sin suscripción."
+      },
       "catalogSection": "programs",
       "type": "app",
       "typeLabel": "App",
@@ -211,7 +219,7 @@
       "typeLabel": "App",
       "title": "75 Adaptive",
       "tagline": "Show up every day, your way.",
-      "description": "75 days of daily movement, nutrition and habit tasks flexible to your schedule — no restart if you miss a day.",
+      "description": "75 days of daily movement, nutrition and habit tasks flexible to your schedule, with no restart if you miss a day.",
       "status": "checkout_pending",
       "image": {
         "svg": "/icons/logo.svg",

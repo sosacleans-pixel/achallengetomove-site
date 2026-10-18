@@ -166,7 +166,10 @@
     const tagline = product.tagline
       ? '<p class="product-tagline">' + escapeHtml(product.tagline) + "</p>"
       : "";
-    const price = product.price
+    const PRICE_LINE = window.ACTM_BUY_TRUST && window.ACTM_BUY_TRUST.priceLineHtml;
+    const price = product.priceLine && PRICE_LINE
+      ? PRICE_LINE(product.priceLine, "product-price")
+      : product.price
       ? '<p class="product-price">' + escapeHtml(product.price) + "</p>"
       : "";
     const compact = product._compact ? " product-card--compact" : "";
