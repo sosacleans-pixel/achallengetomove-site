@@ -23,9 +23,12 @@
       .replace(/"/g, "&quot;");
   }
 
+  /* Look C design preview: <html data-icon-set="color"> uses the program-coded variants in /icons/apps-color/. */
+  const SET = document.documentElement.getAttribute("data-icon-set") === "color" ? "apps-color" : "apps";
+
   function src(productId) {
     const slug = SLUGS[productId];
-    return slug ? "/icons/apps/" + slug + "/icon.svg" : "";
+    return slug ? "/icons/" + SET + "/" + slug + "/icon.svg" : "";
   }
 
   /* <img> for a program card; alt text is the program name. Empty string if the product has no icon. */

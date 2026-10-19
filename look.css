@@ -1,0 +1,583 @@
+/* ==========================================================================
+   Homepage look (design preview). Loaded after /styles.css on the homepage only.
+   Shared part: hero visual layout, scroll reveal, tap feedback, Day 1 to 22 strip.
+   All motion is off under prefers-reduced-motion (see the end of this file).
+   ========================================================================== */
+
+/* ---- Hero: text column + motion column ---- */
+.hero-grid--visual {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.hero-visual {
+  position: relative;
+  order: -1; /* mobile: compact motion banner above the text */
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (min-width: 900px) {
+  .hero-grid--visual {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 3rem;
+  }
+
+  .hero-visual {
+    order: 0;
+  }
+}
+
+/* ---- Tap feedback: press + scale + ripple ---- */
+.btn,
+.nav-cta {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active:not(.btn-checkout-soon),
+.nav-cta:active {
+  transform: translateY(1px) scale(0.95);
+  box-shadow: 0 1px 0 var(--charcoal);
+  transition-duration: 0.06s;
+}
+
+.tap-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.3;
+  transform: scale(0);
+  animation: tap-ripple 0.6s ease-out forwards;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes tap-ripple {
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+.hub-tile,
+.program-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease, opacity 0.6s ease;
+}
+
+a.hub-tile:active {
+  transform: scale(0.97);
+}
+
+/* ---- Scroll reveal (only elements that start below the fold get hidden, and only with JS) ---- */
+.reveal {
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.motion-ok .reveal:not(.is-in) {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+/* ---- Day 1 to 22 progress strip ---- */
+section.journey {
+  padding: 3rem 0 3.25rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+.journey-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  margin: 0 0 0.5rem;
+}
+
+.journey h2 {
+  font-size: clamp(2rem, 6vw, 3rem);
+  margin-bottom: 0.4rem;
+}
+
+.journey-lede {
+  max-width: 34rem;
+  margin: 0 auto 1.75rem;
+}
+
+.journey-strip {
+  max-width: 62rem;
+  margin: 0 auto;
+}
+
+.journey-bar {
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 0 0 1.1rem;
+}
+
+.journey-bar-fill {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  transition: width 1.6s cubic-bezier(0.3, 0.6, 0.2, 1) 0.15s;
+}
+
+.motion-ok .journey:not(.is-filled) .journey-bar-fill {
+  width: 0;
+}
+
+.journey-track {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(11, minmax(0, 1fr));
+  gap: 2.1rem 0.3rem;
+}
+
+@media (min-width: 900px) {
+  .journey-track {
+    grid-template-columns: repeat(22, minmax(0, 1fr));
+    gap: 0 0.35rem;
+    padding-bottom: 1.6rem;
+  }
+}
+
+.journey-day {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.journey-dot {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 2.6rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  font-weight: 900;
+  font-size: 0.78rem;
+  line-height: 1;
+  background: var(--dot-bg);
+  color: var(--dot-fg);
+  border: 2px solid var(--dot-border, var(--dot-bg));
+  transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease, transform 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);
+  transition-delay: calc(var(--i) * 60ms + 0.2s);
+}
+
+/* Before the strip scrolls into view (motion on): days are empty, then fill one by one. */
+.motion-ok .journey:not(.is-filled) .journey-dot {
+  background: var(--dot-empty-bg);
+  color: var(--dot-empty-fg);
+  border-color: var(--dot-empty-border);
+  transform: scale(0.82);
+}
+
+.journey-day.is-milestone .journey-dot {
+  box-shadow: 0 0 0 3px var(--ms-ring, transparent);
+}
+
+.journey-cap {
+  position: absolute;
+  top: calc(100% + 0.3rem);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.journey-day:first-child .journey-cap {
+  left: 0;
+  transform: none;
+}
+
+.journey-day:last-child .journey-cap {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+.journey-more {
+  margin: 2.5rem 0 0;
+}
+
+@media (min-width: 900px) {
+  .journey-more {
+    margin-top: 1.25rem;
+  }
+}
+
+/* ==========================================================================
+   LOOK C: Program-coded color. Bright white canvas; every program has its own color,
+   matching its app icon (program-coded icon variants in /icons/apps-color/).
+   Text on every color is charcoal #1e1e1e (4.7:1 or better).
+   ========================================================================== */
+.look-c {
+  --c-22: #ffc700;
+  --c-food: #2fbf71;
+  --c-5k: #3b8bff;
+  --c-half: #9b6bff;
+  --c-pack: #19c3d6;
+  --c-adaptive: #ff5fa2;
+  --c-allin: #ff6a2b;
+  --c-xmas: #ff4d5e;
+  --rainbow: linear-gradient(90deg, var(--c-22), var(--c-allin), var(--c-adaptive), var(--c-half), var(--c-5k), var(--c-pack), var(--c-food));
+  --rainbow-bands: linear-gradient(90deg,
+    var(--c-22) 0 14.28%, var(--c-allin) 0 28.56%, var(--c-adaptive) 0 42.84%, var(--c-half) 0 57.12%,
+    var(--c-5k) 0 71.4%, var(--c-pack) 0 85.68%, var(--c-food) 0 100%);
+  --cream: #ffffff;
+  --paper: #ffffff;
+  --line: #e7e5ee;
+  --muted: #55535f;
+}
+
+.look-c .site-header {
+  border-bottom: 0;
+  position: relative;
+}
+
+.look-c .site-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5px;
+  background: var(--rainbow-bands);
+}
+
+.look-c .text-link {
+  color: var(--charcoal);
+  text-decoration-color: var(--c-adaptive);
+}
+
+.look-c .text-link:hover {
+  text-decoration-color: var(--c-5k);
+}
+
+/* Hero: white with soft color blobs + bouncing icon mosaic */
+.look-c .hero {
+  background:
+    radial-gradient(22rem 18rem at 92% 12%, rgba(59, 139, 255, 0.2), transparent 70%),
+    radial-gradient(20rem 16rem at 70% 95%, rgba(255, 95, 162, 0.18), transparent 70%),
+    radial-gradient(24rem 18rem at 0% 0%, rgba(255, 199, 0, 0.25), transparent 70%),
+    radial-gradient(18rem 14rem at 30% 110%, rgba(47, 191, 113, 0.16), transparent 70%),
+    #fff;
+  border-bottom: 0;
+}
+
+.look-c .hero-eyebrow {
+  color: var(--charcoal);
+}
+
+.look-c .hero-eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 2.6rem;
+  height: 0.5rem;
+  margin-right: 0.6rem;
+  vertical-align: 0.1rem;
+  border-radius: 999px;
+  background: var(--rainbow-bands);
+}
+
+.look-c .hero .btn-primary {
+  box-shadow: 0 5px 0 var(--c-adaptive), 0 10px 0 var(--c-5k);
+}
+
+.look-c .hero .btn-primary:hover {
+  box-shadow: 0 6px 0 var(--c-adaptive), 0 12px 0 var(--c-5k), 0 18px 0 var(--c-food);
+}
+
+.look-c .mosaic {
+  display: grid;
+  grid-template-columns: repeat(4, 60px);
+  gap: 12px;
+  justify-content: center;
+  padding: 6px 0;
+}
+
+.look-c .mosaic-tile {
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  box-shadow: 0 0 0 3px var(--c), 0 10px 22px -8px var(--c);
+  animation: c-wave 2.8s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 0.18s);
+}
+
+@keyframes c-wave {
+  0%, 60%, 100% { transform: translateY(0) rotate(0); }
+  25% { transform: translateY(-10px) rotate(-4deg); }
+  40% { transform: translateY(2px) rotate(2deg); }
+}
+
+@media (min-width: 900px) {
+  .look-c .hero {
+    padding: 3.5rem 0 4.5rem;
+  }
+
+  .look-c .mosaic {
+    grid-template-columns: repeat(4, minmax(0, 96px));
+    gap: 20px;
+    justify-content: end;
+    transform: rotate(-4deg);
+  }
+
+  .look-c .mosaic-tile {
+    width: 100%;
+    height: auto;
+    border-radius: 22px;
+    box-shadow: 0 0 0 4px var(--c), 0 16px 30px -10px var(--c);
+  }
+
+  .look-c .mosaic-tile:nth-child(n + 5) {
+    margin-left: 40px;
+    margin-right: -40px;
+  }
+}
+
+/* Hub tiles: one color each */
+.look-c .hub-strip {
+  border-bottom: 0;
+}
+
+.look-c .hub-strip-title {
+  color: #fff;
+}
+
+.look-c .hub-tiles > li:nth-child(1) { --c: var(--c-22); }
+.look-c .hub-tiles > li:nth-child(2) { --c: var(--c-adaptive); }
+.look-c .hub-tiles > li:nth-child(3) { --c: var(--c-food); }
+.look-c .hub-tiles > li:nth-child(4) { --c: var(--c-5k); }
+
+.look-c .hub-tile {
+  border-color: color-mix(in srgb, var(--c) 45%, transparent);
+  border-top: 5px solid var(--c);
+}
+
+.look-c .hub-tile-icon {
+  color: var(--c);
+}
+
+.look-c a.hub-tile:hover {
+  transform: translateY(-3px);
+  border-color: var(--c);
+  background: color-mix(in srgb, var(--c) 14%, transparent);
+}
+
+.look-c .hub-tile .badge-live {
+  background: var(--c);
+}
+
+/* Journey strip: a rainbow run from Day 1 to Day 22 */
+.look-c .journey {
+  background: #fff;
+  border-top: 1px solid var(--line);
+  --dot-fg: var(--charcoal);
+  --dot-empty-bg: #f3f2f7;
+  --dot-empty-fg: var(--muted);
+  --dot-empty-border: #e1dfe8;
+  --ms-ring: var(--charcoal);
+}
+
+.look-c .journey-bar {
+  background: #f0eef5;
+}
+
+.look-c .journey-bar-fill {
+  background: var(--rainbow);
+}
+
+.look-c .journey-day.is-milestone .journey-dot {
+  border-color: #fff;
+}
+
+.look-c .journey-cap {
+  color: var(--charcoal);
+}
+
+/* Program cards, coded by program id */
+.look-c .program-card[data-program-id="22-day-workout-app"] { --c: var(--c-22); --c-ink: #8a6a00; }
+.look-c .program-card[data-program-id="whole-food-app"] { --c: var(--c-food); --c-ink: #13824a; }
+.look-c .program-card[data-program-id="doing-a-5k"] { --c: var(--c-5k); --c-ink: #1d64d8; }
+.look-c .program-card[data-program-id="5k-to-half-marathon"] { --c: var(--c-half); --c-ink: #6d3ee8; }
+.look-c .program-card[data-program-id="5k-2-pack"] { --c: var(--c-pack); --c-ink: #0e7c8a; }
+.look-c .program-card[data-program-id="75-adaptive"] { --c: var(--c-adaptive); --c-ink: #c2185b; }
+.look-c .program-card[data-program-id="75-all-in"] { --c: var(--c-allin); --c-ink: #c2410c; }
+
+.look-c .programs {
+  background:
+    radial-gradient(30rem 20rem at 100% 0%, rgba(155, 107, 255, 0.08), transparent 70%),
+    #faf9fd;
+}
+
+.look-c .program-card {
+  --c: var(--c-22);
+  --c-ink: #8a6a00;
+  background: #fff;
+  border: 2px solid color-mix(in srgb, var(--c) 40%, #fff);
+  overflow: hidden;
+  box-shadow: 0 8px 22px -14px color-mix(in srgb, var(--c) 70%, #000);
+}
+
+.look-c .program-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 8px;
+  background: var(--c);
+}
+
+.look-c .program-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--c);
+  box-shadow: 0 18px 32px -14px color-mix(in srgb, var(--c) 80%, #000);
+}
+
+.look-c .program-card--featured {
+  border-left-width: 2px;
+  background: linear-gradient(110deg, #fff 55%, color-mix(in srgb, var(--c) 22%, #fff));
+}
+
+.look-c .program-card-icon,
+.look-c .program-featured-icon {
+  box-shadow: 0 0 0 3px var(--c), 0 6px 14px -4px var(--c);
+}
+
+.look-c .program-card .badge-live {
+  background: var(--c);
+  color: var(--charcoal);
+}
+
+.look-c .program-card .program-price {
+  color: var(--c-ink);
+}
+
+.look-c .program-price-pill {
+  background: var(--c);
+}
+
+.look-c .program-card .program-note {
+  border-left-color: var(--c);
+  background: color-mix(in srgb, var(--c) 10%, #fff);
+}
+
+.look-c .program-card .btn-primary {
+  background: var(--c);
+  color: var(--charcoal);
+  border-color: var(--charcoal);
+}
+
+.look-c .program-card .btn-secondary:hover {
+  background: color-mix(in srgb, var(--c) 18%, #fff);
+}
+
+/* Holiday teaser keeps the holiday app colors, with its own program color as the accent line */
+.look-c .holiday-teaser {
+  border-bottom-color: var(--c-xmas);
+}
+
+/* Book */
+.look-c .book-promo {
+  background:
+    radial-gradient(26rem 20rem at 12% 50%, rgba(255, 199, 0, 0.3), transparent 70%),
+    #fff;
+}
+
+/* Store teaser + steps */
+.look-c .store-teaser {
+  position: relative;
+}
+
+.look-c .store-teaser::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 5px;
+  background: var(--rainbow-bands);
+}
+
+.look-c .store-teaser h2,
+.look-c .how h2 {
+  color: #fff;
+}
+
+.look-c .steps li:nth-child(1) { --c: var(--c-22); }
+.look-c .steps li:nth-child(2) { --c: var(--c-adaptive); }
+.look-c .steps li:nth-child(3) { --c: var(--c-pack); }
+
+.look-c .steps li {
+  border-left-color: var(--c);
+}
+
+.look-c .step-num {
+  color: var(--c);
+}
+
+/* Notify: soft multi-color wash, charcoal text */
+.look-c .notify {
+  background: linear-gradient(110deg, #ffe58a 0%, #ffc2dc 50%, #bcd8ff 100%);
+}
+
+.look-c .footer a {
+  color: var(--c-22);
+}
+.look-c .journey-day:nth-child(1) .journey-dot { --dot-bg: #ffc700; }
+.look-c .journey-day:nth-child(2) .journey-dot { --dot-bg: #ffac0c; }
+.look-c .journey-day:nth-child(3) .journey-dot { --dot-bg: #ff9219; }
+.look-c .journey-day:nth-child(4) .journey-dot { --dot-bg: #ff7725; }
+.look-c .journey-day:nth-child(5) .journey-dot { --dot-bg: #ff683c; }
+.look-c .journey-day:nth-child(6) .journey-dot { --dot-bg: #ff655e; }
+.look-c .journey-day:nth-child(7) .journey-dot { --dot-bg: #ff6280; }
+.look-c .journey-day:nth-child(8) .journey-dot { --dot-bg: #ff5fa2; }
+.look-c .journey-day:nth-child(9) .journey-dot { --dot-bg: #e262bd; }
+.look-c .journey-day:nth-child(10) .journey-dot { --dot-bg: #c666d7; }
+.look-c .journey-day:nth-child(11) .journey-dot { --dot-bg: #a969f2; }
+.look-c .journey-day:nth-child(12) .journey-dot { --dot-bg: #8d70ff; }
+.look-c .journey-day:nth-child(13) .journey-dot { --dot-bg: #7279ff; }
+.look-c .journey-day:nth-child(14) .journey-dot { --dot-bg: #5682ff; }
+.look-c .journey-day:nth-child(15) .journey-dot { --dot-bg: #3b8bff; }
+.look-c .journey-day:nth-child(16) .journey-dot { --dot-bg: #319bf3; }
+.look-c .journey-day:nth-child(17) .journey-dot { --dot-bg: #28abe8; }
+.look-c .journey-day:nth-child(18) .journey-dot { --dot-bg: #1ebbdc; }
+.look-c .journey-day:nth-child(19) .journey-dot { --dot-bg: #1cc2c8; }
+.look-c .journey-day:nth-child(20) .journey-dot { --dot-bg: #22c1ab; }
+.look-c .journey-day:nth-child(21) .journey-dot { --dot-bg: #29c08e; }
+.look-c .journey-day:nth-child(22) .journey-dot { --dot-bg: #2fbf71; }
+/* ---- Reduced motion: no animation, no reveal, strip shown complete ---- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .motion-ok .reveal:not(.is-in) {
+    opacity: 1;
+    transform: none;
+  }
+
+  .motion-ok .journey:not(.is-filled) .journey-bar-fill {
+    width: 100%;
+  }
+
+  .btn:active:not(.btn-checkout-soon),
+  .nav-cta:active {
+    transform: none;
+  }
+}
