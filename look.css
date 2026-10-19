@@ -1,0 +1,653 @@
+/* ==========================================================================
+   Homepage look (design preview). Loaded after /styles.css on the homepage only.
+   Shared part: hero visual layout, scroll reveal, tap feedback, Day 1 to 22 strip.
+   All motion is off under prefers-reduced-motion (see the end of this file).
+   ========================================================================== */
+
+/* ---- Hero: text column + motion column ---- */
+.hero-grid--visual {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.hero-visual {
+  position: relative;
+  order: -1; /* mobile: compact motion banner above the text */
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (min-width: 900px) {
+  .hero-grid--visual {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 3rem;
+  }
+
+  .hero-visual {
+    order: 0;
+  }
+}
+
+/* ---- Tap feedback: press + scale + ripple ---- */
+.btn,
+.nav-cta {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active:not(.btn-checkout-soon),
+.nav-cta:active {
+  transform: translateY(1px) scale(0.95);
+  box-shadow: 0 1px 0 var(--charcoal);
+  transition-duration: 0.06s;
+}
+
+.tap-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.3;
+  transform: scale(0);
+  animation: tap-ripple 0.6s ease-out forwards;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes tap-ripple {
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+.hub-tile,
+.program-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease, opacity 0.6s ease;
+}
+
+a.hub-tile:active {
+  transform: scale(0.97);
+}
+
+/* ---- Scroll reveal (only elements that start below the fold get hidden, and only with JS) ---- */
+.reveal {
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.motion-ok .reveal:not(.is-in) {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+/* ---- Day 1 to 22 progress strip ---- */
+section.journey {
+  padding: 3rem 0 3.25rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+.journey-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  margin: 0 0 0.5rem;
+}
+
+.journey h2 {
+  font-size: clamp(2rem, 6vw, 3rem);
+  margin-bottom: 0.4rem;
+}
+
+.journey-lede {
+  max-width: 34rem;
+  margin: 0 auto 1.75rem;
+}
+
+.journey-strip {
+  max-width: 62rem;
+  margin: 0 auto;
+}
+
+.journey-bar {
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 0 0 1.1rem;
+}
+
+.journey-bar-fill {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  transition: width 1.6s cubic-bezier(0.3, 0.6, 0.2, 1) 0.15s;
+}
+
+.motion-ok .journey:not(.is-filled) .journey-bar-fill {
+  width: 0;
+}
+
+.journey-track {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(11, minmax(0, 1fr));
+  gap: 2.1rem 0.3rem;
+}
+
+@media (min-width: 900px) {
+  .journey-track {
+    grid-template-columns: repeat(22, minmax(0, 1fr));
+    gap: 0 0.35rem;
+    padding-bottom: 1.6rem;
+  }
+}
+
+.journey-day {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.journey-dot {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 2.6rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  font-weight: 900;
+  font-size: 0.78rem;
+  line-height: 1;
+  background: var(--dot-bg);
+  color: var(--dot-fg);
+  border: 2px solid var(--dot-border, var(--dot-bg));
+  transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease, transform 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);
+  transition-delay: calc(var(--i) * 60ms + 0.2s);
+}
+
+/* Before the strip scrolls into view (motion on): days are empty, then fill one by one. */
+.motion-ok .journey:not(.is-filled) .journey-dot {
+  background: var(--dot-empty-bg);
+  color: var(--dot-empty-fg);
+  border-color: var(--dot-empty-border);
+  transform: scale(0.82);
+}
+
+.journey-day.is-milestone .journey-dot {
+  box-shadow: 0 0 0 3px var(--ms-ring, transparent);
+}
+
+.journey-cap {
+  position: absolute;
+  top: calc(100% + 0.3rem);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.journey-day:first-child .journey-cap {
+  left: 0;
+  transform: none;
+}
+
+.journey-day:last-child .journey-cap {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+.journey-more {
+  margin: 2.5rem 0 0;
+}
+
+@media (min-width: 900px) {
+  .journey-more {
+    margin-top: 1.25rem;
+  }
+}
+
+/* ==========================================================================
+   LOOK A: Bold energy. New palette: deep ink, coral and orange, with a sun accent.
+   ========================================================================== */
+.look-a {
+  --ink: #17131f;
+  --coral: #ff5a3c;
+  --coral-hi: #ff6a45; /* coral for text and lines on ink */
+  --orange: #ff8a1f;
+  --sun: #ffd447;
+  --blush: #fff3ec;
+  --link: #c4321a;
+  --grad: linear-gradient(100deg, var(--coral) 0%, var(--orange) 100%);
+
+  /* Base tokens remapped so every existing component picks up the new palette. */
+  --yellow: var(--coral-hi);
+  --charcoal: var(--ink);
+  --rust: var(--link);
+  --cream: var(--blush);
+  --paper: #fffaf6;
+  --muted: #5b4a46;
+  --line: #f3d6c8;
+}
+
+.look-a .site-header {
+  background:
+    linear-gradient(var(--ink), var(--ink)) padding-box,
+    var(--grad) border-box;
+  border-bottom: 4px solid transparent;
+}
+
+/* Hero: dark, glowing, high energy */
+.look-a .hero {
+  background:
+    radial-gradient(60rem 30rem at 85% -10%, rgba(255, 90, 60, 0.45), transparent 60%),
+    radial-gradient(40rem 26rem at -10% 110%, rgba(255, 138, 31, 0.32), transparent 60%),
+    var(--ink);
+  color: #fff;
+  border-bottom: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.look-a .hero-eyebrow {
+  color: var(--sun);
+}
+
+.look-a .hero h1 {
+  color: #fff;
+}
+
+.look-a .hero-subhead {
+  color: #fff;
+}
+
+.look-a .hero-brand-statement {
+  color: #d9d3de;
+}
+
+.look-a .hero .text-link {
+  color: var(--sun);
+}
+
+.look-a .hero .btn-primary {
+  border-color: transparent;
+  box-shadow: 0 10px 30px -8px rgba(255, 90, 60, 0.7);
+}
+
+.look-a .hero .btn-primary:hover {
+  box-shadow: 0 14px 34px -8px rgba(255, 138, 31, 0.85);
+}
+
+/* Buttons: coral to orange, ink text (5.9:1 or better) */
+.look-a .btn-primary {
+  background: var(--grad);
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.look-a .btn-primary:hover {
+  box-shadow: 0 6px 0 var(--ink);
+}
+
+.look-a .btn-secondary {
+  border-color: var(--ink);
+}
+
+.look-a .btn-secondary:hover {
+  background: #fff;
+}
+
+.look-a .store-teaser .btn-primary,
+.look-a .holiday-teaser .btn-primary {
+  border-color: transparent;
+  background: var(--grad);
+  color: var(--ink);
+}
+
+.look-a .nav-cta {
+  border-color: var(--coral-hi);
+}
+
+.look-a .nav-cta:hover,
+.look-a .nav-cta:focus-visible {
+  background: var(--grad);
+  color: var(--ink);
+}
+
+/* Hero clip */
+.look-a .hero-visual--clip {
+  height: 168px;
+}
+
+.look-a .clip-frame {
+  position: relative;
+  height: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #000 url("/img/hero/hero-move-poster.webp") center / cover no-repeat;
+  box-shadow: 0 0 0 3px var(--coral), 0 18px 44px -12px rgba(255, 90, 60, 0.6);
+}
+
+.look-a .clip-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.look-a .clip-video.is-playing {
+  opacity: 1;
+}
+
+.look-a .clip-tint {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(140deg, rgba(255, 90, 60, 0.55), rgba(255, 138, 31, 0.15) 55%, rgba(23, 19, 31, 0.35));
+  mix-blend-mode: color;
+}
+
+.look-a .clip-ring {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 82px;
+  height: 82px;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.45));
+}
+
+.look-a .clip-ring-track {
+  fill: rgba(23, 19, 31, 0.82);
+  stroke: rgba(255, 255, 255, 0.18);
+  stroke-width: 9;
+}
+
+.look-a .clip-ring-sweep {
+  fill: none;
+  stroke: var(--sun);
+  stroke-width: 9;
+  stroke-linecap: round;
+  stroke-dasharray: 314.16;
+  stroke-dashoffset: 314.16;
+  transform: rotate(-90deg);
+  transform-origin: 60px 60px;
+  animation: a-sweep 7s linear infinite;
+}
+
+.look-a .clip-ring-num {
+  font-family: Anton, Impact, sans-serif;
+  font-size: 40px;
+  fill: #fff;
+}
+
+.look-a .clip-ring-unit {
+  font: 900 13px Lato, system-ui, sans-serif;
+  letter-spacing: 0.12em;
+  fill: var(--sun);
+}
+
+@keyframes a-sweep {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.look-a .clip-chip {
+  position: absolute;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  background: var(--sun);
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.5);
+  animation: a-bob 3.2s ease-in-out infinite;
+}
+
+.look-a .clip-chip--1 {
+  left: 10px;
+  top: 10px;
+}
+
+.look-a .clip-chip--2 {
+  left: 10px;
+  bottom: 12px;
+  background: #fff;
+  animation-delay: -1.6s;
+}
+
+@keyframes a-bob {
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@media (min-width: 900px) {
+  .look-a .hero {
+    padding: 3.5rem 0 4.5rem;
+  }
+
+  .look-a .hero-visual--clip {
+    height: auto;
+    aspect-ratio: 1;
+    max-width: 430px;
+    justify-self: end;
+    width: 100%;
+  }
+
+  .look-a .clip-frame {
+    border-radius: 32px;
+    transform: rotate(2.5deg);
+    animation: a-float 6s ease-in-out infinite;
+  }
+
+  .look-a .clip-ring {
+    width: 128px;
+    height: 128px;
+    right: -18px;
+    bottom: -18px;
+  }
+
+  .look-a .clip-chip {
+    font-size: 0.8rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .look-a .clip-chip--1 {
+    left: -22px;
+    top: 34px;
+  }
+
+  .look-a .clip-chip--2 {
+    left: -10px;
+    bottom: 54px;
+  }
+}
+
+@keyframes a-float {
+  50% {
+    transform: rotate(1deg) translateY(-8px);
+  }
+}
+
+/* Hub strip */
+.look-a .hub-strip {
+  border-bottom: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 90, 60, 0.12), transparent 70%),
+    var(--ink);
+}
+
+.look-a .hub-strip-title {
+  color: #fff;
+}
+
+.look-a .hub-tile-icon {
+  color: var(--coral-hi);
+}
+
+.look-a a.hub-tile:hover {
+  transform: translateY(-3px);
+  border-color: var(--coral-hi);
+}
+
+/* Journey strip */
+.look-a .journey {
+  background: var(--blush);
+  --dot-bg: var(--coral);
+  --dot-fg: var(--ink);
+  --dot-empty-bg: #fff;
+  --dot-empty-fg: var(--muted);
+  --dot-empty-border: #f0c9b8;
+  --ms-ring: rgba(255, 90, 60, 0.28);
+}
+
+.look-a .journey-eyebrow {
+  color: var(--link);
+}
+
+.look-a .journey-bar {
+  background: #f6dccf;
+}
+
+.look-a .journey-bar-fill {
+  background: linear-gradient(90deg, var(--coral), var(--orange), var(--sun));
+}
+
+.look-a .journey-day:nth-child(n + 8) .journey-dot {
+  --dot-bg: var(--orange);
+}
+
+.look-a .journey-day:nth-child(n + 15) .journey-dot {
+  --dot-bg: var(--sun);
+}
+
+.look-a .journey-day.is-milestone .journey-dot {
+  --dot-bg: var(--ink);
+  --dot-fg: var(--sun);
+}
+
+.look-a .journey-cap {
+  color: var(--ink);
+}
+
+/* Programs */
+.look-a .programs {
+  background: #fff;
+}
+
+.look-a .program-card {
+  background: #fff;
+  border-color: var(--line);
+  border-top: 5px solid var(--coral);
+  box-shadow: 0 8px 24px -14px rgba(23, 19, 31, 0.35);
+}
+
+.look-a .program-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 34px -16px rgba(255, 90, 60, 0.5);
+}
+
+.look-a .program-card--featured {
+  border-left: 0;
+  border-top-width: 6px;
+  border-image: none;
+  background: linear-gradient(120deg, #fff 55%, #fff1e8);
+}
+
+.look-a .badge-live {
+  background: var(--sun);
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.look-a .program-price-pill {
+  background: var(--sun);
+}
+
+.look-a .program-note {
+  border-left-color: var(--coral);
+}
+
+/* Holiday teaser + store teaser + how */
+.look-a .holiday-teaser {
+  border-bottom-color: var(--coral);
+}
+
+.look-a .holiday-teaser-soon {
+  background: var(--sun);
+}
+
+.look-a .holiday-teaser-es {
+  color: var(--sun);
+}
+
+.look-a .store-teaser,
+.look-a .how {
+  background:
+    radial-gradient(40rem 20rem at 100% 0%, rgba(255, 90, 60, 0.28), transparent 60%),
+    var(--ink);
+}
+
+.look-a .steps li {
+  border-left-color: var(--coral);
+}
+
+.look-a .step-num {
+  color: var(--sun);
+}
+
+.look-a .how h2,
+.look-a .store-teaser h2 {
+  color: #fff;
+}
+
+/* Notify */
+.look-a .notify {
+  background: var(--grad);
+}
+
+.look-a .notify .btn-primary {
+  background: var(--ink);
+  color: #fff;
+}
+
+.look-a .footer a {
+  color: var(--coral-hi);
+}
+
+/* ---- Reduced motion: no animation, no reveal, strip shown complete ---- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .motion-ok .reveal:not(.is-in) {
+    opacity: 1;
+    transform: none;
+  }
+
+  .motion-ok .journey:not(.is-filled) .journey-bar-fill {
+    width: 100%;
+  }
+
+  .btn:active:not(.btn-checkout-soon),
+  .nav-cta:active {
+    transform: none;
+  }
+}

@@ -19,7 +19,7 @@
   <meta name="twitter:title" content="A Challenge to Move | Fitness &amp; Wellness Challenge Apps">
   <meta name="twitter:description" content="Move better, eat better and feel better with app-guided challenges from Coach Salim Heyaime. Start with 7 minutes a day and level up from there.">
   <meta name="twitter:image" content="https://achallengetomove.com/img/og-card.png">
-  <meta name="theme-color" content="#1E1E1E">
+  <meta name="theme-color" content="#17131F">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -108,8 +108,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Lato:wght@400;700;900&display=swap">
   <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/look.css">
 </head>
-<body>
+<body class="look look-a">
   <a class="skip" href="#main">Skip to content</a>
 
   <header class="site-header">
@@ -130,7 +131,7 @@
 
   <div id="home-intro">
     <section class="hero" aria-labelledby="hero-heading">
-      <div class="wrap hero-grid">
+      <div class="wrap hero-grid hero-grid--visual">
         <div>
           <p class="hero-eyebrow">What is A Challenge to Move?</p>
           <h1 id="hero-heading">Move better. Eat better. Feel better.</h1>
@@ -141,14 +142,26 @@
           </div>
           <p class="hero-tertiary"><a class="text-link" href="#notify">Get notified when new challenges launch</a></p>
         </div>
+      <div class="hero-visual hero-visual--clip" aria-hidden="true">
+        <div class="clip-frame">
+          <video class="clip-video" data-lazy-hero muted loop playsinline preload="none" poster="/img/hero/hero-move-poster.webp" width="480" height="480" tabindex="-1" disablepictureinpicture>
+            <source data-src="/img/hero/hero-move.webm" type="video/webm">
+            <source data-src="/img/hero/hero-move.mp4" type="video/mp4">
+          </video>
+          <span class="clip-tint"></span>
+        </div>
+        <svg class="clip-ring" viewBox="0 0 120 120" width="120" height="120"><circle cx="60" cy="60" r="50" class="clip-ring-track"/><circle cx="60" cy="60" r="50" class="clip-ring-sweep"/><text x="60" y="58" text-anchor="middle" class="clip-ring-num">7</text><text x="60" y="78" text-anchor="middle" class="clip-ring-unit">MIN</text></svg>
+        <span class="clip-chip clip-chip--1">22 days</span>
+        <span class="clip-chip clip-chip--2">No equipment</span>
+      </div>
       </div>
     </section>
 
     <section class="hub-strip" aria-labelledby="hub-strip-heading">
       <div class="wrap">
-        <h2 id="hub-strip-heading" class="hub-strip-title">Everything you need in one place</h2>
+        <h2 id="hub-strip-heading" class="hub-strip-title" data-reveal>Everything you need in one place</h2>
         <ul class="hub-tiles">
-          <li>
+          <li data-reveal>
             <a class="hub-tile" href="#programs">
               <span class="hub-tile-icon" aria-hidden="true">
                 <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="4" width="20" height="32" rx="4" stroke="currentColor" stroke-width="2.5"/><path d="M16 30h8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
@@ -158,7 +171,7 @@
               <span class="badge badge-live hub-tile-badge">Available now</span>
             </a>
           </li>
-          <li>
+          <li data-reveal>
             <a class="hub-tile" href="#the-book">
               <span class="hub-tile-icon" aria-hidden="true">
                 <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 6h22v28H12a4 4 0 0 1-4-4V6z" stroke="currentColor" stroke-width="2.5"/><path d="M12 6h18v24H12a4 4 0 0 0-4 4V6z" stroke="currentColor" stroke-width="2.5"/></svg>
@@ -168,7 +181,7 @@
               <span class="badge badge-live hub-tile-badge">Available now</span>
             </a>
           </li>
-          <li>
+          <li data-reveal>
             <div class="hub-tile hub-tile--static">
               <span class="hub-tile-icon" aria-hidden="true">
                 <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="12" y="14" width="16" height="18" rx="8" stroke="currentColor" stroke-width="2.5"/><path d="M20 8v6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
@@ -178,7 +191,7 @@
               <span class="badge badge-soon hub-tile-badge">Coming soon</span>
             </div>
           </li>
-          <li>
+          <li data-reveal>
             <div class="hub-tile hub-tile--static">
               <span class="hub-tile-icon" aria-hidden="true">
                 <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 10h16l-2 22H14L12 10z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/><path d="M16 10c0-3 2.5-5 4-5s4 2 4 5" stroke="currentColor" stroke-width="2.5"/></svg>
@@ -196,7 +209,7 @@
   <main id="main">
     <!-- 30 Days Before X-mas Challenge teaser (coming soon). Links to /holiday-challenge/, the same URL the full page uses at launch. -->
     <section class="holiday-teaser" id="holiday-challenge" aria-labelledby="holiday-teaser-heading">
-      <div class="wrap holiday-teaser-inner">
+      <div class="wrap holiday-teaser-inner" data-reveal>
         <img class="holiday-teaser-art" src="/holiday-challenge/img/30-days-before-xmas.svg" width="160" height="160" alt="" loading="lazy" decoding="async">
         <div class="holiday-teaser-copy">
           <h2 id="holiday-teaser-heading">30 Days Before X-mas Challenge</h2>
@@ -212,9 +225,26 @@
       </div>
     </section>
 
+    <!-- Day 1 to 22 progress strip (design preview): the journey of the 22-Day 7-Minute Workout. -->
+    <section class="journey" id="journey" aria-labelledby="journey-heading">
+      <div class="wrap">
+        <p class="journey-eyebrow">22-Day 7-Minute Workout</p>
+        <h2 id="journey-heading">Your 22-day journey</h2>
+        <p class="journey-lede">About 7 minutes a day, no equipment. Check off each day and watch your streak grow from Day 1 to Day 22.</p>
+        <div class="journey-strip">
+          <div class="journey-bar" aria-hidden="true"><span class="journey-bar-fill"></span></div>
+          <ol class="journey-track" aria-hidden="true">
+            <li class="journey-day is-milestone" style="--i:0"><span class="journey-dot">1</span><span class="journey-cap">Start</span></li><li class="journey-day" style="--i:1"><span class="journey-dot">2</span></li><li class="journey-day" style="--i:2"><span class="journey-dot">3</span></li><li class="journey-day" style="--i:3"><span class="journey-dot">4</span></li><li class="journey-day" style="--i:4"><span class="journey-dot">5</span></li><li class="journey-day" style="--i:5"><span class="journey-dot">6</span></li><li class="journey-day is-milestone" style="--i:6"><span class="journey-dot">7</span><span class="journey-cap">One week in</span></li><li class="journey-day" style="--i:7"><span class="journey-dot">8</span></li><li class="journey-day" style="--i:8"><span class="journey-dot">9</span></li><li class="journey-day" style="--i:9"><span class="journey-dot">10</span></li><li class="journey-day" style="--i:10"><span class="journey-dot">11</span></li><li class="journey-day" style="--i:11"><span class="journey-dot">12</span></li><li class="journey-day" style="--i:12"><span class="journey-dot">13</span></li><li class="journey-day is-milestone" style="--i:13"><span class="journey-dot">14</span><span class="journey-cap">Two weeks strong</span></li><li class="journey-day" style="--i:14"><span class="journey-dot">15</span></li><li class="journey-day" style="--i:15"><span class="journey-dot">16</span></li><li class="journey-day" style="--i:16"><span class="journey-dot">17</span></li><li class="journey-day" style="--i:17"><span class="journey-dot">18</span></li><li class="journey-day" style="--i:18"><span class="journey-dot">19</span></li><li class="journey-day" style="--i:19"><span class="journey-dot">20</span></li><li class="journey-day" style="--i:20"><span class="journey-dot">21</span></li><li class="journey-day is-milestone" style="--i:21"><span class="journey-dot">22</span><span class="journey-cap">Habit built</span></li>
+          </ol>
+          <p class="visually-hidden">Days 1 to 22, with milestones at Day 1, Day 7, Day 14 and Day 22.</p>
+        </div>
+        <p class="journey-more"><a class="text-link" href="/22-day-7-minute-workout/">See how the 22 days work</a></p>
+      </div>
+    </section>
+
     <section class="programs" id="programs" aria-labelledby="programs-heading">
       <div class="wrap">
-        <div class="section-head">
+        <div class="section-head" data-reveal>
           <h2 id="programs-heading">Programs</h2>
           <p class="programs-overview">Explore the <a class="text-link" href="/22-day-7-minute-workout/">22-day 7-minute workout</a>, <a class="text-link" href="/whole-food-plan/">30-day whole food plan</a>, <a class="text-link" href="/doing-a-5k/">beginner 5K plan</a>, <a class="text-link" href="/5k-to-half-marathon/">5K to half marathon training plan</a>, <a class="text-link" href="/75-adaptive/">75 Adaptive</a>, and <a class="text-link" href="/75-all-in/">75 All-In</a> &mdash; plus <a class="text-link" href="/#the-book">the book</a>. App-based challenges from Coach Salim Heyaime: movement, nutrition, and habits you can keep.</p>
         </div>
@@ -258,11 +288,11 @@
 
     <section class="book-promo" id="the-book" aria-labelledby="book-heading">
       <div class="wrap book-promo-grid">
-        <picture class="book-promo-cover">
+        <picture class="book-promo-cover" data-reveal>
           <source srcset="/img/book-cover.webp" type="image/webp">
           <img src="/img/book-cover.jpg" width="625" height="1000" alt="Book cover: A Challenge to Move — Your 22-Day Roadmap to Move Better and Feel Better">
         </picture>
-        <div class="book-promo-copy">
+        <div class="book-promo-copy" data-reveal>
           <h2 id="book-heading">The Book</h2>
           <h3 class="book-promo-title">A Challenge to Move: Your 22-Day Roadmap to Move Better and Feel Better</h3>
           <p class="program-note">A 22-day roadmap to build the habit of movement in 7 minutes a day. Every copy comes with the guided 22-Day 7-Minute Workout app, tracker and journal.</p>
@@ -274,7 +304,7 @@
     </section>
 
     <section class="store-teaser" aria-labelledby="store-teaser-heading">
-      <div class="wrap store-teaser-inner">
+      <div class="wrap store-teaser-inner" data-reveal>
         <h2 id="store-teaser-heading">Books &amp; apps in one place</h2>
         <p>Visit the store for the paperback and every app program — without leaving the <em>A Challenge to Move</em> brand.</p>
         <a class="btn btn-primary" href="/store/">Visit the store</a>
@@ -283,19 +313,19 @@
 
     <section class="how" id="how-it-works" aria-labelledby="how-heading">
       <div class="wrap">
-        <h2 id="how-heading">How it works</h2>
+        <h2 id="how-heading" data-reveal>How it works</h2>
         <ol class="steps">
-          <li>
+          <li data-reveal>
             <div class="step-num" aria-hidden="true">1</div>
             <h3>Pick a challenge</h3>
             <p>Choose the program that fits your goal — movement, nutrition, or a longer reset.</p>
           </li>
-          <li>
+          <li data-reveal>
             <div class="step-num" aria-hidden="true">2</div>
             <h3>Follow the daily plan in the app</h3>
             <p>Open the companion app for that day’s workout, meals, or tasks — with timers and reminders built in.</p>
           </li>
-          <li>
+          <li data-reveal>
             <div class="step-num" aria-hidden="true">3</div>
             <h3>Build the habit</h3>
             <p>Short, repeatable sessions add up. Check off each day and keep going when the challenge ends.</p>
@@ -305,7 +335,7 @@
     </section>
 
     <section class="about" id="about" aria-labelledby="about-heading">
-      <div class="wrap about-inner">
+      <div class="wrap about-inner" data-reveal>
         <h2 id="about-heading">About</h2>
         <p>Coach Salim Heyaime has coached online clients around the world since 2017. He created <em>A Challenge to Move</em> to make wellness approachable: a few focused minutes a day, not hours at the gym.</p>
         <p>These programs pair practical books with apps that coach you through each day. Learn more at <a class="text-link" href="https://coachsalimheyaime.com/" target="_blank" rel="noopener">coachsalimheyaime.com</a>.</p>
@@ -313,7 +343,7 @@
     </section>
 
     <section class="notify" id="notify" aria-labelledby="notify-heading">
-      <div class="wrap notify-inner">
+      <div class="wrap notify-inner" data-reveal>
         <h2 id="notify-heading">Get notified when new challenges launch</h2>
         <p>Be the first to know when 75 All-In, 75 Adaptive, the whole-food plan, and new app programs go live.</p>
         <form class="notify-form" id="notify-form" action="https://formsubmit.co/coachsalimheyaime@gmail.com" method="POST" novalidate>
@@ -345,5 +375,6 @@
   <script src="/js/home-programs.js" defer></script>
   <script src="/js/notify.js" defer></script>
 <script src="/js/external-links.js" defer></script>
+  <script src="/js/motion.js" defer></script>
 </body>
 </html>
