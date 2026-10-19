@@ -42,6 +42,16 @@ BASE = `http://127.0.0.1:${server.address().port}/holiday-challenge/app/`;
 const ORIGIN = new URL(BASE).origin;
 
 const results = [];
+
+// Pricing copy rule (Attorney, Oct 18, 2026)
+const PRICE_BANNED = /\d*\s*%\s*off\b|\bwas\s*\$|% de descuento|antes\s*\$/i;
+function strikeNearPrice(t) {
+  const out = [];
+  const re = /<s[\s>]|<del[\s>]|<strike[\s>]|line-through/gi;
+  let m;
+  while ((m = re.exec(t))) { const w = t.slice(Math.max(0, m.index - 120), m.index + 120); if (/\$\s?\d|\d\s?\$|USD|price|precio/i.test(w)) out.push(w.replace(/\s+/g, " ").slice(0, 90)); }
+  return out;
+}
 const errors = [];
 const offsite = []; // every request that leaves the app's own origin (must stay empty)
 const sameOrigin = []; // same-origin requests seen (proves the tracker is wired up)
@@ -303,8 +313,8 @@ if (run(7)) {
   await page.goto(BASE + "index.html#/moves").catch(() => {});
   await page.waitForSelector(".move-card", { timeout: 15000 }).catch(() => {});
   check("offline navigation works (Moves)", (await page.locator(".move-card").count()) > 20);
-  const cached = await page.evaluate(async () => { const keys = await caches.keys(); const c = await caches.open("holiday-30-v6"); return { keys, urls: (await c.keys()).map((r) => new URL(r.url).pathname) }; });
-  check("service worker cache is holiday-30-v6", cached.keys.includes("holiday-30-v6"), cached.keys.join(","));
+  const cached = await page.evaluate(async () => { const keys = await caches.keys(); const c = await caches.open("holiday-30-v7"); return { keys, urls: (await c.keys()).map((r) => new URL(r.url).pathname) }; });
+  check("service worker cache is holiday-30-v7", cached.keys.includes("holiday-30-v7"), cached.keys.join(","));
   check("fonts are in the offline cache", ["anton-v27-latin-400", "lato-v25-latin-400", "lato-v25-latin-700", "lato-v25-latin-900"].every((f) => cached.urls.some((u) => u.endsWith(`/fonts/${f}.woff2`))));
   await ctx.close();
 }
@@ -343,7 +353,7 @@ if (run(9)) {
   await page.goto(BASE + "index.html#/legal/refund");
   await page.waitForSelector("#legal-refund");
   const refundText = await page.textContent("#legal-refund");
-  check("refund: approved 3-day wording shown exactly", refundText.includes("You can request a full refund within 3 days (72 hours) of purchase by emailing coachsalimheyaime@gmail.com. After that, all sales are final. After Dec 24 the challenge continues as a self-paced edition for the rest of your 12-month Access Period. Gift purchases: the buyer can request a full refund within 3 days of purchase, as long as the recipient hasn't redeemed the access code. Refunds go to the original payment method."));
+  check("refund: approved 3-day wording shown exactly", refundText.includes("You can request a full refund within 3 days (72 hours) of purchase by emailing coachsalimheyaime@gmail.com. After that, all sales are final. Start your 30 days whenever you like. You can begin a new 30-day round as often as you want for the rest of your 12-month Access Period. Gift purchases: the buyer can request a full refund within 3 days of purchase, as long as the recipient hasn't redeemed the access code. Refunds go to the original payment method."));
   check("refund screen shows Attorney section C (refund ends access, dispute suspends) and the redemption-flow gift paragraph", refundText.includes("When a refund is issued, access ends right away and any sign-in links stop working.") && refundText.includes("access is suspended while the dispute is open") && refundText.includes("we email the gift code to the buyer") && !refundText.includes("["));
   check("refund: no PENDING tag on the refund window", !S.legal.refund.find(([h]) => h === "Refunds")[1].includes("PENDING"));
   check("refund: old 7-day / Dec 1 window gone", !/7 days|whichever is later|activat/i.test(JSON.stringify(S.legal)));
@@ -547,7 +557,9 @@ if (run(12)) {
   check("strings.es.js: legal text marked with its review status (reviewed, pending final sign-off)", esSrc.startsWith("// " + STATUS) && esSrc.includes("// ===== " + STATUS + " =====") && !/pending attorney review/.test(esSrc));
   check("legal draft notices show the review status (EN + ES)", EN.legal.draft.includes("reviewed October 18, 2026, pending final sign-off by a Utah attorney") && ES.legal.draft.includes("revisado el 18 de octubre de 2026") && ES.legal.draft.includes("prevalece la versión en inglés"));
   check("reviewed ES release wording in place", ES.legal.terms[3][0] === "EXONERACIÓN DE RESPONSABILIDAD, INCLUIDA LA NEGLIGENCIA" && ES.legal.terms[3][1].includes("ESTA EXONERACIÓN INCLUYE LOS RECLAMOS BASADOS EN LA NEGLIGENCIA DE COACH SALIM HEYAIME LLC") && !/cedes/.test(ES.legal.terms[3][1]) && ES.legal.terms.find(([h]) => h === "Otros términos")[1].includes("prevalece la versión en inglés"));
-  check("ES refund keeps the approved meaning (3 days, final, self-paced for the rest of the 12-month Access Period after Dec 24)", ES.legal.refund[1][1].includes("dentro de los 3 días (72 horas)") && ES.legal.refund[1][1].includes("Después del 24 de diciembre, el reto continúa como edición a tu ritmo durante el resto de tu Periodo de acceso de 12 meses.") && ES.legal.refund[1][1].includes("coachsalimheyaime@gmail.com"));
+  check("ES refund keeps the approved meaning (3 days, final, Attorney rolling-start line: new 30-day rounds for the rest of the 12-month Access Period)", ES.legal.refund[1][1].includes("dentro de los 3 días (72 horas)") && ES.legal.refund[1][1].includes("Empieza tus 30 días cuando quieras. Puedes comenzar una nueva ronda de 30 días cuantas veces quieras durante el resto de tu Periodo de acceso de 12 meses.") && ES.legal.refund[1][1].includes("coachsalimheyaime@gmail.com"));
+  check("Attorney ruling (Oct 18): no 'After Dec 24' / self-paced line in the legal text (EN + ES)", !/Dec 24|self-paced|24 de diciembre|a tu ritmo|25 de noviembre|Nov 25/i.test(JSON.stringify(EN.legal) + JSON.stringify(ES.legal)));
+  check("Attorney ruling (Oct 18): Purchase term says 'Sales end December 5, 2026.' (EN) / 'Las ventas terminan el 5 de diciembre de 2026.' (ES)", EN.legal.terms.find(([h]) => h === "Purchase")[1].includes("Sales end December 5, 2026.") && ES.legal.terms.find(([h]) => h === "Compra")[1].includes("Las ventas terminan el 5 de diciembre de 2026."));
   check("refund: old 'never expires' line gone (EN + ES)", !/never expires|converts to the self-paced/i.test(JSON.stringify(EN.legal)) && !/nunca vence/i.test(JSON.stringify(ES.legal)));
   const termsEN = JSON.stringify(EN.legal.terms), termsES = JSON.stringify(ES.legal.terms);
   check("terms: liability cap is the greater of the amount paid or $50 (EN + ES)", termsEN.includes("is limited to the greater of the amount you paid or $50") && !termsEN.includes("limited to the amount paid") && termsES.includes("la cantidad mayor entre el monto que pagaste y $50") && !termsES.includes("pagaste o $50"));
@@ -969,7 +981,7 @@ if (run(17)) {
   check("no absolute http(s) URLs loaded by app code", !/(src|href)\s*=\s*["']https?:|url\(\s*["']?https?:|import\s*\(?\s*["']https?:|fetch\(\s*["']https?:/i.test(all));
   check("shipped config has allowDateOverride: false", /allowDateOverride:\s*false/.test(configSrc));
   const sw = readFileSync(join(appDir, "sw.js"), "utf8");
-  check("sw.js cache name is holiday-30-v6", /const CACHE = "holiday-30-v6"/.test(sw));
+  check("sw.js cache name is holiday-30-v7", /const CACHE = "holiday-30-v7"/.test(sw));
   const assets = [...sw.match(/const ASSETS = \[([\s\S]*?)\];/)[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
   const runtime = [];
   const walk3 = (d, rel = "") => readdirSync(d).forEach((f) => { const p = join(d, f); const r = rel + f; if (["node_modules", "tests"].includes(f) || f.startsWith(".")) return; statSync(p).isDirectory() ? walk3(p, r + "/") : /\.(html|css|js|webmanifest|png|svg|woff2)$/.test(f) && f !== "sw.js" && runtime.push("./" + r); });
@@ -986,6 +998,28 @@ if (run(17)) {
   const walk2 = (d) => readdirSync(d).forEach((f) => { const p = join(d, f); if ([".git", "node_modules", "holiday-challenge"].includes(f)) return; statSync(p).isDirectory() ? walk2(p) : f.endsWith(".html") && publicHtml.push(p); });
   walk2(siteRoot);
   check("not linked from any other page", !publicHtml.some((f) => /holiday-challenge/.test(readFileSync(f, "utf8"))));
+}
+
+// 16. Pricing copy rule (Attorney, Oct 18, 2026): no "% off", "30% off", "was $" and no strikethrough near a price,
+//     in any shipped app file (the tests folder is skipped because it holds these patterns).
+{
+  const files = [];
+  const walk3 = (d) => readdirSync(d).forEach((f) => { const p = join(d, f); if (["node_modules", "tests", "fonts", "icons"].includes(f)) return; statSync(p).isDirectory() ? walk3(p) : /\.(html|js|css|json|webmanifest|txt|md)$/.test(f) && files.push(p); });
+  walk3(appDir);
+  const hits = [];
+  for (const f of files) {
+    const t = readFileSync(f, "utf8");
+    const m = t.match(PRICE_BANNED);
+    if (m) hits.push(`${f.slice(appDir.length + 1)}: ${m[0]}`);
+    for (const s of strikeNearPrice(t)) hits.push(`${f.slice(appDir.length + 1)}: ${s}`);
+  }
+  check("pricing rule: no '% off', 'was $' or strikethrough near a price in any app file", hits.length === 0, hits.slice(0, 5).join(" | "));
+  // self-test so the rule can't silently stop working
+  check("pricing rule self-test: catches '30% off', '% off', 'was $9.99', <s>/<del> and line-through near a price; ignores line-through away from prices",
+    PRICE_BANNED.test("Now 30% off") && PRICE_BANNED.test("50 % OFF today") && PRICE_BANNED.test("was $9.99") && PRICE_BANNED.test("Was  $12") &&
+    strikeNearPrice("<s>$9.99</s> $6.99").length > 0 && strikeNearPrice("<del>$9.99</del>").length > 0 &&
+    strikeNearPrice('<span style="text-decoration: line-through">$9.99</span>').length > 0 &&
+    strikeNearPrice(".cal-dot.st-missed { text-decoration: line-through; }").length === 0 && !PRICE_BANNED.test("$9.99 one-time payment"));
 }
 
 check("tracker saw the app's own requests", sameOrigin.length > 0, `${sameOrigin.length} same-origin requests`);
