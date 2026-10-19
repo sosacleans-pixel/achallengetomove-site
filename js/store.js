@@ -93,12 +93,23 @@
     const parts = [];
 
     if (product.status === "coming_soon") {
-      const subject = product.notifySubject || "Notify me: new product";
-      parts.push(
-        '<a class="btn btn-primary btn-small" href="' +
-          escapeHtml(mailtoNotify(subject)) +
-          '">Notify me</a>'
-      );
+      if (product.notifyHref) {
+        /* Coming-soon page with its own sign-up (e.g. /holiday-challenge/). No price, no buy button. */
+        parts.push(
+          '<a class="btn btn-primary btn-small" href="' +
+            escapeHtml(product.notifyHref) +
+            '">' +
+            escapeHtml(product.notifyLabel || "Get notified") +
+            "</a>"
+        );
+      } else {
+        const subject = product.notifySubject || "Notify me: new product";
+        parts.push(
+          '<a class="btn btn-primary btn-small" href="' +
+            escapeHtml(mailtoNotify(subject)) +
+            '">Notify me</a>'
+        );
+      }
       if (product.learnMoreHref) {
         parts.push(
           '<a class="btn btn-secondary btn-small" href="' +
