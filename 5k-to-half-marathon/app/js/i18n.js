@@ -1,7 +1,7 @@
 /**
  * 5K to Half Marathon: app strings, English and Spanish.
- * Health and safety section text is the approved shared text (same wording as the shared screen on
- * preview/legacy-access-copy, js/health-ack.js hs-2026-10-18.3). Coach plan detail text stays English.
+ * The Health and safety + App Terms consent screen text lives in health-ack-text.js (verbatim copy of the
+ * shared /js/health-ack.js on preview/legacy-access-copy). Coach plan detail text stays English.
  */
 
 export const STRINGS = {
@@ -15,37 +15,6 @@ export const STRINGS = {
   "navProgress": "Progress",
   "navSettings": "Settings",
   "safety": "<strong>Safety:</strong> Check with a doctor before starting an exercise program. Stop if you feel pain, dizziness, or chest discomfort.",
-  "ackTitle": "Before you start",
-  "ackHeading": "Health and safety",
-  "ackLead": "Please read this before you start 5K to Half Marathon from Coach Salim Heyaime LLC.",
-  "ackSections": [
-   [
-    "General wellness education only. Not medical advice.",
-    "Our apps provide general fitness, nutrition and habit information for healthy adults 18 and older. They don't diagnose, treat, cure, mitigate or prevent any disease or condition, and they make no weight-loss, medical or health-outcome claims. They are not physical therapy, rehabilitation or a medical program, and they are not a substitute for care from a doctor or other qualified healthcare provider."
-   ],
-   [
-    "Adults only",
-    "You must be 18 or older to use our apps."
-   ],
-   [
-    "Check with your doctor first",
-    "Check with your doctor or a qualified healthcare provider before starting, especially if you have a heart condition, high blood pressure, diabetes, joint or bone problems, a recent injury or surgery, are pregnant or postpartum, take medication for a chronic condition, or have been inactive for a while. Before you change how you eat, also check with them if you have a medical condition, food allergies or a history of disordered eating. In an emergency, call 911 (or your local emergency number)."
-   ],
-   [
-    "Stop if you feel pain",
-    "STOP right away if you feel pain, or if you have: chest pain, pressure or tightness (or pain spreading to the arm, jaw, neck or back); unusual shortness of breath that doesn't settle with rest; dizziness, light-headedness, fainting or confusion; an irregular or racing heartbeat; sharp, stabbing or joint pain; numbness, tingling or loss of coordination; nausea or vomiting during effort. If symptoms are severe or don't settle quickly with rest, call 911 (or your local emergency number). Otherwise, contact a healthcare provider before you exercise again."
-   ],
-   [
-    "Your space and your pace",
-    "You are responsible for your space and any equipment you use, and for checking that it is safe and in good condition. You control your pace and intensity. Never hold your breath during effort."
-   ],
-   [
-    "Results vary",
-    "Individual experiences vary. We don't promise any weight, body, fitness or health outcome."
-   ]
-  ],
-  "ackCheck": "I am 18 or older and I have read the Health and safety information above.",
-  "ackBtn": "Continue",
   "tagline": "A 12 or 16 week plan from 5K to 13.1 miles (21.1 km).",
   "obName": "Your name (optional)",
   "obNamePh": "Alex",
@@ -202,7 +171,7 @@ export const STRINGS = {
   "reset": "Reset all data",
   "resetConfirm": "Delete all app data on this device? This cannot be undone.",
   "refundTitle": "Refunds for 5K to Half Marathon",
-  "refund": "You can request a full refund within 3 days (72 hours) of purchase by emailing <a href=\"mailto:coachsalimheyaime@gmail.com?subject=Refund+request\">coachsalimheyaime@gmail.com</a>. After that, all sales are final. Refunds go to the original payment method.",
+  "refund": "You can request a full refund within 3 days (72 hours) of purchase by emailing <a href=\"mailto:coachsalimheyaime@gmail.com?subject=Refund+request\">coachsalimheyaime@gmail.com</a>. After that, all sales are final, except where the law requires otherwise. Refunds go to the original payment method.",
   "dataNote": "Your plan and progress are saved only on this device.",
   "coachEnNote": "",
   "rest": "Rest",
@@ -234,37 +203,6 @@ export const STRINGS = {
   "navProgress": "Progreso",
   "navSettings": "Ajustes",
   "safety": "<strong>Seguridad:</strong> Consulta a un médico antes de empezar un programa de ejercicio. Detente si sientes dolor, mareo o molestias en el pecho.",
-  "ackTitle": "Antes de empezar",
-  "ackHeading": "Salud y seguridad",
-  "ackLead": "Léelo antes de empezar 5K to Half Marathon de Coach Salim Heyaime LLC.",
-  "ackSections": [
-   [
-    "Solo educación general sobre bienestar. No es consejo médico.",
-    "Nuestras apps ofrecen información general sobre ejercicio, alimentación y hábitos para adultos sanos de 18 años o más. No diagnostican, tratan, curan, mitigan ni previenen ninguna enfermedad o afección, y no hacen afirmaciones sobre pérdida de peso, afirmaciones médicas ni afirmaciones sobre resultados de salud. No son fisioterapia, rehabilitación ni un programa médico, y no sustituyen la atención de un médico u otro profesional de la salud calificado."
-   ],
-   [
-    "Solo adultos",
-    "Debes tener 18 años o más para usar nuestras apps."
-   ],
-   [
-    "Consulta primero a tu médico",
-    "Consulta a tu médico o a un profesional de la salud calificado antes de empezar, sobre todo si tienes una enfermedad del corazón, presión arterial alta, diabetes, problemas en las articulaciones o los huesos, una lesión o cirugía reciente, si estás embarazada o en el posparto, si tomas medicamentos para una enfermedad crónica o si llevas un tiempo sin hacer actividad física. Antes de cambiar tu forma de comer, consúltalo también si tienes una afección médica, alergias alimentarias o antecedentes de trastornos de la conducta alimentaria. En una emergencia, llama al 911 (o al número local de emergencias)."
-   ],
-   [
-    "Detente si sientes dolor",
-    "DETENTE de inmediato si sientes dolor o si tienes: dolor, presión u opresión en el pecho (o dolor que se extiende al brazo, la mandíbula, el cuello o la espalda); falta de aire inusual que no mejora con el descanso; mareo, sensación de desmayo, desmayo o confusión; latidos irregulares o muy acelerados; dolor agudo, punzante o en las articulaciones; entumecimiento, hormigueo o pérdida de coordinación; náuseas o vómitos durante el esfuerzo. Si los síntomas son graves o no mejoran pronto con el descanso, llama al 911 (o al número local de emergencias). En los demás casos, comunícate con un profesional de la salud antes de volver a hacer ejercicio."
-   ],
-   [
-    "Tu espacio y tu ritmo",
-    "Tú eres responsable de tu espacio y de cualquier equipo que uses, y de revisar que sea seguro y esté en buen estado. Tú controlas tu ritmo y la intensidad. No contengas la respiración durante el esfuerzo."
-   ],
-   [
-    "Los resultados varían",
-    "Las experiencias individuales varían. No prometemos ningún resultado de peso, cuerpo, condición física ni salud."
-   ]
-  ],
-  "ackCheck": "Tengo 18 años o más y leí la información de Salud y seguridad de arriba.",
-  "ackBtn": "Continuar",
   "tagline": "Un plan de 12 o 16 semanas de 5K a 21,1 km (13.1 mi).",
   "obName": "Tu nombre (opcional)",
   "obNamePh": "Alex",
@@ -421,7 +359,7 @@ export const STRINGS = {
   "reset": "Borrar todos los datos",
   "resetConfirm": "¿Borrar todos los datos de la app en este dispositivo? No se puede deshacer.",
   "refundTitle": "Reembolsos de 5K to Half Marathon",
-  "refund": "Puedes pedir un reembolso completo dentro de los 3 días (72 horas) posteriores a la compra escribiendo a <a href=\"mailto:coachsalimheyaime@gmail.com?subject=Refund+request\">coachsalimheyaime@gmail.com</a>. Después de ese plazo, todas las ventas son finales. Los reembolsos se hacen al método de pago original.",
+  "refund": "Puedes pedir un reembolso completo dentro de los 3 días (72 horas) posteriores a la compra escribiendo a <a href=\"mailto:coachsalimheyaime@gmail.com?subject=Refund+request\">coachsalimheyaime@gmail.com</a>. Después de ese plazo, todas las ventas son finales, salvo cuando la ley exija otra cosa. Los reembolsos se hacen al método de pago original.",
   "dataNote": "Tu plan y tu progreso se guardan solo en este dispositivo.",
   "coachEnNote": "Las indicaciones detalladas del entrenador para cada sesión y ejercicio están en inglés por ahora.",
   "rest": "Descanso",

@@ -1,4 +1,4 @@
-const CACHE = "5k-to-half-marathon-v2";
+const CACHE = "5k-to-half-marathon-v3";
 const ASSETS = [
   "./",
   "./index.html",
@@ -10,6 +10,7 @@ const ASSETS = [
   "./js/schedule.js",
   "./js/storage.js",
   "./js/i18n.js",
+  "./js/health-ack-text.js",
   "./js/timer.js",
   "./js/strength-timer.js",
   "./data/half-marathon-plan.json",

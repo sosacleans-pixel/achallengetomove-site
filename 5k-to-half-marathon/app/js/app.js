@@ -41,11 +41,13 @@ import {
 import { WorkoutTimer } from "./timer.js";
 import { StrengthTimer } from "./strength-timer.js";
 import { getLang, setLang, makeT } from "./i18n.js";
+import { HS_VERSION, HS_LINKS, HS_TEXT } from "./health-ack-text.js";
 
 const E2E = new URLSearchParams(location.search).has("e2e");
 const APP_ID = "5k-to-half-marathon";
 const ACK_KEY = "actm.healthAck." + APP_ID;
-const ACK_VERSION = "half-hs-2026-10-18.1";
+/* Same consent version as the shared screen (/js/health-ack.js); text in ./health-ack-text.js. */
+const ACK_VERSION = HS_VERSION;
 const DAY_NAMES_ES = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
 let lang = getLang();
@@ -178,25 +180,58 @@ function bindCommon() {
   $("#lang-btn")?.addEventListener("click", (e) => switchLang(e.currentTarget.dataset.lang));
 }
 
-/* ---------- Health and safety (one time, before first use) ---------- */
+/* ---------- Health and safety + App Terms consent (one time, before first use) ----------
+ * Same design and text as the shared screen in /js/health-ack.js (Salim approved, Oct 18):
+ * bold short label, then the full consent sentence ALWAYS visible inside the label (never in the
+ * expander), "Read the full text" collapsed below, Continue disabled until ticked. Links open in a
+ * new tab so the screen stays put; clicking a link does not tick the box. */
+
+function hsText() {
+  return HS_TEXT[lang] || HS_TEXT.en;
+}
+
+function hsSentence(h) {
+  const sfx = lang === "es" ? "#es" : "";
+  let out = esc(h.ack);
+  [[h.ackLinks[0], HS_LINKS.safety], [h.ackLinks[1], HS_LINKS.terms]].forEach(([label, href]) => {
+    out = out.replace(esc(label), `<a href="${href}${sfx}" target="_blank" rel="noopener" data-hs-doc>${esc(label)}</a>`);
+  });
+  return out;
+}
 
 function renderAck() {
-  const sections = t("ackSections")
-    .map(([h, b]) => `<h3>${esc(h)}</h3><p>${esc(b)}</p>`)
-    .join("");
+  const h = hsText();
+  const sfx = lang === "es" ? "#es" : "";
+  const para = (head, body) => `<h3>${esc(head)}</h3><p>${esc(body)}</p>`;
+  const full =
+    `<p>${esc(h.lead)}</p>` +
+    h.sections.map((x) => para(x[1], x[2])).join("") +
+    `<h3 class="hs-ack-sub">${esc(h.termsHeading)}</h3>` +
+    h.terms.map((x) => para(x[0], x[1])).join("") +
+    `<p class="hs-ack-links">${esc(h.fullPages)} <a href="${HS_LINKS.safety}${sfx}" target="_blank" rel="noopener">${esc(h.links[0])}</a> · ` +
+    `<a href="${HS_LINKS.terms}${sfx}" target="_blank" rel="noopener">${esc(h.links[1])}</a></p>`;
+  const other = lang === "es" ? "en" : "es";
   return shell(
     `
-    <div class="card ack-card" data-screen="health-ack">
-      <h2 id="ack-title">${t("ackHeading")}</h2>
-      <p>${t("ackLead")}</p>
-      <div class="ack-text" tabindex="0" role="region" aria-labelledby="ack-title">${sections}</div>
-      <label class="check-row ack-check">
-        <input type="checkbox" id="ack-tick">
-        <span>${t("ackCheck")}</span>
+    <div class="card ack-card hs-ack-lang" data-screen="health-ack" lang="${lang}">
+      <h2 id="ack-title">${esc(h.ackTitle)}</h2>
+      <label class="hs-ack-check" for="ack-tick">
+        <input type="checkbox" id="ack-tick" data-hs="tick" aria-describedby="ack-sentence">
+        <span>
+          <strong class="hs-ack-label">${esc(h.ackLabel)}</strong>
+          <span class="hs-ack-sentence" id="ack-sentence">${hsSentence(h)}</span>
+        </span>
       </label>
-      <button type="button" class="btn btn-primary btn-block" id="ack-go" disabled>${t("ackBtn")}</button>
+      <details class="hs-ack-more">
+        <summary>${esc(h.readFull)}</summary>
+        <div class="hs-ack-full" tabindex="0" role="region" aria-label="${esc(h.readFull)}">${full}</div>
+      </details>
+      <div class="hs-ack-actions">
+        <button type="button" class="btn btn-primary" id="ack-go" data-hs="go" disabled>${esc(h.btn)}</button>
+        <button type="button" class="hs-ack-lang-btn" id="ack-lang" data-lang="${other}" lang="${other}">${esc(h.langBtn)}</button>
+      </div>
     </div>`,
-    { showNav: false, title: t("ackTitle") }
+    { showNav: false, title: esc(h.screenTitle) }
   );
 }
 
@@ -204,13 +239,15 @@ function bindAck() {
   $("#ack-tick")?.addEventListener("change", (e) => {
     $("#ack-go").disabled = !e.target.checked;
   });
+  $("#ack-lang")?.addEventListener("click", (e) => switchLang(e.currentTarget.dataset.lang));
   $("#ack-go")?.addEventListener("click", () => {
     if (!$("#ack-tick").checked) return;
+    const h = hsText();
+    // Kept on the device, same record as the shared screen: version, SHA-256 of the exact screen
+    // text, language, short label, full sentence agreed to, ISO time.
+    const rec = { version: ACK_VERSION, textHash: h.hash, lang, label: h.ackLabel, accepted: h.ack, at: new Date().toISOString() };
     try {
-      localStorage.setItem(
-        ACK_KEY,
-        JSON.stringify({ version: ACK_VERSION, lang, label: t("ackCheck"), at: new Date().toISOString() })
-      );
+      localStorage.setItem(ACK_KEY, JSON.stringify(rec));
     } catch {}
     route();
   });

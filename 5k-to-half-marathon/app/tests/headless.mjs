@@ -3,7 +3,7 @@
  *   PORT=8799 SHOTS=/workspace/half-app node 5k-to-half-marathon/app/tests/headless.mjs
  * Needs puppeteer-core (resolved from ./node_modules, e.g. a symlink to /workspace/pptr-tools/node_modules)
  * and Chrome at /usr/bin/google-chrome (or CHROME=...).
- * Covers: Health and safety screen, onboarding (run level A and B, not-ready block), Day 1, run timer,
+ * Covers: Health and safety + App Terms consent screen (shared design, hs version, text hash), onboarding (run level A and B, not-ready block), Day 1, run timer,
  * check-off and undo, strength timer, EN/ES, offline reload via the service worker, no Google Analytics,
  * no sideways scroll at 390 px, manifest icons, copy rules (no em/en dashes, no banned names).
  */
@@ -11,6 +11,7 @@ import puppeteer from "puppeteer-core";
 import { createServer } from "http";
 import { readFileSync, existsSync, statSync, mkdirSync, readdirSync } from "fs";
 import { join, extname, normalize } from "path";
+import { createHash } from "crypto";
 import { fileURLToPath } from "url";
 
 const appDir = normalize(join(fileURLToPath(import.meta.url), "..", ".."));
@@ -62,6 +63,19 @@ try {
   check(/noindex/.test(html), "app page is noindex (same as Doing a 5K app)");
   const appSrc = readFileSync(join(appDir, "js", "app.js"), "utf8") + readFileSync(join(appDir, "js", "i18n.js"), "utf8");
   check(/coachsalimheyaime@gmail\.com/.test(appSrc) && /3 days \(72 hours\)/.test(appSrc), "refund email and 3-day policy text in app");
+  check(/all sales are final, except where the law requires otherwise\./.test(appSrc) && /todas las ventas son finales, salvo cuando la ley exija otra cosa\./.test(appSrc), "refund text: 'except where the law requires otherwise' (EN) and 'salvo cuando la ley exija otra cosa' (ES)");
+  check(!/18 años o más y leí|have read the Health and safety information above/.test(appSrc), "old health checkbox text is gone");
+  const { HS_VERSION, HS_TEXT } = await import(join(appDir, "js", "health-ack-text.js"));
+  for (const l of ["en", "es"]) {
+    const h = HS_TEXT[l];
+    const txt = [h.ackTitle, h.ackLabel, h.ack, h.title, h.lead, ...h.sections.map((x) => x[1] + "\n" + x[2]), h.termsHeading, ...h.terms.map((x) => x[0] + "\n" + x[1])].join("\n\n");
+    check(createHash("sha256").update(txt).digest("hex") === h.hash, `consent text ${l} matches its SHA-256 (verbatim copy of the shared screen)`);
+  }
+  check(HS_TEXT.en.ackLabel === "I agree to the Terms, Health and Safety." && HS_TEXT.es.ackLabel === "Acepto los Términos y la información de Salud y seguridad.", "approved short labels EN/ES");
+  check(HS_TEXT.en.ack === "I am 18 or older. I have read the Health and safety information, and I agree to the App Terms, including the Assumption of Risk and the Release of Liability, which includes claims based on negligence." &&
+    HS_TEXT.es.ack === "Tengo 18 años o más. Leí la información de Salud y seguridad y acepto los Términos de las apps, incluidas la Asunción de riesgos y la Exoneración de responsabilidad, que incluye reclamos por negligencia.", "approved consent sentences EN/ES");
+  const shared = existsSync(join(repo, "js", "health-ack.js")) ? readFileSync(join(repo, "js", "health-ack.js"), "utf8") : "";
+  if (shared) check(shared.includes(`VERSION = "${HS_VERSION}"`) && shared.includes(HS_TEXT.en.hash) && shared.includes(HS_TEXT.es.hash), "same version and text hashes as /js/health-ack.js");
 
   const ctx = await browser.createBrowserContext();
   const page = await ctx.newPage();
@@ -79,11 +93,33 @@ try {
   check(!(await page.$("#onboard-form")), "no onboarding behind the health screen");
   check(await noSideways(page), "health screen: no sideways scroll at 390");
   await shot(page, "half-app-health-390.png", false);
+  const cs = await page.evaluate(() => {
+    const lab = document.querySelector('label[for="ack-tick"]');
+    const sent = document.querySelector("#ack-sentence");
+    const r = sent.getBoundingClientRect();
+    return {
+      label: lab.querySelector("strong.hs-ack-label")?.textContent,
+      sentence: sent.textContent,
+      sentenceInLabel: lab.contains(sent),
+      sentenceVisible: r.height > 0 && !sent.closest("details"),
+      links: [...sent.querySelectorAll("a")].map((a) => [a.textContent, a.getAttribute("href"), a.target]),
+      detailsClosed: !document.querySelector(".hs-ack-more").open,
+      hasTerms: /ASSUMPTION OF RISK/.test(document.querySelector(".hs-ack-full").textContent) && /RELEASE OF LIABILITY/.test(document.querySelector(".hs-ack-full").textContent),
+    };
+  });
+  check(cs.label === "I agree to the Terms, Health and Safety.", "bold short label", cs.label);
+  check(cs.sentenceInLabel && cs.sentenceVisible && /^I am 18 or older\. .*claims based on negligence\.$/.test(cs.sentence), "consent sentence always visible, inside the label", cs);
+  check(JSON.stringify(cs.links) === JSON.stringify([["Health and safety information", "/health-safety/", "_blank"], ["App Terms", "/purchase-terms/", "_blank"]]), "sentence links Health and safety and App Terms", cs.links);
+  check(cs.detailsClosed && cs.hasTerms, "'Read the full text' collapsed, includes Assumption of Risk and Release");
+  await page.click('#ack-sentence a[href="/purchase-terms/"]').catch(() => {});
+  await sleep(200);
+  for (const p of (await browser.pages())) if (p !== page && /purchase-terms/.test(p.url())) await p.close();
+  check(!(await page.$eval("#ack-tick", (c) => c.checked)) && (await page.$eval("#ack-go", (b) => b.disabled)), "clicking a link does not tick the box");
   await page.click("#ack-tick");
   await page.click("#ack-go");
   await page.waitForSelector("#onboard-form");
   const ack = await page.evaluate(() => JSON.parse(localStorage.getItem("actm.healthAck.5k-to-half-marathon") || "null"));
-  check(ack && ack.version && ack.lang === "en", "ack stored on device with version and language", ack);
+  check(ack && ack.version === HS_VERSION && ack.lang === "en" && ack.textHash === HS_TEXT.en.hash && ack.label === HS_TEXT.en.ackLabel && ack.accepted === HS_TEXT.en.ack && /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(ack.at), "consent stored on device: version, text hash, language, label, sentence, ISO time", ack);
 
   // 3. onboarding
   await shot(page, "half-app-onboarding-390.png");
@@ -215,11 +251,15 @@ try {
   await p2.setViewport({ width: 390, height: 844 });
   p2.on("dialog", (d) => d.accept());
   await p2.goto(APP + "?e2e&lang=es", { waitUntil: "networkidle0" });
-  const ackEs = await p2.$eval("#app", (el) => el.textContent);
-  check(/Salud y seguridad/.test(ackEs) && /Tengo 18 años o más/.test(ackEs), "Spanish health screen");
+  const ackEs = await p2.evaluate(() => ({ label: document.querySelector("strong.hs-ack-label")?.textContent, sentence: document.querySelector("#ack-sentence")?.textContent, links: [...document.querySelectorAll("#ack-sentence a")].map((a) => a.getAttribute("href")) }));
+  check(ackEs.label === "Acepto los Términos y la información de Salud y seguridad." && ackEs.sentence === HS_TEXT.es.ack && JSON.stringify(ackEs.links) === JSON.stringify(["/health-safety/#es", "/purchase-terms/#es"]), "Spanish consent screen: label, sentence, links", ackEs);
+  check(await noSideways(p2), "Spanish consent screen: no sideways scroll at 390");
+  await shot(p2, "half-app-health-es-390.png", false);
   await p2.click("#ack-tick");
   await p2.click("#ack-go");
   await p2.waitForSelector("#onboard-form");
+  const ack2 = await p2.evaluate(() => JSON.parse(localStorage.getItem("actm.healthAck.5k-to-half-marathon") || "null"));
+  check(ack2 && ack2.lang === "es" && ack2.textHash === HS_TEXT.es.hash && ack2.accepted === HS_TEXT.es.ack, "Spanish consent stored with ES text hash", ack2);
   await p2.click('input[name="days"][value="4"]');
   await p2.click('input[name="runLevelMethod"][value="b"]');
   await p2.click('input[name="continuousRange"][value="m40plus"]');
