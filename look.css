@@ -1,0 +1,661 @@
+/* ==========================================================================
+   Homepage look (design preview). Loaded after /styles.css on the homepage only.
+   Shared part: hero visual layout, scroll reveal, tap feedback, Day 1 to 22 strip.
+   All motion is off under prefers-reduced-motion (see the end of this file).
+   ========================================================================== */
+
+/* ---- Hero: text column + motion column ---- */
+.hero-grid--visual {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.hero-visual {
+  position: relative;
+  order: -1; /* mobile: compact motion banner above the text */
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (min-width: 900px) {
+  .hero-grid--visual {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 3rem;
+  }
+
+  .hero-visual {
+    order: 0;
+  }
+}
+
+/* ---- Tap feedback: press + scale + ripple ---- */
+.btn,
+.nav-cta {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active:not(.btn-checkout-soon),
+.nav-cta:active {
+  transform: translateY(1px) scale(0.95);
+  box-shadow: 0 1px 0 var(--charcoal);
+  transition-duration: 0.06s;
+}
+
+.tap-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.3;
+  transform: scale(0);
+  animation: tap-ripple 0.6s ease-out forwards;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes tap-ripple {
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+.hub-tile,
+.program-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease, opacity 0.6s ease;
+}
+
+a.hub-tile:active {
+  transform: scale(0.97);
+}
+
+/* ---- Scroll reveal (only elements that start below the fold get hidden, and only with JS) ---- */
+.reveal {
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.motion-ok .reveal:not(.is-in) {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+/* ---- Day 1 to 22 progress strip ---- */
+section.journey {
+  padding: 3rem 0 3.25rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+.journey-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  margin: 0 0 0.5rem;
+}
+
+.journey h2 {
+  font-size: clamp(2rem, 6vw, 3rem);
+  margin-bottom: 0.4rem;
+}
+
+.journey-lede {
+  max-width: 34rem;
+  margin: 0 auto 1.75rem;
+}
+
+.journey-strip {
+  max-width: 62rem;
+  margin: 0 auto;
+}
+
+.journey-bar {
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 0 0 1.1rem;
+}
+
+.journey-bar-fill {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  transition: width 1.6s cubic-bezier(0.3, 0.6, 0.2, 1) 0.15s;
+}
+
+.motion-ok .journey:not(.is-filled) .journey-bar-fill {
+  width: 0;
+}
+
+.journey-track {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(11, minmax(0, 1fr));
+  gap: 2.1rem 0.3rem;
+}
+
+@media (min-width: 900px) {
+  .journey-track {
+    grid-template-columns: repeat(22, minmax(0, 1fr));
+    gap: 0 0.35rem;
+    padding-bottom: 1.6rem;
+  }
+}
+
+.journey-day {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.journey-dot {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 2.6rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  font-weight: 900;
+  font-size: 0.78rem;
+  line-height: 1;
+  background: var(--dot-bg);
+  color: var(--dot-fg);
+  border: 2px solid var(--dot-border, var(--dot-bg));
+  transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease, transform 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);
+  transition-delay: calc(var(--i) * 60ms + 0.2s);
+}
+
+/* Before the strip scrolls into view (motion on): days are empty, then fill one by one. */
+.motion-ok .journey:not(.is-filled) .journey-dot {
+  background: var(--dot-empty-bg);
+  color: var(--dot-empty-fg);
+  border-color: var(--dot-empty-border);
+  transform: scale(0.82);
+}
+
+.journey-day.is-milestone .journey-dot {
+  box-shadow: 0 0 0 3px var(--ms-ring, transparent);
+}
+
+.journey-cap {
+  position: absolute;
+  top: calc(100% + 0.3rem);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.journey-day:first-child .journey-cap {
+  left: 0;
+  transform: none;
+}
+
+.journey-day:last-child .journey-cap {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+.journey-more {
+  margin: 2.5rem 0 0;
+}
+
+@media (min-width: 900px) {
+  .journey-more {
+    margin-top: 1.25rem;
+  }
+}
+
+/* ==========================================================================
+   LOOK B: The current palette, livelier. Same yellow, charcoal, rust and cream,
+   pushed with warmer gradients (yellow to amber), more accent use and motion.
+   ========================================================================== */
+.look-b {
+  --amber: #ffb000;
+  --orange: #ff8a00;
+  --rust-deep: #8f2700; /* rust for small text on yellow (5.4:1) */
+  --sun-grad: linear-gradient(160deg, #ffd23a 0%, #ffc700 45%, #ffb000 100%);
+  --warm-grad: linear-gradient(90deg, #ffc700 0%, #ff9f00 55%, #bf3404 100%);
+}
+
+.look-b .site-header {
+  border-bottom: 0;
+  position: relative;
+}
+
+.look-b .site-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: var(--warm-grad);
+}
+
+/* Hero: sunny gradient, moving diagonal stripes, stopwatch with a jumping-jack figure */
+.look-b .hero {
+  background: var(--sun-grad);
+  border-bottom: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.look-b .hero::before {
+  content: "";
+  position: absolute;
+  inset: -50% -50%;
+  background: repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.16) 0 18px, transparent 18px 46px);
+  animation: b-stripes 14s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes b-stripes {
+  to {
+    transform: translate3d(65px, 0, 0);
+  }
+}
+
+.look-b .hero .wrap {
+  position: relative;
+}
+
+.look-b .hero-eyebrow {
+  color: var(--charcoal);
+  display: inline-block;
+  background: rgba(255, 253, 248, 0.7);
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+}
+
+.look-b .hero-brand-statement {
+  color: #4a4438;
+}
+
+.look-b .hero .text-link {
+  color: var(--rust-deep);
+}
+
+.look-b .hero .btn-primary {
+  box-shadow: 0 6px 0 var(--rust);
+}
+
+.look-b .hero .btn-primary:hover {
+  box-shadow: 0 9px 0 var(--rust);
+}
+
+.look-b .hero-visual--sun {
+  height: 172px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.look-b .sun-svg {
+  width: 172px;
+  height: 172px;
+  overflow: visible;
+}
+
+.look-b .sun-rays {
+  stroke: var(--charcoal);
+  stroke-width: 10;
+  stroke-linecap: round;
+  transform-origin: 160px 160px;
+  animation: b-spin 18s linear infinite;
+}
+
+@keyframes b-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.look-b .sun-disc {
+  fill: var(--charcoal);
+}
+
+.look-b .sun-track {
+  fill: none;
+  stroke: rgba(30, 30, 30, 0.18);
+  stroke-width: 12;
+}
+
+.look-b .sun-sweep {
+  fill: none;
+  stroke: var(--rust);
+  stroke-width: 12;
+  stroke-linecap: round;
+  stroke-dasharray: 804.25;
+  stroke-dashoffset: 804.25;
+  transform: rotate(-90deg);
+  transform-origin: 160px 160px;
+  animation: b-sweep 7s linear infinite;
+}
+
+@keyframes b-sweep {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.look-b .jj {
+  stroke: var(--yellow);
+  stroke-width: 15;
+  stroke-linecap: round;
+  fill: none;
+  animation: b-hop 0.9s ease-in-out infinite;
+}
+
+.look-b .jj-head {
+  fill: var(--yellow);
+  stroke: none;
+}
+
+.look-b .jj-arm,
+.look-b .jj-leg {
+  transform-box: view-box;
+}
+
+.look-b .jj-arm--l {
+  transform-origin: 160px 124px;
+  animation: b-arm-l 0.9s ease-in-out infinite;
+}
+
+.look-b .jj-arm--r {
+  transform-origin: 160px 124px;
+  animation: b-arm-r 0.9s ease-in-out infinite;
+}
+
+.look-b .jj-leg--l {
+  transform-origin: 160px 178px;
+  animation: b-leg-l 0.9s ease-in-out infinite;
+}
+
+.look-b .jj-leg--r {
+  transform-origin: 160px 178px;
+  animation: b-leg-r 0.9s ease-in-out infinite;
+}
+
+.look-b .sun-floor {
+  stroke: var(--rust);
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+
+@keyframes b-arm-l {
+  50% { transform: rotate(118deg); }
+}
+
+@keyframes b-arm-r {
+  50% { transform: rotate(-118deg); }
+}
+
+@keyframes b-leg-l {
+  50% { transform: rotate(16deg); }
+}
+
+@keyframes b-leg-r {
+  50% { transform: rotate(-16deg); }
+}
+
+@keyframes b-hop {
+  25%, 75% { transform: translateY(0); }
+  50% { transform: translateY(-9px); }
+}
+
+.look-b .sun-badge {
+  position: absolute;
+  right: 4%;
+  bottom: 8%;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: var(--paper);
+  color: var(--charcoal);
+  border: 3px solid var(--charcoal);
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+  box-shadow: 0 4px 0 var(--charcoal);
+  animation: b-bob 3s ease-in-out infinite;
+}
+
+.look-b .sun-badge b {
+  font-family: Anton, Impact, sans-serif;
+  font-weight: 400;
+  font-size: 1.1rem;
+  color: var(--rust);
+}
+
+@keyframes b-bob {
+  50% { transform: translateY(-6px) rotate(-3deg); }
+}
+
+@media (min-width: 900px) {
+  .look-b .hero {
+    padding: 3.5rem 0 4.5rem;
+  }
+
+  .look-b .hero-visual--sun {
+    height: auto;
+  }
+
+  .look-b .sun-svg {
+    width: min(100%, 380px);
+    height: auto;
+  }
+
+  .look-b .sun-badge {
+    right: 0;
+    bottom: 12%;
+    font-size: 0.9rem;
+    padding: 0.5rem 1.1rem;
+  }
+}
+
+/* Buttons: same colors, with a warm lift and shine */
+.look-b .btn-primary {
+  background: linear-gradient(180deg, #2c2a26, var(--charcoal));
+}
+
+.look-b .btn-primary:hover {
+  box-shadow: 0 6px 0 var(--amber);
+}
+
+.look-b .btn-secondary:hover {
+  background: var(--yellow);
+}
+
+/* Hub strip */
+.look-b .hub-strip {
+  border-bottom: 0;
+  background:
+    radial-gradient(36rem 14rem at 50% 0%, rgba(255, 199, 0, 0.22), transparent 70%),
+    var(--charcoal);
+}
+
+.look-b a.hub-tile:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 0 -2px var(--yellow);
+}
+
+/* Journey strip: dark band with a yellow to rust run */
+.look-b .journey {
+  background:
+    radial-gradient(40rem 18rem at 50% 120%, rgba(255, 176, 0, 0.25), transparent 70%),
+    var(--charcoal);
+  color: var(--paper);
+  --dot-bg: var(--yellow);
+  --dot-fg: var(--charcoal);
+  --dot-empty-bg: transparent;
+  --dot-empty-fg: rgba(255, 253, 248, 0.75);
+  --dot-empty-border: rgba(255, 253, 248, 0.3);
+  --ms-ring: var(--yellow);
+}
+
+.look-b .journey h2 {
+  color: var(--yellow);
+}
+
+.look-b .journey-eyebrow {
+  color: var(--amber);
+}
+
+.look-b .journey-lede {
+  color: rgba(255, 253, 248, 0.88);
+}
+
+.look-b .journey-bar {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.look-b .journey-bar-fill {
+  background: var(--warm-grad);
+}
+
+.look-b .journey-day:nth-child(n + 8) .journey-dot {
+  --dot-bg: var(--amber);
+}
+
+.look-b .journey-day:nth-child(n + 15) .journey-dot {
+  --dot-bg: #ff9f00;
+}
+
+.look-b .journey-day.is-milestone .journey-dot {
+  --dot-bg: var(--rust);
+  --dot-fg: #fff;
+}
+
+.look-b .journey-cap {
+  color: var(--yellow);
+}
+
+.look-b .journey .text-link {
+  color: var(--yellow);
+}
+
+/* Programs */
+.look-b .program-card {
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 6px 20px -12px rgba(30, 30, 30, 0.3);
+}
+
+.look-b .program-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 6px;
+  background: var(--warm-grad);
+}
+
+.look-b .program-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--yellow);
+  box-shadow: 0 16px 30px -14px rgba(191, 52, 4, 0.4);
+}
+
+.look-b .program-card--featured {
+  border-left: 0;
+  background: linear-gradient(120deg, #fff 50%, #fff3c4);
+}
+
+.look-b .badge-live {
+  background: var(--sun-grad);
+}
+
+.look-b .program-price-pill {
+  background: var(--sun-grad);
+}
+
+.look-b .program-note {
+  border-left-color: var(--orange);
+}
+
+/* Book, teasers, steps */
+.look-b .book-promo {
+  background:
+    radial-gradient(30rem 20rem at 15% 50%, rgba(255, 199, 0, 0.35), transparent 70%),
+    var(--cream);
+}
+
+.look-b .store-teaser {
+  background:
+    linear-gradient(90deg, rgba(255, 199, 0, 0.14), transparent 40%, rgba(191, 52, 4, 0.18)),
+    var(--charcoal);
+}
+
+.look-b .store-teaser .btn-primary,
+.look-b .holiday-teaser .btn-primary {
+  background: var(--sun-grad);
+  color: var(--charcoal);
+}
+
+.look-b .steps li {
+  border-left: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.look-b .steps li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background: linear-gradient(180deg, var(--yellow), var(--rust));
+}
+
+.look-b .step-num {
+  display: inline-grid;
+  place-items: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  background: var(--sun-grad);
+  color: var(--charcoal);
+  font-size: 1.9rem;
+  margin-bottom: 0.6rem;
+}
+
+.look-b .notify {
+  background: var(--sun-grad);
+}
+
+/* ---- Reduced motion: no animation, no reveal, strip shown complete ---- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .motion-ok .reveal:not(.is-in) {
+    opacity: 1;
+    transform: none;
+  }
+
+  .motion-ok .journey:not(.is-filled) .journey-bar-fill {
+    width: 100%;
+  }
+
+  .btn:active:not(.btn-checkout-soon),
+  .nav-cta:active {
+    transform: none;
+  }
+}
