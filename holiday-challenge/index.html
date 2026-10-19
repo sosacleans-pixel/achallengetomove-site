@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- COMING-SOON PAGE for the 30 Days Before X-mas Challenge. At launch, the full holiday page from
+       preview/holiday-app replaces this file (same path, /holiday-challenge/, so the URL never changes).
+       NO Google Analytics on this page or anything under /holiday-challenge/ (Attorney's ruling).
+       Do NOT add /js/ga.js, gtag.js, Google Tag Manager or Google Fonts here. tests/holiday-coming-soon.mjs checks this. -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>30 Days Before X-mas Challenge: Coming Soon | A Challenge to Move</title>
+  <meta name="description" content="30 Days Before X-mas Challenge from A Challenge to Move. Coming soon. Day 1 is November 25. Get notified when it opens.">
+  <link rel="canonical" href="https://achallengetomove.com/holiday-challenge/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="A Challenge to Move">
+  <meta property="og:title" content="30 Days Before X-mas Challenge: Coming Soon">
+  <meta property="og:description" content="Coming soon. Day 1 is November 25. Get notified when it opens.">
+  <meta property="og:url" content="https://achallengetomove.com/holiday-challenge/">
+  <meta property="og:image" content="https://achallengetomove.com/img/og-card.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#1E1E1E">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="/holiday-challenge/img/30-days-before-xmas.svg">
+  <link rel="preload" href="/holiday-challenge/fonts/anton-v27-latin-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/holiday-challenge/coming-soon.css">
+</head>
+<body class="hcs-page">
+  <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">
+        <img src="/icons/logo.svg" width="44" height="44" alt="A Challenge to Move logo" decoding="async">
+        <div class="brand-text">
+          <div class="brand-name">A Challenge to Move</div>
+          <p class="brand-tag" data-i18n="brandTag">Books &amp; apps for daily wellness</p>
+        </div>
+      </a>
+      <nav class="site-nav" aria-label="Primary">
+        <a class="nav-link" href="/store/" data-i18n="navStore">Store</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="hcs-main">
+    <div class="wrap hcs-wrap">
+      <div class="hcs-topbar">
+        <a class="back-link" href="/" data-i18n="back">&larr; Back to home</a>
+        <div class="hcs-lang" role="group" aria-label="Language" data-i18n-aria="langLabel">
+          <button type="button" class="hcs-lang-btn" data-lang="en" lang="en" aria-pressed="true">EN<span class="visually-hidden"> English</span></button>
+          <button type="button" class="hcs-lang-btn" data-lang="es" lang="es" aria-pressed="false">ES<span class="visually-hidden"> Espa&ntilde;ol</span></button>
+        </div>
+      </div>
+
+      <section class="hcs-hero" aria-labelledby="hcs-title">
+        <img class="hcs-hero-art" src="/holiday-challenge/img/30-days-before-xmas.svg" width="220" height="220" alt="" decoding="async">
+        <div class="hcs-hero-copy">
+          <p class="hcs-kicker">A Challenge to Move</p>
+          <h1 id="hcs-title" data-i18n="title">30 Days Before X-mas Challenge</h1>
+          <p class="hcs-soon" data-i18n="soon">Coming soon. Day 1 is November 25.</p>
+          <p class="hcs-dates" data-i18n="dates">Wed, Nov 25 to Thu, Dec 24, 2026</p>
+          <p class="hcs-tagline" data-i18n="tagline">Feel strong into the holidays.</p>
+        </div>
+      </section>
+
+      <p class="hcs-lead" data-i18n="lead">Get through the busiest weeks of the year still moving: a little strength, a little mobility, a little walking, every day, for 30 days.</p>
+
+      <section class="hcs-signup notify" id="notify" aria-labelledby="notify-heading">
+        <h2 id="notify-heading" data-i18n="signupTitle">Get notified when it opens</h2>
+        <!-- Same sign-up mechanism as the homepage list (/js/notify.js -> FormSubmit -> coachsalimheyaime@gmail.com),
+             tagged as the holiday challenge with data-notify-list and the _subject below. -->
+        <form class="notify-form" id="notify-form" action="https://formsubmit.co/coachsalimheyaime@gmail.com" method="POST" novalidate
+              data-msg-invalid="Please enter a valid email address."
+              data-msg-sending="Sending..."
+              data-msg-ok="Thank you! You're on the list. We'll email you when the 30 Days Before X-mas Challenge opens."
+              data-msg-error="Sorry, something went wrong. Please try again, or email coachsalimheyaime@gmail.com.">
+          <input type="hidden" name="_subject" value="A Challenge to Move: notify me (30 Days Before X-mas Challenge)">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="list" value="30-days-before-xmas">
+          <input type="hidden" name="lang" value="en">
+          <input type="text" name="_honey" class="notify-honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <label for="notify-email" data-i18n="emailLabel">Email address</label>
+          <input id="notify-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required aria-describedby="notify-consent notify-status">
+          <button class="btn btn-primary" type="submit" data-i18n="submit">Get notified</button>
+        </form>
+        <p id="notify-consent" class="hcs-consent"><span data-i18n="consent">We'll only email you about this challenge. Unsubscribe anytime.</span> <a class="text-link" href="/privacy/" data-i18n="privacyNotice">Privacy notice</a></p>
+        <p id="notify-status" class="notify-status" role="status" aria-live="polite" tabindex="-1"></p>
+      </section>
+
+      <p class="hcs-fineprint" data-i18n="fineprint">General wellness education. Not medical advice.</p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <p>&copy; 2026 Coach Salim Heyaime LLC</p>
+      <nav class="footer-nav" aria-label="Footer">
+        <a href="/store/" data-i18n="navStore">Store</a>
+        <a href="/privacy/" data-i18n="privacy">Privacy</a>
+        <a href="https://coachsalimheyaime.com/" target="_blank" rel="noopener">coachsalimheyaime.com</a>
+      </nav>
+    </div>
+  </footer>
+  <noscript><style>.hcs-lang{display:none}</style></noscript>
+  <script src="/holiday-challenge/coming-soon.js"></script>
+  <script src="/js/notify.js" defer></script>
+  <script src="/js/external-links.js" defer></script>
+</body>
+</html>

@@ -1,6 +1,10 @@
 {
   "catalogSections": [
     {
+      "id": "seasonal",
+      "title": "Holiday challenge"
+    },
+    {
       "id": "book",
       "title": "Book"
     },
@@ -22,6 +26,25 @@
     }
   ],
   "products": [
+    {
+      "id": "30-days-before-xmas",
+      "catalogSection": "seasonal",
+      "type": "challenge",
+      "typeLabel": "Challenge",
+      "title": "30 Days Before X-mas Challenge",
+      "tagline": "Coming soon. Day 1 is November 25.",
+      "description": "Feel strong into the holidays. Get through the busiest weeks of the year still moving: a little strength, a little mobility, a little walking, every day, for 30 days.",
+      "status": "coming_soon",
+      "image": {
+        "svg": "/holiday-challenge/img/30-days-before-xmas.svg",
+        "width": 512,
+        "height": 512,
+        "alt": "30 Days Before X-mas Challenge (coming soon)"
+      },
+      "notifyHref": "/holiday-challenge/",
+      "notifyLabel": "Get notified",
+      "actions": []
+    },
     {
       "id": "actm-paperback",
       "catalogSection": "book",

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs><clipPath id="sq"><rect width="1024" height="1024" rx="225" ry="225"/></clipPath></defs>
+  <g clip-path="url(#sq)">
+    <rect width="1024" height="1024" fill="#1e1e1e"/>
+    <!-- star -->
+    <path d="M512 120 L536 182 L602 184 L550 224 L568 288 L512 250 L456 288 L474 224 L422 184 L488 182 Z" fill="#ffc700"/>
+    <!-- tree, three tiers -->
+    <path d="M512 270 L640 420 L384 420 Z" fill="#bf3404"/>
+    <path d="M512 350 L700 560 L324 560 Z" fill="#bf3404"/>
+    <path d="M512 450 L760 700 L264 700 Z" fill="#bf3404"/>
+    <rect x="482" y="700" width="60" height="40" fill="#fff7e8"/>
+    <!-- "30" drawn with strokes (no font needed) -->
+    <g fill="none" stroke="#ffc700" stroke-width="46" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M330 790 Q330 770 360 770 L440 770 Q470 770 470 800 Q470 832 430 838 Q470 844 470 876 Q470 906 440 906 L360 906 Q330 906 330 886"/>
+      <rect x="560" y="770" width="140" height="136" rx="50"/>
+    </g>
+  </g>
+</svg>
