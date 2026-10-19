@@ -1,5 +1,5 @@
-/* Homepage motion (design preview): scroll reveal, button tap ripple, Day 1 to 22 strip fill,
- * and the optional lazy hero video. Vanilla JS, no libraries.
+/* Homepage motion (design preview): scroll reveal, button tap ripple, Day 1 to 22 strip fill.
+ * Vanilla JS, no libraries. The hero animation is pure CSS (see look.css).
  * Everything is skipped under prefers-reduced-motion: content simply shows, static.
  * Never cancels clicks, never changes link hrefs or data attributes, so buy links and the
  * GA4 click events in /js/ga.js behave exactly as before. */
@@ -70,24 +70,4 @@
     btn.appendChild(ink);
     setTimeout(function () { if (ink.parentNode) ink.parentNode.removeChild(ink); }, 650);
   }, { passive: true });
-
-  /* ---- Lazy hero video: only after the page has loaded, never on Save-Data ---- */
-  var vid = document.querySelector("video[data-lazy-hero]");
-  var saveData = navigator.connection && navigator.connection.saveData;
-  if (vid && !saveData) {
-    var start = function () {
-      Array.prototype.forEach.call(vid.querySelectorAll("source[data-src]"), function (s) {
-        s.src = s.getAttribute("data-src");
-      });
-      vid.load();
-      var p = vid.play();
-      if (p && p.catch) p.catch(function () {});
-      vid.addEventListener("playing", function () { vid.classList.add("is-playing"); }, { once: true });
-    };
-    var later = function () {
-      if (window.requestIdleCallback) window.requestIdleCallback(start, { timeout: 1500 });
-      else setTimeout(start, 300);
-    };
-    if (document.readyState === "complete") later(); else window.addEventListener("load", later, { once: true });
-  }
 })();

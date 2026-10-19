@@ -233,7 +233,7 @@
       "typeLabel": "App",
       "title": "75 Adaptive",
       "tagline": "Show up every day, your way.",
-      "description": "75 days of daily movement, nutrition and habit tasks flexible to your schedule — no restart if you miss a day.",
+      "description": "75 days of daily movement, nutrition and habit tasks flexible to your schedule. No restart if you miss a day.",
       "status": "checkout_pending",
       "image": {
         "svg": "/icons/logo.svg",

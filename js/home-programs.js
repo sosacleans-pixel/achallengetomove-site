@@ -235,8 +235,10 @@
       return res.json();
     })
     .then(function (data) {
+      /* Homepage only: the 5K 2-Pack is not shown here (the store reads products.json on its own). */
+      const HOME_HIDDEN = ["5k-2-pack"];
       const programs = (data.products || []).filter(function (p) {
-        return p.catalogSection === "programs";
+        return p.catalogSection === "programs" && HOME_HIDDEN.indexOf(p.id) === -1;
       });
       if (!programs.length) {
         layout.innerHTML = '<p class="store-error">Programs could not be loaded.</p>';

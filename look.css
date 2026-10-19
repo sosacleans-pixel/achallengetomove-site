@@ -217,74 +217,108 @@ section.journey {
 }
 
 /* ==========================================================================
-   LOOK A: Bold energy. New palette: deep ink, coral and orange, with a sun accent.
+   LOOK A (white): Bold energy on a white page. Ink text, coral / orange / sun accents.
+   Text contrast (WCAG 2.x, measured): ink #17131f on #fff 18.27, on paper #fffaf6 17.62,
+   on blush #fff3ec 16.78; muted #5b4a46 on #fff 8.36, on blush 7.67; link coral #b02a14
+   on #fff 6.59, on paper 6.36, on blush 6.05, and 5.07 even where two glows overlap at full
+   strength (#ffdcb4); ink on coral #ff5a3c 5.90, on orange #ff8a1f 7.75, on sun #ffd447
+   12.84; sun on ink 12.84; white on ink 18.27.
+   Bright coral, orange and sun are never used as text on white (decoration only).
    ========================================================================== */
 .look-a {
   --ink: #17131f;
   --coral: #ff5a3c;
-  --coral-hi: #ff6a45; /* coral for text and lines on ink */
+  --coral-deep: #e8432a; /* non-text accents on white (3.99:1, above the 3:1 graphics minimum) */
   --orange: #ff8a1f;
   --sun: #ffd447;
   --blush: #fff3ec;
-  --link: #c4321a;
+  --link: #b02a14; /* coral for text on white, paper, blush and the glows */
   --grad: linear-gradient(100deg, var(--coral) 0%, var(--orange) 100%);
 
-  /* Base tokens remapped so every existing component picks up the new palette. */
-  --yellow: var(--coral-hi);
+  /* Base tokens remapped so every existing component picks up the white palette. */
+  --yellow: var(--coral-deep);
   --charcoal: var(--ink);
   --rust: var(--link);
   --cream: var(--blush);
   --paper: #fffaf6;
   --muted: #5b4a46;
   --line: #f3d6c8;
+  background: #fff;
 }
 
+/* Header: white with a coral to orange underline */
 .look-a .site-header {
   background:
-    linear-gradient(var(--ink), var(--ink)) padding-box,
+    linear-gradient(#fff, #fff) padding-box,
     var(--grad) border-box;
+  color: var(--ink);
   border-bottom: 4px solid transparent;
 }
 
-/* Hero: dark, glowing, high energy */
+.look-a .brand-name {
+  color: var(--ink);
+}
+
+.look-a .brand-tag {
+  color: var(--muted);
+}
+
+.look-a .nav-link {
+  color: var(--ink);
+}
+
+.look-a .nav-link:hover,
+.look-a .nav-link:focus-visible {
+  color: var(--link);
+}
+
+.look-a .nav-cta {
+  color: var(--ink);
+  border-color: var(--coral-deep);
+}
+
+.look-a .nav-cta:hover,
+.look-a .nav-cta:focus-visible {
+  background: var(--grad);
+  color: var(--ink);
+}
+
+/* Hero: white, soft coral and orange glows (glows stay lighter than #ffe9e1 behind text) */
 .look-a .hero {
   background:
-    radial-gradient(60rem 30rem at 85% -10%, rgba(255, 90, 60, 0.45), transparent 60%),
-    radial-gradient(40rem 26rem at -10% 110%, rgba(255, 138, 31, 0.32), transparent 60%),
-    var(--ink);
-  color: #fff;
+    radial-gradient(56rem 28rem at 92% -12%, rgba(255, 90, 60, 0.13), transparent 62%),
+    radial-gradient(40rem 24rem at -12% 112%, rgba(255, 138, 31, 0.12), transparent 60%),
+    #fff;
+  color: var(--ink);
   border-bottom: 0;
   position: relative;
   overflow: hidden;
 }
 
 .look-a .hero-eyebrow {
-  color: var(--sun);
+  color: var(--link);
 }
 
-.look-a .hero h1 {
-  color: #fff;
-}
-
+.look-a .hero h1,
 .look-a .hero-subhead {
-  color: #fff;
+  color: var(--ink);
 }
 
 .look-a .hero-brand-statement {
-  color: #d9d3de;
+  color: var(--muted);
 }
 
 .look-a .hero .text-link {
-  color: var(--sun);
+  color: var(--link);
 }
 
 .look-a .hero .btn-primary {
   border-color: transparent;
-  box-shadow: 0 10px 30px -8px rgba(255, 90, 60, 0.7);
+  box-shadow: 0 10px 28px -10px rgba(255, 90, 60, 0.75);
 }
 
 .look-a .hero .btn-primary:hover {
-  box-shadow: 0 14px 34px -8px rgba(255, 138, 31, 0.85);
+  box-shadow: 0 14px 32px -10px rgba(255, 138, 31, 0.9);
 }
 
 /* Buttons: coral to orange, ink text (5.9:1 or better) */
@@ -300,10 +334,11 @@ section.journey {
 
 .look-a .btn-secondary {
   border-color: var(--ink);
+  background: #fff;
 }
 
 .look-a .btn-secondary:hover {
-  background: #fff;
+  background: var(--blush);
 }
 
 .look-a .store-teaser .btn-primary,
@@ -311,95 +346,171 @@ section.journey {
   border-color: transparent;
   background: var(--grad);
   color: var(--ink);
+  box-shadow: 0 10px 26px -12px rgba(255, 90, 60, 0.8);
 }
 
-.look-a .nav-cta {
-  border-color: var(--coral-hi);
+/* Hero visual: illustrated 7-minute timer ring with a bodyweight jumping-jack figure (no equipment) */
+.look-a .hero-visual--move {
+  height: 196px;
 }
 
-.look-a .nav-cta:hover,
-.look-a .nav-cta:focus-visible {
-  background: var(--grad);
-  color: var(--ink);
-}
-
-/* Hero clip */
-.look-a .hero-visual--clip {
-  height: 168px;
-}
-
-.look-a .clip-frame {
+.look-a .move-card {
   position: relative;
   height: 100%;
-  border-radius: 20px;
-  overflow: hidden;
-  background: #000 url("/img/hero/hero-move-poster.webp") center / cover no-repeat;
-  box-shadow: 0 0 0 3px var(--coral), 0 18px 44px -12px rgba(255, 90, 60, 0.6);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 42%, #fff 0 48%, var(--blush) 70%, #ffe6da 100%);
+  box-shadow: 0 18px 40px -18px rgba(255, 90, 60, 0.55), 0 0 0 1px var(--line);
 }
 
-.look-a .clip-video {
+.look-a .move-svg {
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  display: block;
-  opacity: 0;
-  transition: opacity 0.6s ease;
+  overflow: visible;
 }
 
-.look-a .clip-video.is-playing {
-  opacity: 1;
-}
-
-.look-a .clip-tint {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(140deg, rgba(255, 90, 60, 0.55), rgba(255, 138, 31, 0.15) 55%, rgba(23, 19, 31, 0.35));
-  mix-blend-mode: color;
-}
-
-.look-a .clip-ring {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  width: 82px;
-  height: 82px;
-  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.45));
-}
-
-.look-a .clip-ring-track {
-  fill: rgba(23, 19, 31, 0.82);
-  stroke: rgba(255, 255, 255, 0.18);
-  stroke-width: 9;
-}
-
-.look-a .clip-ring-sweep {
+.look-a .mv-track {
   fill: none;
-  stroke: var(--sun);
-  stroke-width: 9;
+  stroke: #fbe0d4;
+  stroke-width: 18;
+}
+
+.look-a .mv-tick {
+  stroke: #f0b9a3;
+  stroke-width: 4;
   stroke-linecap: round;
-  stroke-dasharray: 314.16;
-  stroke-dashoffset: 314.16;
+}
+
+.look-a .mv-sweep {
+  fill: none;
+  stroke: url(#mvGrad);
+  stroke-width: 18;
+  stroke-linecap: round;
+  stroke-dasharray: 1080.7;
+  stroke-dashoffset: 324; /* static: about 70% of the 7 minutes done */
   transform: rotate(-90deg);
-  transform-origin: 60px 60px;
-  animation: a-sweep 7s linear infinite;
+  transform-origin: 200px 200px;
+  animation: mv-sweep 7s linear infinite;
 }
 
-.look-a .clip-ring-num {
-  font-family: Anton, Impact, sans-serif;
-  font-size: 40px;
-  fill: #fff;
-}
-
-.look-a .clip-ring-unit {
-  font: 900 13px Lato, system-ui, sans-serif;
-  letter-spacing: 0.12em;
-  fill: var(--sun);
-}
-
-@keyframes a-sweep {
+@keyframes mv-sweep {
+  from {
+    stroke-dashoffset: 1080.7;
+  }
   to {
     stroke-dashoffset: 0;
   }
+}
+
+.look-a .mv-shadow {
+  fill: rgba(23, 19, 31, 0.12);
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: mv-shadow 0.9s ease-in-out infinite;
+}
+
+.look-a .mv-limb line,
+.look-a .mv-body {
+  stroke: var(--ink);
+  stroke-width: 15;
+  stroke-linecap: round;
+}
+
+.look-a .mv-head {
+  fill: var(--coral);
+  stroke: var(--ink);
+  stroke-width: 6;
+}
+
+.look-a .mv-band {
+  fill: none;
+  stroke: var(--sun);
+  stroke-width: 7;
+  stroke-linecap: round;
+}
+
+.look-a .mv-limb {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+}
+
+/* Static pose (also the reduced-motion pose): the open star of a jumping jack */
+.look-a .mv-arm--l { transform: rotate(132deg); }
+.look-a .mv-arm--r { transform: rotate(-132deg); }
+.look-a .mv-leg--l { transform: rotate(22deg); }
+.look-a .mv-leg--r { transform: rotate(-22deg); }
+
+.look-a .mv-arm--l { animation: mv-arm-l 0.9s ease-in-out infinite; }
+.look-a .mv-arm--r { animation: mv-arm-r 0.9s ease-in-out infinite; }
+.look-a .mv-leg--l { animation: mv-leg-l 0.9s ease-in-out infinite; }
+.look-a .mv-leg--r { animation: mv-leg-r 0.9s ease-in-out infinite; }
+
+.look-a .mv-fig {
+  animation: mv-hop 0.45s ease-in-out infinite alternate;
+}
+
+@keyframes mv-arm-l {
+  0%, 100% { transform: rotate(16deg); }
+  50% { transform: rotate(160deg); }
+}
+
+@keyframes mv-arm-r {
+  0%, 100% { transform: rotate(-16deg); }
+  50% { transform: rotate(-160deg); }
+}
+
+@keyframes mv-leg-l {
+  0%, 100% { transform: rotate(4deg); }
+  50% { transform: rotate(26deg); }
+}
+
+@keyframes mv-leg-r {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(-26deg); }
+}
+
+@keyframes mv-hop {
+  from { transform: translateY(0); }
+  to { transform: translateY(-10px); }
+}
+
+@keyframes mv-shadow {
+  0%, 100% { transform: scaleX(1); }
+  25%, 75% { transform: scaleX(0.78); }
+}
+
+.look-a .mv-spark {
+  animation: a-bob 2.6s ease-in-out infinite;
+}
+
+.look-a .mv-spark--2 { animation-delay: -0.9s; }
+.look-a .mv-spark--3 { animation-delay: -1.7s; }
+
+.look-a .move-ring {
+  position: absolute;
+  right: calc(50% - 128px);
+  bottom: -6px;
+  width: 64px;
+  height: 64px;
+  filter: drop-shadow(0 6px 12px rgba(23, 19, 31, 0.25));
+}
+
+.look-a .move-ring-bg {
+  fill: var(--ink);
+}
+
+.look-a .move-ring-num {
+  font-family: Anton, Impact, sans-serif;
+  font-size: 44px;
+  fill: #fff;
+}
+
+.look-a .move-ring-unit {
+  font: 900 15px Lato, system-ui, sans-serif;
+  letter-spacing: 0.12em;
+  fill: var(--sun);
 }
 
 .look-a .clip-chip {
@@ -410,20 +521,22 @@ section.journey {
   letter-spacing: 0.08em;
   color: var(--ink);
   background: var(--sun);
+  border: 2px solid var(--ink);
   border-radius: 999px;
-  padding: 0.35rem 0.75rem;
-  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.5);
+  padding: 0.3rem 0.7rem;
+  box-shadow: 0 8px 18px -8px rgba(23, 19, 31, 0.45);
   animation: a-bob 3.2s ease-in-out infinite;
+  white-space: nowrap;
 }
 
 .look-a .clip-chip--1 {
-  left: 10px;
-  top: 10px;
+  left: 0;
+  top: 12px;
 }
 
 .look-a .clip-chip--2 {
-  left: 10px;
-  bottom: 12px;
+  left: 0;
+  bottom: 14px;
   background: #fff;
   animation-delay: -1.6s;
 }
@@ -439,7 +552,7 @@ section.journey {
     padding: 3.5rem 0 4.5rem;
   }
 
-  .look-a .hero-visual--clip {
+  .look-a .hero-visual--move {
     height: auto;
     aspect-ratio: 1;
     max-width: 430px;
@@ -447,17 +560,16 @@ section.journey {
     width: 100%;
   }
 
-  .look-a .clip-frame {
-    border-radius: 32px;
-    transform: rotate(2.5deg);
-    animation: a-float 6s ease-in-out infinite;
+  .look-a .move-card {
+    width: 100%;
+    height: auto;
   }
 
-  .look-a .clip-ring {
-    width: 128px;
-    height: 128px;
-    right: -18px;
-    bottom: -18px;
+  .look-a .move-ring {
+    width: 120px;
+    height: 120px;
+    right: -6px;
+    bottom: 4px;
   }
 
   .look-a .clip-chip {
@@ -466,41 +578,110 @@ section.journey {
   }
 
   .look-a .clip-chip--1 {
-    left: -22px;
-    top: 34px;
+    left: -18px;
+    top: 40px;
   }
 
   .look-a .clip-chip--2 {
     left: -10px;
-    bottom: 54px;
-  }
-}
-
-@keyframes a-float {
-  50% {
-    transform: rotate(1deg) translateY(-8px);
+    bottom: 60px;
   }
 }
 
 /* Hub strip */
 .look-a .hub-strip {
   border-bottom: 0;
-  background:
-    linear-gradient(180deg, rgba(255, 90, 60, 0.12), transparent 70%),
-    var(--ink);
+  color: var(--ink);
+  background: var(--paper);
+  border-top: 1px solid var(--line);
 }
 
 .look-a .hub-strip-title {
-  color: #fff;
+  color: var(--ink);
+}
+
+.look-a .hub-tile {
+  background: #fff;
+  border-color: var(--line);
+  box-shadow: 0 6px 18px -14px rgba(23, 19, 31, 0.4);
 }
 
 .look-a .hub-tile-icon {
-  color: var(--coral-hi);
+  color: var(--coral-deep);
 }
 
-.look-a a.hub-tile:hover {
+.look-a .hub-tile-label {
+  color: var(--ink);
+}
+
+.look-a .hub-tile-desc {
+  color: var(--muted);
+}
+
+.look-a a.hub-tile:hover,
+.look-a a.hub-tile:focus-visible {
   transform: translateY(-3px);
-  border-color: var(--coral-hi);
+  border-color: var(--coral-deep);
+  background: #fff;
+  box-shadow: 0 14px 28px -16px rgba(255, 90, 60, 0.6);
+}
+
+/* Badges */
+.look-a .badge-live {
+  background: var(--sun);
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.look-a .badge-soon {
+  background: var(--ink);
+  color: var(--sun);
+}
+
+/* Holiday teaser: white card with a coral to orange frame */
+.look-a section.holiday-teaser {
+  background: #fff;
+  color: var(--ink);
+  border-bottom: 0;
+}
+
+.look-a .holiday-teaser-inner {
+  width: calc(100% - 2rem);
+  border: 3px solid transparent;
+  border-radius: 22px;
+  padding: 1.75rem 1.25rem;
+  background:
+    linear-gradient(120deg, #fff 60%, var(--blush)) padding-box,
+    var(--grad) border-box;
+  box-shadow: 0 18px 40px -26px rgba(255, 90, 60, 0.8);
+}
+
+.look-a .holiday-teaser::after {
+  background: radial-gradient(circle, rgba(255, 212, 71, 0.35), transparent 70%);
+}
+
+.look-a .holiday-teaser h2,
+.look-a .holiday-teaser-price {
+  color: var(--ink);
+}
+
+.look-a .holiday-teaser-soon {
+  background: var(--sun);
+  color: var(--ink);
+}
+
+.look-a .holiday-teaser-desc {
+  color: var(--muted);
+}
+
+.look-a .holiday-teaser-es {
+  color: var(--link);
+}
+
+@media (min-width: 720px) {
+  .look-a .holiday-teaser-inner {
+    padding: 2rem 2.25rem;
+  }
 }
 
 /* Journey strip */
@@ -552,7 +733,7 @@ section.journey {
   background: #fff;
   border-color: var(--line);
   border-top: 5px solid var(--coral);
-  box-shadow: 0 8px 24px -14px rgba(23, 19, 31, 0.35);
+  box-shadow: 0 8px 24px -14px rgba(23, 19, 31, 0.3);
 }
 
 .look-a .program-card:hover {
@@ -567,12 +748,6 @@ section.journey {
   background: linear-gradient(120deg, #fff 55%, #fff1e8);
 }
 
-.look-a .badge-live {
-  background: var(--sun);
-  color: var(--ink);
-  border-color: var(--ink);
-}
-
 .look-a .program-price-pill {
   background: var(--sun);
 }
@@ -581,37 +756,68 @@ section.journey {
   border-left-color: var(--coral);
 }
 
-/* Holiday teaser + store teaser + how */
-.look-a .holiday-teaser {
-  border-bottom-color: var(--coral);
+/* Book */
+.look-a .book-promo {
+  background: var(--paper);
 }
 
-.look-a .holiday-teaser-soon {
-  background: var(--sun);
-}
-
-.look-a .holiday-teaser-es {
-  color: var(--sun);
-}
-
-.look-a .store-teaser,
-.look-a .how {
+/* Store teaser: soft glow on paper */
+.look-a .store-teaser {
+  color: var(--ink);
   background:
-    radial-gradient(40rem 20rem at 100% 0%, rgba(255, 90, 60, 0.28), transparent 60%),
-    var(--ink);
+    radial-gradient(36rem 18rem at 100% 0%, rgba(255, 90, 60, 0.14), transparent 60%),
+    radial-gradient(30rem 16rem at 0% 100%, rgba(255, 212, 71, 0.22), transparent 60%),
+    var(--blush);
+}
+
+.look-a .store-teaser h2 {
+  color: var(--ink);
+}
+
+.look-a .store-teaser p {
+  color: var(--muted);
+}
+
+/* How it works: white cards on white */
+.look-a .how {
+  background: #fff;
+  color: var(--ink);
+}
+
+.look-a .how h2 {
+  color: var(--ink);
 }
 
 .look-a .steps li {
-  border-left-color: var(--coral);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--coral);
+  box-shadow: 0 10px 24px -18px rgba(23, 19, 31, 0.45);
 }
 
 .look-a .step-num {
-  color: var(--sun);
+  display: inline-grid;
+  place-items: center;
+  width: 3.1rem;
+  height: 3.1rem;
+  border-radius: 50%;
+  background: var(--grad);
+  color: var(--ink);
+  font-size: 1.9rem;
+  margin-bottom: 0.6rem;
 }
 
-.look-a .how h2,
-.look-a .store-teaser h2 {
-  color: #fff;
+.look-a .steps h3 {
+  color: var(--ink);
+}
+
+.look-a .steps p {
+  color: var(--muted);
+}
+
+/* About */
+.look-a .about {
+  background: var(--paper);
 }
 
 /* Notify */
@@ -619,13 +825,27 @@ section.journey {
   background: var(--grad);
 }
 
+.look-a .notify-form input::placeholder {
+  color: var(--muted); /* 8.06:1 on the paper input */
+  opacity: 1;
+}
+
 .look-a .notify .btn-primary {
   background: var(--ink);
   color: #fff;
 }
 
+/* Footer: paper with a gradient top line */
+.look-a .footer {
+  background:
+    linear-gradient(var(--paper), var(--paper)) padding-box,
+    var(--grad) border-box;
+  border-top: 4px solid transparent;
+  color: var(--muted);
+}
+
 .look-a .footer a {
-  color: var(--coral-hi);
+  color: var(--link);
 }
 
 /* ---- Reduced motion: no animation, no reveal, strip shown complete ---- */
