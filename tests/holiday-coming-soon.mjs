@@ -7,7 +7,7 @@
  *    and window.gtag / window.dataLayer never exist.
  * 2. Copy rules on the new content: no em or en dashes, no banned names, price $9.99 shown but no buy button or Stripe link,
  *    no fixed Nov 25 / Dec 24 dates (rolling start: Day 1 is the day you get it; available through December 5, 2026),
- *    and no sale / 30% off line shown yet (only a TODO comment).
+ *    and no sale / 30% off line shown yet (the TODO(sale) marker is only in coming-soon.js; no HTML comments in page source).
  * 3. EN/ES switch, sign-up payload (tagged as the holiday list), consent line and privacy link.
  * 4. Homepage teaser and store card, and the homepage sign-up still sends what it sent before.
  * 5. No horizontal overflow at 390 px.
@@ -81,7 +81,7 @@ for (const [name, txt] of Object.entries({ "coming-soon page": html, "homepage t
 check(LINE_RE.test(homeTeaser) && /href="\/holiday-challenge\/">Get notified</.test(homeTeaser), "teaser: exact coming-soon + availability line and Get notified -> /holiday-challenge/");
 check(product && LINE_RE.test(product.tagline) && LINE_RE.test(storeCard), "store card (products.json and static): rolling-start + availability line");
 for (const [name, txt] of Object.entries({ "coming-soon page": html, "homepage teaser": homeTeaser, "store card (static)": storeCard })) {
-  check(/TODO\(sale\)/.test(txt), `${name}: marked TODO(sale) comment where the Dec 1 sale line goes`);
+  check(!/<!--/.test(txt), `${name}: no internal HTML comments in the page source (m-11; the Dec 1 sale marker lives in coming-soon.js)`);
 }
 check(/TODO\(sale\)/.test(enStrings), "coming-soon.js: marked TODO(sale) comment for the EN/ES sale line");
 check((html.match(/<meta name="description" content="([^"]*)"/) || [])[1].includes(EN_SOON + " " + EN_AVAIL) && (html.match(/<meta property="og:description" content="([^"]*)"/) || [])[1].includes(EN_SOON + " " + EN_AVAIL), "meta and og descriptions: rolling-start + availability line");

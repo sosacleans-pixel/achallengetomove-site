@@ -154,6 +154,9 @@ const state = (page) => page.evaluate(() => ({ banner: !!document.getElementById
   check("answer (1): ask-everyone sentence EN+ES", P1.includes("We ask every visitor before loading Google Analytics, wherever you are, and we don't load it at all if your browser sends a Global Privacy Control or Do Not Track signal. You can change your choice any time with Cookie settings.") && P1.includes("Pedimos permiso a cada visitante antes de cargar Google Analytics"));
   check("B-2: officer line is 'Contact: email.'", />coachsalimheyaime@gmail.com<\/a>\.<\/p>/.test(P1) && !/MAILING ADDRESS|TODO\(address\)/.test(P1 + P2 + H));
   check("m-11: no internal notes in page source", !/<!--[^>]*(Attorney|home address|gaps-and-fixes|preview\/|NEVER Salim)/.test(P1 + P2 + H));
+  const PAGES_SRC = ["privacy/index.html", "privacy/consumer-health-data/index.html", "index.html", "store/index.html", "holiday-challenge/index.html"].map((f) => fs.readFileSync(path.join(ROOT, f), "utf8")).join("\n");
+  check("m-11: no HTML comments, TODO or DRAFT notes in the source of privacy, CHD, home, store and holiday pages", !/<!--|TODO|\bDRAFT\b|\[(MAILING|EFFECTIVE|POSTAL|CONFIRM|PENDING|DATE)/.test(PAGES_SRC));
+  check("no street address published; no app GA parenthetical", !/Herriman|\bP\.?O\.? Box\b|app\.coachsalimheyaime\.com\)? only if you choose/i.test(P1 + P2 + H) && !/signed-out welcome screen of app\.coachsalimheyaime\.com/.test(P1 + P2));
   check("effective-date tokens present and filled", [P1, P2].every((x) => (x.match(/data-effective-date="2026-10-18"/g) || []).length === 2));
   check("ES copy: no em/en dashes", !/[\u2014\u2013]/.test(P1 + P2));
   await browser.close(); server.close();
