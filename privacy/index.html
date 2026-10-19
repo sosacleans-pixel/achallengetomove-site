@@ -1,12 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-title-en="Privacy | A Challenge to Move" data-title-es="Privacidad | A Challenge to Move">
 <head>
+  <script src="/js/lang.js"></script>
   <script src="/js/ga.js"></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Privacy | A Challenge to Move</title>
   <meta name="description" content="Privacy notice for achallengetomove.com and companion apps: how we handle your information and how to reach Coach Salim Heyaime LLC.">
   <link rel="canonical" href="https://achallengetomove.com/privacy/">
+  <link rel="alternate" hreflang="en" href="https://achallengetomove.com/privacy/?lang=en">
+  <link rel="alternate" hreflang="es" href="https://achallengetomove.com/privacy/?lang=es">
+  <link rel="alternate" hreflang="x-default" href="https://achallengetomove.com/privacy/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="A Challenge to Move">
   <meta property="og:title" content="Privacy | A Challenge to Move">
@@ -47,12 +51,15 @@
   </header>
 
   <main id="main" class="wrap page-simple">
-    <a class="back-link" href="/">&larr; Back to home</a>
+    <a class="back-link" href="/" data-text-es="← Volver al inicio">&larr; Back to home</a>
+    <div class="lang-toggle" role="group" aria-label="Language / Idioma" hidden>
+      <button type="button" class="lang-btn" data-lang="en" lang="en" aria-pressed="true">English</button>
+      <button type="button" class="lang-btn" data-lang="es" lang="es" aria-pressed="false">Español</button>
+    </div>
+    <div class="lang-block" data-lang-block="en" lang="en">
     <h1>Privacy</h1>
-    <!-- Staged for Attorney review (privacy-coverage/gaps-and-fixes.md M-2, M-3, M-5, M-6, M-7, M-13c).
-         Before publishing: replace [EFFECTIVE DATE] with the publish date and [MAILING ADDRESS ...] with a PO box or
-         virtual office. NEVER Salim's home address or personal phone. -->
-    <p><strong>Effective date: <span class="tbd">[EFFECTIVE DATE]</span>.</strong></p>
+    <p class="effective-date" lang="en" data-effective-date="2026-10-18"><strong>Effective date: <time datetime="2026-10-18">October 18, 2026</time>.</strong></p>
+    <p class="lang-note">If the English and Spanish versions conflict, the English version controls.</p>
     <p>This website, achallengetomove.com, and the companion apps on it are operated by Coach Salim Heyaime LLC (Salt Lake County, Utah). This notice explains what information we collect and how we use it.</p>
 
     <h2>Notify-me sign-up</h2>
@@ -66,16 +73,20 @@
     <p>The challenge apps hosted on this site save your progress (such as checked-off days, settings and any photos you add) in your own browser on your device. That data is not sent to us. Clearing your browser data removes it.</p>
     <p>The 22-Day 7-Minute Workout app at app.coachsalimheyaime.com uses email sign-in. It saves your workout days, streaks and reminder settings to your account on our database provider's servers and, only if you agree, your energy and mood ratings and written reflections. It has its own Privacy Policy and Consumer Health Data Privacy Policy, which explain what it collects and your choices.</p>
 
+    <h2 id="retention">How long we keep it</h2>
+    <p><strong>How long we keep it.</strong> Notify-me sign-ups: until you unsubscribe or ask us to delete them. Messages you send us: up to 3 years. Purchase records: as long as tax law requires (generally up to 7 years). Analytics data: Google Analytics keeps it for 2 months.</p>
+
     <h2 id="analytics">Analytics, cookies and your choices</h2>
-    <p><strong>Analytics, cookies and your choices.</strong> We use Google Analytics on achallengetomove.com (and on the signed-out welcome screen of app.coachsalimheyaime.com) only if you choose "Accept analytics." With your consent, it records the pages you view (which can include pages about specific fitness programs), clicks on links to Amazon or to checkout, your approximate location (city level, from your IP address) and your device and browser type. We have turned off Google signals and advertising features, and Google processes this data for us as our service provider. We never send names, email addresses, purchase details or anything you enter in an app to Google Analytics. Our challenge apps never load Google Analytics. You can change your choice at any time with "Cookie settings" at the bottom of every page.</p>
+    <p><strong>Analytics, cookies and your choices.</strong> We use Google Analytics on achallengetomove.com only if you choose "Accept analytics." With your consent, it records the pages you view (which can include pages about specific fitness programs), clicks on links to Amazon or to checkout, your approximate location (city level, from your IP address) and your device and browser type. We have turned off Google signals and advertising features, and Google processes this data for us as our service provider. We never send names, email addresses, purchase details or anything you enter in an app to Google Analytics. The challenge apps on this site (such as the 5K and whole-food plan apps) never load Google Analytics. You can change your choice at any time with "Cookie settings" at the bottom of every page.</p>
+    <p id="ask-everyone">We ask every visitor before loading Google Analytics, wherever you are, and we don't load it at all if your browser sends a Global Privacy Control or Do Not Track signal. You can change your choice any time with Cookie settings.</p>
     <p id="do-not-track"><strong>Global Privacy Control and Do Not Track.</strong> If your browser sends a Global Privacy Control (GPC) or Do Not Track signal, we treat it as a refusal of analytics and as a request to opt out of any sale, sharing or targeted advertising, and we don't load Google Analytics. We do not sell personal information, share it for cross-context behavioral advertising, or use it for targeted advertising.</p>
     <p><strong>Other sites.</strong> Other than Google Analytics when you accept it, we don't allow third parties to collect information about your online activity over time and across other websites through our sites. Our pages load fonts from Google Fonts, which receives your IP address.</p>
 
     <h2>Consumer Health Data Privacy Policy</h2>
-    <p>Our Consumer Health Data Privacy Policy (for residents of Washington, Nevada, Connecticut and similar states) is on its own page: <a class="text-link" href="/privacy/consumer-health-data/">Consumer Health Data Privacy Policy</a>.</p>
+    <p>Our Consumer Health Data Privacy Policy (for residents of Washington, Nevada, Connecticut and similar states) is on its own page: <a class="text-link" href="/privacy/consumer-health-data/?lang=en">Consumer Health Data Privacy Policy</a>.</p>
 
     <h2 id="where-stored">Where your information is stored</h2>
-    <p><strong>Where your information is stored.</strong> We're based in the United States, and our service providers (Supabase, Resend, Stripe, Google and GitHub) store and process your information in the United States and, for some providers, other countries where they operate. If you live outside the US, including in Canada or Quebec, your information is transferred to the US. There it is protected by our agreements with these providers, but it may be accessible to US courts, law enforcement and national security authorities under US law. Before transferring personal information of Quebec residents outside Quebec, we assess the privacy risks and require written protections from the recipient. Questions? Contact our person in charge of privacy at <a class="text-link" href="mailto:coachsalimheyaime@gmail.com">coachsalimheyaime@gmail.com</a>.</p>
+    <p><strong>Where your information is stored.</strong> We're based in the United States, and our service providers (Supabase, Resend, Stripe, Google, FormSubmit and GitHub) store and process your information in the United States and, for some providers, other countries where they operate. If you live outside the US, including in Canada or Quebec, your information is transferred to the US. There it is protected by our contracts with these providers or by their terms of service, but it may be accessible to US courts, law enforcement and national security authorities under US law. Before transferring personal information of Quebec residents outside Quebec, we assess the privacy risks and require written protections from the recipient. Questions? Contact our person in charge of privacy at <a class="text-link" href="mailto:coachsalimheyaime@gmail.com">coachsalimheyaime@gmail.com</a>.</p>
 
     <h2 id="your-privacy-rights">Your privacy rights</h2>
     <p><strong>Wherever you live</strong>, you can ask us to:</p>
@@ -89,11 +100,11 @@
     <p>We won't charge you, refuse service or treat you differently for using these rights.</p>
     <p><strong>How to ask.</strong> Use the tools in the app, or email <a class="text-link" href="mailto:coachsalimheyaime@gmail.com">coachsalimheyaime@gmail.com</a> with "Privacy request" in the subject line from the email address you use with us. We'll confirm the request comes from you, for example by asking you to reply from that address or sign in. Someone you authorize can ask for you with your signed permission; we may still confirm your identity with you. We respond within 45 days (within 30 days for residents of Canada). If we need more time, we'll tell you why within that period: up to 45 more days in the US, or as Canadian law allows.</p>
     <p><strong>Appeals (United States).</strong> If we deny your request in whole or in part, reply to our answer with "Appeal" in the subject line. We'll answer in writing within 45 days and explain why. If you're not satisfied, you can contact your state attorney general, for example: Washington (atg.wa.gov/file-complaint), Nevada (ag.nv.gov), Connecticut (portal.ct.gov/ag), California (oag.ca.gov/contact/consumer-complaint-against-business-or-company) or Colorado (coag.gov).</p>
-    <p><strong>Consumer health data.</strong> If you live in Washington, Nevada, Connecticut or another state with a consumer health data law, our <a class="text-link" href="/privacy/consumer-health-data/">Consumer Health Data Privacy Policy</a> describes the extra rights you have, including a list of everyone we've shared your health data with.</p>
+    <p><strong>Consumer health data.</strong> If you live in Washington, Nevada, Connecticut or another state with a consumer health data law, our <a class="text-link" href="/privacy/consumer-health-data/?lang=en">Consumer Health Data Privacy Policy</a> describes the extra rights you have, including a list of everyone we've shared your health data with.</p>
     <p><strong>California.</strong> We don't share personal information with third parties for their own direct marketing. You can review and correct your information as described above. We explain how we respond to Do Not Track and Global Privacy Control signals in "<a class="text-link" href="#analytics">Analytics, cookies and your choices</a>."</p>
     <p><strong>Canada.</strong> If you live in Canada, you have rights under the federal <em>Personal Information Protection and Electronic Documents Act</em> (PIPEDA) and, where they apply, the private-sector privacy laws of Alberta, British Columbia and Quebec. You can access and correct your information and withdraw consent (subject to legal or contractual limits; we'll tell you what withdrawing means for your use of the app). You can also complain to the Office of the Privacy Commissioner of Canada (priv.gc.ca), the Commission d'acc&egrave;s &agrave; l'information du Qu&eacute;bec (cai.gouv.qc.ca), the Office of the Information and Privacy Commissioner of Alberta (oipc.ab.ca) or of British Columbia (oipc.bc.ca). Please contact us first so we can try to help.</p>
     <p><strong>Quebec.</strong> You can also: ask how we got your information and who can see it; be told about, and turn off, any technology that can identify, locate or profile you (our only such technology is optional Google Analytics on our website, which is off unless you accept it); get your information in a structured, commonly used technological format; and ask us to stop disseminating your information or to de-index links to it where the law allows. We don't make decisions about you based only on automated processing.</p>
-    <p id="privacy-officer"><strong>Person in charge of privacy.</strong> Salim Heyaime, Owner of Coach Salim Heyaime LLC, is responsible for protecting your personal information and is our person in charge of the protection of personal information under Quebec law. Contact: <a class="text-link" href="mailto:coachsalimheyaime@gmail.com">coachsalimheyaime@gmail.com</a> &middot; <span class="tbd">[MAILING ADDRESS: PO box or virtual office TBD]</span>.</p>
+    <p id="privacy-officer"><strong>Person in charge of privacy.</strong> Salim Heyaime, Owner of Coach Salim Heyaime LLC, is responsible for protecting your personal information and is our person in charge of the protection of personal information under Quebec law. Contact: <a class="text-link" href="mailto:coachsalimheyaime@gmail.com">coachsalimheyaime@gmail.com</a>.</p>
 
     <h2>How we handle privacy</h2>
     <p><strong>How we handle privacy.</strong> Our person in charge of privacy reviews every privacy request and complaint, keeps a record of them, and answers within the time limits above. Only Coach Salim Heyaime LLC and the contractors who build and support our apps can access personal information, only when needed, and under a duty of confidentiality. We keep a register of privacy incidents and notify you and the authorities when the law requires. We review these practices at least once a year.</p>
@@ -103,6 +114,66 @@
 
     <h2>Questions</h2>
     <p>For any privacy question, or to ask us to delete your email address, contact <a class="text-link" href="mailto:coachsalimheyaime@gmail.com">coachsalimheyaime@gmail.com</a>.</p>
+    </div>
+    <div class="lang-block" data-lang-block="es" lang="es" hidden>
+    <h1>Privacidad</h1>
+    <p class="effective-date" lang="es" data-effective-date="2026-10-18"><strong>Fecha de entrada en vigor: <time datetime="2026-10-18">18 de octubre de 2026</time>.</strong></p>
+    <p class="lang-note">Si las versiones en inglés y español no coinciden, prevalece la versión en inglés.</p>
+    <p>Este sitio web, achallengetomove.com, y las apps complementarias que contiene son operados por Coach Salim Heyaime LLC (condado de Salt Lake, Utah). Este aviso explica qué información recopilamos y cómo la usamos.</p>
+
+    <h2>Registro para recibir avisos</h2>
+    <p>Cuando te registras para recibir avisos sobre nuevos retos, la dirección de correo electrónico que escribes se le envía por correo a Coach Salim a través del servicio de reenvío de correo FormSubmit. La usamos solo para avisarte cuando se lancen nuevos retos y programas y, solo si marcas la casilla aparte del formulario, para enviarte noticias y ofertas. Guardamos un registro de lo que aceptaste y cuándo. No la vendemos.</p>
+
+    <h2>Compras</h2>
+    <p>Las compras de apps se gestionan con Stripe, en la propia página de pago de Stripe. Stripe recopila tus datos de pago según su propia política de privacidad; nunca vemos ni guardamos el número completo de tu tarjeta. Los libros impresos los vende Amazon, que gestiona ese pedido según su propia política.</p>
+    <p>Cuando compras una app, recibimos de Stripe tu nombre, tu dirección de correo electrónico y los detalles de la compra. Usamos tu correo para enviarte recibos y mensajes de servicio sobre tu compra y tu acceso (como enlaces de inicio de sesión, la fecha en que termina tu acceso y avisos sobre cambios en tu acceso), y para gestionar reembolsos y soporte. Comprar una app no te agrega a ninguna lista de marketing.</p>
+
+    <h2>Apps complementarias</h2>
+    <p>Las apps de retos alojadas en este sitio guardan tu progreso (como los días marcados, la configuración y las fotos que agregues) en tu propio navegador, en tu dispositivo. Esos datos no se nos envían. Si borras los datos de tu navegador, se eliminan.</p>
+    <p>La app 22-Day 7-Minute Workout de app.coachsalimheyaime.com usa inicio de sesión por correo electrónico. Guarda tus días de entrenamiento, tus rachas y tu configuración de recordatorios en tu cuenta, en los servidores de nuestro proveedor de base de datos y, solo si das tu permiso, tus calificaciones de energía y de ánimo y tus reflexiones escritas. Tiene su propia Política de privacidad y su propia Política de privacidad de datos de salud del consumidor, que explican qué recopila y qué opciones tienes.</p>
+
+    <h2 id="es-retention">Cuánto tiempo la guardamos</h2>
+    <p><strong>Cuánto tiempo la guardamos.</strong> Registros para recibir avisos: hasta que te des de baja o nos pidas que los eliminemos. Mensajes que nos envías: hasta 3 años. Registros de compras: el tiempo que exija la ley fiscal (en general, hasta 7 años). Datos de analítica: Google Analytics los guarda durante 2 meses.</p>
+
+    <h2 id="es-analytics">Analítica, cookies y tus opciones</h2>
+    <p><strong>Analítica, cookies y tus opciones.</strong> Usamos Google Analytics en achallengetomove.com solo si eliges "Aceptar analítica". Con tu permiso, registra las páginas que ves (que pueden incluir páginas sobre programas de ejercicio específicos), los clics en enlaces a Amazon o a la página de pago, tu ubicación aproximada (a nivel de ciudad, a partir de tu dirección IP) y tu tipo de dispositivo y de navegador. Desactivamos las señales de Google y las funciones de publicidad, y Google procesa estos datos por nosotros como nuestro proveedor de servicios. Nunca enviamos a Google Analytics nombres, direcciones de correo electrónico, detalles de compras ni nada que escribas en una app. Las apps de retos de este sitio (como las apps del 5K y del plan de alimentación integral) nunca cargan Google Analytics. Puedes cambiar tu elección en cualquier momento con "Configuración de cookies", al final de cada página.</p>
+    <p id="es-ask-everyone">Pedimos permiso a cada visitante antes de cargar Google Analytics, estés donde estés, y no lo cargamos en absoluto si tu navegador envía una señal de Global Privacy Control o Do Not Track. Puedes cambiar tu elección en cualquier momento con Configuración de cookies.</p>
+    <p id="es-do-not-track"><strong>Global Privacy Control y Do Not Track.</strong> Si tu navegador envía una señal de Global Privacy Control (GPC) o Do Not Track, la tratamos como un rechazo de la analítica y como una solicitud para excluirte de cualquier venta, intercambio de datos o publicidad dirigida, y no cargamos Google Analytics. No vendemos información personal, no la compartimos para publicidad basada en tu actividad en distintos sitios ni la usamos para publicidad dirigida.</p>
+    <p><strong>Otros sitios.</strong> Aparte de Google Analytics cuando lo aceptas, no permitimos que terceros recopilen, a través de nuestros sitios, información sobre tu actividad en línea a lo largo del tiempo y en otros sitios web. Nuestras páginas cargan fuentes de Google Fonts, que recibe tu dirección IP.</p>
+
+    <h2>Política de privacidad de datos de salud del consumidor</h2>
+    <p>Nuestra Política de privacidad de datos de salud del consumidor (para residentes de Washington, Nevada, Connecticut y estados similares) está en su propia página: <a class="text-link" href="/privacy/consumer-health-data/?lang=es">Política de privacidad de datos de salud del consumidor</a>.</p>
+
+    <h2 id="es-where-stored">Dónde se guarda tu información</h2>
+    <p><strong>Dónde se guarda tu información.</strong> Estamos en los Estados Unidos, y nuestros proveedores de servicios (Supabase, Resend, Stripe, Google, FormSubmit y GitHub) guardan y procesan tu información en los Estados Unidos y, en el caso de algunos proveedores, en otros países donde operan. Si vives fuera de los Estados Unidos, incluso en Canadá o Quebec, tu información se transfiere a los Estados Unidos. Allí está protegida por nuestros contratos con estos proveedores o por sus condiciones de servicio, pero los tribunales, las fuerzas del orden y las autoridades de seguridad nacional de los Estados Unidos pueden tener acceso a ella según la ley de ese país. Antes de transferir fuera de Quebec información personal de residentes de Quebec, evaluamos los riesgos para la privacidad y le exigimos al destinatario protecciones por escrito. ¿Tienes preguntas? Escribe a nuestra persona responsable de la privacidad a <a class="text-link" href="mailto:coachsalimheyaime@gmail.com">coachsalimheyaime@gmail.com</a>.</p>
+
+    <h2 id="es-your-privacy-rights">Tus derechos de privacidad</h2>
+    <p><strong>Vivas donde vivas</strong>, puedes pedirnos que:</p>
+    <ul>
+      <li>te confirmemos si tenemos información personal sobre ti y te demos una copia, en un formato portátil y legible por máquina si lo pides (en la app: <em>Download my data</em>, Descargar mis datos);</li>
+      <li>corrijamos la información que sea inexacta;</li>
+      <li>eliminemos tu información (en la app: <em>Delete my account and data</em>, Eliminar mi cuenta y mis datos). También les pedimos a nuestros proveedores de servicios que la eliminen. Solo guardamos los registros que exige la ley, como los registros fiscales y de pagos;</li>
+      <li>dejemos de usar cualquier consentimiento que nos hayas dado, porque puedes retirarlo, por ejemplo, el de guardar tus registros diarios o el de recibir correos de marketing;</li>
+      <li>excluyamos tu información de la venta de información personal, de la publicidad dirigida y de la elaboración de perfiles que lleve a decisiones con efectos legales o de importancia similar. No hacemos nada de esto, pero igual puedes pedirlo y te lo confirmaremos por escrito.</li>
+    </ul>
+    <p>No te cobraremos, no te negaremos el servicio ni te trataremos de forma diferente por ejercer estos derechos.</p>
+    <p><strong>Cómo pedirlo.</strong> Usa las herramientas de la app o escribe a <a class="text-link" href="mailto:coachsalimheyaime@gmail.com">coachsalimheyaime@gmail.com</a> con "Privacy request" (solicitud de privacidad) en el asunto, desde la dirección de correo electrónico que usas con nosotros. Confirmaremos que la solicitud viene de ti, por ejemplo, pidiéndote que respondas desde esa dirección o que inicies sesión. Una persona que autorices puede hacer la solicitud por ti con tu permiso firmado; aun así, podemos confirmar tu identidad contigo. Respondemos en un plazo de 45 días (30 días para residentes de Canadá). Si necesitamos más tiempo, te diremos por qué dentro de ese plazo: hasta 45 días más en los Estados Unidos, o lo que permita la ley canadiense.</p>
+    <p><strong>Apelaciones (Estados Unidos).</strong> Si rechazamos tu solicitud total o parcialmente, contesta nuestra respuesta con "Appeal" (apelación) en el asunto. Te responderemos por escrito en un plazo de 45 días y te explicaremos por qué. Si no estás conforme, puedes comunicarte con el fiscal general de tu estado, por ejemplo: Washington (atg.wa.gov/file-complaint), Nevada (ag.nv.gov), Connecticut (portal.ct.gov/ag), California (oag.ca.gov/contact/consumer-complaint-against-business-or-company) o Colorado (coag.gov).</p>
+    <p><strong>Datos de salud del consumidor.</strong> Si vives en Washington, Nevada, Connecticut u otro estado con una ley sobre datos de salud del consumidor, nuestra <a class="text-link" href="/privacy/consumer-health-data/?lang=es">Política de privacidad de datos de salud del consumidor</a> describe los derechos adicionales que tienes, incluida una lista de todos aquellos con quienes hemos compartido tus datos de salud.</p>
+    <p><strong>California.</strong> No compartimos información personal con terceros para su propio marketing directo. Puedes revisar y corregir tu información como se describe arriba. En "<a class="text-link" href="#es-analytics">Analítica, cookies y tus opciones</a>" explicamos cómo respondemos a las señales Do Not Track y Global Privacy Control.</p>
+    <p><strong>Canadá.</strong> Si vives en Canadá, tienes derechos según la ley federal <em>Personal Information Protection and Electronic Documents Act</em> (PIPEDA) y, cuando correspondan, según las leyes de privacidad del sector privado de Alberta, Columbia Británica y Quebec. Puedes acceder a tu información y corregirla, y retirar tu consentimiento (con los límites legales o contractuales que correspondan; te diremos qué significa retirarlo para tu uso de la app). También puedes presentar una queja ante la Oficina del Comisionado de Privacidad de Canadá (priv.gc.ca), la Commission d'acc&egrave;s &agrave; l'information du Qu&eacute;bec (cai.gouv.qc.ca) o la Oficina del Comisionado de Información y Privacidad de Alberta (oipc.ab.ca) o de Columbia Británica (oipc.bc.ca). Te pedimos que primero te comuniques con nosotros para que podamos intentar ayudarte.</p>
+    <p><strong>Quebec.</strong> También puedes: preguntar cómo obtuvimos tu información y quién puede verla; recibir información sobre cualquier tecnología que pueda identificarte, ubicarte o elaborar tu perfil, y desactivarla (la única tecnología de este tipo que usamos es Google Analytics, opcional, en nuestro sitio web, que está desactivado a menos que lo aceptes); obtener tu información en un formato tecnológico estructurado y de uso común; y pedirnos que dejemos de difundir tu información o que desindexemos los enlaces a ella cuando la ley lo permita. No tomamos decisiones sobre ti basadas únicamente en un tratamiento automatizado.</p>
+    <p id="es-privacy-officer"><strong>Persona responsable de la privacidad.</strong> Salim Heyaime, propietario de Coach Salim Heyaime LLC, es responsable de proteger tu información personal y es nuestra persona responsable de la protección de la información personal según la ley de Quebec. Contacto: <a class="text-link" href="mailto:coachsalimheyaime@gmail.com">coachsalimheyaime@gmail.com</a>.</p>
+
+    <h2>Cómo gestionamos la privacidad</h2>
+    <p><strong>Cómo gestionamos la privacidad.</strong> Nuestra persona responsable de la privacidad revisa cada solicitud y cada queja sobre privacidad, lleva un registro de ellas y las responde dentro de los plazos indicados arriba. Solo Coach Salim Heyaime LLC y los contratistas que crean y dan soporte a nuestras apps pueden acceder a la información personal, solo cuando es necesario y con un deber de confidencialidad. Llevamos un registro de los incidentes de privacidad y te notificamos a ti y a las autoridades cuando la ley lo exige. Revisamos estas prácticas al menos una vez al año.</p>
+
+    <h2 id="es-changes">Cambios en este aviso</h2>
+    <p>Si cambiamos este aviso, publicaremos la nueva versión en esta página con una nueva fecha de entrada en vigor. Si un cambio es importante, te avisaremos antes de que entre en vigor, por ejemplo, con un aviso en este sitio o por correo electrónico, y te pediremos tu consentimiento cuando la ley lo exija.</p>
+
+    <h2>Preguntas</h2>
+    <p>Para cualquier pregunta sobre privacidad, o para pedirnos que eliminemos tu dirección de correo electrónico, escribe a <a class="text-link" href="mailto:coachsalimheyaime@gmail.com">coachsalimheyaime@gmail.com</a>.</p>
+    </div>
   </main>
 
   <footer class="footer">

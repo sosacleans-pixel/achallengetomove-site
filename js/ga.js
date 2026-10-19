@@ -2,7 +2,7 @@
  * Measurement ID: G-CZNZSJ2290 (set in GA_ID below). If GA_ID is ever reset to a
  * G-XXXX... placeholder, gtag.js is not loaded and nothing is sent.
  *
- * Consent gate (Attorney, privacy-coverage/gaps-and-fixes.md M-3):
+ * Consent gate:
  *   - GA never loads when the browser sends Global Privacy Control (navigator.globalPrivacyControl === true)
  *     or Do Not Track ('1' or 'yes'). The banner is not shown then; the choice is treated as "No".
  *   - Otherwise GA loads ONLY after the visitor chooses "Accept analytics" (opt-in for everyone:
@@ -67,7 +67,7 @@
   if (noGaPage) { window.gaEvent = function () {}; return; }
   loadGA();
 
-  /* ---- Consent banner (Attorney's EN/ES wording, M-3). Equal-weight buttons, nothing pre-selected. ---- */
+  /* ---- Consent banner (EN/ES). Equal-weight buttons, nothing pre-selected. ---- */
   var TEXT = {
     en: { title: 'Analytics cookies?', body: 'With your OK, we use Google Analytics to count visits and see which pages and buttons are used. This can show which fitness programs you looked at, which some state laws treat as health data. Google processes it for us as a service provider; we never send your name, email or anything you enter in an app. Analytics stays off unless you choose Accept, and you can change your choice any time in Cookie settings.',
       accept: 'Accept analytics', decline: 'No thanks', privacy: 'Privacy', chd: 'Consumer Health Data Privacy Policy', settings: 'Cookie settings',

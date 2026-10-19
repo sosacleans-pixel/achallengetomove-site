@@ -1633,3 +1633,11 @@ section.holiday-teaser {
 
 /* Clearly marked placeholder that must be filled before publishing */
 .tbd { background: #ffe08a; outline: 2px dashed var(--rust); padding: 0 0.2em; font-weight: 700; }
+
+/* Privacy pages: EN/ES toggle and the effective-date token (hidden until filled at publish). */
+.effective-date[data-effective-date=""], .effective-date[hidden] { display: none !important; }
+.lang-toggle { display: flex; gap: .5rem; margin: 1rem 0 .5rem; }
+.lang-toggle[hidden] { display: none; }
+.lang-btn { font: inherit; font-weight: 700; padding: .35rem .9rem; border: 2px solid currentColor; border-radius: 999px; background: transparent; color: inherit; cursor: pointer; }
+.lang-btn[aria-pressed="true"] { background: #FFC700; color: #111; border-color: #FFC700; }
+.lang-note { font-style: italic; }

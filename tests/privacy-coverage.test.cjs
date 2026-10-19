@@ -1,8 +1,8 @@
 // achallengetomove.com preview/privacy-coverage: GA gate (GPC, DNT, opt-in), no product param, CHD page, notify form, layout, links.
 // node site-ga-gate.test.js <siteDir>     serves on :8795; GA requests are answered with a stub (nothing reaches Google).
 const http = require("http"), fs = require("fs"), path = require("path");
-const puppeteer = require(process.env.PPTR || "/workspace/pptr-tools/node_modules/puppeteer-core");
-const ROOT = path.resolve(process.argv[2]); const PORT = 8795, BASE = `http://localhost:${PORT}`;
+const puppeteer = require("/workspace/pptr-tools/node_modules/puppeteer-core");
+const ROOT = path.resolve(process.argv[2]); const PORT = +(process.env.PORT || 8795), BASE = `http://localhost:${PORT}`;
 const OUT = "/workspace/privacy-coverage/screens";
 const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".webmanifest": "application/manifest+json", ".png": "image/png", ".jpg": "image/jpeg", ".webp": "image/webp", ".svg": "image/svg+xml", ".ico": "image/x-icon", ".woff2": "font/woff2", ".xml": "application/xml", ".txt": "text/plain" };
 const server = http.createServer((req, res) => {
@@ -86,13 +86,13 @@ const state = (page) => page.evaluate(() => ({ banner: !!document.getElementById
   t = await open("/", { consent: "denied" });
   const hint = await t.page.evaluate(() => { const h = document.getElementById("notify-hint"); const c = getComputedStyle(h); return { text: h.innerText, visible: h.offsetHeight > 10 && c.position !== "absolute" && c.clip === "auto", optin: document.getElementById("notify-marketing").checked }; });
   check("notify: purpose text visible (not visually-hidden)", hint.visible, hint.text);
-  check("notify: withdraw line + placeholder address, no home address", /withdraw your consent/.test(hint.text) && /\[MAILING ADDRESS: PO box or virtual office TBD\]/.test(hint.text) && !/Herriman|\d{3}[-. ]\d{3}[-. ]\d{4}/.test(hint.text));
+  check("notify: withdraw line, reviewed sender line, no brackets, no home address", /withdraw your consent/.test(hint.text) && hint.text.includes("Coach Salim Heyaime LLC (coachsalimheyaime@gmail.com) will send occasional launch emails.") && !/\[|TBD|mailing address/i.test(hint.text) && !/Herriman|\d{3}[-. ]\d{3}[-. ]\d{4}/.test(hint.text), hint.text);
   check("notify: marketing box not pre-ticked", hint.optin === false);
   await t.page.evaluate(() => document.getElementById("notify").scrollIntoView());
   await sleep(200); await t.page.screenshot({ path: `${OUT}/E-site-notify-390.png` });
   await t.page.type("#notify-email", "test@example.com"); await t.page.click('#notify-form button[type="submit"]'); await sleep(800);
   const body = t.log.forms[0] || "";
-  check("notify payload carries consent text, version, language, marketing state, time", /consent_text/.test(body) && /notify-2026-10-18\.1/.test(body) && /"consent_language":"en"/.test(body) && /"marketing_optin":"no"/.test(body) && /consent_at/.test(body), body.slice(0, 200));
+  check("notify payload carries consent text, version, language, marketing state, time", /consent_text/.test(body) && /notify-2026-10-18\.3/.test(body) && /"consent_language":"en"/.test(body) && /"marketing_optin":"no"/.test(body) && /consent_at/.test(body), body.slice(0, 200));
   await t.ctx.close();
   // Layout and screenshots
   for (const url of ["/", "/privacy/", "/privacy/consumer-health-data/", "/store/", "/holiday-challenge/", "/22-day-7-minute-workout/"]) {
@@ -110,7 +110,7 @@ const state = (page) => page.evaluate(() => ({ banner: !!document.getElementById
   const links = new Set();
   for (const url of ["/", "/privacy/", "/privacy/consumer-health-data/", "/store/"]) {
     await t.page.goto(BASE + url, { waitUntil: "networkidle0" });
-    (await t.page.evaluate(() => [...document.querySelectorAll("a[href]")].map((a) => a.href))).forEach((h) => { if (h.startsWith("http://localhost:8795")) links.add(h.split("#")[0]); });
+    (await t.page.evaluate(() => [...document.querySelectorAll("a[href]")].map((a) => a.href))).forEach((h) => { if (h.startsWith("http://localhost:" + PORT + "")) links.add(h.split("#")[0]); });
   }
   const dead = [];
   for (const l of links) { const r = await t.page.goto(l, { waitUntil: "domcontentloaded" }); if (!r || r.status() >= 400) dead.push(l); }
@@ -120,6 +120,42 @@ const state = (page) => page.evaluate(() => ({ banner: !!document.getElementById
   const priv = fs.readFileSync(path.join(ROOT, "privacy/index.html"), "utf8") + fs.readFileSync(path.join(ROOT, "privacy/consumer-health-data/index.html"), "utf8") + fs.readFileSync(path.join(ROOT, "js/ga.js"), "utf8");
   check("no em/en dashes, no workforcewellness, no santosh, no Herriman", !/[\u2014\u2013]|workforcewellness|santosh|Herriman/i.test(priv));
   check("privacy page has effective date, DNT, changes, rights, Quebec, officer, US-storage", ["Effective date", "Do Not Track", "Changes to this notice", "Your privacy rights", "Quebec.", "Person in charge of privacy", "Where your information is stored", "only if you agree, your energy and mood ratings"].every((k) => priv.includes(k)) && !/used only to give you access to the app/.test(priv));
+  // Attorney answers + diff review (B-1, B-2, B-3, m-1 to m-5, m-11) and the ES versions
+  for (const url of ["/", "/privacy/", "/privacy/consumer-health-data/", "/privacy/?lang=es", "/privacy/consumer-health-data/?lang=es"]) {
+    t = await open(url, { consent: "denied" });
+    const txt = await t.page.evaluate(() => document.body.innerText);
+    check(`${url}: no visible brackets or placeholders`, !/\[[A-Z]|TBD|PLACEHOLDER|EFFECTIVE DATE/.test(txt));
+    await t.ctx.close();
+  }
+  for (const [url, en, es] of [["/privacy/", "Effective date: October 18, 2026.", "Fecha de entrada en vigor: 18 de octubre de 2026."], ["/privacy/consumer-health-data/", "Effective date: October 18, 2026.", "Fecha de entrada en vigor: 18 de octubre de 2026."]]) {
+    t = await open(url, { consent: "denied" });
+    let v = await t.page.evaluate(() => ({ txt: document.body.innerText, lang: document.documentElement.lang, toggle: !document.querySelector(".lang-toggle").hidden }));
+    check(`${url} EN: effective date shown, conflict line, toggle visible, no ES text`, v.txt.includes(en) && v.txt.includes("If the English and Spanish versions conflict, the English version controls.") && v.toggle && v.lang === "en" && !v.txt.includes(es));
+    await t.page.click('.lang-btn[data-lang="es"]'); await sleep(200);
+    v = await t.page.evaluate(() => ({ txt: document.body.innerText, lang: document.documentElement.lang, url: location.search, title: document.title }));
+    check(`${url} toggle to ES: ES date, ES conflict line, EN hidden, lang=es, URL ?lang=es`, v.txt.includes(es) && v.txt.includes("Si las versiones en inglés y español no coinciden, prevalece la versión en inglés.") && !v.txt.includes(en) && v.lang === "es" && v.url === "?lang=es", v.title);
+    await t.page.screenshot({ path: `${OUT}/ES-site${url.replace(/\//g, "_")}390.png` });
+    await t.ctx.close();
+  }
+  t = await open("/privacy/?lang=es"); s = await state(t.page);
+  const bt = await t.page.evaluate(() => (document.getElementById("actm-consent") || {}).innerText || "");
+  check("?lang=es: analytics banner in Spanish", s.banner && /Cookies de anal/.test(bt), bt.slice(0, 60));
+  await t.page.screenshot({ path: `${OUT}/ES-site-privacy-banner-390.png` }); await t.ctx.close();
+  t = await open("/privacy/", { consent: "denied", width: 390 }); await t.page.setJavaScriptEnabled(false); await t.page.goto(BASE + "/privacy/", { waitUntil: "load" });
+  const nojs = await t.page.evaluate(() => document.body.innerText);
+  check("no JavaScript: English shows, Spanish and the date token stay hidden correctly", nojs.includes("Effective date: October 18, 2026.") && !nojs.includes("Fecha de entrada en vigor"));
+  await t.ctx.close();
+  const P1 = fs.readFileSync(path.join(ROOT, "privacy/index.html"), "utf8"), P2 = fs.readFileSync(path.join(ROOT, "privacy/consumer-health-data/index.html"), "utf8"), H = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
+  check("B-3: 'contracts ... or by their terms of service' (EN+ES, both pages), old wording gone", [P1, P2].every((x) => x.includes("protected by our contracts with these providers or by their terms of service") && x.includes("por sus condiciones de servicio")) && !/protected by our agreements/.test(P1 + P2));
+  check("m-1: provider lists", P1.includes("(Supabase, Resend, Stripe, Google, FormSubmit and GitHub)") && P2.includes("(Stripe, Google, FormSubmit and GitHub)") && !P2.includes("Supabase, Resend"));
+  check("m-2 / m-3: no app GA mention on site; 'challenge apps on this site' sentence", !/signed-out welcome screen/.test(P1 + P2) && P1.includes("The challenge apps on this site (such as the 5K and whole-food plan apps) never load Google Analytics."));
+  check("m-4: no checkout-checkbox claim", !/At checkout, we send marketing/.test(P2) && P2.includes("Buying from us does not add you to our marketing list; we send marketing email only if you sign up with a separate, unticked checkbox"));
+  check("m-5: retention line", P1.includes("How long we keep it.</strong> Notify-me sign-ups: until you unsubscribe or ask us to delete them. Messages you send us: up to 3 years. Purchase records: as long as tax law requires (generally up to 7 years). Analytics data: Google Analytics keeps it for 2 months."));
+  check("answer (1): ask-everyone sentence EN+ES", P1.includes("We ask every visitor before loading Google Analytics, wherever you are, and we don't load it at all if your browser sends a Global Privacy Control or Do Not Track signal. You can change your choice any time with Cookie settings.") && P1.includes("Pedimos permiso a cada visitante antes de cargar Google Analytics"));
+  check("B-2: officer line is 'Contact: email.'", />coachsalimheyaime@gmail.com<\/a>\.<\/p>/.test(P1) && !/MAILING ADDRESS|TODO\(address\)/.test(P1 + P2 + H));
+  check("m-11: no internal notes in page source", !/<!--[^>]*(Attorney|home address|gaps-and-fixes|preview\/|NEVER Salim)/.test(P1 + P2 + H));
+  check("effective-date tokens present and filled", [P1, P2].every((x) => (x.match(/data-effective-date="2026-10-18"/g) || []).length === 2));
+  check("ES copy: no em/en dashes", !/[\u2014\u2013]/.test(P1 + P2));
   await browser.close(); server.close();
   const failed = results.filter((r) => !r.ok).length; console.log(failed ? `${failed} FAILED of ${results.length}` : `ALL ${results.length} PASSED`); process.exit(failed ? 1 : 0);
 })().catch((e) => { console.error(e); process.exit(2); });
