@@ -939,6 +939,45 @@ section.journey {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
+/* ==========================================================================
+   RED ACCENT (metal-red): racing red used sparingly on energy points only.
+   Metallic blue and gray stay dominant; buy buttons stay blue steel.
+   Red is never used as text. White on candy red #d81f32 -> #8f0d18 is 5.05 or better
+   (worst stop #d81f32). Red #e11d2e as a line or ring on ink #0b0d11 is 4.09 (graphics need 3).
+   ========================================================================== */
+.look-a {
+  --red: #e11d2e;
+  --candy-red: linear-gradient(180deg, #d81f32 0%, #b3121f 46%, #8f0d18 54%, #b01422 100%);
+  --line-grad: linear-gradient(90deg, #5b6675, #c9d2dd 28%, #3c69c9 52%, #e11d2e 68%, #9aa6b4 84%, #5b6675);
+  --badge7-stroke: #e11d2e; /* red rim on the 7 MIN timer badge */
+  --fig-band: #e11d2e; /* red headband on the jumping-jack figure */
+}
+
+/* Hero "Explore all programs": candy red with a chrome edge */
+.look-a .hero .btn-primary,
+.look-a .hero .btn-primary:hover {
+  background: var(--candy-red);
+  color: #fff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -2px 0 rgba(0, 0, 0, 0.25), 0 0 0 2px #9aa6b4, 0 10px 28px -10px rgba(225, 29, 46, 0.75);
+}
+
+/* Floating "22 days" tag */
+.look-a .clip-chip--1 {
+  background: var(--candy-red);
+  color: #fff;
+}
+
+/* Strip milestones (Day 1, 7, 14, 22): ink with a red ring */
+.look-a .journey {
+  --ms-ring-c: rgba(225, 29, 46, 0.85);
+}
+
+.look-a .journey-day.is-milestone .journey-dot {
+  --dot-fg: #fff;
+  box-shadow: 0 0 0 3px var(--ms-ring), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+
 /* ---- Reduced motion: no animation, no reveal, strip shown complete ---- */
 @media (prefers-reduced-motion: reduce) {
   *,
