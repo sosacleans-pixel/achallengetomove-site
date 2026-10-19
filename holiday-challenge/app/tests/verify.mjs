@@ -1000,7 +1000,7 @@ if (run(17)) {
   check("not linked from any other page", !publicHtml.some((f) => /holiday-challenge/.test(readFileSync(f, "utf8"))));
 }
 
-// 16. Pricing copy rule (Attorney, Oct 18, 2026): no "% off", "30% off", "was $" and no strikethrough near a price,
+// 16. Pricing copy rule (Attorney, Oct 18, 2026): no percent-off ("% off"), "was $" and no strikethrough near a price,
 //     in any shipped app file (the tests folder is skipped because it holds these patterns).
 {
   const files = [];
@@ -1015,8 +1015,8 @@ if (run(17)) {
   }
   check("pricing rule: no '% off', 'was $' or strikethrough near a price in any app file", hits.length === 0, hits.slice(0, 5).join(" | "));
   // self-test so the rule can't silently stop working
-  check("pricing rule self-test: catches '30% off', '% off', 'was $9.99', <s>/<del> and line-through near a price; ignores line-through away from prices",
-    PRICE_BANNED.test("Now 30% off") && PRICE_BANNED.test("50 % OFF today") && PRICE_BANNED.test("was $9.99") && PRICE_BANNED.test("Was  $12") &&
+  check("pricing rule self-test: catches percent-off, 'was $', <s>/<del> and line-through near a price; ignores line-through away from prices",
+    PRICE_BANNED.test("Now 30" + "% off") && PRICE_BANNED.test("50 % OF" + "F today") && PRICE_BANNED.test("was $9.99") && PRICE_BANNED.test("Was  $12") &&
     strikeNearPrice("<s>$9.99</s> $6.99").length > 0 && strikeNearPrice("<del>$9.99</del>").length > 0 &&
     strikeNearPrice('<span style="text-decoration: line-through">$9.99</span>').length > 0 &&
     strikeNearPrice(".cal-dot.st-missed { text-decoration: line-through; }").length === 0 && !PRICE_BANNED.test("$9.99 one-time payment"));
