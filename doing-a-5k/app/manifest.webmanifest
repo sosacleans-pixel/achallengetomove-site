@@ -1,7 +1,7 @@
 {
   "name": "Doing a 5K",
   "short_name": "Doing a 5K",
-  "description": "Your first 5K, or go further to a half marathon.",
+  "description": "Go from walking to your first 5K.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

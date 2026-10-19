@@ -26,3 +26,6 @@ Open http://localhost:8080/
 - `js/products.json` — store catalog data (add books, apps, bundles here)
 - `js/store.js` — renders the store grid; includes a commented hook for future checkout
 - `js/home-programs.js` — renders homepage Programs from `products.json`
+- `js/checkout-config.js` — single place for app prices, buy links and gift links (`ACTM_CHECKOUT`). Doing a 5K flips from $6.99 to $8.99 everywhere when `newBuyLink` is set; 5K to Half Marathon goes live when `buyLink` is set; each app's gift button goes live when its `giftLink` is set. See `GIFT-LINKS.md`.
+- `5k-to-half-marathon/app/` — 5K to Half Marathon app (offline PWA, EN/ES); test: `5k-to-half-marathon/app/tests/headless.mjs`
+- `tests/checkout-config.mjs` — prices, buy and gift buttons in default and flipped config

@@ -1,6 +1,7 @@
 /**
  * Homepage Programs — sourced from /js/products.json (catalogSection: programs).
  * Coming-soon programs fill the grid; homeFeatured program renders full-width below.
+ * Prices, buy and gift links are resolved through /js/checkout-config.js (load it first).
  */
 (function () {
   const layout = document.getElementById("home-programs-layout");
@@ -29,6 +30,18 @@
 
   /* Stripe badge + refund line from /js/buy-trust.js (shared component). */
   const BUY_TRUST_HTML = (window.ACTM_BUY_TRUST && window.ACTM_BUY_TRUST.html) || "";
+
+  /* Prices, buy links and gift links from /js/checkout-config.js (single config). */
+  const CHECKOUT = window.ACTM_CHECKOUT || null;
+  function withCheckout(product) {
+    return CHECKOUT ? CHECKOUT.applyToProduct(product) : product;
+  }
+  function giftBlock(product) {
+    return CHECKOUT && product._checkout && product._checkout.giftable ? CHECKOUT.giftHtml(product.id) : "";
+  }
+  function priceLines(product) {
+    return CHECKOUT && product._checkout ? CHECKOUT.priceLines(product._checkout) : "";
+  }
 
   function isBuyAction(action) {
     return (
@@ -133,6 +146,7 @@
       parts.join("") +
       "</div>" +
       (hasBuy ? BUY_TRUST_HTML : "") +
+      giftBlock(product) +
       "</div>"
     );
   }
@@ -153,6 +167,7 @@
   }
 
   function renderFeaturedProgram(product) {
+    product = withCheckout(product);
     const tagline = product.tagline
       ? '<p class="tagline">' + escapeHtml(product.tagline) + "</p>"
       : "";
@@ -194,6 +209,7 @@
   }
 
   function renderProgram(product) {
+    product = withCheckout(product);
     const tagline = product.tagline
       ? '<p class="tagline">' + escapeHtml(product.tagline) + "</p>"
       : "";
@@ -218,6 +234,7 @@
       "</h3>" +
       "</div></div>" +
       price +
+      priceLines(product) +
       tagline +
       '<p class="desc">' +
       escapeHtml(product.description) +

@@ -218,29 +218,18 @@ function renderOnboarding() {
 
   return shell(
     `
-    <p class="app-tagline">Your first 5K, or go further to a half marathon.</p>
+    <p class="app-tagline">Your first 5K, one walk-run session at a time.</p>
     <form id="onboard-form" class="card">
       <label class="field">
         <span>Your name (optional)</span>
         <input name="name" type="text" autocomplete="name" placeholder="Alex">
       </label>
-      <fieldset class="field" id="goal-field">
-        <legend>Goal</legend>
-        <div class="radio-row">
-          <label><input type="radio" name="goal" value="5k" checked> 5K</label>
-          <label><input type="radio" name="goal" value="half"> Half marathon (21.1 km / 13.1 mi)</label>
-        </div>
-      </fieldset>
       <fieldset class="field" id="five-k-days-field">
         <legend>Run days per week</legend>
         <div class="radio-row" id="days-5k-row">
           <label><input type="radio" name="days" value="3" checked> 3 days (12 weeks)</label>
           <label><input type="radio" name="days" value="4"> 4 days (10 weeks)</label>
           <label><input type="radio" name="days" value="5"> 5 days (8 weeks)</label>
-        </div>
-        <div class="radio-row hidden" id="days-half-row">
-          <label><input type="radio" name="daysHalf" value="3" checked> 3 days (~16 / ~12 weeks)</label>
-          <label><input type="radio" name="daysHalf" value="4"> 4 days (~16 / ~12 weeks)</label>
         </div>
       </fieldset>
       <fieldset class="field">
@@ -277,40 +266,8 @@ function renderOnboarding() {
         </label>
         <p class="muted" id="strength-level-preview">Strength level: Beginner (under 8 push-ups)</p>
       </fieldset>
-      <fieldset class="field hidden" id="half-base-field">
-        <legend>Running base (half marathon)</legend>
-        <p class="muted">Answer honestly — this picks your <strong>run</strong> plan length. Push-ups pick your strength progression.</p>
-        <label class="check-row">
-          <input type="checkbox" name="base3x4" id="base3x4">
-          <span>I have been running about <strong>3 days per week</strong> for at least the <strong>last 4 weeks</strong>.</span>
-        </label>
-        <label class="check-row">
-          <input type="checkbox" name="base4mi" id="base4mi">
-          <span>I have done a run of at least <strong>4 mi (6.4 km)</strong> in the past month.</span>
-        </label>
-        <label class="check-row">
-          <input type="checkbox" name="base30cont" id="base30cont">
-          <span>I can run <strong>30–40 minutes continuously</strong> at easy effort (full sentences).</span>
-        </label>
-        <fieldset class="field">
-          <legend>Minimum readiness</legend>
-          <div class="radio-row">
-            <label><input type="radio" name="base30rw" value="yes" checked> I can complete <strong>30 minutes</strong> of easy running or run-walk (e.g. 4 min run / 1 min walk)</label>
-            <label><input type="radio" name="base30rw" value="no"> I cannot yet do 30 minutes of run-walk</label>
-          </div>
-        </fieldset>
-        <div class="card card-note hidden" id="half-recommend-card">
-          <p>Finish the 5K track in this app first, then return to the half marathon goal.</p>
-          <button type="button" class="btn btn-secondary btn-block" id="switch-to-5k">Switch to 5K goal</button>
-        </div>
-        <p class="muted" id="half-plan-preview"></p>
-      </fieldset>
-      <details class="card card-note hidden" id="half-disclaimer-details">
-        <summary>Medical disclaimer (required reading)</summary>
-        <p class="disclaimer-text">${COACH_DISCLAIMER}</p>
-      </details>
       <label class="field" id="race-date-field">
-        <span>Race day (optional — sets your start date backward)</span>
+        <span>Race day (optional, sets your start date backward)</span>
         <input name="race" type="date" value="">
       </label>
       <label class="field">
@@ -1110,7 +1067,7 @@ function renderSettings() {
         <label><input type="radio" name="sdays" value="5" ${state.meta.daysPerWeek === 5 ? "checked" : ""}> 5 / week</label>`;
   return shell(
     `
-    <div class="card settings-card">
+    ${isHalf ? `    <div class="card settings-card">
       <h2>Goal</h2>
       <p>Current: <strong>${goalLabel(state.meta)}</strong></p>
       <div class="radio-row" id="goal-setting">
@@ -1118,7 +1075,7 @@ function renderSettings() {
         <label><input type="radio" name="sgoal" value="half" ${isHalf ? "checked" : ""}> Half marathon</label>
       </div>
       <button type="button" class="btn btn-secondary btn-block" id="apply-goal">Change goal (resets plan)</button>
-    </div>
+    </div>` : ""}
     <div class="card settings-card">
       <h2>Distance units</h2>
       <div class="radio-row" id="units-setting">

@@ -63,6 +63,9 @@
   /* Stripe badge + refund line from /js/buy-trust.js (shared component). */
   const BUY_TRUST_HTML = (window.ACTM_BUY_TRUST && window.ACTM_BUY_TRUST.html) || "";
 
+  /* Prices, buy links and gift links from /js/checkout-config.js (single config). */
+  const CHECKOUT = window.ACTM_CHECKOUT || null;
+
   function isBuyAction(action) {
     return (
       action.kind === "checkout_pending" ||
@@ -152,7 +155,11 @@
 
     if (!parts.length) return "";
     const hasBuy = product.status !== "coming_soon" && (product.actions || []).some(isBuyAction);
-    return '<div class="product-actions">' + parts.join("") + "</div>" + (hasBuy ? BUY_TRUST_HTML : "");
+    const gift =
+      CHECKOUT && product._checkout && product._checkout.giftable && product.status !== "coming_soon"
+        ? CHECKOUT.giftHtml(product.id)
+        : "";
+    return '<div class="product-actions">' + parts.join("") + "</div>" + (hasBuy ? BUY_TRUST_HTML : "") + gift;
   }
 
   function statusBadge(status) {
@@ -166,6 +173,8 @@
   }
 
   function renderProduct(product) {
+    if (CHECKOUT) product = CHECKOUT.applyToProduct(product);
+    const priceLines = CHECKOUT && product._checkout ? CHECKOUT.priceLines(product._checkout) : "";
     const typeLabel = product.typeLabel ? '<p class="product-type">' + escapeHtml(product.typeLabel) + "</p>" : "";
     const note = product.note
       ? '<p class="product-note">' + escapeHtml(product.note) + "</p>"
@@ -203,6 +212,7 @@
         "</div></div>" +
         '<div class="product-card-body"><div class="product-copy">' +
         price +
+        priceLines +
         tagline +
         '<p class="product-desc">' +
         desc +
@@ -229,6 +239,7 @@
       title +
       "</h3>" +
       price +
+      priceLines +
       tagline +
       '<p class="product-desc">' +
       desc +

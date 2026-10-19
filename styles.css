@@ -1631,3 +1631,71 @@ section.holiday-teaser {
 .product-card--app-icon .product-card-body {
   gap: 0;
 }
+
+/* Price line under the price (Doing a 5K, 5K to Half Marathon): set in /js/checkout-config.js. */
+.price-line {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--charcoal);
+}
+
+.price-line[lang="es"] {
+  color: var(--muted);
+}
+
+.product-page .price-line {
+  font-size: 1rem;
+}
+
+/* Gift: secondary button + Terms link + one short note (EN/ES), under the buy block on every app card
+   and product page. Markup from ACTM_CHECKOUT.giftHtml() in /js/checkout-config.js. */
+.gift-block {
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--line);
+}
+
+.gift-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.9rem;
+}
+
+.gift-actions .btn-gift {
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: center;
+}
+
+.btn-gift-pending {
+  filter: grayscale(1);
+}
+
+.gift-terms {
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.gift-note {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.gift-note small {
+  display: block;
+  font-size: inherit;
+}
+
+.gift-note small + small {
+  margin-top: 0.2rem;
+}
+
+.product-page .gift-block {
+  max-width: 34rem;
+}

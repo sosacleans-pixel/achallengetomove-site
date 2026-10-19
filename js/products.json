@@ -183,47 +183,32 @@
       "type": "app",
       "typeLabel": "App",
       "title": "5K to Half Marathon",
-      "description": "Build from 5K to 13.1 miles with structured runs, strength, and recovery in the app.",
-      "status": "coming_soon",
-      "image": {
-        "svg": "/icons/logo.svg",
-        "width": 512,
-        "height": 512,
-        "alt": "5K to Half Marathon app (coming soon)"
-      },
-      "notifySubject": "Notify me: 5K to Half Marathon",
-      "actions": []
-    },
-    {
-      "id": "5k-2-pack",
-      "catalogSection": "programs",
-      "type": "bundle",
-      "typeLabel": "Bundle",
-      "title": "5K 2-Pack",
-      "tagline": "Both running plans for one price.",
-      "description": "Get Doing a 5K and 5K to Half Marathon together: start with your first 5K, then build to 13.1 miles.",
-      "note": "Includes: Doing a 5K + 5K to Half Marathon.",
-      "price": "$9.99",
+      "tagline": "Build from 5K to 13.1 miles in 12 or 16 weeks.",
+      "description": "Structured runs, two short strength sessions a week, and recovery, with a plan set by your run level and schedule.",
       "status": "checkout_pending",
-      "bundleIncludes": [
-        "doing-a-5k",
-        "5k-to-half-marathon"
-      ],
       "image": {
         "svg": "/icons/logo.svg",
         "width": 512,
         "height": 512,
-        "alt": "5K 2-Pack: Doing a 5K and 5K to Half Marathon"
+        "alt": "5K to Half Marathon app"
       },
       "actions": [
         {
           "kind": "checkout_pending",
-          "label": "Buy 2-pack, $9.99",
-          "href": "#stripe-link-pending-5k-2pack",
+          "label": "Buy app, $8.99",
+          "href": "#stripe-link-pending-5k-to-half-marathon",
           "variant": "primary",
           "pendingNote": "Checkout link pending"
+        },
+        {
+          "kind": "link",
+          "label": "Program details",
+          "href": "/5k-to-half-marathon/",
+          "variant": "secondary",
+          "newTab": false
         }
-      ]
+      ],
+      "price": "$8.99"
     },
     {
       "id": "75-adaptive",

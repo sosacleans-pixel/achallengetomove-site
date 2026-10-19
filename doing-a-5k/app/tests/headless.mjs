@@ -4,6 +4,7 @@ import { readFileSync, existsSync, statSync, mkdirSync } from "fs";
 import { join, extname } from "path";
 import { fileURLToPath } from "url";
 
+const PORT = Number(process.env.PORT || 8765);
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const root = join(__dirname, "..");
 const repoRoot = join(root, "../..");
@@ -39,9 +40,8 @@ function server() {
 
 async function onboard5k(page, days, { e2e = false, strengthDays = 1, pushups = 5, equipment = [] } = {}) {
   const q = e2e ? "?e2e=1" : "";
-  await page.goto(`http://127.0.0.1:8765/doing-a-5k/app/index.html${q}`);
+  await page.goto(`http://127.0.0.1:${PORT}/doing-a-5k/app/index.html${q}`);
   await page.waitForSelector("#onboard-form");
-  await page.click('input[name="goal"][value="5k"]');
   await page.click(`input[name="days"][value="${days}"]`);
   await page.click(`input[name="strengthDays"][value="${strengthDays}"]`);
   const boxes = await page.$$('input[name="day"]');
@@ -64,37 +64,12 @@ async function onboard5k(page, days, { e2e = false, strengthDays = 1, pushups = 
   await page.waitForSelector(".today-card");
 }
 
-async function onboardHalf(
-  page,
-  { days = 3, pushups = 10, equipment = "dumbbells", base = "average", e2e = false } = {}
-) {
-  const q = e2e ? "?e2e=1" : "";
-  await page.goto(`http://127.0.0.1:8765/doing-a-5k/app/index.html${q}`);
-  await page.waitForSelector("#onboard-form");
-  await page.click('input[name="goal"][value="half"]');
-  await page.click(`input[name="daysHalf"][value="${days}"]`);
-  const boxes = await page.$$('input[name="day"]');
-  for (let i = 0; i < days; i++) {
-    await boxes[i].check();
-  }
-  await page.fill('input[name="pushups"]', String(pushups));
-  await page.click(`input[name="equipmentHalf"][value="${equipment}"]`);
-  if (base === "average") {
-    await page.check("#base3x4");
-    await page.check("#base4mi");
-    await page.check("#base30cont");
-  }
-  await page.click('input[name="base30rw"][value="yes"]');
-  await page.click('button[type="submit"]');
-  await page.waitForSelector(".today-card");
-}
-
 async function main() {
   const errors = [];
   const http = server();
-  await new Promise((r) => http.listen(8765, r));
+  await new Promise((r) => http.listen(PORT, r));
   const browser = await chromium.launch();
-  const artifacts = "/opt/cursor/artifacts";
+  const artifacts = process.env.ARTIFACTS || "/opt/cursor/artifacts";
   mkdirSync(artifacts, { recursive: true });
   const results = [];
 
@@ -110,7 +85,7 @@ async function main() {
       const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
       const page = await ctx.newPage();
       attachErrors(page);
-      await page.goto("http://127.0.0.1:8765/doing-a-5k/app/index.html");
+      await page.goto(`http://127.0.0.1:${PORT}/doing-a-5k/app/index.html`);
       await page.evaluate(() => localStorage.clear());
       await onboard5k(page, days, { strengthDays: 1 });
       const check = await page.evaluate(() => {
@@ -133,99 +108,28 @@ async function main() {
     const page = await ctx.newPage();
     attachErrors(page);
 
-    await page.goto("http://127.0.0.1:8765/doing-a-5k/app/index.html");
+    // The half marathon goal moved to its own app (/5k-to-half-marathon/app/): no goal choice here any more.
+    await page.goto(`http://127.0.0.1:${PORT}/doing-a-5k/app/index.html`);
     await page.evaluate(() => localStorage.clear());
+    await page.reload();
     await page.waitForSelector("#onboard-form");
-    await page.click('input[name="goal"][value="half"]');
-    await page.fill('input[name="pushups"]', "10");
-    await page.check("#base3x4");
-    await page.screenshot({ path: `${artifacts}/half-base-check.png`, fullPage: true });
+    const noGoal = await page.evaluate(() => ({
+      goalInputs: document.querySelectorAll('input[name="goal"]').length,
+      halfFields: document.querySelectorAll("#half-base-field, #days-half-row, #half-disclaimer-details").length,
+      text: document.querySelector("#app").textContent,
+    }));
+    results.push({ test: "no-half-goal-in-onboarding", ok: noGoal.goalInputs === 0 && noGoal.halfFields === 0 && !/half marathon/i.test(noGoal.text), noGoal: { goalInputs: noGoal.goalInputs, halfFields: noGoal.halfFields } });
 
-    await onboardHalf(page, { days: 3, pushups: 10, equipment: "dumbbells", base: "average" });
-    const half3avg = await page.evaluate(() => {
-      const s = window.__doingA5K.loadState();
-      const lr = s.longRunProgressionKm;
-      const peak = Math.max(...lr.slice(0, s.meta.weeks - 2));
-      const peakWeekIdx = s.meta.runLevel === "average" ? 9 : 13;
-      const peakWeekKm = lr[peakWeekIdx];
-      const taper = lr.slice(-2);
-      return {
-        weeks: s.meta.weeks,
-        runLevel: s.meta.runLevel,
-        strengthLevel: s.meta.strengthLevel,
-        coachPlanId: s.meta.coachPlanId,
-        peakKm: peak,
-        peakWeekKm,
-        taperKm: taper,
-        hasWorkout: s.workouts.some((w) => w.title.includes("Fartlek") || w.title.includes("Hill")),
-      };
+    // Saved plans from before the split (goal "half") still open and can switch back to 5K.
+    await page.evaluate(() => {
+      const plan = window.__doingA5K.buildPlan({ goal: "half", daysPerWeek: 3, runLevel: "beginner", strengthLevel: "beginner", preferredDays: [1, 3, 5], startDateISO: "2026-10-19", name: "", strengthDaysPerWeek: 2, strengthPreferredDays: [2, 4], equipment: ["none"], units: "mi", pushups: 5 });
+      localStorage.setItem("doing-a-5k-v3", JSON.stringify({ ...plan, completed: [], strengthCompleted: [], settings: { voice: true, units: "mi" } }));
     });
-    results.push({
-      test: "half-3day-average-coach",
-      ok:
-        half3avg.weeks === 12 &&
-        half3avg.runLevel === "average" &&
-        half3avg.strengthLevel === "average" &&
-        half3avg.coachPlanId === "average-3day" &&
-        half3avg.peakWeekKm >= 19 &&
-        half3avg.peakKm >= 19 &&
-        half3avg.taperKm[0] < half3avg.peakKm &&
-        half3avg.hasWorkout,
-      half3avg,
-    });
-
-    await page.click('[data-nav="plan"]');
-    await page.waitForSelector(".plan-week");
-    await page.screenshot({ path: `${artifacts}/half-plan-week.png`, fullPage: true });
-
-    await page.evaluate(() => localStorage.clear());
-    await onboardHalf(page, { days: 4, pushups: 3, equipment: "none", base: "minimal" });
-    const half4beg = await page.evaluate(() => {
-      const s = window.__doingA5K.loadState();
-      const lr = s.longRunProgressionKm;
-      const w14 = lr[13];
-      return {
-        weeks: s.meta.weeks,
-        runLevel: s.meta.runLevel,
-        strengthLevel: s.meta.strengthLevel,
-        week14Km: w14,
-      };
-    });
-    results.push({
-      test: "half-4day-beginner-coach",
-      ok:
-        half4beg.weeks === 16 &&
-        half4beg.runLevel === "beginner" &&
-        half4beg.strengthLevel === "beginner" &&
-        half4beg.week14Km >= 16 &&
-        half4beg.week14Km <= 16.5,
-      half4beg,
-    });
-
-    await page.evaluate(() => localStorage.clear());
-    await page.goto("http://127.0.0.1:8765/doing-a-5k/app/index.html");
-    await page.waitForSelector("#onboard-form");
-    await page.click('input[name="goal"][value="half"]');
-    await page.fill('input[name="pushups"]', "10");
-    await page.click('input[name="base30rw"][value="yes"]');
-    await page.click(`input[name="daysHalf"][value="3"]`);
-    const boxes = await page.$$('input[name="day"]');
-    for (let i = 0; i < 3; i++) await boxes[i].check();
-    await page.click('input[name="equipmentHalf"][value="none"]');
-    await page.click('button[type="submit"]');
+    await page.reload();
     await page.waitForSelector(".today-card");
-    const splitLevels = await page.evaluate(() => {
-      const s = window.__doingA5K.loadState();
-      return { runLevel: s.meta.runLevel, strengthLevel: s.meta.strengthLevel, weeks: s.meta.weeks };
-    });
-    results.push({
-      test: "half-8push-no-base",
-      ok:
-        splitLevels.runLevel === "beginner" &&
-        splitLevels.strengthLevel === "average" &&
-        splitLevels.weeks === 16,
-      splitLevels,
-    });
+    await page.click('[data-nav="settings"]');
+    await page.waitForSelector("#apply-goal");
+    results.push({ test: "legacy-half-plan-still-opens", ok: true });
 
     const boundaries = await page.evaluate(() => ({
       seven: window.__doingA5K.strengthLevelFromPushUps(7),
@@ -244,7 +148,7 @@ async function main() {
     results.push({ strengthPersistence5k: strengthDone });
 
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto("http://127.0.0.1:8765/doing-a-5k/app/index.html");
+    await page.goto(`http://127.0.0.1:${PORT}/doing-a-5k/app/index.html`);
     await page.waitForSelector(".today-card");
     await ctx.close();
   } finally {

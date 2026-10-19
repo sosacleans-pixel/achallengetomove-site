@@ -1,0 +1,621 @@
+/* 5K to Half Marathon app: same styles as the Doing a 5K app (copied from doing-a-5k/app/css/app.css), plus language button, health screen and small fixes. */
+
+.app-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--cream);
+}
+
+.app-screen {
+  flex: 1;
+  max-width: 32rem;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 5.5rem;
+  width: 100%;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.app-eyebrow {
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  margin: 0 0 0.35rem;
+}
+
+.app-title {
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
+  margin: 0;
+}
+
+.app-tagline {
+  text-align: center;
+  color: var(--muted);
+  margin: 0 0 1.25rem;
+}
+
+.card {
+  background: var(--paper);
+  border: 3px solid var(--charcoal);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 6px 0 var(--charcoal);
+  margin-bottom: 1rem;
+}
+
+.card-celebrate {
+  border-color: var(--rust);
+  background: linear-gradient(180deg, #fff9ee 0%, var(--paper) 100%);
+}
+
+.field {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.field span,
+.field legend {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.field input[type="text"],
+.field input[type="date"],
+.field textarea {
+  width: 100%;
+  font: inherit;
+  padding: 0.65rem 0.75rem;
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.radio-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.radio-row label {
+  font-weight: 400;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.chip:has(:checked) {
+  border-color: var(--charcoal);
+  background: var(--yellow);
+  font-weight: 700;
+}
+
+.btn-block {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.btn-start {
+  font-size: 1.1rem;
+  padding: 1.15rem 1.4rem;
+}
+
+.today-greet {
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+
+.today-card .today-date {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 0 0 0.25rem;
+}
+
+.today-title {
+  font-size: 1.35rem;
+  margin: 0 0 0.35rem;
+}
+
+.today-summary,
+.today-meta {
+  margin: 0 0 0.35rem;
+  color: var(--muted);
+}
+
+.banner {
+  background: var(--yellow);
+  border: 2px solid var(--charcoal);
+  padding: 0.75rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+}
+
+.app-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  background: var(--charcoal);
+  border-top: 4px solid var(--yellow);
+  padding: 0.35rem 0.5rem calc(0.35rem + env(safe-area-inset-bottom));
+  z-index: 50;
+}
+
+.app-nav-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 253, 248, 0.75);
+  font-family: inherit;
+  font-size: 0.65rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.65rem 0.25rem;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.app-nav-btn.is-active {
+  color: var(--yellow);
+  background: rgba(255, 199, 0, 0.12);
+}
+
+.app-footer {
+  margin-top: 2rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.safety-note {
+  background: var(--paper);
+  border-left: 4px solid var(--rust);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  margin-bottom: 1rem;
+}
+
+.timer-card {
+  text-align: center;
+}
+
+.timer-phase {
+  font-family: Anton, Impact, sans-serif;
+  text-transform: uppercase;
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem;
+}
+
+.timer-countdown {
+  font-size: clamp(3rem, 12vw, 4.5rem);
+  font-weight: 900;
+  line-height: 1;
+  margin: 0 0 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer-next {
+  color: var(--muted);
+  margin: 0 0 1rem;
+}
+
+.progress-bar {
+  height: 10px;
+  background: var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--rust);
+  transition: width 0.2s linear;
+}
+
+.step-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  text-align: left;
+  font-size: 0.85rem;
+  max-height: 8rem;
+  overflow: auto;
+}
+
+.step-preview {
+  padding: 0.35rem 0;
+  color: var(--muted);
+}
+
+.step-preview.is-current {
+  color: var(--charcoal);
+  font-weight: 700;
+}
+
+.timer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.plan-scroll {
+  max-height: calc(100vh - 12rem);
+  overflow: auto;
+}
+
+.plan-week h2 {
+  font-size: 1.1rem;
+  margin-top: 1rem;
+}
+
+.plan-item {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.plan-check {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid var(--charcoal);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  flex-shrink: 0;
+  background: var(--paper);
+}
+
+.plan-item.is-done .plan-check {
+  background: var(--yellow);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.stat {
+  background: var(--paper);
+  border: 2px solid var(--charcoal);
+  border-radius: 12px;
+  padding: 1rem 0.5rem;
+  text-align: center;
+}
+
+.stat-num {
+  display: block;
+  font-family: Anton, sans-serif;
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.check-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  margin: 0.75rem 0;
+  cursor: pointer;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.card-note {
+  margin-top: 0.75rem;
+  padding: 0.85rem;
+  background: #fff9ee;
+}
+
+.plan-overview-card h2 {
+  margin-top: 0;
+  font-size: 1.1rem;
+}
+
+.plan-countdown {
+  font-size: 1rem;
+}
+
+.disclaimer-text {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.effort-table {
+  width: 100%;
+  font-size: 0.8rem;
+  border-collapse: collapse;
+  margin: 0.5rem 0;
+}
+
+.effort-table th,
+.effort-table td {
+  border: 1px solid var(--line);
+  padding: 0.35rem 0.4rem;
+  text-align: left;
+}
+
+.plan-effort-guide {
+  margin: 0.75rem 0;
+}
+
+.settings-card h2 {
+  font-size: 1rem;
+  margin-top: 0;
+}
+
+.section-mini {
+  font-family: Anton, Impact, sans-serif;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  margin: 1.25rem 0 0.5rem;
+}
+
+.today-card--strength {
+  border-color: var(--rust);
+  background: linear-gradient(180deg, #fff5f0 0%, var(--paper) 100%);
+  position: relative;
+}
+
+.strength-badge {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.strength-badge--large {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.plan-item--strength {
+  background: rgba(191, 52, 4, 0.04);
+  border-radius: 8px;
+  padding-left: 0.25rem;
+}
+
+.plan-check--run,
+.plan-check--strength {
+  font-size: 0.85rem;
+}
+
+.timer-card--strength .progress-fill--strength {
+  background: var(--rust);
+}
+
+.timer-desc {
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin: 0 0 0.75rem;
+  min-height: 2.5rem;
+}
+
+.timer-variant {
+  font-size: 0.75rem;
+  margin: 0 0 0.75rem;
+  line-height: 1.4;
+}
+
+.strength-overview-meta {
+  text-align: center;
+  color: var(--muted);
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+}
+
+.strength-outline {
+  text-align: left;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.strength-outline-block {
+  margin: 0 0 0.85rem;
+}
+
+.strength-outline-block > p {
+  margin: 0 0 0.35rem;
+}
+
+.strength-overview-card .strength-preview-list {
+  list-style: none;
+  margin: 0.35rem 0 0;
+  padding: 0;
+}
+
+.strength-rest-note {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0.5rem 0 0;
+}
+
+.strength-exercise-item {
+  border-bottom: 1px solid var(--line);
+}
+
+.strength-exercise-btn {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: baseline;
+  text-align: left;
+  padding: 0.55rem 0.25rem;
+  border: none;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+}
+
+.strength-exercise-btn:hover,
+.strength-exercise-btn.is-open {
+  color: var(--rust);
+}
+
+.strength-exercise-amount {
+  font-size: 0.8rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.strength-exercise-detail {
+  padding: 0 0.25rem 0.65rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.strength-exercise-detail p {
+  margin: 0 0 0.35rem;
+}
+
+.stats-grid--secondary {
+  margin-top: 0.5rem;
+}
+
+.stats-grid--secondary .stat-num {
+  font-size: 1.35rem;
+}
+
+@media (min-width: 768px) {
+  .app-screen {
+    max-width: 36rem;
+    padding-top: 2rem;
+  }
+
+  .stats-grid {
+    gap: 1rem;
+  }
+
+  .stat-num {
+    font-size: 2.25rem;
+  }
+}
+
+/* ---- 5K to Half Marathon additions ---- */
+.app-header--lang {
+  text-align: left;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.app-header-text {
+  min-width: 0;
+}
+
+.lang-btn {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0.4rem 0.9rem;
+  border: 2px solid var(--charcoal, #1e1e1e);
+  border-radius: 999px;
+  background: transparent;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ack-card h3 {
+  font-size: 1rem;
+  margin: 0.9rem 0 0.2rem;
+}
+
+.ack-text {
+  max-height: 46vh;
+  overflow-y: auto;
+  padding: 0 0.75rem 0.75rem;
+  margin: 0.5rem 0 1rem;
+  border: 1px solid #e6dcc0;
+  border-radius: 10px;
+}
+
+.ack-check {
+  margin-bottom: 1rem;
+}
+
+.chip--wide {
+  flex: 1 1 100%;
+}
+
+.form-error {
+  color: #a3220f;
+  font-weight: 700;
+}
+
+.done-pill {
+  font-weight: 900;
+  margin: 0.25rem 0;
+}
+
+.today-card.is-done {
+  opacity: 0.8;
+}
+
+.coach-en-note {
+  font-size: 0.85rem;
+}
+
+.effort-table {
+  width: 100%;
+  table-layout: fixed;
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+.app-screen,
+.card {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.app-noscript {
+  padding: 1rem;
+}
