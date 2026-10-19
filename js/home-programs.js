@@ -21,6 +21,12 @@
     return "mailto:" + NOTIFY_EMAIL + "?" + q.toString();
   }
 
+  /* App icon <img> from /js/app-icons.js (one icon per program). */
+  function appIcon(product, cls) {
+    const icons = window.ACTM_APP_ICONS;
+    return icons ? icons.img(product, cls, 52) : "";
+  }
+
   /* Stripe badge + refund line from /js/buy-trust.js (shared component). */
   const BUY_TRUST_HTML = (window.ACTM_BUY_TRUST && window.ACTM_BUY_TRUST.html) || "";
 
@@ -132,6 +138,8 @@
   }
 
   function renderFeaturedIcon(product) {
+    const icon = appIcon(product, "program-featured-icon");
+    if (icon) return icon;
     const alt = product.image && product.image.alt ? escapeHtml(product.image.alt) : "";
     const src =
       product.image && product.image.svg ? escapeHtml(product.image.svg) : "/icons/logo.svg";
@@ -201,11 +209,15 @@
       escapeHtml(product.id) +
       '">' +
       '<div class="program-card-main">' +
+      '<div class="program-card-head">' +
+      appIcon(product, "program-card-icon") +
+      '<div class="program-card-head-text">' +
       badge(product.status) +
-      price +
       "<h3>" +
       escapeHtml(product.title) +
       "</h3>" +
+      "</div></div>" +
+      price +
       tagline +
       '<p class="desc">' +
       escapeHtml(product.description) +
