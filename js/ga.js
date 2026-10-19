@@ -83,7 +83,9 @@
     (kids || []).forEach(function (c) { if (c) n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
     return n;
   }
-  function closeBanner() { var b = document.getElementById('actm-consent'); if (b) b.remove(); }
+  /* Keep page content reachable above the banner: pad the page bottom while it is open. */
+  function pad() { var b = document.getElementById('actm-consent'); document.body.style.paddingBottom = b ? (b.offsetHeight + 24) + 'px' : ''; }
+  function closeBanner() { var b = document.getElementById('actm-consent'); if (b) b.remove(); pad(); }
   function showBanner(focus) {
     closeBanner();
     var t = TEXT[lang()];
@@ -107,6 +109,7 @@
       ]);
     }
     document.body.appendChild(box);
+    pad();
     if (focus) { var f = box.querySelector('button'); if (f) f.focus(); }
   }
   function addSettingsLinks() {
