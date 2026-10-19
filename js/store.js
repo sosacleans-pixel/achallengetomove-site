@@ -179,7 +179,39 @@
       ? '<p class="product-price">' + escapeHtml(product.price) + "</p>"
       : "";
     const compact = product._compact ? " product-card--compact" : "";
-    const textOnly = !product.image ? " product-card--text-only" : "";
+    /* Programs with an app icon (/js/app-icons.js) show it at the top left beside the badge and title,
+       in place of the large media image. */
+    const icon = window.ACTM_APP_ICONS ? window.ACTM_APP_ICONS.img(product, "product-app-icon", 52) : "";
+    const textOnly = !product.image || icon ? " product-card--text-only" : "";
+
+    if (icon) {
+      return (
+        '<article class="product-card product-card--app-icon' +
+        compact +
+        textOnly +
+        '" data-product-id="' +
+        escapeHtml(product.id) +
+        '">' +
+        '<div class="product-card-head">' +
+        icon +
+        '<div class="product-card-head-text">' +
+        statusBadge(product.status) +
+        typeLabel +
+        "<h3>" +
+        title +
+        "</h3>" +
+        "</div></div>" +
+        '<div class="product-card-body"><div class="product-copy">' +
+        price +
+        tagline +
+        '<p class="product-desc">' +
+        desc +
+        "</p>" +
+        note +
+        renderActions(product) +
+        "</div></div></article>"
+      );
+    }
 
     return (
       '<article class="product-card' +
