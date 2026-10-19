@@ -8,7 +8,7 @@
  * Sections: 1-9 core flow (rolling start: Day 1 = the day setup is finished), 10 rolling-start rules + local time zone,
  *   11 rolling start from any date (after Christmas, old saved data, new round, copy scan), 12 Spanish (EN/ES key parity, switch,
  *   390px overflow), 13 Consumer Health Data Privacy Policy page (/privacy/consumer-health-data/, links, sitemap),
- *   14 bold negligence release, 15 protected days = make-up days after Day 30, 16 no GA on holiday pages / checkout path,
+ *   14 bold negligence release in Terms + shared consent design on the setup step, 15 protected days = make-up days after Day 30, 16 no GA on holiday pages / checkout path,
  *   17 Notify-me unchecked opt-in (FormSubmit stubbed).
  * Date override: CONFIG.allowDateOverride is false in the shipped app. Tests that need ?date= call
  * newPage(..., { dateOverride: true }), which intercepts js/config.js in that test browser only.
@@ -18,6 +18,7 @@ import { readFileSync, existsSync, mkdirSync, readdirSync, statSync } from "fs";
 import { join, extname } from "path";
 import { fileURLToPath } from "url";
 import { chromium } from "playwright";
+import { createHash } from "crypto";
 
 const appDir = join(fileURLToPath(import.meta.url), "..", "..");
 const siteRoot = join(appDir, "..", "..");
@@ -313,8 +314,8 @@ if (run(7)) {
   await page.goto(BASE + "index.html#/moves").catch(() => {});
   await page.waitForSelector(".move-card", { timeout: 15000 }).catch(() => {});
   check("offline navigation works (Moves)", (await page.locator(".move-card").count()) > 20);
-  const cached = await page.evaluate(async () => { const keys = await caches.keys(); const c = await caches.open("holiday-30-v7"); return { keys, urls: (await c.keys()).map((r) => new URL(r.url).pathname) }; });
-  check("service worker cache is holiday-30-v7", cached.keys.includes("holiday-30-v7"), cached.keys.join(","));
+  const cached = await page.evaluate(async () => { const keys = await caches.keys(); const c = await caches.open("holiday-30-v8"); return { keys, urls: (await c.keys()).map((r) => new URL(r.url).pathname) }; });
+  check("service worker cache is holiday-30-v8", cached.keys.includes("holiday-30-v8"), cached.keys.join(","));
   check("fonts are in the offline cache", ["anton-v27-latin-400", "lato-v25-latin-400", "lato-v25-latin-700", "lato-v25-latin-900"].every((f) => cached.urls.some((u) => u.endsWith(`/fonts/${f}.woff2`))));
   await ctx.close();
 }
@@ -353,7 +354,7 @@ if (run(9)) {
   await page.goto(BASE + "index.html#/legal/refund");
   await page.waitForSelector("#legal-refund");
   const refundText = await page.textContent("#legal-refund");
-  check("refund: approved 3-day wording shown exactly", refundText.includes("You can request a full refund within 3 days (72 hours) of purchase by emailing coachsalimheyaime@gmail.com. After that, all sales are final. Start your 30 days whenever you like. You can begin a new 30-day round as often as you want for the rest of your 12-month Access Period. Gift purchases: the buyer can request a full refund within 3 days of purchase, as long as the recipient hasn't redeemed the access code. Refunds go to the original payment method."));
+  check("refund: approved 3-day wording shown exactly", refundText.includes("You can request a full refund within 3 days (72 hours) of purchase by emailing coachsalimheyaime@gmail.com. After that, all sales are final, except where the law requires otherwise. Start your 30 days whenever you like. You can begin a new 30-day round as often as you want for the rest of your 12-month Access Period. Gift purchases: the buyer can request a full refund within 3 days of purchase, as long as the recipient hasn't redeemed the access code. Refunds go to the original payment method."));
   check("refund screen shows Attorney section C (refund ends access, dispute suspends) and the redemption-flow gift paragraph", refundText.includes("When a refund is issued, access ends right away and any sign-in links stop working.") && refundText.includes("access is suspended while the dispute is open") && refundText.includes("we email the gift code to the buyer") && !refundText.includes("["));
   check("refund: no PENDING tag on the refund window", !S.legal.refund.find(([h]) => h === "Refunds")[1].includes("PENDING"));
   check("refund: old 7-day / Dec 1 window gone", !/7 days|whichever is later|activat/i.test(JSON.stringify(S.legal)));
@@ -772,7 +773,7 @@ if (run(13)) {
   await ctx.close();
 }
 
-// 14. Bold release: the negligence release renders in bold caps in the Terms and in the setup checkbox (EN + ES)
+// 14. Bold release in the Terms (EN + ES) + setup consent in the shared design (bold short label, full sentence always visible, record)
 if (run(14)) {
   for (const [l, SS] of [["en-US", (await import(new URL("../js/strings.en.js", import.meta.url).href)).S], ["es-MX", (await import(new URL("../js/strings.es.js", import.meta.url).href)).S]]) {
     const caps = SS.legal.terms[3][1].match(/[A-ZÁÉÍÓÚÑÜ][A-ZÁÉÍÓÚÑÜ0-9 ,.'\-]{24,}\./)[0];
@@ -792,10 +793,30 @@ if (run(14)) {
     await page.click("#setup-next"); await page.click("#setup-next"); await page.click("#setup-next");
     await page.waitForSelector("#terms-label");
     const lab = await page.$eval("#terms-label", (e) => [e.tagName, e.textContent, getComputedStyle(e).fontWeight, e.children.length]);
-    check(`[${l}] setup checkbox label is bold, plain text, with NEGLIGENCIA/NEGLIGENCE of the LLC in caps`, lab[0] === "STRONG" && lab[1] === SS.setup.termsLabel && Number(lab[2]) >= 700 && lab[3] === 0 && (l === "en-US" ? lab[1].includes("NEGLIGENCE of Coach Salim Heyaime LLC") : lab[1].includes("NEGLIGENCIA de Coach Salim Heyaime LLC")));
+    const EXP = l === "en-US"
+      ? { label: "I agree to the Terms, Health and Safety.", ack: "I am 18 or older. I have read the Health and safety information, and I agree to the App Terms, including the Assumption of Risk and the Release of Liability, which includes claims based on negligence.", links: [["Health and safety information", "#/legal/safety"], ["App Terms", "#/legal/terms"]] }
+      : { label: "Acepto los Términos y la información de Salud y seguridad.", ack: "Tengo 18 años o más. Leí la información de Salud y seguridad y acepto los Términos de las apps, incluidas la Asunción de riesgos y la Exoneración de responsabilidad, que incluye reclamos por negligencia.", links: [["Salud y seguridad", "#/legal/safety"], ["Términos de las apps", "#/legal/terms"]] };
+    check(`[${l}] consent: bold short label (approved text)`, lab[0] === "STRONG" && lab[1] === EXP.label && SS.setup.ackLabel === EXP.label && Number(lab[2]) >= 700 && lab[3] === 0, JSON.stringify(lab));
+    const cs = await page.evaluate(() => {
+      const box = document.getElementById("terms-ok"), lb = box.closest("label"), sent = document.getElementById("terms-sentence"), r = sent.getBoundingClientRect();
+      return { checked: box.checked, inLabel: !!lb && lb.contains(sent) && lb.contains(document.getElementById("terms-label")), visible: r.height > 0 && getComputedStyle(sent).display !== "none" && !sent.closest("details"), text: sent.textContent, weight: getComputedStyle(sent).fontWeight, links: [...sent.querySelectorAll("a")].map((a) => [a.textContent, a.getAttribute("href"), a.getAttribute("target")]) };
+    });
+    check(`[${l}] consent: box starts unticked`, cs.checked === false);
+    check(`[${l}] consent: full sentence always visible, inside the label, normal weight (approved text)`, cs.inLabel && cs.visible && cs.text === EXP.ack && SS.setup.ack === EXP.ack && Number(cs.weight) < 700, JSON.stringify(cs));
+    check(`[${l}] consent: sentence links the in-app Health and safety and App Terms sections (same tab)`, JSON.stringify(cs.links) === JSON.stringify(EXP.links.map(([a, b]) => [a, b, null])), JSON.stringify(cs.links));
+    check(`[${l}] consent: old single-line label is gone`, !("termsLabel" in SS.setup) && !(await page.content()).includes("NEGLIGEN"));
     const o = await overflowOn(page); check(`[${l}] setup terms step fits 390px`, o.length === 0, o.slice(0, 3).join(" | "));
     await page.evaluate(() => document.getElementById("terms-label").scrollIntoView({ block: "center" }));
     if (SHOTS) await page.screenshot({ path: join(SHOTS, `setup-bold-release-${l === "en-US" ? "en" : "es"}-390.png`) });
+    if (process.env.CONSENT_SHOTS) { await page.evaluate(() => document.getElementById("terms-label").scrollIntoView({ block: "center" })); await page.screenshot({ path: join(process.env.CONSENT_SHOTS, `consent-holiday-${l === "en-US" ? "en" : "es"}-390.png`) }); }
+    await page.click("#setup-next");
+    check(`[${l}] consent: Finish blocked until the box is ticked`, await page.isVisible("#setup-err"));
+    await page.check("#terms-ok"); await page.click("#setup-next"); await page.waitForSelector(".day-head");
+    const rec = await page.evaluate(() => ({ ls: JSON.parse(localStorage.getItem("actm.healthAck.holiday-challenge") || "null"), st: window.__HC.state.setup, text: window.__HC.consentText(), v: window.__HC.consentVersion }));
+    const want = createHash("sha256").update(rec.text).digest("hex");
+    check(`[${l}] consent record stored: version, SHA-256 fingerprint, language, label, sentence, ISO time`, !!rec.ls && rec.ls.version === rec.v && /^hc-consent-/.test(rec.v) && rec.ls.textHash === want && rec.ls.lang === (l === "en-US" ? "en" : "es") && rec.ls.label === EXP.label && rec.ls.accepted === EXP.ack && /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(rec.ls.at), JSON.stringify(rec.ls));
+    check(`[${l}] consent record also kept with the setup (terms, termsAt match)`, rec.st.terms === true && JSON.stringify(rec.st.consent) === JSON.stringify(rec.ls) && rec.st.termsAt === rec.ls.at);
+    check(`[${l}] consent fingerprint covers the label and sentence`, rec.text.includes(EXP.label) && rec.text.includes(EXP.ack));
     await ctx.close();
   }
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -981,7 +1002,7 @@ if (run(17)) {
   check("no absolute http(s) URLs loaded by app code", !/(src|href)\s*=\s*["']https?:|url\(\s*["']?https?:|import\s*\(?\s*["']https?:|fetch\(\s*["']https?:/i.test(all));
   check("shipped config has allowDateOverride: false", /allowDateOverride:\s*false/.test(configSrc));
   const sw = readFileSync(join(appDir, "sw.js"), "utf8");
-  check("sw.js cache name is holiday-30-v7", /const CACHE = "holiday-30-v7"/.test(sw));
+  check("sw.js cache name is holiday-30-v8", /const CACHE = "holiday-30-v8"/.test(sw));
   const assets = [...sw.match(/const ASSETS = \[([\s\S]*?)\];/)[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
   const runtime = [];
   const walk3 = (d, rel = "") => readdirSync(d).forEach((f) => { const p = join(d, f); const r = rel + f; if (["node_modules", "tests"].includes(f) || f.startsWith(".")) return; statSync(p).isDirectory() ? walk3(p, r + "/") : /\.(html|css|js|webmanifest|png|svg|woff2)$/.test(f) && f !== "sw.js" && runtime.push("./" + r); });

@@ -90,7 +90,11 @@ export const S = {
     termsTitle: "Safety and terms",
     termsLead: "Please read the Safety section, the Terms (including the Assumption of Risk and Release), the Refund policy and the Privacy policy before Day 1.",
     readSafety: "Read Safety", readTerms: "Read the Terms", readPrivacy: "Privacy", readRefund: "Refund policy",
-    termsLabel: "I am 18 or older. I have read the Safety section and agree to the Terms, including the Assumption of Risk and the Release of Liability, which covers claims based on the NEGLIGENCE of Coach Salim Heyaime LLC.",
+    // Consent: same design and wording as every other app (shared screen hs-2026-10-18.4). The links open the
+    // in-app Safety and Terms sections.
+    ackLabel: "I agree to the Terms, Health and Safety.",
+    ack: "I am 18 or older. I have read the Health and safety information, and I agree to the App Terms, including the Assumption of Risk and the Release of Liability, which includes claims based on negligence.",
+    ackLinks: ["Health and safety information", "App Terms"],
     termsRequired: "Please tick the box to continue.",
     ageRequired: "Please confirm you are 18 or older.",
     ackRequired: "Please confirm you understand.",
@@ -327,7 +331,7 @@ export const S = {
     refundTitle: "Refund policy",
     refund: [
       ["One-time purchase", "A Challenge to Move: 30 Days Before X-mas Challenge is a one-time purchase. No subscription, no auto-renew, no recurring charges."],
-      ["Refunds", "You can request a full refund within 3 days (72 hours) of purchase by emailing coachsalimheyaime@gmail.com. After that, all sales are final. Start your 30 days whenever you like. You can begin a new 30-day round as often as you want for the rest of your 12-month Access Period. Gift purchases: the buyer can request a full refund within 3 days of purchase, as long as the recipient hasn't redeemed the access code. Refunds go to the original payment method."],
+      ["Refunds", "You can request a full refund within 3 days (72 hours) of purchase by emailing coachsalimheyaime@gmail.com. After that, all sales are final, except where the law requires otherwise. Start your 30 days whenever you like. You can begin a new 30-day round as often as you want for the rest of your 12-month Access Period. Gift purchases: the buyer can request a full refund within 3 days of purchase, as long as the recipient hasn't redeemed the access code. Refunds go to the original payment method."],
       ["Refunds and access", "When a refund is issued, access ends right away and any sign-in links stop working. Gifts can be refunded within 3 days of purchase only if the gift code has not been redeemed; once redeemed, the gift is non-refundable. If a payment is disputed or charged back, access is suspended while the dispute is open and ends if the dispute is decided in the payer's favor. Nothing here limits any refund right you have under the law."],
       ["How to ask", "Email the address below from, or including, the email you used at checkout, and tell us you'd like a refund. Your bank or card issuer may take several business days to post it."],
       ["Gift enrollments", "A gift enrollment is a seat in the challenge for one adult recipient (18 or older). After the purchase, we email the gift code to the buyer, who gives it to the recipient. The recipient redeems the code with their own email address, and their 12 months of access start on the day they redeem it. The code can be redeemed for 5 years from the date of purchase and works only once. The buyer can get a full refund within 3 days (72 hours) of purchase, only if the code hasn't been redeemed. A gift enrollment is not a dollar-value gift card and can't be exchanged for cash, except where the law requires otherwise."],

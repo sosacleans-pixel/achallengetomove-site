@@ -488,6 +488,33 @@ function viewLegal(which) {
   main.innerHTML = `${back}<article class="card legal" id="legal-${esc(which || "disclaimer")}">${body}${foot}</article>`;
 }
 
+/* ---------- consent (same design as the shared Health and safety screen in every app) ---------- */
+const CONSENT_VERSION = "hc-consent-2026-10-18.1";
+const CONSENT_KEY = "actm.healthAck.holiday-challenge";
+// The sentence links the in-app Safety and Terms sections (same tab, hash routes; the setup draft is kept).
+function consentSentence(St) {
+  let out = esc(St.ack);
+  [[St.ackLinks[0], "#/legal/safety"], [St.ackLinks[1], "#/legal/terms"]].forEach(([label, href]) => {
+    out = out.replace(esc(label), `<a href="${href}" data-hs-doc>${esc(label)}</a>`);
+  });
+  return out;
+}
+// Everything on the consent step the person agrees to: title, lead, disclaimer, short label, full sentence.
+function consentText() {
+  const St = S.setup;
+  return [St.termsTitle, St.termsLead, ...S.legal.disclaimer, St.ackLabel, St.ack].join("\n\n");
+}
+async function sha256Hex(text) {
+  try {
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+    return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  } catch (e) { return null; }
+}
+async function consentRecord() {
+  const St = S.setup;
+  return { version: CONSENT_VERSION, textHash: await sha256Hex(consentText()), lang, label: St.ackLabel, accepted: St.ack, at: new Date().toISOString() };
+}
+
 /* ---------- setup ---------- */
 function newDraft() {
   return { age: false, readiness: [], gentleAck: false, level: "b", pu: null, puSkip: false, equipment: "none", busyDays: [], reminderTime: "07:00", terms: false };
@@ -519,7 +546,7 @@ function viewSetup(step) {
   if (step === 5) body = `<h1 class="page-title">${esc(St.termsTitle)}</h1><form id="setup-form"><div class="card"><p>${esc(St.termsLead)}</p>
       ${S.legal.disclaimer.map((p) => `<p class="small">${esc(p)}</p>`).join("")}
       <p class="legal-links small"><a href="#/legal/safety">${esc(St.readSafety)}</a> · <a href="#/legal/terms">${esc(St.readTerms)}</a> · <a href="#/legal/privacy">${esc(St.readPrivacy)}</a> · <a href="#/legal/refund">${esc(St.readRefund)}</a></p>
-      <label class="check-line big"><input type="checkbox" id="terms-ok" ${draft.terms ? "checked" : ""}> <strong id="terms-label">${esc(St.termsLabel)}</strong></label>
+      <label class="hs-ack-check" for="terms-ok"><input type="checkbox" id="terms-ok" aria-describedby="terms-sentence" ${draft.terms ? "checked" : ""}> <span><strong class="hs-ack-label" id="terms-label">${esc(St.ackLabel)}</strong><span class="hs-ack-sentence" id="terms-sentence">${consentSentence(St)}</span></span></label>
       <p class="muted small">${esc(S.welcome.purchase)}</p></div>${navBtns(St.finish)}</form>`;
   main.innerHTML = head + body;
   const err = (m) => { const e = $("#setup-err"); e.textContent = m; e.classList.remove("hidden"); };
@@ -541,7 +568,7 @@ function viewSetup(step) {
     $("#lvl-now").addEventListener("change", (e) => { draft.level = e.target.value; $("#lvl-cap").textContent = S.levelCap[draft.level]; });
   }
   if (step === 4) $$("input[name=eq]").forEach((r) => r.addEventListener("change", () => $$(".mode-card").forEach((c) => c.classList.toggle("sel", c.contains(r) ? r.checked : false))));
-  $("#setup-form").addEventListener("submit", (e) => {
+  $("#setup-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     if (step === 1) { draft.age = $("#age-ok").checked; if (!draft.age) return err(St.ageRequired); }
     if (step === 2) {
@@ -552,12 +579,15 @@ function viewSetup(step) {
     if (step === 4) { draft.equipment = ($("input[name=eq]:checked") || {}).value || "none"; draft.busyDays = $$("input[name=busy]:checked").map((x) => Number(x.value)); draft.reminderTime = $("#rem-time").value || "07:00"; }
     if (step === 5) {
       draft.terms = $("#terms-ok").checked; if (!draft.terms) return err(St.termsRequired);
+      // Kept on this device: version, SHA-256 of the consent text, language, short label, full sentence, ISO time.
+      const consent = await consentRecord();
+      try { localStorage.setItem(CONSENT_KEY, JSON.stringify(consent)); } catch (err2) { /* private mode */ }
       const s = defaultState();
       const today = dateKey(now());
       s.setupDone = true;
       // Rolling start: Day 1 = today, the local date setup is finished (config.js). Stored on this device only.
       s.startDate = today; s.joinedDate = today;
-      s.setup = { age: true, readiness: draft.readiness.slice(), gentleAck: draft.gentleAck, terms: true, termsAt: new Date().toISOString() };
+      s.setup = { age: true, readiness: draft.readiness.slice(), gentleAck: draft.gentleAck, terms: true, termsAt: consent.at, consent };
       s.level = draft.level; s.equipment = draft.equipment; s.busyDays = draft.busyDays; s.reminderTime = draft.reminderTime;
       if (draft.pu != null || draft.puSkip) s.tests[0] = { pu: draft.pu, puSkipped: draft.puSkip, at: today, note: "setup" };
       s.levelLog.push({ at: today, level: s.level });
@@ -576,4 +606,4 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
   navigator.serviceWorker.register("./sw.js").catch(() => {});
 }
 // Test hook (read-only helpers for automated checks).
-window.__HC = { get state() { return state; }, todayN, buildICS: () => buildICS(state), get lang() { return lang; } };
+window.__HC = { get state() { return state; }, todayN, buildICS: () => buildICS(state), get lang() { return lang; }, consentText, consentVersion: CONSENT_VERSION };

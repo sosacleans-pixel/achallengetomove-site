@@ -10,7 +10,7 @@ export function defaultState() {
     startDate: null,
     joinedDate: null, // same as startDate (kept for older saved data and exports)
     history: [], // earlier rounds (a new round starts with Day 1 = that day; past results are kept here)
-    setup: { age: false, readiness: [], gentleAck: false, terms: false, termsAt: null },
+    setup: { age: false, readiness: [], gentleAck: false, terms: false, termsAt: null, consent: null },
     level: "b",
     equipment: "none",
     busyDays: [],

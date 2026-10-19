@@ -664,3 +664,10 @@ main.app-main:focus { outline: none; }
 /* long Spanish words must wrap instead of overflowing on a 390px screen */
 .app-main, .card, .btn, .tab, .stat span, .badge, .plan-item, .chip, .field span, legend { overflow-wrap: anywhere; hyphens: auto; }
 .nowrap { white-space: nowrap; }
+
+/* Consent checkbox: same layout as the shared Health and safety screen (bold short label, full sentence always visible). */
+.hs-ack-check { display: flex; gap: 0.7rem; align-items: flex-start; margin: 0.6rem 0 0.9rem; cursor: pointer; }
+.hs-ack-check input { width: 24px; height: 24px; flex: 0 0 auto; margin-top: 1px; }
+.hs-ack-label { display: block; font-size: 16px; font-weight: 700; }
+.hs-ack-sentence { display: block; font-size: 15px; font-weight: 400; line-height: 1.5; margin-top: 0.3rem; }
+.hs-ack-sentence a { text-decoration: underline; }
