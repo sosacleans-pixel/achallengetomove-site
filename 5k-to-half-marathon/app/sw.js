@@ -1,4 +1,4 @@
-const CACHE = "5k-to-half-marathon-v1";
+const CACHE = "5k-to-half-marathon-v2";
 const ASSETS = [
   "./",
   "./index.html",

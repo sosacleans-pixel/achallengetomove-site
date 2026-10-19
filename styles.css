@@ -847,6 +847,28 @@ section.holiday-teaser {
   margin-top: 0.4rem;
 }
 
+/* Terms line (EN/ES) directly under every buy button: links App Terms and Health and safety. */
+.buy-agree {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.buy-agree small {
+  display: block;
+  font-size: inherit;
+}
+
+.buy-agree small + small {
+  margin-top: 0.2rem;
+}
+
+.buy-agree + .stripe-badge {
+  margin-top: 0.5rem;
+}
+
 /* Refund line shown under every buy button. */
 .buy-refund {
   margin: 0.6rem 0 0;
@@ -1525,6 +1547,11 @@ section.holiday-teaser {
   font-size: 0.85rem;
   border-top: 1px solid var(--line);
   padding-top: 1rem;
+}
+
+.product-page-disclaimer small + small {
+  display: block;
+  margin-top: 0.35rem;
 }
 
 /* ---------- Gear page ---------- */

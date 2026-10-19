@@ -212,7 +212,7 @@
         "rpe": "Strides",
         "label": "Strides",
         "talk_test": "n/a (too short to matter)",
-        "used_for": "15-20 s smooth, quick, relaxed running building to about RPE 7-8 (fast but never a sprint), then walk or jog 60-90 s until fully recovered. Improves form and leg speed without fatigue."
+        "used_for": "15-20 s smooth, quick, relaxed running building to about RPE 7-8 (fast but never a sprint), then walk or jog 60-90 s until fully recovered. Practice for relaxed form and leg speed."
       }
     ],
     "notes": [
@@ -222,10 +222,10 @@
     ]
   },
   "phases": {
-    "Base": "Build the habit and durability: mostly easy running, short controlled surges (fartlek), intro hills and strides.",
+    "Base": "Build the habit: mostly easy running, short controlled surges (fartlek), intro hills and strides.",
     "Build": "Extend steady and tempo work, longer hills, longer long runs.",
     "Peak": "Practice half-marathon effort, longest long runs, strength held at a maintenance dose.",
-    "Taper": "Cut volume about 25-40% while keeping a little half-marathon effort so legs feel fresh on race day."
+    "Taper": "Cut volume about 25-40% while keeping a little half-marathon effort before race day."
   },
   "plans": [
     {
