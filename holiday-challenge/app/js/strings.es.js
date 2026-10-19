@@ -193,7 +193,7 @@ export const S = {
     lead: "El Día 1 es tu fecha de inicio y cada semana son 7 días a partir de ahí. ⚑ = día flexible.",
     window: (a, b) => `Tus 30 días: del ${a} al ${b}`,
     previewWindow: (a, b) => `Si empiezas hoy: del ${a} al ${b}`,
-    range: (a, b) => `${a} al ${b}`,
+    range: (a, b) => `del ${a} al ${b}`,
     today: "Hoy",
     status: { core: "Principal ✓", floor: "Mínima ✓", protected: "Protegido", missed: "Día de gracia usado", open: "", future: "" },
   },
