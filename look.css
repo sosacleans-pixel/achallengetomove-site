@@ -217,114 +217,169 @@ section.journey {
 }
 
 /* ==========================================================================
-   LOOK A (white): Bold energy on a white page. Ink text, coral / orange / sun accents.
-   Text contrast (WCAG 2.x, measured): ink #17131f on #fff 18.27, on paper #fffaf6 17.62,
-   on blush #fff3ec 16.78; muted #5b4a46 on #fff 8.36, on blush 7.67; link coral #b02a14
-   on #fff 6.59, on paper 6.36, on blush 6.05, and 5.07 even where two glows overlap at full
-   strength (#ffdcb4); ink on coral #ff5a3c 5.90, on orange #ff8a1f 7.75, on sun #ffd447
-   12.84; sun on ink 12.84; white on ink 18.27.
-   Bright coral, orange and sun are never used as text on white (decoration only).
+   LOOK A (blue and gray, flat): Bold energy on near-black ink. Electric blue + cool slate grays.
+   No orange, coral or yellow. Text contrast (WCAG 2.x, measured):
+   on ink #0d1117: white 18.92, slate #cbd5e1 12.75, blue #60a5fa 7.44, pale blue #93c5fd 10.49;
+   on light #f1f5f9: ink 17.27, slate #475569 6.92, link blue #1d4ed8 6.12 (7.58 / 6.70 on white);
+   white on button blue #2563eb 5.17, on #1d4ed8 6.70; ink on #60a5fa 7.44, on #93c5fd 10.49,
+   on #bfdbfe 13.32, on #cbd5e1 12.75, on #e2e8f0 15.35; #e2e8f0 on slate #334155 8.40.
    ========================================================================== */
 .look-a {
-  --ink: #17131f;
-  --coral: #ff5a3c;
-  --coral-deep: #e8432a; /* non-text accents on white (3.99:1, above the 3:1 graphics minimum) */
-  --orange: #ff8a1f;
-  --sun: #ffd447;
-  --blush: #fff3ec;
-  --link: #b02a14; /* coral for text on white, paper, blush and the glows */
-  --grad: linear-gradient(100deg, var(--coral) 0%, var(--orange) 100%);
-
-  /* Base tokens remapped so every existing component picks up the white palette. */
-  --yellow: var(--coral-deep);
-  --charcoal: var(--ink);
-  --rust: var(--link);
-  --cream: var(--blush);
-  --paper: #fffaf6;
-  --muted: #5b4a46;
-  --line: #f3d6c8;
-  background: #fff;
+  --ink: #0d1117;
+  --on-ink: #ffffff;
+  --on-ink-muted: #cbd5e1;
+  --accent-on-ink: #60a5fa;
+  --link: #1d4ed8;
+  --light-bg: #f1f5f9;
+  --muted-light: #475569;
+  --line: #d5dce6;
+  --focus: #3b82f6;
+  --line-grad: linear-gradient(90deg, #2563eb, #60a5fa 50%, #94a3b8);
+  --glow-1: rgba(37, 99, 235, 0.35);
+  --glow-2: rgba(148, 163, 184, 0.18);
+  --glow-strip: rgba(37, 99, 235, 0.12);
+  --btn-bg: #2563eb;
+  --btn-fg: #ffffff;
+  --btn-glow: 0 10px 30px -8px rgba(37, 99, 235, 0.75);
+  --card-bg: radial-gradient(circle at 50% 42%, #1a2130 0 48%, #131924 70%, #0f141c 100%);
+  --card-shadow: 0 0 0 1px #263041, 0 18px 44px -14px rgba(37, 99, 235, 0.55);
+  --ring-1: #2563eb;
+  --ring-2: #60a5fa;
+  --ring-3: #cbd5e1;
+  --ring-track: #1e2633;
+  --tick: #475569;
+  --fig-limb: #e2e8f0;
+  --fig-head: #2563eb;
+  --fig-band: #93c5fd;
+  --spark-1: #60a5fa;
+  --spark-2: #94a3b8;
+  --spark-3: #2563eb;
+  --badge7-bg: #0d1117;
+  --badge7-stroke: #2563eb;
+  --badge7-num: #ffffff;
+  --badge7-unit: #93c5fd;
+  --chip1-bg: #2563eb;
+  --chip1-fg: #ffffff;
+  --chip2-bg: #e2e8f0;
+  --chip2-fg: #0d1117;
+  --tile-bg: rgba(255, 255, 255, 0.05);
+  --tile-border: rgba(148, 163, 184, 0.25);
+  --badge-live-bg: #93c5fd;
+  --badge-live-fg: #0d1117;
+  --badge-soon-bg: #334155;
+  --badge-soon-fg: #e2e8f0;
+  --art-ring: rgba(96, 165, 250, 0.5);
+  --ms-ring-c: rgba(37, 99, 235, 0.3);
+  --bar-track: #dbe3ee;
+  --bar-fill: linear-gradient(90deg, #1d4ed8, #60a5fa 55%, #94a3b8);
+  --dot-1: #1d4ed8;
+  --dot-1-fg: #ffffff;
+  --dot-1-edge: #1d4ed8;
+  --dot-2: #60a5fa;
+  --dot-2-fg: #0d1117;
+  --dot-2-edge: #60a5fa;
+  --dot-3: #cbd5e1;
+  --dot-3-fg: #0d1117;
+  --dot-3-edge: #cbd5e1;
+  --dot-ms-fg: #93c5fd;
+  --card-top: #2563eb;
+  --card-hover: rgba(37, 99, 235, 0.45);
+  --featured-bg: linear-gradient(120deg, #fff 55%, #eef3fb);
+  --pill-bg: #bfdbfe;
+  --notify-bg: #1d4ed8;
+  --notify-fg: #ffffff;
 }
 
-/* Header: white with a coral to orange underline */
+/* Base tokens remapped so every existing component picks up the palette. */
+.look-a {
+  --yellow: var(--accent-on-ink);
+  --charcoal: var(--ink);
+  --rust: var(--link);
+  --cream: var(--light-bg);
+  --paper: #f8fafc;
+  --muted: var(--muted-light);
+  background: var(--light-bg);
+}
+
+.look-a .btn:focus-visible,
+.look-a a:focus-visible,
+.look-a button:focus-visible,
+.look-a input:focus-visible {
+  outline-color: var(--focus);
+}
+
+/* Header: ink with an accent underline */
 .look-a .site-header {
   background:
-    linear-gradient(#fff, #fff) padding-box,
-    var(--grad) border-box;
-  color: var(--ink);
+    linear-gradient(var(--ink), var(--ink)) padding-box,
+    var(--line-grad) border-box;
   border-bottom: 4px solid transparent;
 }
 
 .look-a .brand-name {
-  color: var(--ink);
+  color: var(--on-ink);
 }
 
-.look-a .brand-tag {
-  color: var(--muted);
-}
-
+.look-a .brand-tag,
 .look-a .nav-link {
-  color: var(--ink);
+  color: var(--on-ink-muted);
 }
 
 .look-a .nav-link:hover,
 .look-a .nav-link:focus-visible {
-  color: var(--link);
+  color: var(--accent-on-ink);
 }
 
 .look-a .nav-cta {
-  color: var(--ink);
-  border-color: var(--coral-deep);
+  color: var(--accent-on-ink);
+  border-color: var(--accent-on-ink);
 }
 
 .look-a .nav-cta:hover,
 .look-a .nav-cta:focus-visible {
-  background: var(--grad);
-  color: var(--ink);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  border-color: transparent;
 }
 
-/* Hero: white, soft coral and orange glows (glows stay lighter than #ffe9e1 behind text) */
+/* Hero: dark with cool glows */
 .look-a .hero {
   background:
-    radial-gradient(56rem 28rem at 92% -12%, rgba(255, 90, 60, 0.13), transparent 62%),
-    radial-gradient(40rem 24rem at -12% 112%, rgba(255, 138, 31, 0.12), transparent 60%),
-    #fff;
-  color: var(--ink);
+    radial-gradient(60rem 30rem at 85% -10%, var(--glow-1), transparent 60%),
+    radial-gradient(40rem 26rem at -10% 110%, var(--glow-2), transparent 60%),
+    var(--ink);
+  color: var(--on-ink);
   border-bottom: 0;
   position: relative;
   overflow: hidden;
 }
 
 .look-a .hero-eyebrow {
-  color: var(--link);
+  color: var(--accent-on-ink);
 }
 
 .look-a .hero h1,
 .look-a .hero-subhead {
-  color: var(--ink);
+  color: var(--on-ink);
 }
 
 .look-a .hero-brand-statement {
-  color: var(--muted);
+  color: var(--on-ink-muted);
 }
 
 .look-a .hero .text-link {
-  color: var(--link);
+  color: var(--accent-on-ink);
 }
 
 .look-a .hero .btn-primary {
   border-color: transparent;
-  box-shadow: 0 10px 28px -10px rgba(255, 90, 60, 0.75);
+  box-shadow: var(--btn-glow);
 }
 
-.look-a .hero .btn-primary:hover {
-  box-shadow: 0 14px 32px -10px rgba(255, 138, 31, 0.9);
-}
-
-/* Buttons: coral to orange, ink text (5.9:1 or better) */
+/* Buttons */
 .look-a .btn-primary {
-  background: var(--grad);
-  color: var(--ink);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
   border-color: var(--ink);
 }
 
@@ -335,21 +390,23 @@ section.journey {
 .look-a .btn-secondary {
   border-color: var(--ink);
   background: #fff;
+  color: var(--ink);
 }
 
 .look-a .btn-secondary:hover {
-  background: var(--blush);
+  background: var(--light-bg);
 }
 
 .look-a .store-teaser .btn-primary,
-.look-a .holiday-teaser .btn-primary {
+.look-a .holiday-teaser .btn-primary,
+.look-a .hero .btn-primary:hover {
   border-color: transparent;
-  background: var(--grad);
-  color: var(--ink);
-  box-shadow: 0 10px 26px -12px rgba(255, 90, 60, 0.8);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  box-shadow: var(--btn-glow);
 }
 
-/* Hero visual: illustrated 7-minute timer ring with a bodyweight jumping-jack figure (no equipment) */
+/* Hero visual: code-drawn 7-minute timer ring with a jumping-jack figure (no equipment) */
 .look-a .hero-visual--move {
   height: 196px;
 }
@@ -360,8 +417,8 @@ section.journey {
   aspect-ratio: 1;
   margin: 0 auto;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 42%, #fff 0 48%, var(--blush) 70%, #ffe6da 100%);
-  box-shadow: 0 18px 40px -18px rgba(255, 90, 60, 0.55), 0 0 0 1px var(--line);
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
 }
 
 .look-a .move-svg {
@@ -371,14 +428,31 @@ section.journey {
   overflow: visible;
 }
 
+.look-a .mv-s1 { stop-color: var(--ring-1); }
+.look-a .mv-s2 { stop-color: var(--ring-2); }
+.look-a .mv-s3 { stop-color: var(--ring-3); }
+.look-a .mv-h0 { stop-color: #fff; stop-opacity: 0; }
+.look-a .mv-h1 { stop-color: #fff; stop-opacity: var(--sheen, 0); }
+
 .look-a .mv-track {
   fill: none;
-  stroke: #fbe0d4;
+  stroke: var(--ring-track);
   stroke-width: 18;
 }
 
+.look-a .mv-sheen {
+  fill: none;
+  stroke: url(#mvSheen);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 260 820;
+  transform: rotate(-150deg);
+  transform-origin: 200px 200px;
+  display: var(--sheen-display, none);
+}
+
 .look-a .mv-tick {
-  stroke: #f0b9a3;
+  stroke: var(--tick);
   stroke-width: 4;
   stroke-linecap: round;
 }
@@ -396,16 +470,12 @@ section.journey {
 }
 
 @keyframes mv-sweep {
-  from {
-    stroke-dashoffset: 1080.7;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
+  from { stroke-dashoffset: 1080.7; }
+  to { stroke-dashoffset: 0; }
 }
 
 .look-a .mv-shadow {
-  fill: rgba(23, 19, 31, 0.12);
+  fill: rgba(255, 255, 255, 0.1);
   transform-box: fill-box;
   transform-origin: 50% 50%;
   animation: mv-shadow 0.9s ease-in-out infinite;
@@ -413,23 +483,27 @@ section.journey {
 
 .look-a .mv-limb line,
 .look-a .mv-body {
-  stroke: var(--ink);
+  stroke: var(--fig-limb);
   stroke-width: 15;
   stroke-linecap: round;
 }
 
 .look-a .mv-head {
-  fill: var(--coral);
-  stroke: var(--ink);
+  fill: var(--fig-head);
+  stroke: var(--fig-limb);
   stroke-width: 6;
 }
 
 .look-a .mv-band {
   fill: none;
-  stroke: var(--sun);
+  stroke: var(--fig-band);
   stroke-width: 7;
   stroke-linecap: round;
 }
+
+.look-a .mv-spark--1 { fill: var(--spark-1); }
+.look-a .mv-spark--2 { fill: var(--spark-2); }
+.look-a .mv-spark--3 { fill: var(--spark-3); }
 
 .look-a .mv-limb {
   transform-box: fill-box;
@@ -437,49 +511,21 @@ section.journey {
 }
 
 /* Static pose (also the reduced-motion pose): the open star of a jumping jack */
-.look-a .mv-arm--l { transform: rotate(132deg); }
-.look-a .mv-arm--r { transform: rotate(-132deg); }
-.look-a .mv-leg--l { transform: rotate(22deg); }
-.look-a .mv-leg--r { transform: rotate(-22deg); }
-
-.look-a .mv-arm--l { animation: mv-arm-l 0.9s ease-in-out infinite; }
-.look-a .mv-arm--r { animation: mv-arm-r 0.9s ease-in-out infinite; }
-.look-a .mv-leg--l { animation: mv-leg-l 0.9s ease-in-out infinite; }
-.look-a .mv-leg--r { animation: mv-leg-r 0.9s ease-in-out infinite; }
+.look-a .mv-arm--l { transform: rotate(132deg); animation: mv-arm-l 0.9s ease-in-out infinite; }
+.look-a .mv-arm--r { transform: rotate(-132deg); animation: mv-arm-r 0.9s ease-in-out infinite; }
+.look-a .mv-leg--l { transform: rotate(22deg); animation: mv-leg-l 0.9s ease-in-out infinite; }
+.look-a .mv-leg--r { transform: rotate(-22deg); animation: mv-leg-r 0.9s ease-in-out infinite; }
 
 .look-a .mv-fig {
   animation: mv-hop 0.45s ease-in-out infinite alternate;
 }
 
-@keyframes mv-arm-l {
-  0%, 100% { transform: rotate(16deg); }
-  50% { transform: rotate(160deg); }
-}
-
-@keyframes mv-arm-r {
-  0%, 100% { transform: rotate(-16deg); }
-  50% { transform: rotate(-160deg); }
-}
-
-@keyframes mv-leg-l {
-  0%, 100% { transform: rotate(4deg); }
-  50% { transform: rotate(26deg); }
-}
-
-@keyframes mv-leg-r {
-  0%, 100% { transform: rotate(-4deg); }
-  50% { transform: rotate(-26deg); }
-}
-
-@keyframes mv-hop {
-  from { transform: translateY(0); }
-  to { transform: translateY(-10px); }
-}
-
-@keyframes mv-shadow {
-  0%, 100% { transform: scaleX(1); }
-  25%, 75% { transform: scaleX(0.78); }
-}
+@keyframes mv-arm-l { 0%, 100% { transform: rotate(16deg); } 50% { transform: rotate(160deg); } }
+@keyframes mv-arm-r { 0%, 100% { transform: rotate(-16deg); } 50% { transform: rotate(-160deg); } }
+@keyframes mv-leg-l { 0%, 100% { transform: rotate(4deg); } 50% { transform: rotate(26deg); } }
+@keyframes mv-leg-r { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(-26deg); } }
+@keyframes mv-hop { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+@keyframes mv-shadow { 0%, 100% { transform: scaleX(1); } 25%, 75% { transform: scaleX(0.78); } }
 
 .look-a .mv-spark {
   animation: a-bob 2.6s ease-in-out infinite;
@@ -494,23 +540,25 @@ section.journey {
   bottom: -6px;
   width: 64px;
   height: 64px;
-  filter: drop-shadow(0 6px 12px rgba(23, 19, 31, 0.25));
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5));
 }
 
 .look-a .move-ring-bg {
-  fill: var(--ink);
+  fill: var(--badge7-bg);
+  stroke: var(--badge7-stroke, none);
+  stroke-width: 4;
 }
 
 .look-a .move-ring-num {
   font-family: Anton, Impact, sans-serif;
   font-size: 44px;
-  fill: #fff;
+  fill: var(--badge7-num);
 }
 
 .look-a .move-ring-unit {
   font: 900 15px Lato, system-ui, sans-serif;
   letter-spacing: 0.12em;
-  fill: var(--sun);
+  fill: var(--badge7-unit);
 }
 
 .look-a .clip-chip {
@@ -519,12 +567,11 @@ section.journey {
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--ink);
-  background: var(--sun);
-  border: 2px solid var(--ink);
+  color: var(--chip1-fg);
+  background: var(--chip1-bg);
   border-radius: 999px;
-  padding: 0.3rem 0.7rem;
-  box-shadow: 0 8px 18px -8px rgba(23, 19, 31, 0.45);
+  padding: 0.35rem 0.75rem;
+  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.6);
   animation: a-bob 3.2s ease-in-out infinite;
   white-space: nowrap;
 }
@@ -537,14 +584,13 @@ section.journey {
 .look-a .clip-chip--2 {
   left: 0;
   bottom: 14px;
-  background: #fff;
+  color: var(--chip2-fg);
+  background: var(--chip2-bg);
   animation-delay: -1.6s;
 }
 
 @keyframes a-bob {
-  50% {
-    transform: translateY(-6px);
-  }
+  50% { transform: translateY(-6px); }
 }
 
 @media (min-width: 900px) {
@@ -577,122 +623,99 @@ section.journey {
     padding: 0.5rem 1rem;
   }
 
-  .look-a .clip-chip--1 {
-    left: -18px;
-    top: 40px;
-  }
-
-  .look-a .clip-chip--2 {
-    left: -10px;
-    bottom: 60px;
-  }
+  .look-a .clip-chip--1 { left: -18px; top: 40px; }
+  .look-a .clip-chip--2 { left: -10px; bottom: 60px; }
 }
 
 /* Hub strip */
 .look-a .hub-strip {
   border-bottom: 0;
-  color: var(--ink);
-  background: var(--paper);
-  border-top: 1px solid var(--line);
+  background:
+    linear-gradient(180deg, var(--glow-strip), transparent 70%),
+    var(--ink);
 }
 
-.look-a .hub-strip-title {
-  color: var(--ink);
-}
-
-.look-a .hub-tile {
-  background: #fff;
-  border-color: var(--line);
-  box-shadow: 0 6px 18px -14px rgba(23, 19, 31, 0.4);
-}
-
-.look-a .hub-tile-icon {
-  color: var(--coral-deep);
-}
-
+.look-a .hub-strip-title,
 .look-a .hub-tile-label {
-  color: var(--ink);
+  color: var(--on-ink);
 }
 
 .look-a .hub-tile-desc {
-  color: var(--muted);
+  color: var(--on-ink-muted);
+}
+
+.look-a .hub-tile {
+  background: var(--tile-bg);
+  border-color: var(--tile-border);
+}
+
+.look-a .hub-tile-icon {
+  color: var(--accent-on-ink);
 }
 
 .look-a a.hub-tile:hover,
 .look-a a.hub-tile:focus-visible {
   transform: translateY(-3px);
-  border-color: var(--coral-deep);
-  background: #fff;
-  box-shadow: 0 14px 28px -16px rgba(255, 90, 60, 0.6);
+  border-color: var(--accent-on-ink);
 }
 
 /* Badges */
 .look-a .badge-live {
-  background: var(--sun);
-  color: var(--ink);
+  background: var(--badge-live-bg);
+  color: var(--badge-live-fg);
   border-color: var(--ink);
 }
 
 .look-a .badge-soon {
-  background: var(--ink);
-  color: var(--sun);
+  background: var(--badge-soon-bg);
+  color: var(--badge-soon-fg);
 }
 
-/* Holiday teaser: white card with a coral to orange frame */
+.look-a .hub-tile .badge-live {
+  border-color: transparent;
+}
+
+/* Holiday teaser (dark) */
 .look-a section.holiday-teaser {
-  background: #fff;
-  color: var(--ink);
+  background: var(--ink);
+  color: var(--on-ink);
   border-bottom: 0;
-}
-
-.look-a .holiday-teaser-inner {
-  width: calc(100% - 2rem);
-  border: 3px solid transparent;
-  border-radius: 22px;
-  padding: 1.75rem 1.25rem;
-  background:
-    linear-gradient(120deg, #fff 60%, var(--blush)) padding-box,
-    var(--grad) border-box;
-  box-shadow: 0 18px 40px -26px rgba(255, 90, 60, 0.8);
+  border-top: 1px solid var(--tile-border);
 }
 
 .look-a .holiday-teaser::after {
-  background: radial-gradient(circle, rgba(255, 212, 71, 0.35), transparent 70%);
+  background: radial-gradient(circle, var(--glow-1), transparent 70%);
+}
+
+.look-a .holiday-teaser-art {
+  box-shadow: 0 0 0 3px var(--art-ring);
 }
 
 .look-a .holiday-teaser h2,
 .look-a .holiday-teaser-price {
-  color: var(--ink);
+  color: var(--on-ink);
 }
 
 .look-a .holiday-teaser-soon {
-  background: var(--sun);
-  color: var(--ink);
+  background: var(--badge-live-bg);
+  color: var(--badge-live-fg);
 }
 
 .look-a .holiday-teaser-desc {
-  color: var(--muted);
+  color: var(--on-ink-muted);
 }
 
 .look-a .holiday-teaser-es {
-  color: var(--link);
+  color: var(--accent-on-ink);
 }
 
-@media (min-width: 720px) {
-  .look-a .holiday-teaser-inner {
-    padding: 2rem 2.25rem;
-  }
-}
-
-/* Journey strip */
+/* Journey strip (light) */
 .look-a .journey {
-  background: var(--blush);
-  --dot-bg: var(--coral);
-  --dot-fg: var(--ink);
+  background: var(--light-bg);
   --dot-empty-bg: #fff;
-  --dot-empty-fg: var(--muted);
-  --dot-empty-border: #f0c9b8;
-  --ms-ring: rgba(255, 90, 60, 0.28);
+  --dot-empty-fg: var(--muted-light);
+  --dot-empty-border: var(--line);
+  --ms-ring: var(--ms-ring-c);
 }
 
 .look-a .journey-eyebrow {
@@ -700,31 +723,42 @@ section.journey {
 }
 
 .look-a .journey-bar {
-  background: #f6dccf;
+  background: var(--bar-track);
 }
 
 .look-a .journey-bar-fill {
-  background: linear-gradient(90deg, var(--coral), var(--orange), var(--sun));
+  background: var(--bar-fill);
+}
+
+.look-a .journey-day .journey-dot {
+  --dot-bg: var(--dot-1);
+  --dot-fg: var(--dot-1-fg);
+  --dot-border: var(--dot-1-edge);
 }
 
 .look-a .journey-day:nth-child(n + 8) .journey-dot {
-  --dot-bg: var(--orange);
+  --dot-bg: var(--dot-2);
+  --dot-fg: var(--dot-2-fg);
+  --dot-border: var(--dot-2-edge);
 }
 
 .look-a .journey-day:nth-child(n + 15) .journey-dot {
-  --dot-bg: var(--sun);
+  --dot-bg: var(--dot-3);
+  --dot-fg: var(--dot-3-fg);
+  --dot-border: var(--dot-3-edge);
 }
 
 .look-a .journey-day.is-milestone .journey-dot {
   --dot-bg: var(--ink);
-  --dot-fg: var(--sun);
+  --dot-fg: var(--dot-ms-fg);
+  --dot-border: var(--ink);
 }
 
 .look-a .journey-cap {
   color: var(--ink);
 }
 
-/* Programs */
+/* Programs (light) */
 .look-a .programs {
   background: #fff;
 }
@@ -732,67 +766,60 @@ section.journey {
 .look-a .program-card {
   background: #fff;
   border-color: var(--line);
-  border-top: 5px solid var(--coral);
-  box-shadow: 0 8px 24px -14px rgba(23, 19, 31, 0.3);
+  border-top: 5px solid var(--card-top);
+  box-shadow: 0 8px 24px -14px rgba(13, 17, 23, 0.35);
 }
 
 .look-a .program-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 18px 34px -16px rgba(255, 90, 60, 0.5);
+  box-shadow: 0 18px 34px -16px var(--card-hover);
 }
 
 .look-a .program-card--featured {
   border-left: 0;
   border-top-width: 6px;
   border-image: none;
-  background: linear-gradient(120deg, #fff 55%, #fff1e8);
+  background: var(--featured-bg);
 }
 
 .look-a .program-price-pill {
-  background: var(--sun);
+  background: var(--pill-bg);
+  color: var(--ink);
 }
 
 .look-a .program-note {
-  border-left-color: var(--coral);
+  border-left-color: var(--card-top);
 }
 
-/* Book */
-.look-a .book-promo {
-  background: var(--paper);
+/* Book and about (light) */
+.look-a .book-promo,
+.look-a .about {
+  background: var(--light-bg);
 }
 
-/* Store teaser: soft glow on paper */
-.look-a .store-teaser {
-  color: var(--ink);
-  background:
-    radial-gradient(36rem 18rem at 100% 0%, rgba(255, 90, 60, 0.14), transparent 60%),
-    radial-gradient(30rem 16rem at 0% 100%, rgba(255, 212, 71, 0.22), transparent 60%),
-    var(--blush);
-}
-
-.look-a .store-teaser h2 {
-  color: var(--ink);
-}
-
-.look-a .store-teaser p {
-  color: var(--muted);
-}
-
-/* How it works: white cards on white */
+/* Store teaser + how (dark) */
+.look-a .store-teaser,
 .look-a .how {
-  background: #fff;
-  color: var(--ink);
+  background:
+    radial-gradient(40rem 20rem at 100% 0%, var(--glow-1), transparent 60%),
+    var(--ink);
+  color: var(--on-ink);
 }
 
-.look-a .how h2 {
-  color: var(--ink);
+.look-a .store-teaser p,
+.look-a .steps p {
+  color: var(--on-ink-muted);
+}
+
+.look-a .how h2,
+.look-a .store-teaser h2,
+.look-a .steps h3 {
+  color: var(--on-ink);
 }
 
 .look-a .steps li {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-left: 6px solid var(--coral);
-  box-shadow: 0 10px 24px -18px rgba(23, 19, 31, 0.45);
+  background: var(--tile-bg);
+  border-left-color: var(--card-top);
 }
 
 .look-a .step-num {
@@ -801,51 +828,45 @@ section.journey {
   width: 3.1rem;
   height: 3.1rem;
   border-radius: 50%;
-  background: var(--grad);
-  color: var(--ink);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
   font-size: 1.9rem;
   margin-bottom: 0.6rem;
 }
 
-.look-a .steps h3 {
-  color: var(--ink);
-}
-
-.look-a .steps p {
-  color: var(--muted);
-}
-
-/* About */
-.look-a .about {
-  background: var(--paper);
-}
-
 /* Notify */
 .look-a .notify {
-  background: var(--grad);
-}
-
-.look-a .notify-form input::placeholder {
-  color: var(--muted); /* 8.06:1 on the paper input */
-  opacity: 1;
+  background: var(--notify-bg);
+  color: var(--notify-fg);
 }
 
 .look-a .notify .btn-primary {
   background: var(--ink);
   color: #fff;
+  border-color: var(--ink);
 }
 
-/* Footer: paper with a gradient top line */
+.look-a .notify-form input {
+  background: #fff;
+  color: var(--ink);
+}
+
+.look-a .notify-form input::placeholder {
+  color: var(--muted-light);
+  opacity: 1;
+}
+
+/* Footer (dark) */
 .look-a .footer {
   background:
-    linear-gradient(var(--paper), var(--paper)) padding-box,
-    var(--grad) border-box;
+    linear-gradient(var(--ink), var(--ink)) padding-box,
+    var(--line-grad) border-box;
   border-top: 4px solid transparent;
-  color: var(--muted);
+  color: var(--on-ink-muted);
 }
 
 .look-a .footer a {
-  color: var(--link);
+  color: var(--accent-on-ink);
 }
 
 /* ---- Reduced motion: no animation, no reveal, strip shown complete ---- */
