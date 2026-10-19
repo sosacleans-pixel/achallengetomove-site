@@ -1135,7 +1135,7 @@ function renderSettings() {
     <button type="button" class="btn btn-secondary btn-block" id="reset-app">Reset all data</button>
     <div class="card refund-card">
       <h2>Refunds for the 75-Day Challenge</h2>
-      <p>You can request a full refund within 3 days (72 hours) of purchase by emailing <a href="mailto:coachsalimheyaime@gmail.com?subject=Refund+request">coachsalimheyaime@gmail.com</a>. After that, all sales are final. Refunds go to the original payment method.</p>
+      <p>You can request a full refund within 3 days (72 hours) of purchase by emailing <a href="mailto:coachsalimheyaime@gmail.com?subject=Refund+request">coachsalimheyaime@gmail.com</a>. After that, all sales are final, except where the law requires otherwise. Refunds go to the original payment method.</p>
       <p><a href="/purchase-terms/" target="_blank" rel="noopener">Purchase terms</a> · <a href="/health-safety/" target="_blank" rel="noopener">Health and safety</a> · <a href="/purchase-terms/#es" target="_blank" rel="noopener" lang="es" hreflang="es">Términos de compra</a> · <a href="/health-safety/#es" target="_blank" rel="noopener" lang="es" hreflang="es">Salud y seguridad</a></p>
     </div>`;
 }

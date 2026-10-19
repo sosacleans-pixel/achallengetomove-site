@@ -1,4 +1,4 @@
-const CACHE = "wf-plan-cache-v8";
+const CACHE = "wf-plan-cache-v9";
 const ASSETS = [
   "/js/health-ack.js",
   "./icons/icon.svg",

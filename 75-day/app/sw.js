@@ -1,4 +1,4 @@
-const CACHE = "seventy-five-v3";
+const CACHE = "seventy-five-v4";
 const ASSETS = [
   "/js/health-ack.js",
   "./",

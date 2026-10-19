@@ -1163,7 +1163,7 @@ function renderSettings() {
     </div>
     <div class="card refund-card">
       <h2>Refunds for the 30-Day Whole Food Plan</h2>
-      <p>You can request a full refund within 3 days (72 hours) of purchase by emailing <a href="mailto:coachsalimheyaime@gmail.com?subject=Refund+request">coachsalimheyaime@gmail.com</a>. After that, all sales are final. Refunds go to the original payment method.</p>
+      <p>You can request a full refund within 3 days (72 hours) of purchase by emailing <a href="mailto:coachsalimheyaime@gmail.com?subject=Refund+request">coachsalimheyaime@gmail.com</a>. After that, all sales are final, except where the law requires otherwise. Refunds go to the original payment method.</p>
       <p>$9.99 one-time payment. Includes 12 months of access. No subscription.</p>
       <p lang="es">$9.99 pago único. Incluye 12 meses de acceso. Sin suscripción.</p>
       <p>Purchases include 12 months of app access. If you bought before [GATING DATE], your 12 months start on [GATING DATE]. There is no automatic renewal.</p>
