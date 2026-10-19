@@ -217,114 +217,177 @@ section.journey {
 }
 
 /* ==========================================================================
-   LOOK A (white): Bold energy on a white page. Ink text, coral / orange / sun accents.
-   Text contrast (WCAG 2.x, measured): ink #17131f on #fff 18.27, on paper #fffaf6 17.62,
-   on blush #fff3ec 16.78; muted #5b4a46 on #fff 8.36, on blush 7.67; link coral #b02a14
-   on #fff 6.59, on paper 6.36, on blush 6.05, and 5.07 even where two glows overlap at full
-   strength (#ffdcb4); ink on coral #ff5a3c 5.90, on orange #ff8a1f 7.75, on sun #ffd447
-   12.84; sun on ink 12.84; white on ink 18.27.
-   Bright coral, orange and sun are never used as text on white (decoration only).
+   LOOK A (blue and gray metallic): Bold energy on near-black ink. Brushed steel, gunmetal and
+   blue steel gradients with a chrome sheen. No orange, coral or yellow.
+   Text contrast (WCAG 2.x, measured at the WORST gradient stop behind the text):
+   on ink #0b0d11: white 19.45, steel #c3ccd7 11.98, steel blue #9fbff0 10.36;
+   on gunmetal #1a2029 / #222a35 (hero card, tiles): #c3ccd7 10.09, #9fbff0 7.71;
+   on light steel #eef1f5 -> #e4e9ef: ink 15.93, slate #475569 6.21, link blue #1e4fb4 6.07 (7.41 on white);
+   white on blue steel #3c69c9 -> #1d4296: 5.18 or better; ink on chrome #f4f7fa -> #aab5c3: 9.36 or better;
+   ink on brushed steel band #e9edf2 -> #b9c3cf: 10.90 or better; #dbe2ea on gunmetal badge 7.67 or better;
+   ink on dot steel #8fa6c8 7.83, on #c3ccd7 11.98; white on dot blue #2a58bb 6.54.
    ========================================================================== */
 .look-a {
-  --ink: #17131f;
-  --coral: #ff5a3c;
-  --coral-deep: #e8432a; /* non-text accents on white (3.99:1, above the 3:1 graphics minimum) */
-  --orange: #ff8a1f;
-  --sun: #ffd447;
-  --blush: #fff3ec;
-  --link: #b02a14; /* coral for text on white, paper, blush and the glows */
-  --grad: linear-gradient(100deg, var(--coral) 0%, var(--orange) 100%);
-
-  /* Base tokens remapped so every existing component picks up the white palette. */
-  --yellow: var(--coral-deep);
-  --charcoal: var(--ink);
-  --rust: var(--link);
-  --cream: var(--blush);
-  --paper: #fffaf6;
-  --muted: #5b4a46;
-  --line: #f3d6c8;
-  background: #fff;
+  --ink: #0b0d11;
+  --on-ink: #ffffff;
+  --on-ink-muted: #c3ccd7;
+  --accent-on-ink: #9fbff0;
+  --link: #1e4fb4;
+  --light-bg: #eef1f5;
+  --muted-light: #475569;
+  --line: #cfd6df;
+  --focus: #6f9cf0;
+  --chrome: linear-gradient(180deg, #f4f7fa 0%, #d3dae3 45%, #aab5c3 52%, #dfe5ec 100%);
+  --blue-steel: linear-gradient(180deg, #3c69c9 0%, #2a58bb 46%, #1d4296 54%, #2a57b8 100%);
+  --gunmetal: linear-gradient(180deg, #3a434f 0%, #262c35 100%);
+  --line-grad: linear-gradient(90deg, #5b6675, #c9d2dd 30%, #3c69c9 55%, #9aa6b4 80%, #5b6675);
+  --glow-1: rgba(80, 120, 200, 0.28);
+  --glow-2: rgba(190, 200, 215, 0.12);
+  --glow-strip: rgba(140, 160, 190, 0.1);
+  --btn-bg: var(--blue-steel);
+  --btn-fg: #ffffff;
+  --btn-glow: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -2px 0 rgba(0, 0, 0, 0.25), 0 10px 28px -10px rgba(60, 105, 201, 0.8);
+  --card-bg: radial-gradient(circle at 50% 36%, #222a35 0 46%, #1a2029 66%, #0e1117 100%);
+  --card-shadow: 0 0 0 2px #3a4350, inset 0 2px 0 rgba(255, 255, 255, 0.08), 0 18px 44px -14px rgba(60, 105, 201, 0.5);
+  --ring-1: #e8eef6;
+  --ring-2: #7fa3e6;
+  --ring-3: #2a58bb;
+  --ring-track: #232a35;
+  --sheen: 0.6;
+  --sheen-display: inline;
+  --tick: #5b6675;
+  --fig-limb: #dfe5ec;
+  --fig-head: #3c69c9;
+  --fig-band: #c3ccd7;
+  --spark-1: #e8eef6;
+  --spark-2: #7fa3e6;
+  --spark-3: #9aa6b4;
+  --badge7-bg: #0b0d11;
+  --badge7-stroke: url(#mvGrad);
+  --badge7-num: #ffffff;
+  --badge7-unit: #9fbff0;
+  --chip1-bg: var(--blue-steel);
+  --chip1-fg: #ffffff;
+  --chip2-bg: var(--chrome);
+  --chip2-fg: #0b0d11;
+  --tile-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  --tile-border: rgba(195, 204, 215, 0.22);
+  --badge-live-bg: var(--chrome);
+  --badge-live-fg: #0b0d11;
+  --badge-soon-bg: var(--gunmetal);
+  --badge-soon-fg: #dbe2ea;
+  --art-ring: rgba(195, 204, 215, 0.55);
+  --ms-ring-c: rgba(60, 105, 201, 0.3);
+  --bar-track: #d5dbe3;
+  --bar-fill: linear-gradient(90deg, #1d4296, #5a86dc 45%, #c9d2dd 75%, #8d99a8);
+  --dot-1: linear-gradient(180deg, #2a58bb, #2a58bb);
+  --dot-1-fg: #ffffff;
+  --dot-1-edge: #1d4296;
+  --dot-2: linear-gradient(180deg, #a9bcd8, #8fa6c8);
+  --dot-2-fg: #0b0d11;
+  --dot-2-edge: #7d93b3;
+  --dot-3: linear-gradient(180deg, #e6ebf1, #c3ccd7);
+  --dot-3-fg: #0b0d11;
+  --dot-3-edge: #aab5c3;
+  --dot-ms-fg: #9fbff0;
+  --card-top: #3c69c9;
+  --card-hover: rgba(60, 105, 201, 0.45);
+  --featured-bg: linear-gradient(120deg, #fff 55%, #e9eef4);
+  --pill-bg: var(--chrome);
+  --notify-bg: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.07) 0 1px, transparent 1px 3px), linear-gradient(180deg, #e9edf2 0%, #b9c3cf 100%);
+  --notify-fg: #0b0d11;
 }
 
-/* Header: white with a coral to orange underline */
+/* Base tokens remapped so every existing component picks up the palette. */
+.look-a {
+  --yellow: var(--accent-on-ink);
+  --charcoal: var(--ink);
+  --rust: var(--link);
+  --cream: var(--light-bg);
+  --paper: #f8fafc;
+  --muted: var(--muted-light);
+  background: var(--light-bg);
+}
+
+.look-a .btn:focus-visible,
+.look-a a:focus-visible,
+.look-a button:focus-visible,
+.look-a input:focus-visible {
+  outline-color: var(--focus);
+}
+
+/* Header: ink with an accent underline */
 .look-a .site-header {
   background:
-    linear-gradient(#fff, #fff) padding-box,
-    var(--grad) border-box;
-  color: var(--ink);
+    linear-gradient(var(--ink), var(--ink)) padding-box,
+    var(--line-grad) border-box;
   border-bottom: 4px solid transparent;
 }
 
 .look-a .brand-name {
-  color: var(--ink);
+  color: var(--on-ink);
 }
 
-.look-a .brand-tag {
-  color: var(--muted);
-}
-
+.look-a .brand-tag,
 .look-a .nav-link {
-  color: var(--ink);
+  color: var(--on-ink-muted);
 }
 
 .look-a .nav-link:hover,
 .look-a .nav-link:focus-visible {
-  color: var(--link);
+  color: var(--accent-on-ink);
 }
 
 .look-a .nav-cta {
-  color: var(--ink);
-  border-color: var(--coral-deep);
+  color: var(--accent-on-ink);
+  border-color: var(--accent-on-ink);
 }
 
 .look-a .nav-cta:hover,
 .look-a .nav-cta:focus-visible {
-  background: var(--grad);
-  color: var(--ink);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  border-color: transparent;
 }
 
-/* Hero: white, soft coral and orange glows (glows stay lighter than #ffe9e1 behind text) */
+/* Hero: dark with cool glows */
 .look-a .hero {
   background:
-    radial-gradient(56rem 28rem at 92% -12%, rgba(255, 90, 60, 0.13), transparent 62%),
-    radial-gradient(40rem 24rem at -12% 112%, rgba(255, 138, 31, 0.12), transparent 60%),
-    #fff;
-  color: var(--ink);
+    radial-gradient(60rem 30rem at 85% -10%, var(--glow-1), transparent 60%),
+    radial-gradient(40rem 26rem at -10% 110%, var(--glow-2), transparent 60%),
+    var(--ink);
+  color: var(--on-ink);
   border-bottom: 0;
   position: relative;
   overflow: hidden;
 }
 
 .look-a .hero-eyebrow {
-  color: var(--link);
+  color: var(--accent-on-ink);
 }
 
 .look-a .hero h1,
 .look-a .hero-subhead {
-  color: var(--ink);
+  color: var(--on-ink);
 }
 
 .look-a .hero-brand-statement {
-  color: var(--muted);
+  color: var(--on-ink-muted);
 }
 
 .look-a .hero .text-link {
-  color: var(--link);
+  color: var(--accent-on-ink);
 }
 
 .look-a .hero .btn-primary {
   border-color: transparent;
-  box-shadow: 0 10px 28px -10px rgba(255, 90, 60, 0.75);
+  box-shadow: var(--btn-glow);
 }
 
-.look-a .hero .btn-primary:hover {
-  box-shadow: 0 14px 32px -10px rgba(255, 138, 31, 0.9);
-}
-
-/* Buttons: coral to orange, ink text (5.9:1 or better) */
+/* Buttons */
 .look-a .btn-primary {
-  background: var(--grad);
-  color: var(--ink);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
   border-color: var(--ink);
 }
 
@@ -335,21 +398,23 @@ section.journey {
 .look-a .btn-secondary {
   border-color: var(--ink);
   background: #fff;
+  color: var(--ink);
 }
 
 .look-a .btn-secondary:hover {
-  background: var(--blush);
+  background: var(--light-bg);
 }
 
 .look-a .store-teaser .btn-primary,
-.look-a .holiday-teaser .btn-primary {
+.look-a .holiday-teaser .btn-primary,
+.look-a .hero .btn-primary:hover {
   border-color: transparent;
-  background: var(--grad);
-  color: var(--ink);
-  box-shadow: 0 10px 26px -12px rgba(255, 90, 60, 0.8);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  box-shadow: var(--btn-glow);
 }
 
-/* Hero visual: illustrated 7-minute timer ring with a bodyweight jumping-jack figure (no equipment) */
+/* Hero visual: code-drawn 7-minute timer ring with a jumping-jack figure (no equipment) */
 .look-a .hero-visual--move {
   height: 196px;
 }
@@ -360,8 +425,8 @@ section.journey {
   aspect-ratio: 1;
   margin: 0 auto;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 42%, #fff 0 48%, var(--blush) 70%, #ffe6da 100%);
-  box-shadow: 0 18px 40px -18px rgba(255, 90, 60, 0.55), 0 0 0 1px var(--line);
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
 }
 
 .look-a .move-svg {
@@ -371,14 +436,31 @@ section.journey {
   overflow: visible;
 }
 
+.look-a .mv-s1 { stop-color: var(--ring-1); }
+.look-a .mv-s2 { stop-color: var(--ring-2); }
+.look-a .mv-s3 { stop-color: var(--ring-3); }
+.look-a .mv-h0 { stop-color: #fff; stop-opacity: 0; }
+.look-a .mv-h1 { stop-color: #fff; stop-opacity: var(--sheen, 0); }
+
 .look-a .mv-track {
   fill: none;
-  stroke: #fbe0d4;
+  stroke: var(--ring-track);
   stroke-width: 18;
 }
 
+.look-a .mv-sheen {
+  fill: none;
+  stroke: url(#mvSheen);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 260 820;
+  transform: rotate(-150deg);
+  transform-origin: 200px 200px;
+  display: var(--sheen-display, none);
+}
+
 .look-a .mv-tick {
-  stroke: #f0b9a3;
+  stroke: var(--tick);
   stroke-width: 4;
   stroke-linecap: round;
 }
@@ -396,16 +478,12 @@ section.journey {
 }
 
 @keyframes mv-sweep {
-  from {
-    stroke-dashoffset: 1080.7;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
+  from { stroke-dashoffset: 1080.7; }
+  to { stroke-dashoffset: 0; }
 }
 
 .look-a .mv-shadow {
-  fill: rgba(23, 19, 31, 0.12);
+  fill: rgba(255, 255, 255, 0.1);
   transform-box: fill-box;
   transform-origin: 50% 50%;
   animation: mv-shadow 0.9s ease-in-out infinite;
@@ -413,23 +491,27 @@ section.journey {
 
 .look-a .mv-limb line,
 .look-a .mv-body {
-  stroke: var(--ink);
+  stroke: var(--fig-limb);
   stroke-width: 15;
   stroke-linecap: round;
 }
 
 .look-a .mv-head {
-  fill: var(--coral);
-  stroke: var(--ink);
+  fill: var(--fig-head);
+  stroke: var(--fig-limb);
   stroke-width: 6;
 }
 
 .look-a .mv-band {
   fill: none;
-  stroke: var(--sun);
+  stroke: var(--fig-band);
   stroke-width: 7;
   stroke-linecap: round;
 }
+
+.look-a .mv-spark--1 { fill: var(--spark-1); }
+.look-a .mv-spark--2 { fill: var(--spark-2); }
+.look-a .mv-spark--3 { fill: var(--spark-3); }
 
 .look-a .mv-limb {
   transform-box: fill-box;
@@ -437,49 +519,21 @@ section.journey {
 }
 
 /* Static pose (also the reduced-motion pose): the open star of a jumping jack */
-.look-a .mv-arm--l { transform: rotate(132deg); }
-.look-a .mv-arm--r { transform: rotate(-132deg); }
-.look-a .mv-leg--l { transform: rotate(22deg); }
-.look-a .mv-leg--r { transform: rotate(-22deg); }
-
-.look-a .mv-arm--l { animation: mv-arm-l 0.9s ease-in-out infinite; }
-.look-a .mv-arm--r { animation: mv-arm-r 0.9s ease-in-out infinite; }
-.look-a .mv-leg--l { animation: mv-leg-l 0.9s ease-in-out infinite; }
-.look-a .mv-leg--r { animation: mv-leg-r 0.9s ease-in-out infinite; }
+.look-a .mv-arm--l { transform: rotate(132deg); animation: mv-arm-l 0.9s ease-in-out infinite; }
+.look-a .mv-arm--r { transform: rotate(-132deg); animation: mv-arm-r 0.9s ease-in-out infinite; }
+.look-a .mv-leg--l { transform: rotate(22deg); animation: mv-leg-l 0.9s ease-in-out infinite; }
+.look-a .mv-leg--r { transform: rotate(-22deg); animation: mv-leg-r 0.9s ease-in-out infinite; }
 
 .look-a .mv-fig {
   animation: mv-hop 0.45s ease-in-out infinite alternate;
 }
 
-@keyframes mv-arm-l {
-  0%, 100% { transform: rotate(16deg); }
-  50% { transform: rotate(160deg); }
-}
-
-@keyframes mv-arm-r {
-  0%, 100% { transform: rotate(-16deg); }
-  50% { transform: rotate(-160deg); }
-}
-
-@keyframes mv-leg-l {
-  0%, 100% { transform: rotate(4deg); }
-  50% { transform: rotate(26deg); }
-}
-
-@keyframes mv-leg-r {
-  0%, 100% { transform: rotate(-4deg); }
-  50% { transform: rotate(-26deg); }
-}
-
-@keyframes mv-hop {
-  from { transform: translateY(0); }
-  to { transform: translateY(-10px); }
-}
-
-@keyframes mv-shadow {
-  0%, 100% { transform: scaleX(1); }
-  25%, 75% { transform: scaleX(0.78); }
-}
+@keyframes mv-arm-l { 0%, 100% { transform: rotate(16deg); } 50% { transform: rotate(160deg); } }
+@keyframes mv-arm-r { 0%, 100% { transform: rotate(-16deg); } 50% { transform: rotate(-160deg); } }
+@keyframes mv-leg-l { 0%, 100% { transform: rotate(4deg); } 50% { transform: rotate(26deg); } }
+@keyframes mv-leg-r { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(-26deg); } }
+@keyframes mv-hop { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+@keyframes mv-shadow { 0%, 100% { transform: scaleX(1); } 25%, 75% { transform: scaleX(0.78); } }
 
 .look-a .mv-spark {
   animation: a-bob 2.6s ease-in-out infinite;
@@ -494,23 +548,25 @@ section.journey {
   bottom: -6px;
   width: 64px;
   height: 64px;
-  filter: drop-shadow(0 6px 12px rgba(23, 19, 31, 0.25));
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5));
 }
 
 .look-a .move-ring-bg {
-  fill: var(--ink);
+  fill: var(--badge7-bg);
+  stroke: var(--badge7-stroke, none);
+  stroke-width: 4;
 }
 
 .look-a .move-ring-num {
   font-family: Anton, Impact, sans-serif;
   font-size: 44px;
-  fill: #fff;
+  fill: var(--badge7-num);
 }
 
 .look-a .move-ring-unit {
   font: 900 15px Lato, system-ui, sans-serif;
   letter-spacing: 0.12em;
-  fill: var(--sun);
+  fill: var(--badge7-unit);
 }
 
 .look-a .clip-chip {
@@ -519,12 +575,11 @@ section.journey {
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--ink);
-  background: var(--sun);
-  border: 2px solid var(--ink);
+  color: var(--chip1-fg);
+  background: var(--chip1-bg);
   border-radius: 999px;
-  padding: 0.3rem 0.7rem;
-  box-shadow: 0 8px 18px -8px rgba(23, 19, 31, 0.45);
+  padding: 0.35rem 0.75rem;
+  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.6);
   animation: a-bob 3.2s ease-in-out infinite;
   white-space: nowrap;
 }
@@ -537,14 +592,13 @@ section.journey {
 .look-a .clip-chip--2 {
   left: 0;
   bottom: 14px;
-  background: #fff;
+  color: var(--chip2-fg);
+  background: var(--chip2-bg);
   animation-delay: -1.6s;
 }
 
 @keyframes a-bob {
-  50% {
-    transform: translateY(-6px);
-  }
+  50% { transform: translateY(-6px); }
 }
 
 @media (min-width: 900px) {
@@ -577,122 +631,99 @@ section.journey {
     padding: 0.5rem 1rem;
   }
 
-  .look-a .clip-chip--1 {
-    left: -18px;
-    top: 40px;
-  }
-
-  .look-a .clip-chip--2 {
-    left: -10px;
-    bottom: 60px;
-  }
+  .look-a .clip-chip--1 { left: -18px; top: 40px; }
+  .look-a .clip-chip--2 { left: -10px; bottom: 60px; }
 }
 
 /* Hub strip */
 .look-a .hub-strip {
   border-bottom: 0;
-  color: var(--ink);
-  background: var(--paper);
-  border-top: 1px solid var(--line);
+  background:
+    linear-gradient(180deg, var(--glow-strip), transparent 70%),
+    var(--ink);
 }
 
-.look-a .hub-strip-title {
-  color: var(--ink);
-}
-
-.look-a .hub-tile {
-  background: #fff;
-  border-color: var(--line);
-  box-shadow: 0 6px 18px -14px rgba(23, 19, 31, 0.4);
-}
-
-.look-a .hub-tile-icon {
-  color: var(--coral-deep);
-}
-
+.look-a .hub-strip-title,
 .look-a .hub-tile-label {
-  color: var(--ink);
+  color: var(--on-ink);
 }
 
 .look-a .hub-tile-desc {
-  color: var(--muted);
+  color: var(--on-ink-muted);
+}
+
+.look-a .hub-tile {
+  background: var(--tile-bg);
+  border-color: var(--tile-border);
+}
+
+.look-a .hub-tile-icon {
+  color: var(--accent-on-ink);
 }
 
 .look-a a.hub-tile:hover,
 .look-a a.hub-tile:focus-visible {
   transform: translateY(-3px);
-  border-color: var(--coral-deep);
-  background: #fff;
-  box-shadow: 0 14px 28px -16px rgba(255, 90, 60, 0.6);
+  border-color: var(--accent-on-ink);
 }
 
 /* Badges */
 .look-a .badge-live {
-  background: var(--sun);
-  color: var(--ink);
+  background: var(--badge-live-bg);
+  color: var(--badge-live-fg);
   border-color: var(--ink);
 }
 
 .look-a .badge-soon {
-  background: var(--ink);
-  color: var(--sun);
+  background: var(--badge-soon-bg);
+  color: var(--badge-soon-fg);
 }
 
-/* Holiday teaser: white card with a coral to orange frame */
+.look-a .hub-tile .badge-live {
+  border-color: transparent;
+}
+
+/* Holiday teaser (dark) */
 .look-a section.holiday-teaser {
-  background: #fff;
-  color: var(--ink);
+  background: var(--ink);
+  color: var(--on-ink);
   border-bottom: 0;
-}
-
-.look-a .holiday-teaser-inner {
-  width: calc(100% - 2rem);
-  border: 3px solid transparent;
-  border-radius: 22px;
-  padding: 1.75rem 1.25rem;
-  background:
-    linear-gradient(120deg, #fff 60%, var(--blush)) padding-box,
-    var(--grad) border-box;
-  box-shadow: 0 18px 40px -26px rgba(255, 90, 60, 0.8);
+  border-top: 1px solid var(--tile-border);
 }
 
 .look-a .holiday-teaser::after {
-  background: radial-gradient(circle, rgba(255, 212, 71, 0.35), transparent 70%);
+  background: radial-gradient(circle, var(--glow-1), transparent 70%);
+}
+
+.look-a .holiday-teaser-art {
+  box-shadow: 0 0 0 3px var(--art-ring);
 }
 
 .look-a .holiday-teaser h2,
 .look-a .holiday-teaser-price {
-  color: var(--ink);
+  color: var(--on-ink);
 }
 
 .look-a .holiday-teaser-soon {
-  background: var(--sun);
-  color: var(--ink);
+  background: var(--badge-live-bg);
+  color: var(--badge-live-fg);
 }
 
 .look-a .holiday-teaser-desc {
-  color: var(--muted);
+  color: var(--on-ink-muted);
 }
 
 .look-a .holiday-teaser-es {
-  color: var(--link);
+  color: var(--accent-on-ink);
 }
 
-@media (min-width: 720px) {
-  .look-a .holiday-teaser-inner {
-    padding: 2rem 2.25rem;
-  }
-}
-
-/* Journey strip */
+/* Journey strip (light) */
 .look-a .journey {
-  background: var(--blush);
-  --dot-bg: var(--coral);
-  --dot-fg: var(--ink);
+  background: var(--light-bg);
   --dot-empty-bg: #fff;
-  --dot-empty-fg: var(--muted);
-  --dot-empty-border: #f0c9b8;
-  --ms-ring: rgba(255, 90, 60, 0.28);
+  --dot-empty-fg: var(--muted-light);
+  --dot-empty-border: var(--line);
+  --ms-ring: var(--ms-ring-c);
 }
 
 .look-a .journey-eyebrow {
@@ -700,31 +731,42 @@ section.journey {
 }
 
 .look-a .journey-bar {
-  background: #f6dccf;
+  background: var(--bar-track);
 }
 
 .look-a .journey-bar-fill {
-  background: linear-gradient(90deg, var(--coral), var(--orange), var(--sun));
+  background: var(--bar-fill);
+}
+
+.look-a .journey-day .journey-dot {
+  --dot-bg: var(--dot-1);
+  --dot-fg: var(--dot-1-fg);
+  --dot-border: var(--dot-1-edge);
 }
 
 .look-a .journey-day:nth-child(n + 8) .journey-dot {
-  --dot-bg: var(--orange);
+  --dot-bg: var(--dot-2);
+  --dot-fg: var(--dot-2-fg);
+  --dot-border: var(--dot-2-edge);
 }
 
 .look-a .journey-day:nth-child(n + 15) .journey-dot {
-  --dot-bg: var(--sun);
+  --dot-bg: var(--dot-3);
+  --dot-fg: var(--dot-3-fg);
+  --dot-border: var(--dot-3-edge);
 }
 
 .look-a .journey-day.is-milestone .journey-dot {
   --dot-bg: var(--ink);
-  --dot-fg: var(--sun);
+  --dot-fg: var(--dot-ms-fg);
+  --dot-border: var(--ink);
 }
 
 .look-a .journey-cap {
   color: var(--ink);
 }
 
-/* Programs */
+/* Programs (light) */
 .look-a .programs {
   background: #fff;
 }
@@ -732,67 +774,60 @@ section.journey {
 .look-a .program-card {
   background: #fff;
   border-color: var(--line);
-  border-top: 5px solid var(--coral);
-  box-shadow: 0 8px 24px -14px rgba(23, 19, 31, 0.3);
+  border-top: 5px solid var(--card-top);
+  box-shadow: 0 8px 24px -14px rgba(13, 17, 23, 0.35);
 }
 
 .look-a .program-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 18px 34px -16px rgba(255, 90, 60, 0.5);
+  box-shadow: 0 18px 34px -16px var(--card-hover);
 }
 
 .look-a .program-card--featured {
   border-left: 0;
   border-top-width: 6px;
   border-image: none;
-  background: linear-gradient(120deg, #fff 55%, #fff1e8);
+  background: var(--featured-bg);
 }
 
 .look-a .program-price-pill {
-  background: var(--sun);
+  background: var(--pill-bg);
+  color: var(--ink);
 }
 
 .look-a .program-note {
-  border-left-color: var(--coral);
+  border-left-color: var(--card-top);
 }
 
-/* Book */
-.look-a .book-promo {
-  background: var(--paper);
+/* Book and about (light) */
+.look-a .book-promo,
+.look-a .about {
+  background: var(--light-bg);
 }
 
-/* Store teaser: soft glow on paper */
-.look-a .store-teaser {
-  color: var(--ink);
-  background:
-    radial-gradient(36rem 18rem at 100% 0%, rgba(255, 90, 60, 0.14), transparent 60%),
-    radial-gradient(30rem 16rem at 0% 100%, rgba(255, 212, 71, 0.22), transparent 60%),
-    var(--blush);
-}
-
-.look-a .store-teaser h2 {
-  color: var(--ink);
-}
-
-.look-a .store-teaser p {
-  color: var(--muted);
-}
-
-/* How it works: white cards on white */
+/* Store teaser + how (dark) */
+.look-a .store-teaser,
 .look-a .how {
-  background: #fff;
-  color: var(--ink);
+  background:
+    radial-gradient(40rem 20rem at 100% 0%, var(--glow-1), transparent 60%),
+    var(--ink);
+  color: var(--on-ink);
 }
 
-.look-a .how h2 {
-  color: var(--ink);
+.look-a .store-teaser p,
+.look-a .steps p {
+  color: var(--on-ink-muted);
+}
+
+.look-a .how h2,
+.look-a .store-teaser h2,
+.look-a .steps h3 {
+  color: var(--on-ink);
 }
 
 .look-a .steps li {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-left: 6px solid var(--coral);
-  box-shadow: 0 10px 24px -18px rgba(23, 19, 31, 0.45);
+  background: var(--tile-bg);
+  border-left-color: var(--card-top);
 }
 
 .look-a .step-num {
@@ -801,51 +836,107 @@ section.journey {
   width: 3.1rem;
   height: 3.1rem;
   border-radius: 50%;
-  background: var(--grad);
-  color: var(--ink);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
   font-size: 1.9rem;
   margin-bottom: 0.6rem;
 }
 
-.look-a .steps h3 {
-  color: var(--ink);
-}
-
-.look-a .steps p {
-  color: var(--muted);
-}
-
-/* About */
-.look-a .about {
-  background: var(--paper);
-}
-
 /* Notify */
 .look-a .notify {
-  background: var(--grad);
-}
-
-.look-a .notify-form input::placeholder {
-  color: var(--muted); /* 8.06:1 on the paper input */
-  opacity: 1;
+  background: var(--notify-bg);
+  color: var(--notify-fg);
 }
 
 .look-a .notify .btn-primary {
   background: var(--ink);
   color: #fff;
+  border-color: var(--ink);
 }
 
-/* Footer: paper with a gradient top line */
+.look-a .notify-form input {
+  background: #fff;
+  color: var(--ink);
+}
+
+.look-a .notify-form input::placeholder {
+  color: var(--muted-light);
+  opacity: 1;
+}
+
+/* Footer (dark) */
 .look-a .footer {
   background:
-    linear-gradient(var(--paper), var(--paper)) padding-box,
-    var(--grad) border-box;
+    linear-gradient(var(--ink), var(--ink)) padding-box,
+    var(--line-grad) border-box;
   border-top: 4px solid transparent;
-  color: var(--muted);
+  color: var(--on-ink-muted);
 }
 
 .look-a .footer a {
-  color: var(--link);
+  color: var(--accent-on-ink);
+}
+
+/* Metallic extras: chrome sheen and brushed light steel sections */
+.look-a .btn-primary,
+.look-a .step-num,
+.look-a .clip-chip {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -2px 0 rgba(0, 0, 0, 0.22);
+}
+
+.look-a .btn-primary:hover {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 6px 0 var(--ink);
+}
+
+.look-a .hero .btn-primary,
+.look-a .hero .btn-primary:hover,
+.look-a .store-teaser .btn-primary,
+.look-a .holiday-teaser .btn-primary {
+  box-shadow: var(--btn-glow);
+}
+
+.look-a .clip-chip {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 8px 20px -6px rgba(0, 0, 0, 0.6);
+}
+
+.look-a .badge-live,
+.look-a .program-price-pill {
+  border-color: #5b6675;
+}
+
+.look-a .journey,
+.look-a .book-promo,
+.look-a .about {
+  background: linear-gradient(180deg, #f5f7fa 0%, #e4e9ef 100%);
+}
+
+.look-a .journey-dot {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.look-a .journey-day.is-milestone .journey-dot {
+  box-shadow: 0 0 0 3px var(--ms-ring), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.look-a .program-card {
+  border-top-color: transparent;
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(90deg, #8d99a8, #3c69c9 50%, #8d99a8) border-box;
+  border-left-color: var(--line);
+  border-right-color: var(--line);
+  border-bottom-color: var(--line);
+}
+
+.look-a .program-card--featured {
+  background:
+    linear-gradient(120deg, #fff 55%, #e9eef4) padding-box,
+    linear-gradient(90deg, #8d99a8, #3c69c9 50%, #8d99a8) border-box;
+}
+
+.look-a .hub-tile,
+.look-a .steps li {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 /* ---- Reduced motion: no animation, no reveal, strip shown complete ---- */
