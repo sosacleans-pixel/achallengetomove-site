@@ -18,8 +18,6 @@
       soon: "Coming soon. Start Day 1 the day you get it.",
       price: "$9.99",
       dates: "Available through December 5, 2026.",
-      // TODO(sale): from Dec 1, 2026 a sale line (30% off) goes here as "sale", once Salim confirms the price
-      // and the Stripe promotion code or sale Payment Link. Not shown yet. See sale-plan.md.
       tagline: "Feel strong into the holidays.",
       lead: "Get through the busiest weeks of the year still moving: a little strength, a little mobility, a little walking, every day, for 30 days.",
       signupTitle: "Get notified when it opens",
@@ -47,7 +45,6 @@
       soon: "Pr\u00f3ximamente. Empiezas el D\u00eda 1 el mismo d\u00eda que lo recibes.",
       price: "$9.99",
       dates: "Disponible hasta el 5 de diciembre de 2026.",
-      // TODO(sale): ES sale line (30% de descuento desde el 1 de diciembre) goes here as "sale". Not shown yet.
       tagline: "Llega fuerte a las fiestas.",
       lead: "Pasa las semanas m\u00e1s ocupadas del a\u00f1o sin dejar de moverte: un poco de fuerza, un poco de movilidad y un poco de caminata, todos los d\u00edas, durante 30 d\u00edas.",
       signupTitle: "Recibe un aviso cuando abra",

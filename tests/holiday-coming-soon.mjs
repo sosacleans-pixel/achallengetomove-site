@@ -7,7 +7,8 @@
  *    and window.gtag / window.dataLayer never exist.
  * 2. Copy rules on the new content: no em or en dashes, no banned names, price $9.99 shown but no buy button or Stripe link,
  *    no fixed Nov 25 / Dec 24 dates (rolling start: Day 1 is the day you get it; available through December 5, 2026),
- *    and no sale / 30% off line shown yet (only a TODO comment).
+ *    no December sale (Salim, Oct 18, 6:39 PM MT: stays $9.99), so no sale line, no TODO(sale) marker, no second price,
+ *    and the pricing rule (Attorney, Oct 18): no percent-off, 'was $' or strikethrough near a price in any site file.
  * 3. EN/ES switch, sign-up payload (tagged as the holiday list), consent line and privacy link.
  * 4. Homepage teaser and store card, and the homepage sign-up still sends what it sent before.
  * 5. No horizontal overflow at 390 px.
@@ -80,10 +81,23 @@ for (const [name, txt] of Object.entries({ "coming-soon page": html, "homepage t
 }
 check(LINE_RE.test(homeTeaser) && /href="\/holiday-challenge\/">Get notified</.test(homeTeaser), "teaser: exact coming-soon + availability line and Get notified -> /holiday-challenge/");
 check(product && LINE_RE.test(product.tagline) && LINE_RE.test(storeCard), "store card (products.json and static): rolling-start + availability line");
-for (const [name, txt] of Object.entries({ "coming-soon page": html, "homepage teaser": homeTeaser, "store card (static)": storeCard })) {
-  check(/TODO\(sale\)/.test(txt), `${name}: marked TODO(sale) comment where the Dec 1 sale line goes`);
+for (const [name, txt] of Object.entries({ "coming-soon page": html, "homepage teaser": homeTeaser, "store card (static)": storeCard, "coming-soon.js": enStrings })) {
+  check(!/TODO\(sale\)|6\.99|Dec(ember)? 1\b|1 de diciembre/i.test(txt), `${name}: no December sale marker or second price (holiday stays $9.99)`, (txt.match(/TODO\(sale\)|6\.99|Dec(ember)? 1\b|1 de diciembre/i) || [])[0]);
 }
-check(/TODO\(sale\)/.test(enStrings), "coming-soon.js: marked TODO(sale) comment for the EN/ES sale line");
+{
+  // Pricing copy rule (Attorney, Oct 18, 2026) across the whole site.
+  const PRICE_BANNED = /\d*\s*%\s*off\b|\bwas\s*\$|% de descuento|antes\s*\$/i;
+  const strikeNearPrice = (t) => { const out = []; const re = /<s[\s>]|<del[\s>]|<strike[\s>]|line-through/gi; let m; while ((m = re.exec(t))) { const w = t.slice(Math.max(0, m.index - 120), m.index + 120); if (/\$\s?\d|\d\s?\$|USD|price|precio/i.test(w)) out.push(w.replace(/\s+/g, " ").slice(0, 90)); } return out; };
+  const { readdirSync } = await import("fs");
+  const files = [];
+  const walk = (d) => readdirSync(d).forEach((f) => { const p = join(d, f); if ([".git", "node_modules", "tests", "fonts", "icons", "images", "img"].includes(f)) return; statSync(p).isDirectory() ? walk(p) : /\.(html|js|css|json|webmanifest|xml|txt)$/.test(f) && files.push(p); });
+  walk(root);
+  const hits = [];
+  for (const f of files) { const t = readFileSync(f, "utf8"); const m = t.match(PRICE_BANNED); if (m) hits.push(`${f.slice(root.length + 1)}: ${m[0]}`); strikeNearPrice(t).forEach((s) => hits.push(`${f.slice(root.length + 1)}: ${s}`)); }
+  check(hits.length === 0, `pricing rule: no percent-off, 'was $' or strikethrough near a price in ${files.length} site files`, hits.slice(0, 5).join(" | "));
+  const pct = "30" + "% off";
+  check(PRICE_BANNED.test("Now " + pct) && PRICE_BANNED.test("was $9.99") && strikeNearPrice("<s>$9.99</s>").length && strikeNearPrice("<del>$9.99</del>").length && strikeNearPrice('<b style="text-decoration:line-through">$9.99</b>').length && !strikeNearPrice(".x{text-decoration:line-through}").length && !PRICE_BANNED.test("$9.99 one-time payment"), "pricing rule self-test");
+}
 check((html.match(/<meta name="description" content="([^"]*)"/) || [])[1].includes(EN_SOON + " " + EN_AVAIL) && (html.match(/<meta property="og:description" content="([^"]*)"/) || [])[1].includes(EN_SOON + " " + EN_AVAIL), "meta and og descriptions: rolling-start + availability line");
 check(product && product.notifyHref === "/holiday-challenge/" && product.notifyLabel === "Get notified" && product.price === "$9.99" && !(product.actions || []).length, "store product: Get notified -> /holiday-challenge/, price $9.99, no buy action");
 
