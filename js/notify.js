@@ -1,4 +1,6 @@
-/* Notify-me sign-up: posts to FormSubmit via AJAX and shows an inline thank-you. */
+/* Notify-me sign-up: posts to FormSubmit via AJAX and shows an inline thank-you.
+   Consent record (CASL): each sign-up carries the exact visible consent text, its version, the page language,
+   the state of the optional marketing box (never pre-ticked) and the time. */
 (function () {
   "use strict";
   var form = document.getElementById("notify-form");
@@ -6,6 +8,9 @@
   var email = document.getElementById("notify-email");
   var status = document.getElementById("notify-status");
   var button = form.querySelector('button[type="submit"]');
+  var hint = document.getElementById("notify-hint");
+  var marketing = document.getElementById("notify-marketing");
+  function clean(n) { return n ? (n.textContent || "").replace(/\s+/g, " ").trim() : ""; }
   var ENDPOINT = "https://formsubmit.co/ajax/coachsalimheyaime@gmail.com";
 
   function say(msg) {
@@ -42,6 +47,14 @@
     });
     var consentNote = document.getElementById("notify-consent");
     if (consentNote) payload.consent_note = (consentNote.textContent || "").replace(/\s+/g, " ").trim();
+    // Homepage form: CASL consent record (visible text, version, language, optional marketing box, time).
+    if (hint && hint.hasAttribute("data-consent-version")) {
+      payload.consent_text = clean(hint);
+      payload.consent_version = hint.getAttribute("data-consent-version");
+      payload.consent_language = (document.documentElement.getAttribute("lang") || "en").slice(0, 2);
+      payload.marketing_optin = marketing && marketing.checked ? "yes: " + clean(marketing.parentNode) : "no";
+      payload.consent_at = new Date().toISOString();
+    }
     button.disabled = true;
     button.setAttribute("aria-busy", "true");
     say(msg("sending", "Sending…"));

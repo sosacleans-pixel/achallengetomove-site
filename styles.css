@@ -1324,7 +1324,7 @@ section.holiday-teaser {
 
 /* Privacy page */
 .page-simple {
-  padding: 3rem 0 4rem;
+  padding: 3rem 1.25rem 4rem; /* keep .wrap's side gutters (the shorthand used to drop them) */
   max-width: 42rem;
 }
 
@@ -1592,3 +1592,44 @@ section.holiday-teaser {
   font-size: 0.9rem;
   color: var(--charcoal);
 }
+
+/* Analytics consent banner (js/ga.js). Both choices have equal visual weight. */
+.consent-banner {
+  position: fixed;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 1000;
+  max-width: 40rem;
+  margin: 0 auto;
+  box-sizing: border-box;
+  background: var(--paper, #fff);
+  color: var(--charcoal);
+  border: 3px solid var(--charcoal);
+  border-radius: 16px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  font-size: 0.9rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.consent-title { margin: 0 0 0.35rem; font-weight: 900; font-size: 1rem; }
+.consent-body { margin: 0; }
+.consent-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.85rem; }
+.consent-actions .btn { flex: 1 1 9rem; }
+.btn-consent {
+  background: var(--charcoal);
+  color: var(--yellow);
+  border: 3px solid var(--charcoal);
+}
+.consent-links { margin: 0.7rem 0 0; font-size: 0.85rem; }
+.consent-links a { color: var(--charcoal); }
+
+/* Notify-me consent wording (CASL) */
+.notify-consent { margin: 0.25rem 0 0; font-size: 0.85rem; line-height: 1.45; text-align: left; }
+.notify-consent a { color: var(--charcoal); }
+.notify-optin { display: flex; gap: 0.5rem; align-items: flex-start; text-align: left; font-size: 0.85rem; font-weight: 400 !important; line-height: 1.4; }
+.notify-optin input { width: auto !important; margin-top: 0.2rem; flex: 0 0 auto; }
+
+/* Clearly marked placeholder that must be filled before publishing */
+.tbd { background: #ffe08a; outline: 2px dashed var(--rust); padding: 0 0.2em; font-weight: 700; }
