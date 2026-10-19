@@ -63,7 +63,7 @@ try {
   check(/noindex/.test(html), "app page is noindex (same as Doing a 5K app)");
   const appSrc = readFileSync(join(appDir, "js", "app.js"), "utf8") + readFileSync(join(appDir, "js", "i18n.js"), "utf8");
   check(/coachsalimheyaime@gmail\.com/.test(appSrc) && /3 days \(72 hours\)/.test(appSrc), "refund email and 3-day policy text in app");
-  check(/all sales are final, except where the law requires otherwise\./.test(appSrc) && /todas las ventas son finales, salvo cuando la ley exija otra cosa\./.test(appSrc), "refund text: 'except where the law requires otherwise' (EN) and 'salvo cuando la ley exija otra cosa' (ES)");
+  check(/all sales are final, except where the law requires otherwise\./.test(appSrc) && /todas las ventas son definitivas, salvo cuando la ley exija otra cosa\./.test(appSrc), "refund text: 'except where the law requires otherwise' (EN) and 'todas las ventas son definitivas, salvo cuando la ley exija otra cosa' (ES)");
   check(!/18 años o más y leí|have read the Health and safety information above/.test(appSrc), "old health checkbox text is gone");
   const { HS_VERSION, HS_TEXT } = await import(join(appDir, "js", "health-ack-text.js"));
   for (const l of ["en", "es"]) {

@@ -16,7 +16,7 @@
   var REFUND_HTML =
     '<p class="buy-refund"><small>You can request a full refund within 3 days (72 hours) of purchase by emailing ' +
     '<a class="text-link" href="mailto:coachsalimheyaime@gmail.com?subject=Refund+request">coachsalimheyaime@gmail.com</a>. ' +
-    "After that, all sales are final. Refunds go to the original payment method.</small></p>";
+    "After that, all sales are final, except where the law requires otherwise. Refunds go to the original payment method.</small></p>";
   window.ACTM_BUY_TRUST = {
     agreeHtml: AGREE_HTML,
     stripeBadgeHtml: STRIPE_BADGE_HTML,

@@ -359,7 +359,7 @@ export const STRINGS = {
   "reset": "Borrar todos los datos",
   "resetConfirm": "¿Borrar todos los datos de la app en este dispositivo? No se puede deshacer.",
   "refundTitle": "Reembolsos de 5K to Half Marathon",
-  "refund": "Puedes pedir un reembolso completo dentro de los 3 días (72 horas) posteriores a la compra escribiendo a <a href=\"mailto:coachsalimheyaime@gmail.com?subject=Refund+request\">coachsalimheyaime@gmail.com</a>. Después de ese plazo, todas las ventas son finales, salvo cuando la ley exija otra cosa. Los reembolsos se hacen al método de pago original.",
+  "refund": "Puedes pedir un reembolso completo dentro de los 3 días (72 horas) posteriores a la compra escribiendo a <a href=\"mailto:coachsalimheyaime@gmail.com?subject=Refund+request\">coachsalimheyaime@gmail.com</a>. Después de ese plazo, todas las ventas son definitivas, salvo cuando la ley exija otra cosa. Los reembolsos se hacen al método de pago original.",
   "dataNote": "Tu plan y tu progreso se guardan solo en este dispositivo.",
   "coachEnNote": "Las indicaciones detalladas del entrenador para cada sesión y ejercicio están en inglés por ahora.",
   "rest": "Descanso",
