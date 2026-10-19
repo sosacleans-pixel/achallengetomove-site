@@ -809,6 +809,26 @@ if (run(14)) {
     await page.evaluate(() => document.getElementById("terms-label").scrollIntoView({ block: "center" }));
     if (SHOTS) await page.screenshot({ path: join(SHOTS, `setup-bold-release-${l === "en-US" ? "en" : "es"}-390.png`) });
     if (process.env.CONSENT_SHOTS) { await page.evaluate(() => document.getElementById("terms-label").scrollIntoView({ block: "center" })); await page.screenshot({ path: join(process.env.CONSENT_SHOTS, `consent-holiday-${l === "en-US" ? "en" : "es"}-390.png`) }); }
+    // Clicking each consent link opens the app's OWN in-app section (same tab, hash route), not a shared site page.
+    // App Terms must land on the in-app Terms that carry the Release of Liability (bold negligence sentence).
+    for (const [idx, wantId, wantHash] of [[0, "legal-safety", "#/legal/safety"], [1, "legal-terms", "#/legal/terms"]]) {
+      await page.locator("#terms-sentence a").nth(idx).click();
+      await page.waitForSelector(`#${wantId}`);
+      const dest = await page.evaluate(() => ({ path: location.pathname, hash: location.hash, id: (document.querySelector("article.legal") || {}).id, heads: [...document.querySelectorAll("article.legal h2.legal-h")].map((h) => h.textContent), strong: [...document.querySelectorAll("article.legal p strong")].map((e) => e.textContent) }));
+      const inApp = dest.path.endsWith("/holiday-challenge/app/index.html") && dest.hash === wantHash && dest.id === wantId && !/app-terms|purchase-terms/.test(dest.path + dest.hash);
+      if (idx === 1) {
+        const relHead = SS.legal.terms[3][0];
+        check(`[${l}] consent: App Terms link opens the in-app Terms section with the Release (not /app-terms/ or /purchase-terms/)`, inApp && dest.heads.includes(relHead) && /RELEASE OF LIABILITY|EXONERACIÓN DE RESPONSABILIDAD/.test(relHead) && dest.strong.length === 1 && /NEGLIGEN/.test(dest.strong[0]), JSON.stringify({ ...dest, heads: dest.heads.length }));
+        if (SHOTS && l === "en-US") {
+          await page.evaluate(() => document.fonts && document.fonts.ready);
+          await page.evaluate(() => { const b = document.querySelector("#legal-terms p strong"); if (b) { const h = b.closest("p").previousElementSibling; window.scrollTo(0, h.getBoundingClientRect().top + window.scrollY - (document.querySelector(".app-header") || { offsetHeight: 0 }).offsetHeight - 16); } });
+          await page.screenshot({ path: join(SHOTS, "consent-holiday-terms-link-390.png") });
+        }
+      } else {
+        check(`[${l}] consent: Health and safety link opens the in-app Safety section`, inApp && dest.strong.length >= 1, JSON.stringify({ path: dest.path, hash: dest.hash, id: dest.id }));
+      }
+      await page.goto(BASE + "index.html#/setup/5"); await page.waitForSelector("#terms-label");
+    }
     await page.click("#setup-next");
     check(`[${l}] consent: Finish blocked until the box is ticked`, await page.isVisible("#setup-err"));
     await page.check("#terms-ok"); await page.click("#setup-next"); await page.waitForSelector(".day-head");
