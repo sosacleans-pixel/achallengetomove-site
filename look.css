@@ -940,43 +940,155 @@ section.journey {
 }
 
 /* ==========================================================================
-   RED ACCENT (metal-red): racing red used sparingly on energy points only.
-   Metallic blue and gray stay dominant; buy buttons stay blue steel.
-   Red is never used as text. White on candy red #d81f32 -> #8f0d18 is 5.05 or better
-   (worst stop #d81f32). Red #e11d2e as a line or ring on ink #0b0d11 is 4.09 (graphics need 3).
+   RED = ACTION (metal-red-action). Black, steel and gunmetal base.
+   Red (candy red metallic) is the one action color: buy buttons (Stripe and Amazon), the hero
+   "Explore all programs" button, the "Start now" cue, timer progress and strip milestones.
+   Blue (#2563eb family) is secondary only: links, info, secondary buttons.
+   Coach yellow #ffc700 only in the footer and the About section.
+   Contrast (WCAG 2.x, worst gradient stop): white on candy red #d81f32 5.05 (#b3121f 6.95,
+   #8f0d18 9.38); blue text #1d4ed8 on white 6.70, on light steel #e4e9ef 5.49; white on #1d4ed8
+   6.70; ink on chrome #aab5c3 9.36; #dbe2ea on gunmetal #3a434f 7.67; white on dot #4a5563 7.58;
+   ink on #ffc700 12.43, #ffc700 on ink 12.43. Lines and rims: red #e11d2e on ink 4.09,
+   blue #3b82f6 on ink 5.29, #2563eb on white 5.17 / on #e4e9ef 4.23 (graphics need 3).
    ========================================================================== */
 .look-a {
   --red: #e11d2e;
   --candy-red: linear-gradient(180deg, #d81f32 0%, #b3121f 46%, #8f0d18 54%, #b01422 100%);
-  --line-grad: linear-gradient(90deg, #5b6675, #c9d2dd 28%, #3c69c9 52%, #e11d2e 68%, #9aa6b4 84%, #5b6675);
-  --badge7-stroke: #e11d2e; /* red rim on the 7 MIN timer badge */
-  --fig-band: #e11d2e; /* red headband on the jumping-jack figure */
+  --blue: #2563eb;
+  --blue-text: #1d4ed8;
+  --coach-yellow: #ffc700;
+  --line-grad: linear-gradient(90deg, #5b6675, #c9d2dd 35%, #7f93b3 62%, #5b6675);
+  --glow-1: rgba(120, 140, 170, 0.22);
+  --glow-2: rgba(190, 200, 215, 0.1);
+  --ring-1: #c3ccd7;
+  --card-shadow: 0 0 0 2px #3a4350, inset 0 2px 0 rgba(255, 255, 255, 0.08), 0 18px 44px -14px rgba(140, 155, 180, 0.35);
+  --ring-2: #e11d2e;
+  --ring-3: #8f0d18;
+  --badge7-stroke: #9aa6b4;
+  --fig-band: #c3ccd7;
+  --fig-head: #8d99a8;
+  --chip1-bg: var(--gunmetal);
+  --chip1-fg: #dbe2ea;
+  --bar-fill: linear-gradient(90deg, #8f0d18, #e11d2e 70%, #c3ccd7);
+  --dot-1: linear-gradient(180deg, #4a5563, #4a5563);
+  --dot-1-fg: #ffffff;
+  --dot-1-edge: #3a434f;
+  --ms-ring-c: rgba(225, 29, 46, 0.35);
 }
 
-/* Hero "Explore all programs": candy red with a chrome edge */
-.look-a .hero .btn-primary,
-.look-a .hero .btn-primary:hover {
+/* Secondary buttons: blue outline, never filled red */
+.look-a .btn-primary,
+.look-a .btn-secondary {
+  background: #fff;
+  color: var(--blue-text);
+  border-color: var(--blue);
+  box-shadow: none;
+}
+
+.look-a .btn-primary:hover,
+.look-a .btn-secondary:hover {
+  background: #eef3fd;
+  box-shadow: 0 6px 0 var(--ink);
+}
+
+.look-a .store-teaser .btn-primary,
+.look-a .holiday-teaser .btn-primary {
+  background: transparent;
+  color: #fff;
+  border-color: #3b82f6;
+  box-shadow: none;
+}
+
+.look-a .store-teaser .btn-primary:hover,
+.look-a .holiday-teaser .btn-primary:hover {
+  background: rgba(59, 130, 246, 0.16);
+}
+
+.look-a .notify .btn-primary,
+.look-a .notify .btn-primary:hover {
+  background: var(--blue-text);
+  color: #fff;
+  border-color: var(--blue-text);
+}
+
+/* Action: every buy CTA (Stripe and Amazon) and the hero button are candy red */
+.look-a a.btn[href^="https://buy.stripe.com/"],
+.look-a a.btn[href*="amazon.com/"],
+.look-a .hero a.btn-primary {
   background: var(--candy-red);
   color: #fff;
+  border-color: #8f0d18;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -2px 0 rgba(0, 0, 0, 0.25);
+}
+
+.look-a a.btn[href^="https://buy.stripe.com/"]:hover,
+.look-a a.btn[href*="amazon.com/"]:hover {
+  background: var(--candy-red);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 6px 0 var(--ink);
+}
+
+.look-a .hero a.btn-primary,
+.look-a .hero a.btn-primary:hover {
+  border-color: transparent;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -2px 0 rgba(0, 0, 0, 0.25), 0 0 0 2px #9aa6b4, 0 10px 28px -10px rgba(225, 29, 46, 0.75);
 }
 
-/* Floating "22 days" tag */
-.look-a .clip-chip--1 {
+/* Disabled pending checkout: neutral steel, visibly disabled (base opacity + grayscale stay) */
+.look-a .btn-checkout-pending,
+.look-a .btn-checkout-pending:hover {
+  background: #e4e9ef;
+  color: #475569;
+  border-color: #aab5c3;
+  box-shadow: none;
+}
+
+/* Start cue in the header */
+.look-a .nav-cta {
+  color: #fff;
+  border-color: var(--red);
+}
+
+.look-a .nav-cta:hover,
+.look-a .nav-cta:focus-visible {
   background: var(--candy-red);
   color: #fff;
+  border-color: transparent;
 }
 
-/* Strip milestones (Day 1, 7, 14, 22): ink with a red ring */
-.look-a .journey {
-  --ms-ring-c: rgba(225, 29, 46, 0.85);
+/* Step numbers: neutral chrome (not an action) */
+.look-a .step-num {
+  background: var(--chrome);
+  color: var(--ink);
 }
 
+/* Strip milestones (Day 1, 7, 14, 22): progress in candy red */
 .look-a .journey-day.is-milestone .journey-dot {
+  --dot-bg: var(--candy-red);
   --dot-fg: #fff;
-  box-shadow: 0 0 0 3px var(--ms-ring), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  --dot-border: #8f0d18;
+  box-shadow: 0 0 0 3px var(--ms-ring), inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
+/* Coach yellow tie-back: About heading highlight and footer rule + coach link only */
+.look-a .about h2 {
+  display: inline-block;
+  padding: 0 0.2em;
+  background: linear-gradient(transparent 60%, var(--coach-yellow) 60%, var(--coach-yellow) 92%, transparent 92%);
+}
+
+.look-a .footer .wrap::before {
+  content: "";
+  display: block;
+  width: 48px;
+  height: 4px;
+  margin: 0 auto 0.85rem;
+  border-radius: 2px;
+  background: var(--coach-yellow);
+}
+
+.look-a .footer a[href^="https://coachsalimheyaime.com"] {
+  color: var(--coach-yellow);
+}
 
 /* ---- Reduced motion: no animation, no reveal, strip shown complete ---- */
 @media (prefers-reduced-motion: reduce) {
