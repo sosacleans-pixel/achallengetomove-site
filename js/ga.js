@@ -1,7 +1,6 @@
 /* achallengetomove.com: Google Analytics 4 tag + event tracking (the ONLY GA file for this site).
- *
- * >>> To turn GA on: replace the placeholder below with the real Measurement ID (G-...). <<<
- * While GA_ID is still the placeholder, gtag.js is NOT loaded and nothing is sent anywhere.
+ * Measurement ID: G-CZNZSJ2290 (set in GA_ID below). If GA_ID is ever reset to a
+ * G-XXXX... placeholder, gtag.js is not loaded and nothing is sent.
  */
 (function () {
   'use strict';
