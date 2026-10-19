@@ -8,12 +8,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>30 Days Before X-mas Challenge: Coming Soon | A Challenge to Move</title>
-  <meta name="description" content="30 Days Before X-mas Challenge from A Challenge to Move. Coming soon. Day 1 is November 25. Get notified when it opens.">
+  <meta name="description" content="30 Days Before X-mas Challenge from A Challenge to Move. Coming soon. Start Day 1 the day you get it. Available through December 5, 2026. Get notified when it opens.">
   <link rel="canonical" href="https://achallengetomove.com/holiday-challenge/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="A Challenge to Move">
   <meta property="og:title" content="30 Days Before X-mas Challenge: Coming Soon">
-  <meta property="og:description" content="Coming soon. Day 1 is November 25. Get notified when it opens.">
+  <meta property="og:description" content="Coming soon. Start Day 1 the day you get it. Available through December 5, 2026. Get notified when it opens.">
   <meta property="og:url" content="https://achallengetomove.com/holiday-challenge/">
   <meta property="og:image" content="https://achallengetomove.com/img/og-card.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -57,8 +57,11 @@
         <div class="hcs-hero-copy">
           <p class="hcs-kicker">A Challenge to Move</p>
           <h1 id="hcs-title" data-i18n="title">30 Days Before X-mas Challenge</h1>
-          <p class="hcs-soon" data-i18n="soon">Coming soon. Day 1 is November 25.</p>
-          <p class="hcs-dates" data-i18n="dates">Wed, Nov 25 to Thu, Dec 24, 2026</p>
+          <p class="hcs-soon" data-i18n="soon">Coming soon. Start Day 1 the day you get it.</p>
+          <p class="hcs-price" data-i18n="price">$9.99</p>
+          <p class="hcs-dates" data-i18n="dates">Available through December 5, 2026.</p>
+          <!-- TODO(sale): from Dec 1, 2026 a sale line (30% off) goes here, e.g. <p class="hcs-sale" data-i18n="sale">...</p>.
+               Add it only after Salim confirms the price and the Stripe promotion code or sale Payment Link. See sale-plan.md. -->
           <p class="hcs-tagline" data-i18n="tagline">Feel strong into the holidays.</p>
         </div>
       </section>
@@ -81,9 +84,13 @@
           <input type="text" name="_honey" class="notify-honey" tabindex="-1" autocomplete="off" aria-hidden="true">
           <label for="notify-email" data-i18n="emailLabel">Email address</label>
           <input id="notify-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required aria-describedby="notify-consent notify-status">
+          <!-- CASL / CAN-SPAM consent wording (Attorney, privacy-coverage/gaps-and-fixes.md M-4), adapted to this list.
+               Visible under the field; notify.js sends this exact text as consent_note with each sign-up.
+               TODO(address): Attorney's text names a sender mailing address. It is left out on purpose: do NOT use
+               Salim's home address. Add a USPS PO box or private mailbox here (EN and ES) once one exists. -->
+          <p id="notify-consent" class="hcs-consent"><span data-i18n="consentPurpose">Email me when the 30 Days Before X-mas Challenge opens.</span> <span data-i18n="consentSender">Coach Salim Heyaime LLC (coachsalimheyaime@gmail.com) will send occasional emails about this challenge.</span> <span data-i18n="consentWithdraw">You can withdraw your consent and unsubscribe at any time with the link in every email, or by emailing coachsalimheyaime@gmail.com.</span> <a class="text-link" href="/privacy/" data-i18n="privacyNotice">Privacy notice</a></p>
           <button class="btn btn-primary" type="submit" data-i18n="submit">Get notified</button>
         </form>
-        <p id="notify-consent" class="hcs-consent"><span data-i18n="consent">We'll only email you about this challenge. Unsubscribe anytime.</span> <a class="text-link" href="/privacy/" data-i18n="privacyNotice">Privacy notice</a></p>
         <p id="notify-status" class="notify-status" role="status" aria-live="polite" tabindex="-1"></p>
       </section>
 
