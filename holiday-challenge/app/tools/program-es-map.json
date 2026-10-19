@@ -20,8 +20,6 @@
 "n/a (tests: stop at first form break)": "no aplica (pruebas: para en cuanto se rompa la técnica)",
 "Walk test: short sentences (RPE about 6)": "Prueba de caminata: frases cortas (RPE de unos 6)",
 "Holiday flex": "Día flexible festivo",
-"Thanksgiving (Thu Nov 26): short/flex day": "Día de Acción de Gracias (jue. 26 de nov.): día corto o flexible",
-"Thanksgiving: move a little, enjoy a lot. The floor version counts in full.": "Día de Acción de Gracias: muévete un poco y disfruta mucho. La versión mínima cuenta completa.",
 "Holiday walk, any pace, any split (e.g., before and after the meal, with family or friends)": "Caminata festiva, al ritmo que quieras y dividida como quieras (por ejemplo, antes y después de comer, con familia o amigos)",
 "10-15 min easy, split any way": "10-15 min suave, dividido como quieras",
 "Outdoor or indoor walk (mall, hallway loop, treadmill)": "Caminata al aire libre o bajo techo (centro comercial, vueltas en un pasillo, caminadora)",
@@ -177,7 +175,6 @@
 "19 min steady": "19 min constante",
 "Lighter circuit. Arrive at the finish fresh, not fried.": "Circuito más ligero. Llega a la meta fresco, no agotado.",
 "Timed circuit: 2 rounds of 5 moves, 40 s work / 20 s rest. Book swap: you may do the 7-Minute Workout from A Challenge to Move (Ch. 4) instead": "Circuito por tiempo: 2 rondas de 5 ejercicios, 40 s de trabajo / 20 s de descanso. Cambio por el libro: puedes hacer en su lugar el Entrenamiento de 7 Minutos de A Challenge to Move (cap. 4)",
-"Recovery before the finish. Pick your retest day now (Dec 22-24).": "Recuperación antes del final. Elige ya tu día para repetir las pruebas (22-24 de dic.).",
 "Finish-line full body": "Cuerpo completo rumbo a la meta",
 "Finish-line full body: crisp and light.": "Cuerpo completo rumbo a la meta: preciso y ligero.",
 "Circuit: 2 rounds, easy rest. Taper day: stop well short of tired": "Circuito: 2 rondas, descanso cómodo. Día de descarga: para mucho antes de cansarte",
@@ -185,8 +182,6 @@
 "Calf raise holding one dumbbell, other hand on the counter": "Elevación de talones con una mancuerna, la otra mano en la barra de la cocina",
 "Calf raise holding one kettlebell, other hand on the counter": "Elevación de talones con una pesa rusa, la otra mano en la barra de la cocina",
 "Retest + holiday flex": "Repetir pruebas + día flexible festivo",
-"Christmas Eve (Thu Dec 24): short/flex day; retest can move to Dec 22-23 or up to Dec 27": "Nochebuena (jue. 24 de dic.): día corto o flexible; las pruebas pueden pasarse al 22-23 de dic. o hasta el 27 de dic.",
-"Christmas Eve flex + retest. Compare to Day 1 and celebrate showing up.": "Nochebuena flexible + repetir pruebas. Compara con el Día 1 y celebra que te presentaste.",
 "Compare to Day 1": "Compara con el Día 1",
 "Day 30: compare to Day 1, same test options, same time of day if you can": "Día 30: compara con el Día 1, con las mismas opciones de prueba y a la misma hora si puedes",
 "Warm-up (every core session)": "Calentamiento (en cada sesión principal)",
@@ -306,5 +301,10 @@
 "full sentences, couldn't sing (moderate)": "frases completas, no podrías cantar (moderado)",
 "short sentences": "frases cortas",
 "a few words at a time (program ceiling)": "pocas palabras a la vez (el tope del programa)",
-"not used": "no se usa"
+"not used": "no se usa",
+"Flex day: short or floor version": "Día flexible: versión corta o mínima",
+"Flex day: move a little, enjoy a lot. The floor version counts in full.": "Día flexible: muévete un poco y disfruta mucho. La versión mínima cuenta completa.",
+"Recovery before the finish. Pick your retest day now (Day 28, 29 or 30).": "Recuperación antes del final. Elige ya tu día para repetir las pruebas (Día 28, 29 o 30).",
+"Short/flex day; the retest can move up to 2 days earlier or up to 3 days after Day 30": "Día corto o flexible; puedes repetir las pruebas hasta 2 días antes o hasta 3 días después del Día 30",
+"Day 30 flex + retest. Compare to Day 1 and celebrate showing up.": "Día 30 flexible + repetir pruebas. Compara con el Día 1 y celebra que te presentaste."
 }

@@ -5,7 +5,8 @@
  *      HC_TIMEOUT=ms per Playwright action (default 60000; slow boxes can raise it),
  *      HC_ONLY=1,2,8 to run only some sections (default: all). Section 0 (privacy/network checks) and the
  *      final "no off-origin requests" / "no JS errors" checks always run.
- * Sections: 1-9 live challenge, 10 late-join goal, 11 self-paced edition, 12 Spanish (EN/ES key parity, switch,
+ * Sections: 1-9 core flow (rolling start: Day 1 = the day setup is finished), 10 rolling-start rules + local time zone,
+ *   11 rolling start from any date (after Christmas, old saved data, new round, copy scan), 12 Spanish (EN/ES key parity, switch,
  *   390px overflow), 13 Consumer Health Data Privacy Policy page (/privacy/consumer-health-data/, links, sitemap),
  *   14 bold negligence release, 15 protected days = make-up days after Day 30, 16 no GA on holiday pages / checkout path,
  *   17 Notify-me unchecked opt-in (FormSubmit stubbed).
@@ -93,7 +94,7 @@ async function seed(page, state) {
   await page.waitForSelector("#app-main > *");
 }
 function baseState(extra = {}) {
-  return { version: 1, setupDone: true, joinedDate: "2026-11-25", setup: { age: true, readiness: [false, false, false, false, false, false], gentleAck: false, terms: true }, level: "b", equipment: "none", busyDays: [], reminderTime: "07:00", unbrokenOptIn: false, days: {}, makeup: [], tests: {}, levelLog: [], ...extra };
+  return { version: 1, setupDone: true, startDate: "2026-11-25", joinedDate: "2026-11-25", setup: { age: true, readiness: [false, false, false, false, false, false], gentleAck: false, terms: true }, level: "b", equipment: "none", busyDays: [], reminderTime: "07:00", unbrokenOptIn: false, days: {}, makeup: [], tests: {}, levelLog: [], ...extra };
 }
 async function shot(page, name) {
   if (!SHOTS) return;
@@ -116,27 +117,30 @@ async function setup(page) {
   await page.check("#terms-ok"); await page.click("#setup-next");
 }
 
-// 1. Pre-launch countdown + preview Day 1 + setup
+// 1. Welcome (no countdown, no shared start date) + preview Day 1 + setup: Day 1 = the day setup is finished
 if (run(1)) for (const vp of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+  const { S } = await import(new URL("../js/strings.en.js", import.meta.url).href);
   const { ctx, page } = await newPage("2026-11-10T10:00:00", vp);
   await page.goto(BASE + "index.html");
-  await page.waitForSelector("#countdown");
-  const d = await page.textContent("#cd-d");
-  check(`[${vp.width}] pre-launch countdown shows days to Nov 25`, Number(d) === 14, `days=${d}`);
+  await page.waitForSelector("#start-card");
+  check(`[${vp.width}] welcome: no countdown, rolling-start card instead`, !(await page.isVisible("#countdown")) && (await page.textContent("#start-card")).includes(S.welcome.startLead));
+  check(`[${vp.width}] welcome: no fixed Nov 25 / Dec 24 dates`, !/Nov 25|Dec 24|November|Christmas Eve/.test(await page.textContent("main")));
   check(`[${vp.width}] preview Day 1 button`, await page.isVisible("#preview-day1"));
-  await shot(page, `welcome-countdown-${vp.width}.png`);
+  await shot(page, `welcome-${vp.width}.png`);
   if (vp.width === 390) {
     await page.click("#preview-day1");
     await page.waitForSelector(".day-head");
     const t = await page.textContent(".page-title");
     check("preview Day 1 shows Baseline test", /Baseline test/.test(t), t.trim());
     check("preview has no check-off buttons", !(await page.isVisible("#log-core")));
+    check("preview Day 1 notice: check-offs open on the day you finish setup", (await page.textContent(".notice")).includes(S.day.previewDay1));
     await page.goto(BASE + "index.html#/today");
     await page.waitForSelector("#start-setup");
     await setup(page);
-    await page.waitForSelector("#countdown");
+    await page.waitForSelector(".day-head");
     const st = await page.evaluate(() => JSON.parse(localStorage.getItem("holiday-30-v1")));
-    check("setup saved locally (joined = Nov 25, dumbbell, busy Sat)", st.setupDone && st.joinedDate === "2026-11-25" && st.equipment === "dumbbell" && st.busyDays.includes(6));
+    check("setup saved locally (start = today Nov 10, dumbbell, busy Sat, no mode)", st.setupDone && st.startDate === "2026-11-10" && st.joinedDate === "2026-11-10" && !("mode" in st) && st.equipment === "dumbbell" && st.busyDays.includes(6));
+    check("setup on Nov 10 lands on Day 1 (today), ready to log", /Day 1 of 30/.test(await page.textContent(".day-head .kicker")) && /Nov 10/.test(await page.textContent(".day-head .kicker")) && (await page.isVisible("#log-core")));
   }
   await ctx.close();
 }
@@ -146,7 +150,7 @@ if (run(2)) {
   const { ctx, page } = await newPage("2026-11-25T08:00:00");
   await seed(page, baseState());
   const t = await page.textContent(".page-title");
-  check("Nov 25 opens Day 1", /Baseline test/.test(t) && /Day 1 of 30/.test(await page.textContent(".day-head .kicker")));
+  check("start date (Nov 25) opens Day 1", /Baseline test/.test(t) && /Day 1 of 30/.test(await page.textContent(".day-head .kicker")));
   await page.click("#log-core");
   await page.waitForSelector(".status-card.core");
   await page.fill('#tests-form input[name="pu"]', "10");
@@ -160,7 +164,7 @@ if (run(2)) {
   await ctx.close();
 }
 
-// 3. Mid-challenge (Day 15, Dec 9) with history; back-log rule
+// 3. Mid-challenge (start Nov 25, so Dec 9 = Day 15) with history; back-log rule
 if (run(3)) {
   const days = {}; for (let n = 1; n <= 14; n++) if (![4, 9].includes(n)) days[n] = { status: n % 3 ? "core" : "floor", habits: { water: true, steps: true, wind_down: true, breath_1min: true } };
   days[9] = { status: "protected" };
@@ -200,34 +204,42 @@ if (run(3)) {
   await ctx.close();
 }
 
-// 4. Late join (Dec 10 = Day 16)
+// 4. Last sale day: bought and set up on Dec 5, 2026 -> Day 1 Dec 5, Day 30 Jan 3, 2027 (after Christmas, nothing promises otherwise)
 if (run(4)) {
-  const { ctx, page } = await newPage("2026-12-10T09:00:00");
+  const { S } = await import(new URL("../js/strings.en.js", import.meta.url).href);
+  const { ctx, page } = await newPage("2026-12-05T09:00:00");
   await page.goto(BASE + "index.html");
-  await page.waitForSelector(".late-card");
-  check("late joiner sees 'today is Day 16' and 15 days left", /Day 16/.test(await page.textContent(".late-card")) && /15 days left/.test(await page.textContent(".late-card")));
+  await page.waitForSelector("#start-card");
+  check("Dec 5: no 'late' card, no 'days left' copy, same start card", !(await page.isVisible(".late-card")) && !/days left|today is Day/.test(await page.textContent("main")));
   await setup(page);
   await page.waitForSelector(".day-head");
-  check("late joiner lands on Day 16", /Day 16 of 30/.test(await page.textContent(".day-head")));
-  check("late joiner gets a baseline test form on join day", await page.isVisible("#tests-form"));
+  check("Dec 5 buyer starts on Day 1 (Sat, Dec 5)", /Day 1 of 30/.test(await page.textContent(".day-head .kicker")) && /Dec 5/.test(await page.textContent(".day-head .kicker")));
+  check("Dec 5 buyer gets the Day 1 baseline test form", await page.isVisible("#tests-form"));
   await page.goto(BASE + "index.html#/plan");
   await page.waitForSelector(".plan-item");
-  const before = await page.locator(".plan-item.st-before").count();
-  check("days 1-15 shown as 'before you joined'", before === 15, `count=${before}`);
+  const plan = await page.textContent("main");
+  check("Dec 5 plan: 30 days, Dec 5 to Jan 3, none 'before you joined'", (await page.locator(".plan-item").count()) === 30 && (await page.locator(".plan-item.st-before").count()) === 0 && plan.includes(S.plan.window("Sat, Dec 5", "Sun, Jan 3")), (await page.textContent("#plan-window")).trim());
+  check("plan week ranges use 'to', no en dash", !/\u2013/.test(plan) && /Dec 5 to Dec 11/.test(plan));
+  await page.goto(BASE + "index.html#/day/30");
+  await page.waitForSelector(".day-head");
+  const d30 = await page.textContent("main");
+  check("Dec 5 buyer: Day 30 is Sun, Jan 3, with no Christmas Eve / Dec 22-27 text", /Day 30 of 30/.test(d30) && /Jan 3/.test(d30) && !/Christmas|Dec 2[2-7]/.test(d30));
   await page.goto(BASE + "index.html#/progress");
   await page.waitForSelector(".ring");
-  check("late-join target is proportional (11)", /\/ 11/.test(await page.textContent(".ring")));
-  await shot(page, "late-join-progress-390.png");
+  check("goal is 22 of 30 for everyone", /\/ 22\b/.test(await page.textContent(".ring")));
+  const ics = await page.evaluate(() => window.__HC.buildICS());
+  check("Dec 5 buyer reminders: 30 events, Dec 5 to Jan 3", (ics.match(/BEGIN:VEVENT/g) || []).length === 30 && /DTSTART:20261205T/.test(ics) && /DTSTART:20270103T/.test(ics) && !/DTSTART:20261204T|DTSTART:20270104T/.test(ics));
+  await shot(page, "dec5-buyer-progress-390.png");
   await ctx.close();
 }
 
-// 5. Completion (Dec 26)
+// 5. Completion (start Nov 25, so Day 30 = Dec 24; Dec 26 is after Day 30)
 if (run(5)) for (const vp of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
   const days = {}; for (let n = 1; n <= 30; n++) if (n % 5) days[n] = { status: n % 2 ? "core" : "floor", habits: {} };
   const { ctx, page } = await newPage("2026-12-26T10:00:00", vp);
   await seed(page, baseState({ days, tests: { 1: { pu: 4, sts: 10, bal: 20 }, 30: { pu: 7, sts: 9, bal: 25 } } }));
   await page.waitForSelector(".done-hero");
-  check(`[${vp.width}] after Dec 24 shows completion summary`, /Finisher/.test(await page.textContent(".done-hero")));
+  check(`[${vp.width}] after Day 30 shows completion summary, titled by days not by Christmas`, /Finisher/.test(await page.textContent(".done-hero")) && /You finished your 30 days/.test(await page.textContent(".done-hero")) && !/Christmas/.test(await page.textContent("main")));
   check(`[${vp.width}] summary shows 24 complete days`, (await page.textContent("#done-complete")).trim() === "24");
   check(`[${vp.width}] lower retest number shows 'logged', not a drop`, /logged/.test(await page.textContent("table.cmp")));
   await shot(page, `completion-${vp.width}.png`);
@@ -255,6 +267,7 @@ if (run(6)) {
   check("reminder calendar has 30 events", (ics.match(/BEGIN:VEVENT/g) || []).length === 30);
   await page.goto(BASE + "index.html?date=clear#/today");
   check("?date=clear removes override", !(await page.isVisible("#debug-ribbon")));
+  check("start date later than today's clock (clock or time zone moved back): Day 1 shows as a preview, no crash", /Day 1 of 30/.test(await page.textContent(".day-head .kicker")) && !(await page.isVisible("#log-core")));
   await ctx.close();
 }
 // 6b. Shipped config: visitors can't move the clock with ?date= / ?now=
@@ -290,8 +303,8 @@ if (run(7)) {
   await page.goto(BASE + "index.html#/moves").catch(() => {});
   await page.waitForSelector(".move-card", { timeout: 15000 }).catch(() => {});
   check("offline navigation works (Moves)", (await page.locator(".move-card").count()) > 20);
-  const cached = await page.evaluate(async () => { const keys = await caches.keys(); const c = await caches.open("holiday-30-v5"); return { keys, urls: (await c.keys()).map((r) => new URL(r.url).pathname) }; });
-  check("service worker cache is holiday-30-v5", cached.keys.includes("holiday-30-v5"), cached.keys.join(","));
+  const cached = await page.evaluate(async () => { const keys = await caches.keys(); const c = await caches.open("holiday-30-v6"); return { keys, urls: (await c.keys()).map((r) => new URL(r.url).pathname) }; });
+  check("service worker cache is holiday-30-v6", cached.keys.includes("holiday-30-v6"), cached.keys.join(","));
   check("fonts are in the offline cache", ["anton-v27-latin-400", "lato-v25-latin-400", "lato-v25-latin-700", "lato-v25-latin-900"].every((f) => cached.urls.some((u) => u.endsWith(`/fonts/${f}.woff2`))));
   await ctx.close();
 }
@@ -351,7 +364,7 @@ if (run(9)) {
   o = await overflow(); check("setup step 5 (terms) fits 390px", o.length === 0, o.slice(0, 3).join(" | "));
   await shot(page, "setup-terms-390.png");
   await page.check("#terms-ok"); await page.click("#setup-next");
-  await page.waitForSelector("#countdown");
+  await page.waitForSelector(".day-head");
   // Stop & Log text (day.stopText / stopSigns) in the modal, opened from a live day
   const { ctx: c2, page: p2 } = await newPage("2026-12-09T10:00:00");
   await seed(p2, baseState());
@@ -377,124 +390,117 @@ if (run(9)) {
 }
 
 
-// 10. Late joins (DECIDED): allowed, goal = ceil(22/30 x days remaining); a Day 1 start = 22 of 30
+// 10. Rolling start rules: no shared calendar in config; Day N = start + N-1 local days; day boundary = local midnight
 if (run(10)) {
   const { CONFIG } = await import(new URL("../js/config.js", import.meta.url).href);
   const R = await import(new URL("../js/rules.js", import.meta.url).href);
-  check("config: late joins allowed, proportional goal, 22 of 30", CONFIG.lateJoin === true && CONFIG.lateJoinTarget === "proportional" && CONFIG.requiredDays === 22);
-  const expect = { 1: 22, 2: 22, 8: 17, 16: 11, 23: 6, 29: 2, 30: 1 };
-  const got = Object.fromEntries(Object.keys(expect).map((j) => [j, R.lateJoinTarget(Number(j))]));
-  check("late-join goal = ceil(22 * daysLeft / 30)", Object.entries(expect).every(([j, v]) => got[j] === v && v === Math.ceil((22 * (31 - j)) / 30) || (Number(j) === 1 && got[j] === 22)), JSON.stringify(got));
-  const { ctx, page } = await newPage("2026-12-23T09:00:00");
-  await page.goto(BASE + "index.html");
-  await page.waitForSelector(".late-card");
-  check("late join on Dec 23 is open (Day 29, 2 days left)", /Day 29/.test(await page.textContent(".late-card")) && /2 days left/.test(await page.textContent(".late-card")));
-  await setup(page);
-  await page.goto(BASE + "index.html#/progress");
-  await page.waitForSelector(".ring");
-  check("late join on Day 29: goal is 2", /\/ 2\b/.test(await page.textContent(".ring")));
-  await ctx.close();
+  const D = await import(new URL("../js/dates.js", import.meta.url).href);
+  check("config: no fixed start/end, no late-join or self-paced switches; 30 days, 22 to finish, 7 make-up days", !("start" in CONFIG) && !("end" in CONFIG) && !("extendUntil" in CONFIG) && !("lateJoin" in CONFIG) && !("selfPaced" in CONFIG) && CONFIG.programDays === 30 && CONFIG.requiredDays === 22 && CONFIG.extendDays === 7);
+  check("dates.js has no countdown or global day number", !("countdown" in D) && !("dayNumberFor" in D) && !("phase" in D));
+  const st = { setupDone: true, startDate: "2026-12-05", days: {}, makeup: [] };
+  check("start Dec 5: Day 1 Dec 5, Day 2 Dec 6, Day 30 Jan 3, 2027", R.dateFor(st, 1) === "2026-12-05" && R.dateFor(st, 2) === "2026-12-06" && R.endOf(st) === "2027-01-03" && R.dayNum(st, "2027-01-03") === 30 && R.dayNum(st, "2027-01-04") === 31);
+  check("finisher goal is 22 for everyone (no late-join scaling)", R.target(st) === 22 && !("lateJoinTarget" in R));
+  check("visitor preview counts Day 1 as today", R.startOf(null) === D.dateKey(D.now()));
+  // Day boundary follows the user's own clock: the same instant is Day 1 in Los Angeles and Denver, Day 2 in Tokyo.
+  for (const [tz, want] of [["America/Los_Angeles", 1], ["America/Denver", 1], ["Asia/Tokyo", 2]]) {
+    const { ctx, page } = await newPage(null, undefined, { timezoneId: tz });
+    await page.clock.setFixedTime(new Date("2026-12-06T06:30:00Z"));
+    await seed(page, baseState({ startDate: "2026-12-05", joinedDate: "2026-12-05" }));
+    const kick = await page.textContent(".day-head .kicker");
+    check(`[${tz}] 2026-12-06 06:30 UTC is Day ${want} for a Dec 5 start (local midnight unlocks the next day)`, new RegExp(`Day ${want} of 30`).test(kick), kick.trim());
+    await ctx.close();
+  }
 }
 
-// 11. Self-paced edition (after Dec 24, or by choice): Day 1 = own start date, 30 days, no fixed calendar
+// 11. Rolling start from any date: same flow for everyone, no "self-paced edition" and no live/self choice
 if (run(11)) {
   const { S } = await import(new URL("../js/strings.en.js", import.meta.url).href);
-  const { CONFIG } = await import(new URL("../js/config.js", import.meta.url).href);
-  check("config: self-paced on, after Dec 24, 30 days", CONFIG.selfPaced.enabled && CONFIG.selfPaced.after === "2026-12-24" && CONFIG.selfPaced.days === 30);
-  // a. first open after Dec 24
+  // a. first open after Christmas (still within the 12-month Access Period)
   {
     const { ctx, page } = await newPage("2026-12-28T09:00:00");
     await page.goto(BASE + "index.html");
-    await page.waitForSelector("#self-start-card");
-    check("first open Dec 28: self-paced start card, no live setup button", (await page.isVisible("#start-self")) && !(await page.isVisible("#start-setup")) && !(await page.isVisible("#countdown")));
-    await shot(page, "self-paced-start-390.png");
-    await page.click("#start-self");
-    await page.waitForSelector("#self-setup-note");
-    check("self-paced setup explains Day 1 = today", (await page.textContent("#self-setup-note")) === S.self.setupNote);
+    await page.waitForSelector("#start-card");
+    check("first open Dec 28: same start card and setup button, no 'season wrapped up' or self-paced choice", (await page.isVisible("#start-setup")) && !(await page.isVisible("#start-self")) && !(await page.isVisible("#self-choice")) && !/wrapped up|self-paced/i.test(await page.textContent("main")));
+    await page.click("#start-setup");
+    await page.waitForSelector("#start-note");
+    check("setup explains Day 1 = today", (await page.textContent("#start-note")) === S.setup.startNote);
     await page.check("#age-ok"); await page.click("#setup-next");
     for (let i = 0; i < 6; i++) await page.check(`input[name=q${i}][value=no]`);
     await page.click("#setup-next"); await page.fill("#pu-now", "9"); await page.click("#setup-next"); await page.click("#setup-next");
     await page.check("#terms-ok"); await page.click("#setup-next");
     await page.waitForSelector(".day-head");
     const st = await page.evaluate(() => JSON.parse(localStorage.getItem("holiday-30-v1")));
-    check("self-paced state saved: mode self, start Dec 28", st.mode === "self" && st.startDate === "2026-12-28" && st.joinedDate === "2026-12-28");
+    check("state saved: start Dec 28", st.startDate === "2026-12-28" && st.joinedDate === "2026-12-28");
     const kick = await page.textContent(".day-head .kicker");
-    check("self-paced Day 1 is today (Mon, Dec 28)", /Day 1 of 30/.test(kick) && /Dec 28/.test(kick) && /Baseline test/.test(await page.textContent(".page-title")), kick.trim());
-    check("self-paced Day 1 can be logged", await page.isVisible("#log-core"));
+    check("Day 1 is today (Mon, Dec 28)", /Day 1 of 30/.test(kick) && /Dec 28/.test(kick) && /Baseline test/.test(await page.textContent(".page-title")), kick.trim());
+    check("Day 1 can be logged", await page.isVisible("#log-core"));
     await page.goto(BASE + "index.html#/day/2");
     await page.waitForSelector(".day-head");
     const d2 = await page.textContent("main");
-    check("self-paced Day 2 is Dec 29, no Thanksgiving calendar text", /Dec 29/.test(d2) && !/Thanksgiving|Nov 26/.test(d2));
+    check("Day 2 is Dec 29, no Thanksgiving calendar text", /Dec 29/.test(d2) && !/Thanksgiving|Nov 26/.test(d2));
     await page.goto(BASE + "index.html#/day/30");
     await page.waitForSelector(".day-head");
     const d30 = await page.textContent("main");
-    check("self-paced Day 30 is Jan 26, no Christmas Eve dates", /Jan 26/.test(d30) && !/Dec 2[2-7]|Christmas Eve/.test(d30));
+    check("Day 30 is Jan 26, no Christmas Eve dates", /Jan 26/.test(d30) && !/Dec 2[2-7]|Christmas Eve/.test(d30));
     await page.goto(BASE + "index.html#/plan");
     await page.waitForSelector(".plan-item");
-    check("self-paced plan: 30 days, none 'before you joined', own-calendar lead", (await page.locator(".plan-item").count()) === 30 && (await page.locator(".plan-item.st-before").count()) === 0 && (await page.textContent("main")).includes(S.self.planLead));
-    await page.goto(BASE + "index.html#/progress");
-    await page.waitForSelector(".ring");
-    check("self-paced goal is 22 of 30", /\/ 22\b/.test(await page.textContent(".ring")));
-    const ics = await page.evaluate(() => window.__HC.buildICS());
-    check("self-paced reminders: 30 events from Dec 28 to Jan 26", (ics.match(/BEGIN:VEVENT/g) || []).length === 30 && /DTSTART:20261228T/.test(ics) && /DTSTART:20270126T/.test(ics) && !/DTSTART:20261125T/.test(ics));
+    check("plan: 30 days, own-calendar lead", (await page.locator(".plan-item").count()) === 30 && (await page.textContent("main")).includes(S.plan.lead));
     await ctx.close();
   }
-  // b. choosing self-paced before the live window
-  {
-    const { ctx, page } = await newPage("2026-11-10T10:00:00");
-    await page.goto(BASE + "index.html");
-    await page.waitForSelector("#countdown");
-    check("pre-launch welcome offers 'start self-paced' alongside the live setup", (await page.isVisible("#start-self")) && (await page.isVisible("#start-setup")));
-    await page.click("#start-self");
-    await page.check("#age-ok"); await page.click("#setup-next");
-    for (let i = 0; i < 6; i++) await page.check(`input[name=q${i}][value=no]`);
-    await page.click("#setup-next"); await page.click("#setup-next"); await page.click("#setup-next");
-    await page.check("#terms-ok"); await page.click("#setup-next");
-    await page.waitForSelector(".day-head");
-    const st = await page.evaluate(() => JSON.parse(localStorage.getItem("holiday-30-v1")));
-    check("chose self-paced on Nov 10: Day 1 is Nov 10, no countdown", st.mode === "self" && st.startDate === "2026-11-10" && /Day 1 of 30/.test(await page.textContent(".day-head")) && !(await page.isVisible("#countdown")));
-    await ctx.close();
-  }
-  // c. mid-run day numbering follows the user's own start date
+  // b. mid-run day numbering follows the user's own start date
   {
     const { ctx, page } = await newPage("2027-01-24T10:00:00");
-    await seed(page, baseState({ mode: "self", startDate: "2027-01-10", joinedDate: "2027-01-10", days: { 1: { status: "core" }, 2: { status: "floor" } } }));
+    await seed(page, baseState({ startDate: "2027-01-10", joinedDate: "2027-01-10", days: { 1: { status: "core" }, 2: { status: "floor" } } }));
     const head = await page.textContent(".day-head");
-    check("self-paced started Jan 10: Jan 24 is Day 15", /Day 15 of 30/.test(head) && /Jan 24/.test(head));
+    check("started Jan 10: Jan 24 is Day 15", /Day 15 of 30/.test(head) && /Jan 24/.test(head));
     await page.goto(BASE + "index.html#/progress");
     await page.waitForSelector("#complete-count");
-    check("self-paced progress counts its own days", (await page.textContent("#complete-count")).trim() === "2");
+    check("progress counts its own days", (await page.textContent("#complete-count")).trim() === "2");
     await ctx.close();
   }
-  // d. existing live user past Dec 24: completion summary first, then the option to keep going self-paced
+  // c. data saved by the earlier fixed-calendar preview (mode "live", no startDate) keeps its days; then a new round
   {
     const days = {}; for (let n = 1; n <= 30; n++) if (n % 5) days[n] = { status: "core", habits: {} };
     const { ctx, page } = await newPage("2026-12-26T10:00:00");
-    await seed(page, baseState({ days, tests: { 1: { pu: 4 } } }));
+    const old = baseState({ days, tests: { 1: { pu: 4 } }, mode: "live" }); delete old.startDate;
+    await seed(page, old);
     await page.waitForSelector(".done-hero");
-    const order = await page.evaluate(() => { const a = document.querySelector("#done-complete"); const b = document.querySelector("#keep-going-self-card"); return !!(a && b && (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING)); });
-    check("live user on Dec 26 sees the completion summary, then 'keep going self-paced'", (await page.textContent("#done-complete")).trim() === "24" && order);
-    await shot(page, "self-paced-keep-going-390.png");
-    await page.click("#keep-going-self");
+    const order = await page.evaluate(() => { const a = document.querySelector("#done-complete"); const b = document.querySelector("#new-round-card"); return !!(a && b && (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING)); });
+    check("old saved data: start taken from its joined date (Nov 25), completion summary, then 'start a new round'", (await page.textContent("#done-complete")).trim() === "24" && order);
+    await shot(page, "new-round-390.png");
+    await page.click("#new-round");
     await page.waitForSelector(".day-head");
     const st = await page.evaluate(() => JSON.parse(localStorage.getItem("holiday-30-v1")));
-    check("keep going: new self-paced run from Dec 26, live results kept in history", st.mode === "self" && st.startDate === "2026-12-26" && Object.keys(st.days).length === 0 && st.history.length === 1 && st.history[0].mode === "live" && Object.keys(st.history[0].days).length === 24 && st.setup.terms === true);
-    check("keep going: today is self-paced Day 1", /Day 1 of 30/.test(await page.textContent(".day-head")) && (await page.isVisible("#log-core")));
+    check("new round: Day 1 = Dec 26, earlier results kept in history, terms kept", st.startDate === "2026-12-26" && !("mode" in st) && Object.keys(st.days).length === 0 && st.history.length === 1 && st.history[0].startDate === "2026-11-25" && Object.keys(st.history[0].days).length === 24 && st.setup.terms === true);
+    check("new round: today is Day 1", /Day 1 of 30/.test(await page.textContent(".day-head")) && (await page.isVisible("#log-core")));
     await ctx.close();
   }
-  // e. self-paced finish + protected-day extension (capped at 7 extra days)
+  // d. finish + protected-day extension (capped at 7 extra days)
   {
     const days = {}; for (let n = 1; n <= 20; n++) days[n] = { status: "core" }; days[21] = { status: "protected" }; days[22] = { status: "protected" };
     const { ctx, page } = await newPage("2027-02-01T10:00:00");
-    await seed(page, baseState({ mode: "self", startDate: "2027-01-01", joinedDate: "2027-01-01", days }));
+    await seed(page, baseState({ startDate: "2027-01-01", joinedDate: "2027-01-01", days }));
     await page.waitForSelector(".done-hero");
-    check("self-paced run past Day 30 shows its own finish title", (await page.textContent(".done-hero")).includes(S.self.doneTitle) && !/Christmas Eve/.test(await page.textContent(".done-hero")));
-    check("self-paced protected days open make-up logging (Jan 30 + 2 days)", await page.isVisible("#log-makeup"));
-    check("self-paced finish offers another self-paced round", await page.isVisible("#keep-going-self"));
+    check("run past Day 30 shows the finish title", (await page.textContent(".done-hero")).includes(S.done.title) && !/Christmas Eve/.test(await page.textContent(".done-hero")));
+    check("protected days open make-up logging (Jan 30 + 2 days)", await page.isVisible("#log-makeup"));
+    check("finish offers another round", await page.isVisible("#new-round"));
     await ctx.close();
     const R = await import(new URL("../js/rules.js", import.meta.url).href);
     const many = {}; for (let n = 1; n <= 12; n++) many[n] = { status: "protected" };
-    check("self-paced extension capped at 7 days", R.deadline({ setupDone: true, mode: "self", startDate: "2027-01-01", joinedDate: "2027-01-01", days: many, makeup: [] }) === "2027-02-06");
+    check("extension capped at 7 days", R.deadline({ setupDone: true, startDate: "2027-01-01", joinedDate: "2027-01-01", days: many, makeup: [] }) === "2027-02-06");
+  }
+  // e. copy: no fixed calendar, countdown or before-Christmas promise in the app UI or program (EN + ES; legal text excluded, see report)
+  {
+    const EN = (await import(new URL("../js/strings.en.js", import.meta.url).href)).S;
+    const ES = (await import(new URL("../js/strings.es.js", import.meta.url).href)).S;
+    const PEN = (await import(new URL("../js/program.en.js", import.meta.url).href)).PROGRAM;
+    const PES = (await import(new URL("../js/program.es.js", import.meta.url).href)).PROGRAM;
+    const ui = (x) => { const { legal, ...rest } = x; return JSON.stringify(rest, (k, v) => (typeof v === "function" ? v("A", "B") : v)); };
+    const BAD = /Nov(ember)? 2[0-9]|Dec(ember)? (2[0-9]|3[01])\b|noviembre|de dic|diciembre|Christmas|Navidad|Nochebuena|Thanksgiving|Acci\u00f3n de Gracias|countdown|starts in|D\u00eda 1 empieza en|self-paced|a tu ritmo|before you joined|antes de unirte|2026-1[12]-/i;
+    const hit = (ui(EN) + ui(ES) + JSON.stringify(PEN) + JSON.stringify(PES)).match(BAD);
+    check("no fixed dates, countdown, live/self-paced or Christmas promise in app UI strings or program (EN + ES)", !hit, hit && hit[0]);
+    check("no en or em dashes in app UI strings (EN + ES)", !/[\u2013\u2014]/.test(ui(EN) + ui(ES)));
+    check("program has no calendar dates (no date/wd fields, no start/end)", PEN.days.every((d) => !("date" in d) && !("wd" in d)) && !("start" in PEN) && !("end" in PEN) && PES.days.every((d) => !("date" in d)));
   }
 }
 
@@ -522,7 +528,7 @@ if (run(12)) {
   check("strings: every EN key exists in ES and vice versa (same shape, same list lengths)", diffs.length === 0, diffs.slice(0, 5).join(" | "));
   check("strings: ES bundle is marked lang es", EN.lang === "en" && ES.lang === "es");
   const pd = [];
-  const KEEP = new Set(["id", "version", "date", "wd", "cat", "week", "start", "end"]);
+  const KEEP = new Set(["id", "version", "cat", "week", "startRule"]);
   const cmpP = (a, b, p, key, idx) => {
     if (typeof a !== typeof b || Array.isArray(a) !== Array.isArray(b)) return pd.push(`${p}: type`);
     if (Array.isArray(a)) { if (a.length !== b.length) pd.push(`${p}: length`); return a.forEach((v, i) => cmpP(v, b[i], `${p}[${i}]`, key, i)); }
@@ -592,7 +598,8 @@ if (run(12)) {
   {
     const { ctx, page } = await newPage("2026-11-10T10:00:00", undefined, { locale: "es-MX" });
     await page.goto(BASE + "index.html");
-    await page.waitForSelector("#countdown");
+    await page.waitForSelector("#start-card");
+    check("ES welcome: rolling-start card in Spanish, no fixed dates", (await page.textContent("#start-card")).includes(ES.welcome.startLead) && !/noviembre|diciembre/.test(await page.textContent("main")));
     check("browser in Spanish (es-MX): app opens in Spanish", (await page.getAttribute("html", "lang")) === "es" && (await page.textContent(".hero-title")) === ES.welcome.title);
     check("welcome has the EN/ES switch", (await page.isVisible('#lang-welcome [data-lang="en"]')) && (await page.isVisible('#lang-welcome [data-lang="es"]')));
     await shot(page, "es-welcome-390.png");
@@ -619,7 +626,7 @@ if (run(12)) {
   const note = async (page, name) => { const o = await overflowOn(page); if (o.length) bad[name] = o.slice(0, 3); };
   {
     const { ctx, page } = await newPage("2026-11-10T10:00:00", undefined, { locale: "es-MX" });
-    await page.goto(BASE + "index.html"); await page.waitForSelector("#countdown"); await note(page, "welcome-pre");
+    await page.goto(BASE + "index.html"); await page.waitForSelector("#start-card"); await note(page, "welcome");
     await page.click("#start-setup"); await page.waitForSelector("#age-ok"); await note(page, "setup-1");
     await page.check("#age-ok"); await page.click("#setup-next");
     for (let i = 0; i < 6; i++) await page.check(`input[name=q${i}][value=yes]`);
@@ -663,26 +670,30 @@ if (run(12)) {
     await ctx.close();
   }
   {
-    const { ctx, page } = await newPage("2026-12-10T09:00:00", undefined, { locale: "es-MX" });
-    await page.goto(BASE + "index.html"); await page.waitForSelector(".late-card"); await note(page, "welcome-late");
-    check("ES late-join card", /Día 16/.test(await page.textContent(".late-card")) && /quedan 15 días/.test(await page.textContent(".late-card")));
-    await ctx.close();
-  }
-  {
-    const { ctx, page } = await newPage("2026-12-28T09:00:00", undefined, { locale: "es-MX" });
-    await page.goto(BASE + "index.html"); await page.waitForSelector("#self-start-card"); await note(page, "welcome-self");
-    await shot(page, "es-self-paced-start-390.png");
+    const { ctx, page } = await newPage("2026-12-05T09:00:00", undefined, { locale: "es-MX" });
+    await page.goto(BASE + "index.html"); await page.waitForSelector("#start-card"); await note(page, "welcome-dec5");
+    await page.click("#start-setup"); await page.waitForSelector("#start-note");
+    check("ES setup explains Day 1 = today", (await page.textContent("#start-note")) === ES.setup.startNote);
+    await page.check("#age-ok"); await page.click("#setup-next");
+    for (let i = 0; i < 6; i++) await page.check(`input[name=q${i}][value=no]`);
+    await page.click("#setup-next"); await page.click("#setup-next"); await page.click("#setup-next");
+    await page.check("#terms-ok"); await page.click("#setup-next"); await page.waitForSelector(".day-head");
+    check("ES Dec 5 start: Día 1 de 30 on Dec 5", /Día 1 de 30/.test(await page.textContent(".day-head .kicker")) && /5 dic/.test(await page.textContent(".day-head .kicker")), (await page.textContent(".day-head .kicker")).trim());
+    await page.goto(BASE + "index.html#/plan"); await page.waitForSelector(".plan-item"); await note(page, "plan-dec5");
+    check("ES plan window: del ... al ...", /Tus 30 días: del .*5 dic.* al .*3 ene/.test(await page.textContent("#plan-window")), (await page.textContent("#plan-window")).trim());
+    await shot(page, "es-plan-dec5-390.png");
     await ctx.close();
   }
   {
     const days = {}; for (let n = 1; n <= 30; n++) if (n % 5) days[n] = { status: "core", habits: {} };
     const { ctx, page } = await newPage("2026-12-26T10:00:00", undefined, { locale: "es-MX" });
     await seed(page, baseState({ days, tests: { 1: { pu: 4, sts: 10 }, 30: { pu: 7, sts: 9 } } }));
-    await page.waitForSelector(".done-hero"); await note(page, "done-live-keep-going");
-    await page.click("#keep-going-self"); await page.waitForSelector(".day-head"); await note(page, "self-day1");
+    await page.waitForSelector(".done-hero"); await note(page, "done-new-round");
+    check("ES finish title counts days, no Nochebuena / Navidad", (await page.textContent(".done-hero")).includes(ES.done.title) && !/Nochebuena|Navidad/.test(await page.textContent("main")));
+    await page.click("#new-round"); await page.waitForSelector(".day-head"); await note(page, "new-round-day1");
     await ctx.close();
   }
-  check("ES UI renders with no overflow at 390px (welcome, setup, every legal screen, days, moves, plan, progress, more, done, self-paced)", Object.keys(bad).length === 0, JSON.stringify(bad).slice(0, 400));
+  check("ES UI renders with no overflow at 390px (welcome, setup, every legal screen, days, moves, plan, progress, more, done, new round)", Object.keys(bad).length === 0, JSON.stringify(bad).slice(0, 400));
 }
 
 // 13. Consumer Health Data Privacy Policy: standalone page + /privacy/ pointer + every footer + the app's Privacy screen
@@ -785,35 +796,35 @@ if (run(14)) {
 if (run(15)) {
   const EN = (await import(new URL("../js/strings.en.js", import.meta.url).href)).S;
   const ES = (await import(new URL("../js/strings.es.js", import.meta.url).href)).S;
-  check("protected-day copy matches the reviewed EN/ES text", EN.self.protectedDay === "Protected day. It doesn't count as missed, and it gives you one extra day after Day 30 to log a make-up day (up to 7 extra days)." && ES.self.protectedDay === "Día protegido. No cuenta como día perdido y te da un día extra después del Día 30 para registrar un día de reposición (hasta 7 días extra)." && EN.day.protectedDay === "Protected day. It doesn't count as missed, and it gives you one extra day after Dec 24 to log a make-up day (up to Dec 31)." && ES.day.protectedDay === "Día protegido. No cuenta como día perdido y te da un día extra después del 24 de diciembre para registrar un día de reposición (hasta el 31 de dic.).");
+  check("protected-day copy matches the reviewed EN/ES text (Day 30 based, no Dec 24 / Dec 31)", EN.day.protectedDay === "Protected day. It doesn't count as missed, and it gives you one extra day after Day 30 to log a make-up day (up to 7 extra days)." && ES.day.protectedDay === "Día protegido. No cuenta como día perdido y te da un día extra después del Día 30 para registrar un día de reposición (hasta 7 días extra)." && !("self" in EN) && !("self" in ES));
   check("no 'pauses your window' copy left (EN/ES)", !/pauses your window|pausa tu periodo/i.test(JSON.stringify(EN) + JSON.stringify(ES)));
   for (const [l, SS] of [["en-US", EN], ["es-MX", ES]]) {
     const { ctx, page } = await newPage("2027-01-20T10:00:00", undefined, { locale: l });
-    await seed(page, baseState({ mode: "self", startDate: "2027-01-10", joinedDate: "2027-01-10", days: { 1: { status: "core" }, 5: { status: "protected" } } }));
+    await seed(page, baseState({ startDate: "2027-01-10", joinedDate: "2027-01-10", days: { 1: { status: "core" }, 5: { status: "protected" } } }));
     await page.click("#stop-log"); await page.click("#stop-confirm");
     await page.waitForSelector(".status-card.protected");
-    check(`[${l}] self-paced protected day shows the reviewed copy`, (await page.textContent(".status-card.protected")).includes(SS.self.protectedDay));
+    check(`[${l}] protected day shows the reviewed copy`, (await page.textContent(".status-card.protected")).includes(SS.day.protectedDay));
     const o = await overflowOn(page); check(`[${l}] protected-day screen fits 390px`, o.length === 0, o.slice(0, 3).join(" | "));
     if (SHOTS) { await page.waitForTimeout(3500); await page.evaluate(() => { const c = document.querySelector(".status-card"); if (c) c.scrollIntoView({ block: "center" }); }); }
     await shot(page, `protected-day-${l === "en-US" ? "en" : "es"}-390.png`);
     await ctx.close();
   }
   const R = await import(new URL("../js/rules.js", import.meta.url).href);
-  const mk = (p) => { const d = {}; for (let n = 1; n <= p; n++) d[n] = { status: "protected" }; return { setupDone: true, mode: "self", startDate: "2027-01-01", joinedDate: "2027-01-01", days: d, makeup: [] }; };
-  check("self-paced: 1 protected day = 1 make-up day after Day 30; 9 protected = 7 (cap)", R.endOf(mk(0)) === "2027-01-30" && R.deadline(mk(0)) === "2027-01-30" && R.deadline(mk(1)) === "2027-01-31" && R.deadline(mk(7)) === "2027-02-06" && R.deadline(mk(9)) === "2027-02-06");
+  const mk = (p) => { const d = {}; for (let n = 1; n <= p; n++) d[n] = { status: "protected" }; return { setupDone: true, startDate: "2027-01-01", joinedDate: "2027-01-01", days: d, makeup: [] }; };
+  check("1 protected day = 1 make-up day after Day 30; 9 protected = 7 (cap)", R.endOf(mk(0)) === "2027-01-30" && R.deadline(mk(0)) === "2027-01-30" && R.deadline(mk(1)) === "2027-01-31" && R.deadline(mk(7)) === "2027-02-06" && R.deadline(mk(9)) === "2027-02-06");
   // the 30 dated days don't shift: Day 15 is still Jan 15 with protected days before it
   const st = mk(5); check("protected days don't shift the dated days", R.dateFor(st, 15) === "2027-01-15");
   // make-up days: one per day, only after Day 30, until the deadline
   const days = {}; for (let n = 1; n <= 20; n++) days[n] = { status: "core" }; days[21] = { status: "protected" };
   const { ctx, page } = await newPage("2027-02-01T10:00:00");
-  await seed(page, baseState({ mode: "self", startDate: "2027-01-01", joinedDate: "2027-01-01", days }));
+  await seed(page, baseState({ startDate: "2027-01-01", joinedDate: "2027-01-01", days }));
   await page.waitForSelector(".done-hero");
   check("1 protected day: no make-up day 2 days after Day 30 (window was Jan 31 only)", !(await page.isVisible("#log-makeup")));
   await ctx.close();
   const c2 = await newPage("2027-01-31T10:00:00");
-  await seed(c2.page, baseState({ mode: "self", startDate: "2027-01-01", joinedDate: "2027-01-01", days }));
+  await seed(c2.page, baseState({ startDate: "2027-01-01", joinedDate: "2027-01-01", days }));
   await c2.page.waitForSelector(".done-hero");
-  check("1 protected day: make-up day open on Jan 31, with a warning on the keep-going offer", (await c2.page.isVisible("#log-makeup")) && (await c2.page.isVisible("#keep-going-warn")));
+  check("1 protected day: make-up day open on Jan 31, with a warning on the new-round offer", (await c2.page.isVisible("#log-makeup")) && (await c2.page.isVisible("#new-round-warn")));
   await c2.page.click("#log-makeup"); await c2.page.waitForSelector("#done-complete");
   check("make-up day counts toward the goal", (await c2.page.textContent("#done-complete")).trim() === "21");
   await c2.ctx.close();
@@ -958,7 +969,7 @@ if (run(17)) {
   check("no absolute http(s) URLs loaded by app code", !/(src|href)\s*=\s*["']https?:|url\(\s*["']?https?:|import\s*\(?\s*["']https?:|fetch\(\s*["']https?:/i.test(all));
   check("shipped config has allowDateOverride: false", /allowDateOverride:\s*false/.test(configSrc));
   const sw = readFileSync(join(appDir, "sw.js"), "utf8");
-  check("sw.js cache name is holiday-30-v5", /const CACHE = "holiday-30-v5"/.test(sw));
+  check("sw.js cache name is holiday-30-v6", /const CACHE = "holiday-30-v6"/.test(sw));
   const assets = [...sw.match(/const ASSETS = \[([\s\S]*?)\];/)[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
   const runtime = [];
   const walk3 = (d, rel = "") => readdirSync(d).forEach((f) => { const p = join(d, f); const r = rel + f; if (["node_modules", "tests"].includes(f) || f.startsWith(".")) return; statSync(p).isDirectory() ? walk3(p, r + "/") : /\.(html|css|js|webmanifest|png|svg|woff2)$/.test(f) && f !== "sw.js" && runtime.push("./" + r); });

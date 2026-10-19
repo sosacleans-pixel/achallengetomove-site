@@ -1,30 +1,22 @@
 // App configuration. Change behaviour here, not in app.js.
 export const CONFIG = {
-  // Day 1 and Day 30 (local dates, YYYY-MM-DD). Day boundary = user's local midnight.
-  start: "2026-11-25",
-  end: "2026-12-24",
-  // Late joiners (DECIDED, Salim, Oct 18 2026): someone who first opens the app after Day 1 and before Dec 24
-  // can start that day and sees the remaining days. Days before they joined are shown as "before you joined", never "missed".
-  lateJoin: true,
-  // Finisher goal for late joiners (DECIDED): "proportional" = ceil(22/30 x days remaining, counting the join day).
-  // Example: joining on Day 16 leaves 15 days, so the goal is ceil(22 * 15 / 30) = 11. A Day 1 start keeps 22 of 30.
-  // ("fixed" would always require 22.)
-  lateJoinTarget: "proportional",
-  // Self-paced edition (DECIDED, Salim, Oct 18 2026). Anyone who first opens the app after `after`, or who picks
-  // "self-paced" on the welcome screen, starts Day 1 on their own start date and runs `days` days from there,
-  // with no fixed calendar. Live-challenge users who are past Dec 24 see their completion summary first, then get
-  // the option to keep going self-paced (their live results are kept in history).
-  selfPaced: {
-    enabled: true,
-    after: "2026-12-24", // first open after this local date = self-paced only
-    days: 30,
-    offerChoice: true, // show "start self-paced" on the welcome screen before and during the live window
-    extendDays: 7, // each protected day (up to 7) adds one make-up day after Day 30 (the 30 dated days never pause or shift)
-  },
+  // ROLLING START (DECIDED, Salim, Oct 18 2026, 6:14 PM MT: "Day 1 opens when client buys it").
+  // There is no shared calendar. Every user runs their own 30 days:
+  //   Day 1  = the user's start date (state.startDate): the local calendar date on which they finish the welcome
+  //            setup, which happens on their first visit with access (after purchase, or after redeeming a gift code;
+  //            once email sign-in ships, setup only opens after that first sign-in). It is set once and never moves.
+  //   Day N  = start date + (N - 1) calendar days, unlocking at local midnight in the user's own time zone
+  //            (all date math uses local dates, see dates.js).
+  //   Day 30 = the last day. A buyer on the last sale day (Dec 5, 2026) who starts the same day finishes on Jan 3, 2027.
+  // Why setup and not the purchase timestamp: a buyer who opens the app a few days after paying, or a gift recipient,
+  // never starts on a day that is already gone, and nothing about progress has to leave the device (progress stays
+  // on-device per the privacy and CHD policies). The server access record (entitlements.starts_at, UTC) still decides
+  // whether the user has access and when the 12-month Access Period ends; it does not decide the challenge days.
+  programDays: 30,
+  // Protected days (Stop & Log, illness, travel...): each adds one make-up day after Day 30, up to this many.
+  extendDays: 7,
   // Book rule: 22 complete days in the 30-day window (holiday-30-day-challenge.md, Grace rule).
   requiredDays: 22,
-  // Live: each protected day (Stop & Log, illness, travel...) adds one make-up day after Dec 24, up to this date.
-  extendUntil: "2026-12-31",
   // Back-log yesterday until this local hour (12 = 11:59 AM).
   backlogUntilHour: 12,
   // Weekly check-in days and book tie-in days.

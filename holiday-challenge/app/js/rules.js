@@ -1,37 +1,25 @@
 // Completion, streak, points and badge rules (holiday-30-day-challenge.md: Daily rules, Grace rule, App tracking).
-// Two modes: "live" (Nov 25 - Dec 24, 2026 for everyone) and "self" (self-paced: Day 1 = the user's own start date).
+// Rolling start (config.js): every user's Day 1 is their own start date; there is no shared calendar.
 import { CONFIG } from "./config.js";
 import { dateKey, now, addDays, diffDays } from "./dates.js";
 
 export const HABITS = ["steps", "water", "wind_down", "breath_1min"];
-export const DAYS = 30;
+export const DAYS = CONFIG.programDays;
 
 const todayKey = () => dateKey(now());
 
-/** True once the live window is over: new visitors can only start the self-paced edition. */
-export function selfOnlyNow(k = todayKey()) {
-  return !!(CONFIG.selfPaced && CONFIG.selfPaced.enabled && k > CONFIG.selfPaced.after);
-}
-
-/** "live" | "self". A set-up user keeps their mode; a visitor before setup is "self" only after Dec 24. */
-export function modeOf(s) {
-  if (s && s.setupDone) return s.mode === "self" ? "self" : "live";
-  return selfOnlyNow() ? "self" : "live";
-}
-
-/** Date key of Day 1 for this user (self-paced: their start date; a visitor previewing self-paced: today). */
+/** Date key of Day 1 for this user: their start date, or today for a visitor (a preview of "if you start today"). */
 export function startOf(s) {
-  if (modeOf(s) === "self") return (s && s.setupDone && s.startDate) || todayKey();
-  return CONFIG.start;
+  return (s && s.setupDone && s.startDate) || todayKey();
 }
 /** Date key of Day 30. */
 export function endOf(s) {
-  return modeOf(s) === "self" ? addDays(startOf(s), DAYS - 1) : CONFIG.end;
+  return addDays(startOf(s), DAYS - 1);
 }
 export function dayNum(s, k) { return diffDays(startOf(s), k) + 1; }
 export function dateFor(s, n) { return addDays(startOf(s), n - 1); }
 
-/** "pre" | "live" | "post" for this user's window. */
+/** "pre" | "live" | "post" for this user's own 30 days ("pre" only if a saved start date is in the future). */
 export function phaseOf(s, k = todayKey()) {
   if (k < startOf(s)) return "pre";
   if (k > endOf(s)) return "post";
@@ -42,12 +30,6 @@ export function todayN(s) {
   return dayNum(s, todayKey());
 }
 
-export function joinDay(s) {
-  if (!s || !s.joinedDate) return 1;
-  const n = dayNum(s, s.joinedDate);
-  return Math.min(DAYS, Math.max(1, n));
-}
-
 export function isComplete(rec) {
   return !!rec && (rec.status === "core" || rec.status === "floor");
 }
@@ -55,18 +37,17 @@ export function isComplete(rec) {
 /** Can the user log day n right now? */
 export function editable(s, n) {
   if (!s || !s.setupDone) return false;
-  if (n < joinDay(s) || n < 1 || n > DAYS) return false;
+  if (n < 1 || n > DAYS) return false;
   const t = todayN(s);
   if (n === t) return true;
   if (n === t - 1 && now().getHours() < CONFIG.backlogUntilHour) return true;
   return false;
 }
 
-/** core | floor | protected | missed | open | future | before */
+/** core | floor | protected | missed | open | future */
 export function statusOf(s, n) {
   const rec = s?.days?.[n];
   if (rec && rec.status) return rec.status;
-  if (s && n < joinDay(s)) return "before";
   const t = todayN(s);
   if (n > t) return "future";
   if (n === t || editable(s, n)) return "open";
@@ -86,31 +67,22 @@ export function counts(s) {
   return c;
 }
 
-/** Late-join goal: ceil(22/30 x days remaining, counting the join day). A Day 1 start (and every self-paced run) = 22. */
-export function lateJoinTarget(joinDayN) {
-  if (joinDayN <= 1 || CONFIG.lateJoinTarget === "fixed") return CONFIG.requiredDays;
-  const left = DAYS + 1 - joinDayN;
-  return Math.max(1, Math.ceil((left * CONFIG.requiredDays) / DAYS));
-}
-export function target(s) {
-  return lateJoinTarget(joinDay(s));
+/** Finisher goal: 22 complete days out of 30 (book rule), the same for everyone. */
+export function target() {
+  return CONFIG.requiredDays;
 }
 
-/** Last date a make-up day can be logged. Each protected day adds one make-up day after Day 30 (nothing pauses).
- *  Live: Dec 24 + protected days, capped at Dec 31.
- *  Self-paced: Day 30 + protected days, capped at CONFIG.selfPaced.extendDays extra days. */
+/** Last date a make-up day can be logged. Each protected day adds one make-up day after Day 30 (nothing pauses),
+ *  capped at CONFIG.extendDays extra days. */
 export function deadline(s) {
   const p = counts(s).protected;
-  if (modeOf(s) === "self") return addDays(endOf(s), Math.min(p, CONFIG.selfPaced.extendDays));
-  const d = addDays(CONFIG.end, p);
-  return d > CONFIG.extendUntil ? CONFIG.extendUntil : d;
+  return addDays(endOf(s), Math.min(p, CONFIG.extendDays));
 }
 
 export function streaks(s) {
   const t = Math.min(todayN(s), DAYS);
-  const j = joinDay(s);
   let best = 0, run = 0;
-  for (let n = j; n <= t; n++) {
+  for (let n = 1; n <= t; n++) {
     const st = statusOf(s, n);
     if (st === "core" || st === "floor") { run++; best = Math.max(best, run); }
     else if (st === "protected" || st === "open") { /* pauses, doesn't break */ }
@@ -161,8 +133,8 @@ export function badges(s) {
   ];
 }
 
-/** Archive the current run and start a self-paced run with Day 1 = today. Setup answers and terms are kept. */
-export function startSelfRound(s, today = todayKey()) {
-  const prev = { mode: modeOf(s), startDate: startOf(s), joinedDate: s.joinedDate, days: s.days, makeup: s.makeup || [], tests: s.tests || {}, endedAt: today };
-  return { ...s, history: [...(s.history || []), prev], mode: "self", startDate: today, joinedDate: today, days: {}, makeup: [], tests: {}, unbrokenOptIn: s.unbrokenOptIn, levelLog: [...(s.levelLog || []), { at: today, level: s.level, from: "self-paced-start" }] };
+/** Archive the current round and start a new one with Day 1 = today. Setup answers and terms are kept. */
+export function startNewRound(s, today = todayKey()) {
+  const prev = { startDate: startOf(s), days: s.days, makeup: s.makeup || [], tests: s.tests || {}, endedAt: today };
+  return { ...s, history: [...(s.history || []), prev], startDate: today, joinedDate: today, days: {}, makeup: [], tests: {}, unbrokenOptIn: s.unbrokenOptIn, levelLog: [...(s.levelLog || []), { at: today, level: s.level, from: "new-round" }] };
 }

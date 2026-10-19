@@ -546,13 +546,8 @@ main.app-main {
 .hero-title { font-size: clamp(1.9rem, 7vw, 3rem); margin: 0.2rem 0 0.4rem; }
 .hero-desc { margin: 0; opacity: 0.9; font-size: 0.9rem; }
 .tagline { margin: 0.6rem 0 0; font-weight: 900; color: var(--yellow); }
-.countdown { background: var(--yellow); border: 3px solid var(--charcoal); border-radius: 16px; padding: 1rem; text-align: center; margin-bottom: 1rem; box-shadow: 0 4px 0 var(--charcoal); }
-.cd-label { font-family: Anton, Impact, sans-serif; text-transform: uppercase; font-size: 1.05rem; }
-.cd-row { display: flex; justify-content: center; gap: 0.75rem; margin: 0.4rem 0; }
-.cd-row div { background: var(--charcoal); color: var(--yellow); border-radius: 12px; padding: 0.5rem 0.8rem; min-width: 4.4rem; }
-.cd-row b { display: block; font-family: Anton, Impact, sans-serif; font-size: 2rem; line-height: 1; font-weight: 400; }
-.cd-row span { font-size: 0.7rem; color: var(--paper); text-transform: uppercase; }
-.cd-sub { margin: 0.2rem 0 0; font-weight: 700; font-size: 0.9rem; }
+.start-card { background: var(--yellow); border: 3px solid var(--charcoal); box-shadow: 0 4px 0 var(--charcoal); }
+.start-card h2 { margin-top: 0; }
 .btn-stack { display: grid; gap: 0.6rem; margin: 1rem 0; }
 .btn-floor { background: var(--charcoal); color: var(--yellow); }
 .btn-stop { background: var(--paper); color: var(--red); border: 2px solid var(--red); }
@@ -561,7 +556,6 @@ main.app-main {
 .notice { background: #fff3c4; border-left: 4px solid var(--yellow); border-radius: 8px; padding: 0.6rem 0.8rem; margin: 0 0 0.8rem; font-size: 0.9rem; }
 .notice-busy { background: #fde9df; border-left-color: var(--rust); }
 .notice-gentle { background: #fdeceb; border-left: 4px solid var(--red); }
-.late-card { border: 3px solid var(--rust); }
 .day-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
 .day-head { margin-bottom: 0.75rem; }
 .day-head.is-flex .page-title { color: var(--rust); }
@@ -662,9 +656,8 @@ main.app-main:focus { outline: none; }
 .lang-btn.is-active { background: var(--charcoal); color: var(--yellow); }
 .lang-btn:focus-visible { outline: 3px solid var(--rust); outline-offset: 2px; }
 
-/* ---------- self-paced ---------- */
+/* ---------- new round ---------- */
 .self-card { border-left: 6px solid var(--green); }
-.self-choice .btn { margin-top: 0.5rem; }
 .chd { margin-top: 1.25rem; padding-top: 0.75rem; border-top: 1px solid var(--line); }
 .chd-link { font-weight: 700; color: var(--rust); }
 

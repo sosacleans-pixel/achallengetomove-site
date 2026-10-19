@@ -5,7 +5,7 @@ import { readFileSync, writeFileSync } from "fs";
 import { PROGRAM } from "../js/program.en.js";
 const dir = new URL("..", import.meta.url);
 const map = JSON.parse(readFileSync(new URL("tools/program-es-map.json", dir), "utf8"));
-const KEEP = new Set(["id", "version", "date", "wd", "cat", "week", "start", "end", "retestWindow", "protectedExtendUntil"]);
+const KEEP = new Set(["id", "version", "cat", "week", "startRule", "retestWindow", "protectedExtendDays"]);
 const missing = new Set();
 const sub = (s) => s.replace(/(\d) ?s\/side/g, "$1 s/lado").replace(/(\d)\/side/g, "$1/lado");
 function tr(v, key, idx) {

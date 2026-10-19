@@ -51,31 +51,8 @@ export function diffDays(a, b) {
   return Math.round((parseKey(b) - parseKey(a)) / 86400000);
 }
 
-/** Live-challenge day number (1-30) for a date key, or 0 before start, 31+ after end.
- *  Self-paced runs use rules.js dayNum(state, key), which counts from the user's own start date. */
-export function dayNumberFor(k) {
-  return diffDays(CONFIG.start, k) + 1;
-}
-
-export function dateForDay(n) {
-  return addDays(CONFIG.start, n - 1);
-}
-
-/** "pre" | "live" | "post" */
-export function phase(k = dateKey()) {
-  if (k < CONFIG.start) return "pre";
-  if (k > CONFIG.end) return "post";
-  return "live";
-}
-
-export function countdown(n = now()) {
-  const start = parseKey(CONFIG.start);
-  const ms = Math.max(0, start - n);
-  const days = Math.floor(ms / 86400000);
-  const hours = Math.floor((ms % 86400000) / 3600000);
-  const mins = Math.floor((ms % 3600000) / 60000);
-  return { days, hours, mins, ms };
-}
+// No shared challenge calendar (rolling start): day numbers and dates come from the user's own start date,
+// see rules.js dayNum(state, key) / dateFor(state, n).
 
 let LOCALE = "en-US";
 /** Set the locale used by fmtDate (i18n.js: "en-US" or "es-419"). */

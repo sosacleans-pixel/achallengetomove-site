@@ -6,10 +6,10 @@ export function defaultState() {
     version: 1,
     createdAt: new Date().toISOString(),
     setupDone: false,
-    joinedDate: null,
-    mode: "live", // "live" (Nov 25 - Dec 24) or "self" (self-paced: Day 1 = startDate)
+    // Rolling start: Day 1 = startDate, the local date setup was finished (see config.js). Set once per round.
     startDate: null,
-    history: [], // earlier runs (e.g. the live challenge before keeping going self-paced)
+    joinedDate: null, // same as startDate (kept for older saved data and exports)
+    history: [], // earlier rounds (a new round starts with Day 1 = that day; past results are kept here)
     setup: { age: false, readiness: [], gentleAck: false, terms: false, termsAt: null },
     level: "b",
     equipment: "none",
@@ -28,10 +28,19 @@ export function loadState() {
     const raw = localStorage.getItem(CONFIG.storageKey);
     if (!raw) return null;
     const s = JSON.parse(raw);
-    return { ...defaultState(), ...s };
+    return migrate({ ...defaultState(), ...s });
   } catch (e) {
     return null;
   }
+}
+
+/** Saved data from the earlier fixed-calendar preview ("live" mode, Day 1 = Nov 25): keep it, and use its own
+ *  date as Day 1 so the user keeps their days. Everyone now runs on their own start date. */
+export function migrate(s) {
+  if (s.setupDone && !s.startDate) s.startDate = s.joinedDate || dateKey(now());
+  if (s.setupDone && !s.joinedDate) s.joinedDate = s.startDate;
+  delete s.mode;
+  return s;
 }
 
 export function saveState(s) {

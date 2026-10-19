@@ -1,8 +1,8 @@
 import { CONFIG } from "./config.js";
 import { BUNDLES, PROGRAM_EN, detectLang, storeLang } from "./i18n.js";
-import { initDateOverride, overrideActive, now, dateKey, countdown, fmtDate, parseKey, setLocale } from "./dates.js";
+import { initDateOverride, overrideActive, now, dateKey, fmtDate, parseKey, setLocale } from "./dates.js";
 import { loadState, saveState, clearState, defaultState } from "./storage.js";
-import { HABITS, todayN as todayNFor, joinDay, editable, statusOf, counts, target, deadline, streaks, totalPoints, badges, isComplete, modeOf, startOf, endOf, dateFor, phaseOf, selfOnlyNow, startSelfRound } from "./rules.js";
+import { HABITS, todayN as todayNFor, editable, statusOf, counts, target, deadline, streaks, totalPoints, badges, isComplete, startOf, endOf, dateFor, phaseOf, startNewRound } from "./rules.js";
 
 initDateOverride();
 
@@ -35,7 +35,6 @@ const main = document.getElementById("app-main");
 const nav = document.getElementById("bottom-nav");
 let state = loadState();
 let draft = null; // setup in progress
-let countdownTimer = null;
 const previewPrefs = { level: "b", equipment: "none" }; // used before setup (not saved)
 
 const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -46,9 +45,8 @@ const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 const dayData = (n) => PROGRAM.days[n - 1];
 const setupDone = () => !!(state && state.setupDone);
-const ctxState = () => (setupDone() ? state : null); // null = visitor (live, or self-paced preview after Dec 24)
+const ctxState = () => (setupDone() ? state : null); // null = visitor (preview: dates as if they started today)
 const todayN = () => todayNFor(ctxState());
-const isSelf = () => modeOf(ctxState()) === "self";
 
 function persist() { saveState(state); }
 
@@ -76,7 +74,6 @@ function renderChrome(route) {
 }
 
 function render() {
-  clearInterval(countdownTimer);
   const route = (location.hash || "#/today").replace(/^#\/?/, "") || "today";
   renderChrome(route);
   const [r, a] = route.split("/");
@@ -86,64 +83,27 @@ function render() {
   window.scrollTo(0, 0);
 }
 
-/* ---------- welcome / countdown ---------- */
-function countdownHTML() {
-  const c = countdown(now());
-  return `<div class="countdown" id="countdown" aria-live="off">
-    <div class="cd-label">${esc(S.welcome.startsIn)}</div>
-    <div class="cd-row"><div><b id="cd-d">${c.days}</b><span>${S.welcome.days}</span></div><div><b id="cd-h">${c.hours}</b><span>${S.welcome.hours}</span></div><div><b id="cd-m">${c.mins}</b><span>${S.welcome.mins}</span></div></div>
-    <p class="cd-sub">${esc(S.welcome.startsOn)}</p></div>`;
-}
-function tickCountdown() {
-  countdownTimer = setInterval(() => {
-    const c = countdown(now());
-    if (!$("#cd-d")) return clearInterval(countdownTimer);
-    $("#cd-d").textContent = c.days; $("#cd-h").textContent = c.hours; $("#cd-m").textContent = c.mins;
-    if (c.ms <= 0) { clearInterval(countdownTimer); render(); }
-  }, 30000);
-}
-
+/* ---------- welcome ---------- */
+// Rolling start: no countdown and no shared calendar. Day 1 is the day the user finishes setup.
 function viewWelcome() {
-  const selfOnly = selfOnlyNow();
-  const ph = selfOnly ? "self" : phaseOf(null);
-  const t = todayN();
   const W = S.welcome;
-  const SP = S.self;
-  let status = "";
-  let cta = `<a class="btn btn-primary btn-block" id="start-setup" href="#/setup/1">${esc(W.startBtn)}</a>`;
-  const offerSelf = CONFIG.selfPaced.enabled && CONFIG.selfPaced.offerChoice;
-  let selfChoice = offerSelf ? `<div class="card self-choice" id="self-choice"><p class="small">${esc(SP.choiceLead)}</p><a class="btn btn-secondary btn-block" id="start-self" href="#/setup/1">${esc(SP.choiceBtn)}</a></div>` : "";
-  if (ph === "pre") status = countdownHTML();
-  else if (ph === "live") {
-    if (t === 1 || CONFIG.lateJoin) status = `<div class="card late-card"><h2>${esc(W.lateTitle(t))}</h2><p>${esc(W.lateLead(31 - t))}</p></div>`;
-    else { status = `<div class="card"><p>${esc(W.lateClosed)}</p></div>`; cta = ""; }
-  } else {
-    // After Dec 24: self-paced edition only. Day 1 = the day they finish setup.
-    status = `<div class="card"><h2>${esc(W.postTitle)}</h2><p>${esc(W.postLead)}</p></div>
-      <div class="card self-card" id="self-start-card"><p class="kicker">${esc(SP.label)}</p><h2>${esc(SP.welcomeTitle)}</h2><p>${esc(SP.welcomeLead)}</p></div>`;
-    cta = `<a class="btn btn-primary btn-block" id="start-self" href="#/setup/1">${esc(SP.startBtn)}</a>`;
-    selfChoice = "";
-  }
   main.innerHTML = `
     ${langSwitch("lang-welcome")}
     <section class="hero">
       <p class="kicker">${esc(W.kicker)}</p>
       <h1 class="hero-title">${escT(W.title)}</h1>
-      <p class="hero-desc">${esc(S.descriptor)}${ph === "self" ? "" : ` · ${esc(S.dates)}`}</p>
+      <p class="hero-desc">${esc(S.descriptor)} · ${esc(S.dates)}</p>
       <p class="tagline">${esc(S.tagline)}</p>
     </section>
-    ${status}
+    <div class="card start-card" id="start-card"><h2>${esc(W.startTitle)}</h2><p>${esc(W.startLead)}</p></div>
     <div class="card"><p>${esc(W.lead)}</p><ul class="rules-list">${W.bullets.map((b) => `<li>${esc(b)}</li>`).join("")}</ul>
       <p class="why-banner">${esc(W.coachQuote)}</p></div>
-    <div class="btn-stack">${cta}
-      ${ph === "pre" ? `<a class="btn btn-secondary btn-block" id="preview-day1" href="#/day/1">${esc(W.previewBtn)}</a>` : ""}
+    <div class="btn-stack"><a class="btn btn-primary btn-block" id="start-setup" href="#/setup/1">${esc(W.startBtn)}</a>
+      <a class="btn btn-secondary btn-block" id="preview-day1" href="#/day/1">${esc(W.previewBtn)}</a>
       <a class="btn btn-secondary btn-block" href="#/plan">${esc(W.planBtn)}</a></div>
-    ${cta ? selfChoice : ""}
     <p class="muted small center">${esc(W.purchase)}</p>
     ${legalLinks()}`;
-  $("#start-setup")?.addEventListener("click", () => { draft = newDraft("live"); });
-  $("#start-self")?.addEventListener("click", () => { draft = newDraft("self"); });
-  if (ph === "pre") tickCountdown();
+  $("#start-setup")?.addEventListener("click", () => { draft = newDraft(); });
 }
 
 function legalLinks() {
@@ -154,14 +114,8 @@ function legalLinks() {
 function viewToday() {
   if (!state || !state.setupDone) return viewWelcome();
   const ph = phaseOf(state);
-  if (ph === "pre") {
-    main.innerHTML = `<h1 class="page-title">${escT(S.appShort)}</h1>${countdownHTML()}
-      <div class="card"><p><strong>${esc(S.levels[state.level])}</strong> · ${esc(S.equip[state.equipment])}</p><p class="muted">${esc(S.levelCap[state.level])}</p></div>
-      <div class="btn-stack"><a class="btn btn-primary btn-block" id="preview-day1" href="#/day/1">${esc(S.welcome.previewBtn)}</a>
-      <a class="btn btn-secondary btn-block" href="#/plan">${esc(S.welcome.planBtn)}</a></div>
-      <p class="why-banner">${esc(S.welcome.coachQuote)}</p>`;
-    return tickCountdown();
-  }
+  // A saved start date can be "tomorrow" if the device clock or time zone moved back after setup: show Day 1 as a preview.
+  if (ph === "pre") return viewDay(1);
   if (ph === "post") return viewDone();
   viewDay(todayN());
 }
@@ -193,7 +147,6 @@ function viewDay(n) {
   const sess = D.lv[L];
   const cs = ctxState();
   const ph = phaseOf(cs);
-  const self = isSelf();
   const setup = setupDone();
   const dateK = dateFor(cs, n);
   const canLog = editable(state, n);
@@ -202,21 +155,19 @@ function viewDay(n) {
   const t = todayN();
   const weekday = parseKey(dateK).getDay();
   let banner = "";
-  if (!setup && ph === "pre" && n === 1) banner = `<div class="notice">${esc(S.day.previewDay1)}</div>`;
-  else if (!setup && self) banner = `<div class="notice">${esc(S.day.preview)}</div>`;
-  else if (setup && ph === "pre") banner = `<div class="notice">${esc(n === 1 ? S.day.previewDay1 : S.day.preview)}</div>`;
+  if (!setup) banner = `<div class="notice">${esc(n === 1 ? S.day.previewDay1 : S.day.preview)}</div>`;
+  else if (ph === "pre") banner = `<div class="notice">${esc(S.day.preview)}</div>`;
   else if (!canLog && st === "future") banner = `<div class="notice">${esc(S.day.future)}</div>`;
-  else if (!canLog && st === "before") banner = `<div class="notice">${esc(S.day.beforeJoin)}</div>`;
   else if (!canLog && setup) banner = `<div class="notice">${esc(S.day.locked)}</div>`;
   else if (canLog && n === t - 1) banner = `<div class="notice">${esc(S.day.backlogNote)}</div>`;
   const nudges = [];
   if (setup && canLog && state.busyDays.includes(weekday)) nudges.push(`<div class="notice notice-busy" id="busy-nudge">${esc(S.day.busyNudge)}</div>`);
   if (setup && state.setup.readiness.some(Boolean)) nudges.push(`<div class="notice notice-gentle">${esc(S.day.gentleNudge)}</div>`);
   const done = isComplete(rec);
-  const statusLine = rec.status === "core" ? S.day.completeCore : rec.status === "floor" ? S.day.completeFloor : rec.status === "protected" ? (self ? S.self.protectedDay : S.day.protectedDay) : "";
+  const statusLine = rec.status === "core" ? S.day.completeCore : rec.status === "floor" ? S.day.completeFloor : rec.status === "protected" ? S.day.protectedDay : "";
   const isCircuit = /Circuit/.test(PROGRAM_EN.days[n - 1].type);
-  const focus = (self && S.self.focus[n]) || D.focus;
-  const flexNote = self ? "" : D.flexNote;
+  const focus = D.focus;
+  const flexNote = D.flexNote;
   const tabs = `<div class="tabs" role="tablist">
       <button role="tab" class="tab is-active" data-tab="core" aria-selected="true">${esc(S.day.core)}</button>
       <button role="tab" class="tab" data-tab="floor" aria-selected="false">${esc(S.day.floor)}</button></div>`;
@@ -245,7 +196,7 @@ function viewDay(n) {
       <label class="field"><span>${esc(S.day.rpeLabel)}</span><select id="rpe-input"><option value=""></option>${[1,2,3,4,5,6,7,8,9,10].map((v) => `<option ${Number(rec.rpe) === v ? "selected" : ""}>${v}</option>`).join("")}</select></label>
       <label class="check-line"><input type="checkbox" id="pain-input" ${rec.pain ? "checked" : ""}> ${esc(S.day.painLabel)}</label>
       <p class="muted small ${rec.pain ? "" : "hidden"}" id="pain-note">${esc(S.day.painNote)}</p></section>` : "";
-  const isTestDay = CONFIG.testDays.includes(n) || (setup && n === joinDay(state) && joinDay(state) > 1 && !hasTest(1));
+  const isTestDay = CONFIG.testDays.includes(n);
   const testKey = n === 30 ? 30 : 1;
   const tests = setup && isTestDay ? testsForm(testKey, canLog) : "";
   const check15 = setup && n === CONFIG.optionalCheckDay ? check15Form(canLog) : "";
@@ -255,15 +206,14 @@ function viewDay(n) {
       ${canLog ? `<button class="btn btn-secondary btn-small" id="ci-save">${esc(S.day.save)}</button>` : ""}</section>` : "";
   const book = CONFIG.bookTieInDays.includes(n) ? `<div class="card book-card"><p>📖 ${esc(S.day.bookCard)}</p></div>` : "";
   const extras = [];
-  if (n === 2 && !self) extras.push(S.day.thanksgiving);
-  if (n === 28) extras.push(self ? S.self.pickRetest : S.day.pickRetest);
-  if (n === 30) extras.push(self ? S.self.retestMove : S.day.retestMove);
+  if (n === 28) extras.push(S.day.pickRetest);
+  if (n === 30) extras.push(S.day.retestMove);
   main.innerHTML = `
     <div class="day-nav">${n > 1 ? `<a href="#/day/${n - 1}" class="btn btn-secondary btn-small" aria-label="${esc(S.ui.prevDay)}">‹</a>` : "<span></span>"}
       <span class="muted small">${esc(S.day.week(D.week))}</span>
       ${n < 30 ? `<a href="#/day/${n + 1}" class="btn btn-secondary btn-small" aria-label="${esc(S.ui.nextDay)}">›</a>` : "<span></span>"}</div>
     <header class="day-head ${D.flex ? "is-flex" : ""}">
-      <p class="kicker">${esc(S.day.of30(n))} · ${esc(fmtDate(dateK))}${self && setup ? ` · ${esc(S.self.label)}` : ""}</p>
+      <p class="kicker">${esc(S.day.of30(n))} · ${esc(fmtDate(dateK))}</p>
       <h1 class="page-title">${esc(D.type)}${D.flex ? ` <span class="flex-badge">⚑ ${esc(S.day.flex)}</span>` : ""}</h1>
       ${flexNote ? `<p class="muted">${esc(flexNote)}</p>` : ""}
       <p class="why-banner">${esc(focus)}</p>
@@ -373,11 +323,10 @@ function viewPlan() {
   const t = todayN();
   const cs = ctxState();
   const setup = setupDone();
-  const self = isSelf();
   const weeks = [["1", 1, 7], ["2", 8, 14], ["3", 15, 21], ["4", 22, 28], ["Finish", 29, 30]];
-  main.innerHTML = `<h1 class="page-title">${esc(S.plan.title)}</h1><p class="muted">${esc(self ? S.self.planLead : S.plan.lead)}</p>
-    ${self && setup ? `<p class="muted small" id="self-window">${esc(S.self.window(fmtDate(startOf(cs)), fmtDate(endOf(cs))))}</p>` : ""}
-    ${weeks.map(([w, a, b]) => `<section class="card"><h2>${esc(S.day.week(w))} <span class="muted small">${esc(fmtDate(dateFor(cs, a), { month: "short", day: "numeric" }))}–${esc(fmtDate(dateFor(cs, b), { month: "short", day: "numeric" }))}</span></h2>
+  main.innerHTML = `<h1 class="page-title">${esc(S.plan.title)}</h1><p class="muted">${esc(S.plan.lead)}</p>
+    <p class="muted small" id="plan-window">${esc(setup ? S.plan.window(fmtDate(startOf(cs)), fmtDate(endOf(cs))) : S.plan.previewWindow(fmtDate(startOf(cs)), fmtDate(endOf(cs))))}</p>
+    ${weeks.map(([w, a, b]) => `<section class="card"><h2>${esc(S.day.week(w))} <span class="muted small">${esc(S.plan.range(fmtDate(dateFor(cs, a), { month: "short", day: "numeric" }), fmtDate(dateFor(cs, b), { month: "short", day: "numeric" })))}</span></h2>
       <ul class="plan-list">${Array.from({ length: b - a + 1 }, (_, i) => a + i).map((n) => {
         const D = dayData(n); const st = setup ? statusOf(state, n) : "future";
         const lbl = S.plan.status[st] || "";
@@ -397,7 +346,7 @@ function testCompare() {
   }).join("")}</tbody></table>${b ? `<p class="muted small">${esc(S.tests.nice)}</p>` : ""}`;
 }
 
-function badgeText(k) { return k === "holidayFloor" && isSelf() ? S.self.holidayFloor : S.badges[k]; }
+function badgeText(k) { return S.badges[k]; }
 
 function viewProgress() {
   if (!state || !state.setupDone) return viewWelcome();
@@ -433,13 +382,12 @@ function viewDone() {
   const fin = c.complete >= tgt;
   const today = dateKey(now());
   const dl = deadline(state);
-  const self = isSelf();
   const keepGoing = !fin && c.protected > 0 && today > endOf(state) && today <= dl;
   const madeToday = (state.makeup || []).includes(today);
-  const selfOffer = CONFIG.selfPaced.enabled && phaseOf(state) === "post";
-  main.innerHTML = `<section class="card card-celebrate done-hero"><p class="kicker">${escT(S.appShort)}${self ? ` · ${esc(S.self.label)}` : ""}</p><h1 class="page-title">${esc(self ? S.self.doneTitle : D.title)}</h1>
+  const newRound = phaseOf(state) === "post";
+  main.innerHTML = `<section class="card card-celebrate done-hero"><p class="kicker">${escT(S.appShort)}</p><h1 class="page-title">${esc(D.title)}</h1>
       <p class="done-big">${fin ? "🏁 " + esc(D.finisher) : esc(D.notYet)}</p>
-      ${fin ? `<p>${esc(D.keepGoing)}</p>` : `<p>${esc(self ? S.self.restart : D.restart)}</p>`}</section>
+      ${fin ? `<p>${esc(D.keepGoing)}</p>` : `<p>${esc(D.restart)}</p>`}</section>
     ${keepGoing ? `<div class="card"><p>${esc(D.keepGoingWeek(fmtDate(dl)))}</p>${madeToday ? `<p><strong>${esc(D.makeupLogged)}</strong></p>` : `<button class="btn btn-primary btn-block" id="log-makeup">${esc(D.logMakeup)}</button>`}</div>` : ""}
     <section class="card"><h2>${esc(D.summary)}</h2><div class="stat-grid">
       <div class="stat"><b id="done-complete">${c.complete}</b><span>${esc(S.progress.complete)}</span></div>
@@ -449,12 +397,12 @@ function viewDone() {
       <div class="stat"><b>${totalPoints(state)}</b><span>${esc(S.progress.points)}</span></div>
       <div class="stat"><b>${badges(state).filter(([, g]) => g).length}</b><span>${esc(S.progress.badges)}</span></div></div></section>
     <section class="card"><h2>${esc(S.tests.cardTitle)}</h2>${testCompare()}</section>
-    ${selfOffer ? `<section class="card self-card" id="keep-going-self-card"><h2>${esc(S.self.keepGoingTitle)}</h2><p>${esc(S.self.keepGoingLead)}</p>${keepGoing ? `<p class="muted small" id="keep-going-warn">${esc(S.self.keepGoingWarn)}</p>` : ""}<button class="btn btn-primary btn-block" id="keep-going-self">${esc(S.self.keepGoingBtn)}</button></section>` : ""}
+    ${newRound ? `<section class="card self-card" id="new-round-card"><h2>${esc(D.newRoundTitle)}</h2><p>${esc(D.newRoundLead)}</p>${keepGoing ? `<p class="muted small" id="new-round-warn">${esc(D.newRoundWarn)}</p>` : ""}<button class="btn btn-primary btn-block" id="new-round">${esc(D.newRoundBtn)}</button></section>` : ""}
     <div class="card book-card"><p>📖 ${esc(D.book)}</p></div>
     <p class="muted small">${esc(D.experiences)}</p>
     <div class="btn-stack"><a class="btn btn-secondary btn-block" href="#/progress">${esc(D.seeProgress)}</a><a class="btn btn-secondary btn-block" href="#/day/30">${esc(S.day.dayN(30))}</a></div>`;
   $("#log-makeup")?.addEventListener("click", () => { state.makeup = [...(state.makeup || []), today]; persist(); toast(S.toast.logged); render(); });
-  $("#keep-going-self")?.addEventListener("click", () => { state = startSelfRound(state, today); persist(); go("#/today"); });
+  $("#new-round")?.addEventListener("click", () => { state = startNewRound(state, today); persist(); go("#/today"); });
 }
 
 /* ---------- moves ---------- */
@@ -507,7 +455,7 @@ export function buildICS(s) {
   const [hh, mm] = (s.reminderTime || "07:00").split(":");
   const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Coach Salim Heyaime LLC//30 Days Before X-mas//EN", "CALSCALE:GREGORIAN"];
   const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
-  const from = Math.max(joinDay(s), 1);
+  const from = 1;
   const startK = startOf(s).replace(/-/g, "");
   for (let n = from; n <= 30; n++) {
     const D = dayData(n); const dk = dateFor(s, n); const ymd = dk.replace(/-/g, "");
@@ -541,19 +489,16 @@ function viewLegal(which) {
 }
 
 /* ---------- setup ---------- */
-function newDraft(mode = "live") {
-  return { mode, age: false, readiness: [], gentleAck: false, level: "b", pu: null, puSkip: false, equipment: "none", busyDays: [], reminderTime: "07:00", terms: false };
+function newDraft() {
+  return { age: false, readiness: [], gentleAck: false, level: "b", pu: null, puSkip: false, equipment: "none", busyDays: [], reminderTime: "07:00", terms: false };
 }
 function viewSetup(step) {
-  draft = draft || newDraft(selfOnlyNow() ? "self" : "live");
-  if (selfOnlyNow()) draft.mode = "self";
-  const ph = phaseOf(null);
-  if (draft.mode !== "self" && (ph === "post" || (ph === "live" && !CONFIG.lateJoin && todayN() > 1))) return viewWelcome();
+  draft = draft || newDraft();
   const St = S.setup; const total = 5;
   const head = `<p class="kicker">${esc(St.stepOf(step, total))}</p><div class="step-bar"><span style="width:${(step / total) * 100}%"></span></div>`;
   const navBtns = (nextLabel = St.next) => `<p class="err hidden" id="setup-err" role="alert"></p><div class="row-2">${step > 1 ? `<a class="btn btn-secondary" href="#/setup/${step - 1}">${esc(St.back)}</a>` : `<a class="btn btn-secondary" href="#/today">${esc(St.back)}</a>`}<button class="btn btn-primary" id="setup-next" type="submit">${esc(nextLabel)}</button></div>`;
   let body = "";
-  if (step === 1) body = `<h1 class="page-title">${esc(St.ageTitle)}</h1>${draft.mode === "self" ? `<p class="notice" id="self-setup-note">${esc(S.self.setupNote)}</p>` : ""}<form id="setup-form"><div class="card"><label class="check-line big"><input type="checkbox" id="age-ok" ${draft.age ? "checked" : ""}> ${esc(St.ageLabel)}</label><p class="muted small">${esc(St.ageNo)}</p></div>${navBtns()}</form>`;
+  if (step === 1) body = `<h1 class="page-title">${esc(St.ageTitle)}</h1><p class="notice" id="start-note">${esc(St.startNote)}</p><form id="setup-form"><div class="card"><label class="check-line big"><input type="checkbox" id="age-ok" ${draft.age ? "checked" : ""}> ${esc(St.ageLabel)}</label><p class="muted small">${esc(St.ageNo)}</p></div>${navBtns()}</form>`;
   if (step === 2) body = `<h1 class="page-title">${esc(St.readinessTitle)}</h1><p class="muted">${esc(St.readinessLead)}</p><form id="setup-form">${St.readiness.map((q, i) => `<fieldset class="card rq"><legend>${esc(q)}</legend><div class="chip-row">
       <label class="chip"><input type="radio" name="q${i}" value="yes" ${draft.readiness[i] === true ? "checked" : ""}> ${esc(St.yes)}</label>
       <label class="chip"><input type="radio" name="q${i}" value="no" ${draft.readiness[i] === false ? "checked" : ""}> ${esc(St.no)}</label></div>
@@ -610,8 +555,8 @@ function viewSetup(step) {
       const s = defaultState();
       const today = dateKey(now());
       s.setupDone = true;
-      if (draft.mode === "self" || selfOnlyNow()) { s.mode = "self"; s.startDate = today; s.joinedDate = today; }
-      else { s.mode = "live"; s.joinedDate = today < CONFIG.start ? CONFIG.start : today; }
+      // Rolling start: Day 1 = today, the local date setup is finished (config.js). Stored on this device only.
+      s.startDate = today; s.joinedDate = today;
       s.setup = { age: true, readiness: draft.readiness.slice(), gentleAck: draft.gentleAck, terms: true, termsAt: new Date().toISOString() };
       s.level = draft.level; s.equipment = draft.equipment; s.busyDays = draft.busyDays; s.reminderTime = draft.reminderTime;
       if (draft.pu != null || draft.puSkip) s.tests[0] = { pu: draft.pu, puSkipped: draft.puSkip, at: today, note: "setup" };
