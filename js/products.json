@@ -16,13 +16,13 @@
       "id": "supplements",
       "title": "Supplements",
       "comingSoon": true,
-      "blurb": "Nutrition support to complement your training — launching here soon."
+      "blurb": "Nutrition support to complement your training. Launching here soon."
     },
     {
       "id": "activewear",
       "title": "Activewear",
       "comingSoon": true,
-      "blurb": "Gear built for daily movement — launching here soon."
+      "blurb": "Gear built for daily movement. Launching here soon."
     }
   ],
   "products": [
@@ -233,7 +233,7 @@
       "typeLabel": "App",
       "title": "75 Adaptive",
       "tagline": "Show up every day, your way.",
-      "description": "75 days of daily movement, nutrition and habit tasks flexible to your schedule — no restart if you miss a day.",
+      "description": "75 days of daily movement, nutrition and habit tasks flexible to your schedule. No restart if you miss a day.",
       "status": "checkout_pending",
       "image": {
         "svg": "/icons/logo.svg",
