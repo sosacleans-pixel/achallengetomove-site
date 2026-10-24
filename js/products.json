@@ -52,8 +52,8 @@
       "type": "book",
       "typeLabel": "Paperback",
       "title": "A Challenge to Move: Your 22-Day Roadmap to Move Better and Feel Better",
-      "description": "Your practical guide to building a daily movement habit in just seven minutes a day — the foundation of the brand.",
-      "note": "Includes the 22-Day 7-Minute Workout app",
+      "description": "Your practical guide to building a daily movement habit in just seven minutes a day: the foundation of the brand.",
+      "note": "Includes the 22-Day / 7-Minute Workout Challenge app",
       "status": "available",
       "image": {
         "webp": "/img/book-cover.webp",
@@ -79,7 +79,7 @@
       "catalogSection": "programs",
       "type": "app",
       "typeLabel": "App",
-      "title": "22-Day 7-Minute Workout",
+      "title": "22-Day / 7-Minute Workout Challenge",
       "tagline": "Build the habit of movement with just 7 minutes a day.",
       "description": "Guided 7-minute workouts, a 22-day calendar, and built-in exercise and rest timers.",
       "price": "$4.99",
@@ -89,7 +89,7 @@
         "svg": "/icons/logo.svg",
         "width": 512,
         "height": 512,
-        "alt": "22-Day 7-Minute Workout app"
+        "alt": "22-Day / 7-Minute Workout Challenge app"
       },
       "actions": [
         {

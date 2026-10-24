@@ -15,7 +15,7 @@ The site shows `icon.svg` at the top left of each program card on the homepage a
 
 | Program | Folder | Symbol + label | Where it could later be the home-screen icon (not changed here) |
 | --- | --- | --- | --- |
-| 22-Day 7-Minute Workout | `22-day-7-minute-workout/` | stopwatch with a 7-minute wedge, `22` | reader-app (book.coachsalimheyaime.com): `manifest.webmanifest` icons `/icons/icon-192-v5.png`, `/icons/icon-512-v5.png`, maskable 512, and its apple-touch icon |
+| 22-Day / 7-Minute Workout Challenge | `22-day-7-minute-workout/` | stopwatch with a 7-minute wedge, `22` | reader-app (book.coachsalimheyaime.com): `manifest.webmanifest` icons `/icons/icon-192-v5.png`, `/icons/icon-512-v5.png`, maskable 512, and its apple-touch icon |
 | Doing a 5K | `doing-a-5k/` | finish flag, `5K` | this repo: `doing-a-5k/app/manifest.webmanifest` and `doing-a-5k/app/icons/` (icon-192, icon-512, icon.svg, apple-touch-icon) |
 | 30-Day Whole Food Plan | `whole-food-plan/` | apple with leaf, `30` | this repo: `whole-food-plan/app/manifest.webmanifest` and `whole-food-plan/app/icons/` |
 | 5K to Half Marathon | `5k-to-half-marathon/` | finisher medal, `13.1` | the half marathon app when it ships (no app or manifest yet) |
