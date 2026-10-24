@@ -801,7 +801,7 @@ function renderWorkout() {
       <label class="field"><input type="checkbox" name="outdoor" id="workout-outdoor"> Outdoors</label>
       <button type="submit" class="btn btn-primary btn-block" ${!editable ? "disabled" : ""}>Log workout</button>
     </form>
-    <p class="muted"><a href="${SEVEN_MIN_APP_URL}" target="_blank" rel="noopener">22-Day 7-Minute Workout</a> app</p>`;
+    <p class="muted"><a href="${SEVEN_MIN_APP_URL}" target="_blank" rel="noopener">22-Day / 7-Minute Workout Challenge</a> app</p>`;
 }
 
 function bindWorkout() {
