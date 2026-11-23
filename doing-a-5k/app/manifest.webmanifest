@@ -1,6 +1,6 @@
 {
-  "name": "Doing a 5K",
-  "short_name": "Doing a 5K",
+  "name": "A Challenge to Move: 5K and 10K plans",
+  "short_name": "5K and 10K",
   "description": "Your first 5K, or go further to a half marathon.",
   "start_url": "./index.html",
   "scope": "./",

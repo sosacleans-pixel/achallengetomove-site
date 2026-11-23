@@ -1,0 +1,236 @@
+{
+  "displayNameNote": "App names, prices, access length and timer caps come from js/ladder/config.js (Salim's picks, Nov 22, 2026, 8:38 PM MT). The 10K level never carries the 5K house name.",
+  "version": "v6",
+  "status": "Preview build. Nothing live until launch.",
+  "levels": [
+    {
+      "id": "walk-to-5k",
+      "displayName": "A Challenge to Move: Walk to 5K",
+      "price": 6.99,
+      "priceStatus": "decided"
+    },
+    {
+      "id": "5k-faster",
+      "displayName": "A Challenge to Move: 5K Faster",
+      "price": 6.99,
+      "priceStatus": "decided"
+    },
+    {
+      "id": "10k",
+      "displayName": "A Challenge to Move: 10K",
+      "price": 6.99,
+      "priceStatus": "decided"
+    }
+  ],
+  "daysPerWeekOptions": [
+    2,
+    3,
+    4,
+    5
+  ],
+  "weeksByDays": {
+    "2": 18,
+    "3": 12,
+    "4": 10,
+    "5": 9
+  },
+  "sessionsByDays": {
+    "2": 36,
+    "3": 36,
+    "4": 40,
+    "5": 45
+  },
+  "accessDaysByDays": {
+    "2": 140,
+    "3": 98,
+    "4": 84,
+    "5": 77
+  },
+  "accessNote": "Access = plan length + 2 weeks: 20/14/12/11 weeks for 2/3/4/5 days (decided). The exact end date is shown before purchase.",
+  "accessStartsSelf": "purchase date",
+  "accessStartsGift": "redemption date",
+  "giftCodeRedeemableYears": 5,
+  "warningsDaysLeft": [
+    28,
+    14,
+    5
+  ],
+  "warningRule": "compute from the actual access end date; never mention $2.99",
+  "cantFinishRule": "remaining sessions > sessions still possible before the end date, where possible = one per day and at most (daysPerWeek + 1) per 7 days",
+  "openTimers": {
+    "5k-open": {
+      "capSeconds": {
+        "walk-to-5k": 3600,
+        "5k-faster": 2700
+      },
+      "status": "decided"
+    },
+    "10k-open": {
+      "capSeconds": 5400,
+      "status": "decided"
+    }
+  },
+  "placementStarts": {
+    "walk-to-5k-from-week-6": {
+      "level": "walk-to-5k",
+      "startCoreIndex": 16,
+      "when": "Q2 yes and Q3 no, or 12-minute check reaches 12:00"
+    }
+  },
+  "restart": {
+    "price": 2.99,
+    "offerDaysAfterExpiry": 30,
+    "newAccess": "same access length as the plan"
+  },
+  "repeat": {
+    "price": 2.99,
+    "newAccess": "same access length as the plan"
+  },
+  "defaultDays": {
+    "2": [
+      "Tue",
+      "Sat"
+    ],
+    "3": [
+      "Mon",
+      "Wed",
+      "Sat"
+    ],
+    "4": [
+      "Mon",
+      "Tue",
+      "Thu",
+      "Sat"
+    ],
+    "5": [
+      "Mon",
+      "Tue",
+      "Thu",
+      "Fri",
+      "Sat"
+    ]
+  },
+  "spacingRule": "no key sessions on consecutive days; Walk to 5K: no 3 run days in a row (extra days are non-running); the engine re-orders within a week if the user picks other days",
+  "files": [
+    {
+      "file": "walk-to-5k-2x.json",
+      "id": "walk-to-5k",
+      "displayName": "A Challenge to Move: Walk to 5K",
+      "level": 1,
+      "daysPerWeek": 2,
+      "weeks": 18,
+      "totalSessions": 36,
+      "accessDays": 140
+    },
+    {
+      "file": "walk-to-5k-3x.json",
+      "id": "walk-to-5k",
+      "displayName": "A Challenge to Move: Walk to 5K",
+      "level": 1,
+      "daysPerWeek": 3,
+      "weeks": 12,
+      "totalSessions": 36,
+      "accessDays": 98
+    },
+    {
+      "file": "walk-to-5k-4x.json",
+      "id": "walk-to-5k",
+      "displayName": "A Challenge to Move: Walk to 5K",
+      "level": 1,
+      "daysPerWeek": 4,
+      "weeks": 10,
+      "totalSessions": 40,
+      "accessDays": 84
+    },
+    {
+      "file": "walk-to-5k-5x.json",
+      "id": "walk-to-5k",
+      "displayName": "A Challenge to Move: Walk to 5K",
+      "level": 1,
+      "daysPerWeek": 5,
+      "weeks": 9,
+      "totalSessions": 45,
+      "accessDays": 77
+    },
+    {
+      "file": "5k-faster-2x.json",
+      "id": "5k-faster",
+      "displayName": "A Challenge to Move: 5K Faster",
+      "level": 2,
+      "daysPerWeek": 2,
+      "weeks": 18,
+      "totalSessions": 36,
+      "accessDays": 140
+    },
+    {
+      "file": "5k-faster-3x.json",
+      "id": "5k-faster",
+      "displayName": "A Challenge to Move: 5K Faster",
+      "level": 2,
+      "daysPerWeek": 3,
+      "weeks": 12,
+      "totalSessions": 36,
+      "accessDays": 98
+    },
+    {
+      "file": "5k-faster-4x.json",
+      "id": "5k-faster",
+      "displayName": "A Challenge to Move: 5K Faster",
+      "level": 2,
+      "daysPerWeek": 4,
+      "weeks": 10,
+      "totalSessions": 40,
+      "accessDays": 84
+    },
+    {
+      "file": "5k-faster-5x.json",
+      "id": "5k-faster",
+      "displayName": "A Challenge to Move: 5K Faster",
+      "level": 2,
+      "daysPerWeek": 5,
+      "weeks": 9,
+      "totalSessions": 45,
+      "accessDays": 77
+    },
+    {
+      "file": "10k-2x.json",
+      "id": "10k",
+      "displayName": "A Challenge to Move: 10K",
+      "level": 3,
+      "daysPerWeek": 2,
+      "weeks": 18,
+      "totalSessions": 36,
+      "accessDays": 140
+    },
+    {
+      "file": "10k-3x.json",
+      "id": "10k",
+      "displayName": "A Challenge to Move: 10K",
+      "level": 3,
+      "daysPerWeek": 3,
+      "weeks": 12,
+      "totalSessions": 36,
+      "accessDays": 98
+    },
+    {
+      "file": "10k-4x.json",
+      "id": "10k",
+      "displayName": "A Challenge to Move: 10K",
+      "level": 3,
+      "daysPerWeek": 4,
+      "weeks": 10,
+      "totalSessions": 40,
+      "accessDays": 84
+    },
+    {
+      "file": "10k-5x.json",
+      "id": "10k",
+      "displayName": "A Challenge to Move: 10K",
+      "level": 3,
+      "daysPerWeek": 5,
+      "weeks": 9,
+      "totalSessions": 45,
+      "accessDays": 77
+    }
+  ]
+}

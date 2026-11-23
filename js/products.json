@@ -147,24 +147,31 @@
       "catalogSection": "programs",
       "type": "app",
       "typeLabel": "App",
-      "title": "Doing a 5K",
-      "tagline": "Go from walking to your first 5K in 8 to 12 weeks.",
-      "description": "Walk-run your way to a 5K finish line with a plan sized to your schedule.",
+      "title": "5K and 10K plans",
+      "tagline": "Walk to your first 5K, get faster, then go 10K. Train 2 to 5 days a week, one level at a time.",
+      "description": "Three levels: Walk to 5K, 5K Faster and 10K. The 10K level is for people who can already run a 5K. Guided sessions 2 to 5 days a week.",
       "learnMoreHref": "/doing-a-5k/",
       "status": "available",
       "image": {
         "svg": "/icons/logo.svg",
         "width": 512,
         "height": 512,
-        "alt": "Doing a 5K app"
+        "alt": "A Challenge to Move running plans app"
       },
       "actions": [
         {
           "kind": "link",
-          "label": "Buy app, $6.99",
-          "href": "https://buy.stripe.com/14A6oH32iclb6TgeHf4ko04",
+          "label": "Find your level",
+          "href": "/doing-a-5k/app/#l-start",
           "variant": "primary",
-          "newTab": true
+          "newTab": false
+        },
+        {
+          "kind": "link",
+          "label": "Give as a gift",
+          "href": "/doing-a-5k/app/#l-gift",
+          "variant": "secondary",
+          "newTab": false
         },
         {
           "kind": "link",
@@ -174,7 +181,8 @@
           "newTab": false
         }
       ],
-      "price": "$6.99"
+      "price": "$6.99 per level",
+      "note": "$6.99 per level. One-time payment. Access lasts your plan length plus 2 extra weeks. No subscription."
     },
     {
       "id": "5k-to-half-marathon",
@@ -193,37 +201,6 @@
       },
       "notifySubject": "Notify me: 5K to Half Marathon",
       "actions": []
-    },
-    {
-      "id": "5k-2-pack",
-      "catalogSection": "programs",
-      "type": "bundle",
-      "typeLabel": "Bundle",
-      "title": "5K 2-Pack",
-      "tagline": "Both running plans for one price.",
-      "description": "Get Doing a 5K and 5K to Half Marathon together: start with your first 5K, then build to 13.1 miles.",
-      "note": "Includes: Doing a 5K + 5K to Half Marathon.",
-      "price": "$9.99",
-      "status": "checkout_pending",
-      "bundleIncludes": [
-        "doing-a-5k",
-        "5k-to-half-marathon"
-      ],
-      "image": {
-        "svg": "/icons/logo.svg",
-        "width": 512,
-        "height": 512,
-        "alt": "5K 2-Pack: Doing a 5K and 5K to Half Marathon"
-      },
-      "actions": [
-        {
-          "kind": "checkout_pending",
-          "label": "Buy 2-pack, $9.99",
-          "href": "#stripe-link-pending-5k-2pack",
-          "variant": "primary",
-          "pendingNote": "Checkout link pending"
-        }
-      ]
     },
     {
       "id": "75-adaptive",

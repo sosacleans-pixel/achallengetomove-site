@@ -45,6 +45,7 @@ import {
 } from "./storage.js";
 import { WorkoutTimer, SPEECH_CUES } from "./timer.js";
 import { StrengthTimer } from "./strength-timer.js";
+import { render as renderLadder, hasLadder, takeAuthRedirect } from "./ladder/ui.js";
 
 const E2E = new URLSearchParams(location.search).has("e2e");
 
@@ -78,9 +79,17 @@ function speak(text, enabled) {
   window.speechSynthesis.speak(u);
 }
 
+/* Doing a 5K is the level ladder (#l-... routes). There are no existing buyers, so there is no legacy
+ * routing: every other hash opens the ladder. The old single-plan code below is unreachable. */
 function route() {
-  const hash = location.hash.replace("#", "") || (state ? "today" : "onboarding");
-  render(hash);
+  const raw = location.hash.replace("#", "");
+  if (takeAuthRedirect(raw)) return; // magic-link return (only when the server checkout is on)
+  if (raw.startsWith("l-")) {
+    activeTimer?.stop();
+    renderLadder(raw);
+    return;
+  }
+  location.replace(`#${hasLadder() ? "l-today" : "l-start"}`);
 }
 
 function setState(next) {
