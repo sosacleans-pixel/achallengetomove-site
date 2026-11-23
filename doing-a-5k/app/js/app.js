@@ -45,6 +45,7 @@ import {
 } from "./storage.js";
 import { WorkoutTimer, SPEECH_CUES } from "./timer.js";
 import { StrengthTimer } from "./strength-timer.js";
+import { render as renderLadder, hasLadder } from "./ladder/ui.js";
 
 const E2E = new URLSearchParams(location.search).has("e2e");
 
@@ -78,8 +79,26 @@ function speak(text, enabled) {
   window.speechSynthesis.speak(u);
 }
 
+/* Ladder (preview): new buyers get the 30-session ladder (#l-... routes). Existing $6.99 buyers keep the
+ * legacy plan exactly as it is: any device with legacy plan data, or the "original plan" link, opens it. */
+function isLegacy() {
+  if (state) localStorage.setItem("doing-a-5k-legacy", "1"); // stays legacy even after a plan reset
+  return !!state || localStorage.getItem("doing-a-5k-legacy") === "1";
+}
+
 function route() {
-  const hash = location.hash.replace("#", "") || (state ? "today" : "onboarding");
+  const raw = location.hash.replace("#", "");
+  if (raw.startsWith("l-")) {
+    activeTimer?.stop();
+    renderLadder(raw);
+    return;
+  }
+  document.body.classList.remove("ladder-theme");
+  if (!raw && !isLegacy()) {
+    location.hash = hasLadder() ? "l-today" : "l-start";
+    return;
+  }
+  const hash = raw || (state ? "today" : "onboarding");
   render(hash);
 }
 

@@ -18,6 +18,23 @@ export class WorkoutTimer {
     this._wakeLock = null;
     this.totalSeconds = steps.reduce((a, s) => a + s.durationSeconds, 0);
     this._spokenSteps = new Set();
+    /* Ladder additions (preview): actual time spent per step, and the result of an open
+       (count-up) step such as the 5k-open step. Fixed steps behave exactly as before. */
+    this.stepElapsedMs = [];
+    this.openResult = null;
+  }
+
+  static isOpenStep(step) {
+    return !!step && (step.type === "5k-open" || step.open === true);
+  }
+
+  /* Count-up steps only: the user taps Finish (or Stop). Saves the time, then moves on. */
+  finishOpen() {
+    const step = this.steps[this.stepIndex];
+    if (!WorkoutTimer.isOpenStep(step)) return;
+    const secs = Math.floor(this.getStepElapsedMs() / 1000);
+    this.openResult = { stepIndex: this.stepIndex, seconds: secs, capped: false };
+    this._finishStep();
   }
 
   async start() {
@@ -78,6 +95,23 @@ export class WorkoutTimer {
     if (!step) return;
     const elapsed = this.getStepElapsedMs();
     const remaining = step.durationSeconds * 1000 - elapsed;
+    if (WorkoutTimer.isOpenStep(step)) {
+      /* Count-up step: durationSeconds is the cap (45:00 for 5k-open). Auto-stop at the cap. */
+      if (remaining <= 0) {
+        this.openResult = { stepIndex: this.stepIndex, seconds: step.durationSeconds, capped: true };
+        this._finishStep();
+        return;
+      }
+      this.onTick({
+        stepIndex: this.stepIndex,
+        step,
+        open: true,
+        elapsedSeconds: Math.floor(elapsed / 1000),
+        remainingSeconds: Math.ceil(remaining / 1000),
+        overallProgress: Math.min(1, this.getOverallElapsedMs() / (this.totalSeconds * 1000)),
+      });
+      return;
+    }
     const half = step.durationSeconds * 500;
     if (!this._spokenSteps.has(`half-${this.stepIndex}`) && elapsed >= half) {
       this._spokenSteps.add(`half-${this.stepIndex}`);
@@ -97,6 +131,7 @@ export class WorkoutTimer {
 
   _finishStep() {
     const prev = this.stepIndex;
+    this.stepElapsedMs[prev] = Math.max(0, this.getStepElapsedMs());
     this.stepIndex++;
     this.stepStartedAt = Date.now();
     this.accumulatedPauseMs = 0;
@@ -117,6 +152,7 @@ export class WorkoutTimer {
   }
 
   _cueStep(step) {
+    if (step.cue) return this._cue(step.cue);
     if (step.type === "run") this._cue("run");
     else if (step.label.includes("Cool")) this._cue("cooldown");
     else this._cue("walk");

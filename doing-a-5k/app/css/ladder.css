@@ -1,0 +1,432 @@
+/* Doing a 5K ladder (preview): the site's metallic look. Black base, steel blue and gunmetal gray,
+   candy red only for action (buy, start, finish). Scoped to body.ladder-theme so the legacy plan
+   keeps its current look. No added motion. */
+body.ladder-theme {
+  --ink: #0b0d11;
+  --on-ink: #ffffff;
+  --on-ink-muted: #c3ccd7;
+  --accent-on-ink: #9fbff0;
+  --steel: linear-gradient(180deg, #3c69c9 0%, #2a58bb 46%, #1d4296 54%, #2a57b8 100%);
+  --gunmetal: linear-gradient(180deg, #3a434f 0%, #262c35 100%);
+  --chrome: linear-gradient(180deg, #f4f7fa 0%, #d3dae3 45%, #aab5c3 52%, #dfe5ec 100%);
+  --candy-red: linear-gradient(180deg, #d81f32 0%, #b3121f 46%, #8f0d18 54%, #b01422 100%);
+  --red: #e11d2e;
+  --card-bg: linear-gradient(180deg, #1c222b 0%, #141920 100%);
+  --edge: #3a4350;
+  --charcoal: #0b0d11;
+  --muted: #c3ccd7;
+  --paper: #141920;
+  --cream: #0b0d11;
+  --line: #2a313c;
+  --rust: #e11d2e;
+  --yellow: #9fbff0;
+  background: var(--ink);
+  color: var(--on-ink);
+}
+
+body.ladder-theme .app-root,
+body.ladder-theme.app-root {
+  background: var(--ink);
+}
+
+.ladder-theme .app-title,
+.ladder-theme h2 {
+  color: var(--on-ink);
+}
+
+.ladder-theme .app-eyebrow,
+.ladder-theme .muted,
+.ladder-theme .today-meta,
+.ladder-theme .timer-next,
+.ladder-theme .buy-refund,
+.ladder-theme .app-footer {
+  color: var(--on-ink-muted);
+}
+
+.ladder-theme .text-link,
+.ladder-theme a.text-link,
+.ladder-theme .app-footer a {
+  color: var(--accent-on-ink);
+}
+
+.ladder-theme .card {
+  background: var(--card-bg);
+  border: 2px solid var(--edge);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 14px 34px -18px rgba(60, 105, 201, 0.55);
+  color: var(--on-ink);
+}
+
+.ladder-theme .card-celebrate {
+  border-color: var(--red);
+  background: linear-gradient(180deg, #221a20 0%, #141920 100%);
+}
+
+.ladder-theme .btn {
+  border: 2px solid #5b6675;
+}
+
+.ladder-theme .btn-primary {
+  background: var(--steel);
+  color: #ffffff;
+  border-color: #7fa3e6;
+}
+
+.ladder-theme .btn-secondary {
+  background: transparent;
+  color: var(--accent-on-ink);
+  border-color: #7f93b3;
+}
+
+.ladder-theme .btn-small:not(.btn-secondary):not(.btn-primary) {
+  background: var(--gunmetal);
+  color: var(--on-ink);
+}
+
+/* Red = action: buy, restart, repeat, start a session, Finish. */
+.ladder-theme .ladder-buy,
+.ladder-theme .btn-start,
+.ladder-theme .ladder-finish {
+  background: var(--candy-red);
+  color: #ffffff;
+  border-color: #8f0d18;
+}
+
+.ladder-theme .btn[disabled],
+.ladder-theme .btn[aria-disabled="true"] {
+  background: #2a313c;
+  color: #9aa6b4;
+  border-color: #3a4350;
+  cursor: not-allowed;
+}
+
+.ladder-theme .btn:hover {
+  box-shadow: none;
+}
+
+.ladder-theme .btn-block + .btn-block,
+.ladder-theme .ladder-buy-wrap + .btn,
+.ladder-theme .ladder-buy-wrap + .ladder-buy-wrap {
+  margin-top: 0.6rem;
+}
+
+.ladder-theme .ladder-buy-wrap {
+  margin: 0.75rem 0;
+}
+
+.ladder-theme .stripe-badge img {
+  background: #ffffff;
+  border-radius: 4px;
+}
+
+.ladder-theme .buy-disclosure small,
+.ladder-theme .buy-legal small {
+  color: var(--on-ink-muted);
+}
+
+.ladder-theme .progress-bar {
+  background: #232a35;
+}
+
+.ladder-theme .progress-fill {
+  background: linear-gradient(90deg, #8f0d18, #e11d2e 70%, #c3ccd7);
+}
+
+.ladder-theme .app-nav {
+  background: #0b0d11;
+  border-top: 3px solid #3c69c9;
+}
+
+.ladder-theme .app-nav-btn {
+  color: #c3ccd7;
+}
+
+.ladder-theme .app-nav-btn.is-active {
+  color: #ffffff;
+  background: rgba(60, 105, 201, 0.25);
+}
+
+.ladder-theme .chip {
+  background: #1c222b;
+  border-color: #5b6675;
+  color: var(--on-ink);
+}
+
+.ladder-theme .chip:has(:checked) {
+  background: var(--steel);
+  border-color: #7fa3e6;
+  color: #ffffff;
+}
+
+.ladder-theme input[type="text"],
+.ladder-theme select {
+  background: #0f1318;
+  color: var(--on-ink);
+  border: 2px solid #5b6675;
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+  font: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ladder-theme .banner {
+  background: #141920;
+  color: var(--on-ink);
+  border-left: 4px solid var(--red);
+}
+
+.ladder-theme .step-preview {
+  color: #9aa6b4;
+}
+
+.ladder-theme .step-preview.is-current {
+  color: #ffffff;
+}
+
+.ladder-theme .stat {
+  background: var(--card-bg);
+  border: 2px solid var(--edge);
+  border-radius: 12px;
+  padding: 0.6rem 0.4rem;
+  text-align: center;
+}
+
+.ladder-theme .stat-num {
+  display: block;
+  font-weight: 900;
+  font-size: 1.25rem;
+  color: #ffffff;
+}
+
+.ladder-theme .stat-label {
+  display: block;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--on-ink-muted);
+}
+
+.ladder-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.ladder-ribbon {
+  margin: 0;
+  padding: 0.45rem 1rem;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  background: #e11d2e;
+  color: #ffffff;
+}
+
+.ladder-sub,
+.ladder-fit,
+.ladder-lede,
+.ladder-result {
+  text-align: center;
+}
+
+.ladder-result {
+  font-weight: 700;
+}
+
+.ladder-safety,
+.ladder-warn {
+  border-left: 4px solid var(--red);
+  padding: 0.5rem 0.75rem;
+  background: rgba(225, 29, 46, 0.08);
+  border-radius: 0 8px 8px 0;
+}
+
+.ladder-q-count,
+.ladder-tag {
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent-on-ink);
+  margin: 0 0 0.3rem;
+}
+
+.ladder-q {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.ladder-yesno {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.ladder-level.is-suggested {
+  border-color: #7fa3e6;
+}
+
+.ladder-price {
+  font-weight: 900;
+  font-size: 1.1rem;
+  margin: 0 0 0.4rem;
+}
+
+.ladder-preview-note {
+  background: rgba(60, 105, 201, 0.16);
+  border: 1px dashed #7fa3e6;
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.ladder-dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 1rem;
+  margin: 0 0 1rem;
+}
+
+.ladder-dl dt {
+  color: var(--on-ink-muted);
+}
+
+.ladder-dl dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.ladder-timer .timer-countdown {
+  color: #ffffff;
+}
+
+.timer-effort {
+  margin: 0 0 0.5rem;
+  color: var(--accent-on-ink);
+  font-size: 0.9rem;
+}
+
+.ladder-finish {
+  font-size: 1.25rem;
+  padding: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.ladder-cap-note,
+.ladder-exit-note {
+  font-weight: 700;
+}
+
+.ladder-5k {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.ladder-5k-label {
+  margin: 0;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--on-ink-muted);
+}
+
+.ladder-5k-time {
+  margin: 0.2rem 0;
+  font-size: 2.5rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.ladder-linkbtn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.ladder-plan {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+}
+
+.ladder-plan-item {
+  display: grid;
+  grid-template-columns: 2.2rem 1fr auto;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #2a313c;
+}
+
+.ladder-theme .plan-check {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #1c222b;
+  border: 2px solid #5b6675;
+  color: #c3ccd7;
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.ladder-theme .plan-item.is-done .plan-check {
+  background: var(--steel);
+  border-color: #7fa3e6;
+  color: #ffffff;
+}
+
+.ladder-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--chrome);
+  color: #0b0d11;
+  font-weight: 900;
+  font-size: 0.8rem;
+  margin: 0 0.2rem 0.3rem 0;
+}
+
+.ladder-badge--big {
+  font-size: 1rem;
+  padding: 0.35rem 0.9rem;
+  border: 2px solid var(--red);
+}
+
+.ladder-tool-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.ladder-error {
+  color: #ff8a95;
+  font-weight: 700;
+  min-height: 0;
+}
+
+.ladder-theme .effort-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ladder-theme .effort-table th,
+.ladder-theme .effort-table td {
+  border-bottom: 1px solid #2a313c;
+  padding: 0.35rem;
+  text-align: left;
+}
+
+.ladder-steps {
+  padding-left: 1.25rem;
+}
+
+.ladder-legacy {
+  text-align: center;
+}
