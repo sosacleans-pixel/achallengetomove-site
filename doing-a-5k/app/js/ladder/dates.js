@@ -57,3 +57,8 @@ export function parseMmss(str) {
   if (!m) return null;
   return Number(m[1]) * 60 + Number(m[2]);
 }
+
+/* With the year, for end dates, redeem-by dates and receipts. */
+export function prettyFull(isoStr) {
+  return parse(isoStr).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+}

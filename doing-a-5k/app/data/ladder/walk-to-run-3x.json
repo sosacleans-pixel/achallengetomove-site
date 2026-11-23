@@ -1,18 +1,30 @@
 {
- "id": "walk-to-run-30",
+ "id": "walk-to-run",
  "level": 1,
- "name": "Walk-to-Run 30",
+ "name": "Walk-to-Run",
+ "displayName": "Doing a 5K: Walk-to-Run",
  "price": 4.99,
  "entry": "Can walk briskly for 30 minutes.",
  "exit": "12 minutes of continuous easy jogging.",
  "summary": "Walk with short jogs, building to 12 minutes of nonstop running.",
  "cues": "Jogs are RPE 4, full sentences. Walks are brisk, RPE 3.",
- "spacing": "max3InARowAt5",
+ "spacing": "max3RunDaysInARow",
+ "daysPerWeek": 3,
+ "weeks": 12,
+ "extraWeeks": 2,
+ "accessDays": 98,
+ "totalSessions": 36,
+ "accessStarts": "purchase (gift: redemption)",
  "slots": [
   {
    "slot": 1,
+   "week": 1,
+   "weekSession": 1,
+   "template": "S1",
    "title": "Walk with jogs",
    "summary": "6 x (0:30 jog / 2:30 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P1",
    "steps": [
     {
      "type": "walk",
@@ -120,8 +132,13 @@
   },
   {
    "slot": 2,
+   "week": 1,
+   "weekSession": 2,
+   "template": "S2",
    "title": "Walk with jogs",
    "summary": "6 x (0:35 jog / 2:30 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P1",
    "steps": [
     {
      "type": "walk",
@@ -228,8 +245,13 @@
   },
   {
    "slot": 3,
+   "week": 1,
+   "weekSession": 3,
+   "template": "S3",
    "title": "Walk with jogs",
    "summary": "6 x (0:40 jog / 2:30 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P1",
    "steps": [
     {
      "type": "walk",
@@ -336,8 +358,126 @@
   },
   {
    "slot": 4,
+   "week": 2,
+   "weekSession": 1,
+   "template": "S1",
+   "title": "Walk with jogs",
+   "summary": "6 x (0:40 jog / 2:30 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P1",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 40,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 150,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 40,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 150,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 40,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 150,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 40,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 150,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 40,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 150,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 40,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 150,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1140,
+   "totalSeconds": 1740
+  },
+  {
+   "slot": 5,
+   "week": 2,
+   "weekSession": 2,
+   "template": "S2",
    "title": "Walk with jogs",
    "summary": "6 x (0:45 jog / 2:30 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P1",
    "steps": [
     {
      "type": "walk",
@@ -443,9 +583,14 @@
    "totalSeconds": 1770
   },
   {
-   "slot": 5,
+   "slot": 6,
+   "week": 2,
+   "weekSession": 3,
+   "template": "S3",
    "title": "Walk with jogs",
    "summary": "6 x (0:50 jog / 2:30 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P1",
    "steps": [
     {
      "type": "walk",
@@ -551,9 +696,14 @@
    "totalSeconds": 1800
   },
   {
-   "slot": 6,
+   "slot": 7,
+   "week": 3,
+   "weekSession": 1,
+   "template": "S1",
    "title": "Walk with jogs",
    "summary": "5 x (1:00 jog / 2:30 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P2",
    "steps": [
     {
      "type": "walk",
@@ -645,9 +795,14 @@
    "totalSeconds": 1650
   },
   {
-   "slot": 7,
+   "slot": 8,
+   "week": 3,
+   "weekSession": 2,
+   "template": "S2",
    "title": "Walk with jogs",
    "summary": "5 x (1:15 jog / 2:25 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P2",
    "steps": [
     {
      "type": "walk",
@@ -739,9 +894,113 @@
    "totalSeconds": 1700
   },
   {
-   "slot": 8,
+   "slot": 9,
+   "week": 3,
+   "weekSession": 3,
+   "template": "S3",
+   "title": "Walk with jogs",
+   "summary": "5 x (1:15 jog / 2:25 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P2",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 75,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 145,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 75,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 145,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 75,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 145,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 75,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 145,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 75,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 145,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1100,
+   "totalSeconds": 1700
+  },
+  {
+   "slot": 10,
+   "week": 4,
+   "weekSession": 1,
+   "template": "S1",
    "title": "Walk with jogs",
    "summary": "5 x (1:30 jog / 2:20 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P2",
    "steps": [
     {
      "type": "walk",
@@ -833,9 +1092,14 @@
    "totalSeconds": 1750
   },
   {
-   "slot": 9,
+   "slot": 11,
+   "week": 4,
+   "weekSession": 2,
+   "template": "S2",
    "title": "Walk with jogs",
    "summary": "5 x (1:45 jog / 2:15 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P2",
    "steps": [
     {
      "type": "walk",
@@ -927,9 +1191,113 @@
    "totalSeconds": 1800
   },
   {
-   "slot": 10,
+   "slot": 12,
+   "week": 4,
+   "weekSession": 3,
+   "template": "S3",
+   "title": "Walk with jogs",
+   "summary": "5 x (1:45 jog / 2:15 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P2",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 105,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 135,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 105,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 135,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 105,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 135,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 105,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 135,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 105,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 135,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1200,
+   "totalSeconds": 1800
+  },
+  {
+   "slot": 13,
+   "week": 5,
+   "weekSession": 1,
+   "template": "S1",
    "title": "Walk with jogs",
    "summary": "5 x (2:00 jog / 2:00 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P2",
    "steps": [
     {
      "type": "walk",
@@ -1021,9 +1389,14 @@
    "totalSeconds": 1800
   },
   {
-   "slot": 11,
+   "slot": 14,
+   "week": 5,
+   "weekSession": 2,
+   "template": "S2",
    "title": "Walk with jogs",
    "summary": "5 x (2:15 jog / 1:50 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P2",
    "steps": [
     {
      "type": "walk",
@@ -1115,9 +1488,14 @@
    "totalSeconds": 1825
   },
   {
-   "slot": 12,
+   "slot": 15,
+   "week": 5,
+   "weekSession": 3,
+   "template": "S3",
    "title": "Walk with jogs",
-   "summary": "5 x (2:15 jog / 1:45 walk). Hold step: same jogs, shorter walks.",
+   "summary": "5 x (2:15 jog / 1:45 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P2",
    "steps": [
     {
      "type": "walk",
@@ -1209,9 +1587,14 @@
    "totalSeconds": 1800
   },
   {
-   "slot": 13,
+   "slot": 16,
+   "week": 6,
+   "weekSession": 1,
+   "template": "S1",
    "title": "Run / walk",
    "summary": "4 x (3:00 jog / 1:30 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P3 (adjusted)",
    "steps": [
     {
      "type": "walk",
@@ -1289,9 +1672,14 @@
    "totalSeconds": 1680
   },
   {
-   "slot": 14,
+   "slot": 17,
+   "week": 6,
+   "weekSession": 2,
+   "template": "S2",
    "title": "Run / walk",
    "summary": "4 x (3:00 jog / 1:15 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P3 (adjusted)",
    "steps": [
     {
      "type": "walk",
@@ -1369,9 +1757,99 @@
    "totalSeconds": 1620
   },
   {
-   "slot": 15,
+   "slot": 18,
+   "week": 6,
+   "weekSession": 3,
+   "template": "S3",
+   "title": "Run / walk",
+   "summary": "4 x (3:00 jog / 1:15 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P3 (adjusted)",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 180,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 75,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 180,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 75,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 180,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 75,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 180,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 75,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1020,
+   "totalSeconds": 1620
+  },
+  {
+   "slot": 19,
+   "week": 7,
+   "weekSession": 1,
+   "template": "S1",
    "title": "Run / walk",
    "summary": "4 x (3:15 jog / 1:15 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P3 (adjusted)",
    "steps": [
     {
      "type": "walk",
@@ -1449,9 +1927,14 @@
    "totalSeconds": 1680
   },
   {
-   "slot": 16,
+   "slot": 20,
+   "week": 7,
+   "weekSession": 2,
+   "template": "S2",
    "title": "Run / walk",
    "summary": "4 x (3:30 jog / 1:00 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P3 (adjusted)",
    "steps": [
     {
      "type": "walk",
@@ -1529,9 +2012,14 @@
    "totalSeconds": 1680
   },
   {
-   "slot": 17,
+   "slot": 21,
+   "week": 7,
+   "weekSession": 3,
+   "template": "S3",
    "title": "Run / walk",
    "summary": "4 x (3:45 jog / 1:00 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P3 (adjusted)",
    "steps": [
     {
      "type": "walk",
@@ -1609,9 +2097,14 @@
    "totalSeconds": 1740
   },
   {
-   "slot": 18,
+   "slot": 22,
+   "week": 8,
+   "weekSession": 1,
+   "template": "S1",
    "title": "Run / walk",
    "summary": "3 x (5:00 jog / 1:30 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P4 (adjusted)",
    "steps": [
     {
      "type": "walk",
@@ -1675,9 +2168,14 @@
    "totalSeconds": 1770
   },
   {
-   "slot": 19,
+   "slot": 23,
+   "week": 8,
+   "weekSession": 2,
+   "template": "S2",
    "title": "Run / walk",
    "summary": "3 x (5:00 jog / 1:00 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P4 (adjusted)",
    "steps": [
     {
      "type": "walk",
@@ -1741,9 +2239,14 @@
    "totalSeconds": 1680
   },
   {
-   "slot": 20,
+   "slot": 24,
+   "week": 8,
+   "weekSession": 3,
+   "template": "S3",
    "title": "Run / walk",
    "summary": "3 x (5:30 jog / 1:00 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P4 (adjusted)",
    "steps": [
     {
      "type": "walk",
@@ -1807,9 +2310,14 @@
    "totalSeconds": 1770
   },
   {
-   "slot": 21,
+   "slot": 25,
+   "week": 9,
+   "weekSession": 1,
+   "template": "S1",
    "title": "Run / walk",
    "summary": "3 x (6:00 jog / 1:00 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P4 (adjusted) + new",
    "steps": [
     {
      "type": "walk",
@@ -1873,9 +2381,14 @@
    "totalSeconds": 1860
   },
   {
-   "slot": 22,
+   "slot": 26,
+   "week": 9,
+   "weekSession": 2,
+   "template": "S2",
    "title": "Run / walk",
-   "summary": "2 x (7:00 jog / 1:30 walk). Lighter day, longer single jog.",
+   "summary": "2 x (7:00 jog / 1:30 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P4 (adjusted) + new",
    "steps": [
     {
      "type": "walk",
@@ -1925,9 +2438,14 @@
    "totalSeconds": 1620
   },
   {
-   "slot": 23,
+   "slot": 27,
+   "week": 9,
+   "weekSession": 3,
+   "template": "S3",
    "title": "Run / walk",
    "summary": "2 x (8:00 jog / 1:30 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / Legacy P4 (adjusted) + new",
    "steps": [
     {
      "type": "walk",
@@ -1977,210 +2495,14 @@
    "totalSeconds": 1740
   },
   {
-   "slot": 24,
-   "title": "Run / walk",
-   "summary": "2 x (8:00 jog / 1:00 walk).",
-   "steps": [
-    {
-     "type": "walk",
-     "label": "Warm-up brisk walk",
-     "durationSeconds": 300,
-     "phase": "warmup",
-     "effort": "Brisk, RPE 3"
-    },
-    {
-     "type": "run",
-     "label": "Easy jog",
-     "durationSeconds": 480,
-     "phase": "main",
-     "effort": "RPE 4, full sentences"
-    },
-    {
-     "type": "walk",
-     "label": "Brisk walk",
-     "durationSeconds": 60,
-     "phase": "main",
-     "effort": "Brisk, RPE 3"
-    },
-    {
-     "type": "run",
-     "label": "Easy jog",
-     "durationSeconds": 480,
-     "phase": "main",
-     "effort": "RPE 4, full sentences"
-    },
-    {
-     "type": "walk",
-     "label": "Brisk walk",
-     "durationSeconds": 60,
-     "phase": "main",
-     "effort": "Brisk, RPE 3"
-    },
-    {
-     "type": "walk",
-     "label": "Cool-down walk",
-     "durationSeconds": 300,
-     "phase": "cooldown",
-     "effort": "Easy walk",
-     "cue": "cooldown"
-    }
-   ],
-   "mainSeconds": 1080,
-   "totalSeconds": 1680
-  },
-  {
-   "slot": 25,
-   "title": "Run / walk",
-   "summary": "2 x (9:00 jog / 1:00 walk).",
-   "steps": [
-    {
-     "type": "walk",
-     "label": "Warm-up brisk walk",
-     "durationSeconds": 300,
-     "phase": "warmup",
-     "effort": "Brisk, RPE 3"
-    },
-    {
-     "type": "run",
-     "label": "Easy jog",
-     "durationSeconds": 540,
-     "phase": "main",
-     "effort": "RPE 4, full sentences"
-    },
-    {
-     "type": "walk",
-     "label": "Brisk walk",
-     "durationSeconds": 60,
-     "phase": "main",
-     "effort": "Brisk, RPE 3"
-    },
-    {
-     "type": "run",
-     "label": "Easy jog",
-     "durationSeconds": 540,
-     "phase": "main",
-     "effort": "RPE 4, full sentences"
-    },
-    {
-     "type": "walk",
-     "label": "Brisk walk",
-     "durationSeconds": 60,
-     "phase": "main",
-     "effort": "Brisk, RPE 3"
-    },
-    {
-     "type": "walk",
-     "label": "Cool-down walk",
-     "durationSeconds": 300,
-     "phase": "cooldown",
-     "effort": "Easy walk",
-     "cue": "cooldown"
-    }
-   ],
-   "mainSeconds": 1200,
-   "totalSeconds": 1800
-  },
-  {
-   "slot": 26,
-   "title": "Run / walk",
-   "summary": "2 x (10:00 jog / 1:00 walk).",
-   "steps": [
-    {
-     "type": "walk",
-     "label": "Warm-up brisk walk",
-     "durationSeconds": 300,
-     "phase": "warmup",
-     "effort": "Brisk, RPE 3"
-    },
-    {
-     "type": "run",
-     "label": "Easy jog",
-     "durationSeconds": 600,
-     "phase": "main",
-     "effort": "RPE 4, full sentences"
-    },
-    {
-     "type": "walk",
-     "label": "Brisk walk",
-     "durationSeconds": 60,
-     "phase": "main",
-     "effort": "Brisk, RPE 3"
-    },
-    {
-     "type": "run",
-     "label": "Easy jog",
-     "durationSeconds": 600,
-     "phase": "main",
-     "effort": "RPE 4, full sentences"
-    },
-    {
-     "type": "walk",
-     "label": "Brisk walk",
-     "durationSeconds": 60,
-     "phase": "main",
-     "effort": "Brisk, RPE 3"
-    },
-    {
-     "type": "walk",
-     "label": "Cool-down walk",
-     "durationSeconds": 300,
-     "phase": "cooldown",
-     "effort": "Easy walk",
-     "cue": "cooldown"
-    }
-   ],
-   "mainSeconds": 1320,
-   "totalSeconds": 1920
-  },
-  {
-   "slot": 27,
-   "title": "Longer jogs",
-   "summary": "11:00 jog / 1:00 walk / 5:00 jog.",
-   "steps": [
-    {
-     "type": "walk",
-     "label": "Warm-up brisk walk",
-     "durationSeconds": 300,
-     "phase": "warmup",
-     "effort": "Brisk, RPE 3"
-    },
-    {
-     "type": "run",
-     "label": "Easy jog",
-     "durationSeconds": 660,
-     "phase": "main",
-     "effort": "RPE 4, full sentences"
-    },
-    {
-     "type": "walk",
-     "label": "Brisk walk",
-     "durationSeconds": 60,
-     "phase": "main",
-     "effort": "Brisk, RPE 3"
-    },
-    {
-     "type": "run",
-     "label": "Easy jog",
-     "durationSeconds": 300,
-     "phase": "main",
-     "effort": "RPE 4, full sentences"
-    },
-    {
-     "type": "walk",
-     "label": "Cool-down walk",
-     "durationSeconds": 300,
-     "phase": "cooldown",
-     "effort": "Easy walk",
-     "cue": "cooldown"
-    }
-   ],
-   "mainSeconds": 1020,
-   "totalSeconds": 1620
-  },
-  {
    "slot": 28,
-   "title": "Longer jogs",
-   "summary": "2 x (8:00 jog / 1:00 walk). Lighter day before the milestone.",
+   "week": 10,
+   "weekSession": 1,
+   "template": "S1",
+   "title": "Build endurance",
+   "summary": "2 x (8:00 jog / 1:00 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / New",
    "steps": [
     {
      "type": "walk",
@@ -2231,8 +2553,234 @@
   },
   {
    "slot": 29,
-   "title": "Longer jogs",
+   "week": 10,
+   "weekSession": 2,
+   "template": "S2",
+   "title": "Build endurance",
+   "summary": "2 x (9:00 jog / 1:00 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / New",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 540,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 540,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1200,
+   "totalSeconds": 1800
+  },
+  {
+   "slot": 30,
+   "week": 10,
+   "weekSession": 3,
+   "template": "S3",
+   "title": "Build endurance",
+   "summary": "2 x (10:00 jog / 1:00 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / New",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 600,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 600,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1320,
+   "totalSeconds": 1920
+  },
+  {
+   "slot": 31,
+   "week": 11,
+   "weekSession": 1,
+   "template": "S1",
+   "title": "Build endurance",
+   "summary": "11:00 jog / 1:00 walk / 5:00 jog.",
+   "kind": "Core",
+   "reuse": "v3 L1 / New",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 660,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Walk",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 300,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1020,
+   "totalSeconds": 1620
+  },
+  {
+   "slot": 32,
+   "week": 11,
+   "weekSession": 2,
+   "template": "S2",
+   "title": "Build endurance",
+   "summary": "2 x (8:00 jog / 1:00 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / New",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 480,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 480,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1080,
+   "totalSeconds": 1680
+  },
+  {
+   "slot": 33,
+   "week": 11,
+   "weekSession": 3,
+   "template": "S3",
+   "title": "Build endurance",
    "summary": "12:00 jog / 1:00 walk / 4:00 jog.",
+   "kind": "Core",
+   "reuse": "v3 L1 / New",
    "steps": [
     {
      "type": "walk",
@@ -2250,7 +2798,7 @@
     },
     {
      "type": "walk",
-     "label": "Brisk walk",
+     "label": "Walk",
      "durationSeconds": 60,
      "phase": "main",
      "effort": "Brisk, RPE 3"
@@ -2275,9 +2823,121 @@
    "totalSeconds": 1620
   },
   {
-   "slot": 30,
-   "title": "12-minute jog",
-   "summary": "12:00 continuous easy jog. Your Walk-to-Run 30 finish.",
+   "slot": 34,
+   "week": 12,
+   "weekSession": 1,
+   "template": "S1",
+   "title": "Build endurance",
+   "summary": "12:00 jog / 1:00 walk / 4:00 jog.",
+   "kind": "Core",
+   "reuse": "v3 L1 / New + Legacy P5 (12:00)",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 720,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Walk",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 240,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1020,
+   "totalSeconds": 1620
+  },
+  {
+   "slot": 35,
+   "week": 12,
+   "weekSession": 2,
+   "template": "S2",
+   "title": "Build endurance",
+   "summary": "2 x (8:00 jog / 1:00 walk).",
+   "kind": "Core",
+   "reuse": "v3 L1 / New + Legacy P5 (12:00)",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 480,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "run",
+     "label": "Easy jog",
+     "durationSeconds": 480,
+     "phase": "main",
+     "effort": "RPE 4, full sentences"
+    },
+    {
+     "type": "walk",
+     "label": "Brisk walk",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1080,
+   "totalSeconds": 1680
+  },
+  {
+   "slot": 36,
+   "week": 12,
+   "weekSession": 3,
+   "template": "S3",
+   "title": "Milestone: 12 minutes nonstop",
+   "summary": "12:00 continuous easy jog.",
+   "kind": "Core",
+   "reuse": "v3 L1 / New + Legacy P5 (12:00)",
    "steps": [
     {
      "type": "walk",
@@ -2302,7 +2962,7 @@
      "cue": "cooldown"
     }
    ],
-   "checkin": "day30",
+   "checkin": "final",
    "mainSeconds": 720,
    "totalSeconds": 1320
   }

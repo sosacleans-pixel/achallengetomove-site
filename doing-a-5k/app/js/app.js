@@ -79,13 +79,8 @@ function speak(text, enabled) {
   window.speechSynthesis.speak(u);
 }
 
-/* Ladder (preview): new buyers get the 30-session ladder (#l-... routes). Existing $6.99 buyers keep the
- * legacy plan exactly as it is: any device with legacy plan data, or the "original plan" link, opens it. */
-function isLegacy() {
-  if (state) localStorage.setItem("doing-a-5k-legacy", "1"); // stays legacy even after a plan reset
-  return !!state || localStorage.getItem("doing-a-5k-legacy") === "1";
-}
-
+/* Doing a 5K is the level ladder (#l-... routes). There are no existing buyers, so there is no legacy
+ * routing: every other hash opens the ladder. The old single-plan code below is unreachable. */
 function route() {
   const raw = location.hash.replace("#", "");
   if (raw.startsWith("l-")) {
@@ -93,13 +88,7 @@ function route() {
     renderLadder(raw);
     return;
   }
-  document.body.classList.remove("ladder-theme");
-  if (!raw && !isLegacy()) {
-    location.hash = hasLadder() ? "l-today" : "l-start";
-    return;
-  }
-  const hash = raw || (state ? "today" : "onboarding");
-  render(hash);
+  location.replace(`#${hasLadder() ? "l-today" : "l-start"}`);
 }
 
 function setState(next) {

@@ -1,0 +1,96 @@
+{
+ "accessDays": 98,
+ "accessStartsSelf": "purchase date",
+ "accessStartsGift": "redemption date",
+ "giftCodeRedeemableYears": 5,
+ "warningsDaysLeft": [
+  28,
+  14,
+  5
+ ],
+ "warningRule": "compute from the actual access end date; never mention $2.99",
+ "cantFinishRule": "sessions left > days left (one session per day max)",
+ "restart": {
+  "price": 2.99,
+  "offerDaysAfterExpiry": 30,
+  "newAccessDays": 98
+ },
+ "repeat": {
+  "price": 2.99,
+  "newAccessDays": 98
+ },
+ "files": [
+  {
+   "file": "walk-to-run-3x.json",
+   "id": "walk-to-run",
+   "displayName": "Doing a 5K: Walk-to-Run",
+   "level": 1,
+   "daysPerWeek": 3,
+   "totalSessions": 36
+  },
+  {
+   "file": "walk-to-run-4x.json",
+   "id": "walk-to-run",
+   "displayName": "Doing a 5K: Walk-to-Run",
+   "level": 1,
+   "daysPerWeek": 4,
+   "totalSessions": 48
+  },
+  {
+   "file": "walk-to-run-5x.json",
+   "id": "walk-to-run",
+   "displayName": "Doing a 5K: Walk-to-Run",
+   "level": 1,
+   "daysPerWeek": 5,
+   "totalSessions": 60
+  },
+  {
+   "file": "5k-3x.json",
+   "id": "5k",
+   "displayName": "Doing a 5K: 5K",
+   "level": 2,
+   "daysPerWeek": 3,
+   "totalSessions": 36
+  },
+  {
+   "file": "5k-4x.json",
+   "id": "5k",
+   "displayName": "Doing a 5K: 5K",
+   "level": 2,
+   "daysPerWeek": 4,
+   "totalSessions": 48
+  },
+  {
+   "file": "5k-5x.json",
+   "id": "5k",
+   "displayName": "Doing a 5K: 5K",
+   "level": 2,
+   "daysPerWeek": 5,
+   "totalSessions": 60
+  },
+  {
+   "file": "faster-5k-3x.json",
+   "id": "faster-5k",
+   "displayName": "Doing a 5K: Faster 5K",
+   "level": 3,
+   "daysPerWeek": 3,
+   "totalSessions": 36
+  },
+  {
+   "file": "faster-5k-4x.json",
+   "id": "faster-5k",
+   "displayName": "Doing a 5K: Faster 5K",
+   "level": 3,
+   "daysPerWeek": 4,
+   "totalSessions": 48
+  },
+  {
+   "file": "faster-5k-5x.json",
+   "id": "faster-5k",
+   "displayName": "Doing a 5K: Faster 5K",
+   "level": 3,
+   "daysPerWeek": 5,
+   "totalSessions": 60
+  }
+ ]
+}

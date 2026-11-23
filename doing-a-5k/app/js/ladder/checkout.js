@@ -8,10 +8,11 @@ export const CHECKOUT = {
   mode: "preview", // "preview" | "stripe" (stripe needs a server endpoint that creates the Checkout Session)
   sessionEndpoint: null, // e.g. a Supabase Edge Function URL, set after approval
   prices: {
-    "walk-to-run-30": { amount: "4.99", stripePriceId: null },
-    "5k-30": { amount: "6.99", stripePriceId: null },
-    "faster-5k-30": { amount: "6.99", stripePriceId: null },
+    "walk-to-run": { amount: "4.99", stripePriceId: null },
+    "5k": { amount: "6.99", stripePriceId: null },
+    "faster-5k": { amount: "6.99", stripePriceId: null },
     restart: { amount: "2.99", stripePriceId: null },
+    // Gifts use the level prices above (a separate Stripe price per gift level is optional).
     repeat: { amount: "2.99", stripePriceId: null },
   },
 };
@@ -25,35 +26,47 @@ const LEGAL_LINKS_HTML =
   '<p class="buy-legal"><small><a class="text-link" href="../../purchase-terms/#app-5k-ladder" target="_blank" rel="noopener">Purchase terms</a> · ' +
   '<a class="text-link" href="../../health-safety/" target="_blank" rel="noopener">Health and safety</a></small></p>';
 
-/* Attorney §4.1, word for word, with $[PRICE] filled in. */
+/* Attorney §4.1 (memo §7.3), word for word, with $[PRICE] filled in. */
+const DISCLOSURE_REST =
+  "This is not a subscription and will not renew or charge you again. " +
+  "Your purchase gives you 14 weeks of access to this level (the 12-week program plus 2 extra weeks), starting on the date of purchase. " +
+  "After that, you cannot start new sessions in this window. Your history, badges and streak record stay visible. " +
+  "If the window ends before you finish, you can restart the same level for $2.99 within 30 days, which starts a new 14-week window. " +
+  "After those 30 days, the regular price applies. Repeating a finished level is $2.99 at any time and also starts a new 14-week window. " +
+  "You can request a full refund within 3 days (72 hours) of purchase by emailing coachsalimheyaime@gmail.com. " +
+  "After that, all sales are final, except where the law requires otherwise. Refunds go to the original payment method. " +
+  "A refund ends your access.";
+
 export function disclosureText(price) {
-  return (
-    `One-time payment of $${price}. This is not a subscription and will not renew or charge you again. ` +
-    "Your purchase gives you 90 days of access to this level, starting on the date of purchase. " +
-    "After 90 days, you cannot start new sessions in this window. Your history, badges and streak record stay visible. " +
-    "If the window ends before you finish, you can restart the same level for $2.99 within 30 days, which starts a new 90-day window. " +
-    "After those 30 days, the regular price applies. Repeating a finished level is $2.99 at any time and also starts a new 90-day window. " +
-    "You can request a full refund within 3 days (72 hours) of purchase by emailing coachsalimheyaime@gmail.com. " +
-    "After that, all sales are final, except where the law requires otherwise. Refunds go to the original payment method. " +
-    "A refund ends your access."
-  );
+  return `One-time payment of $${price}. ${DISCLOSURE_REST}`;
 }
 
-/* Restart / repeat: the first sentence states the $2.99 price and what it buys (Attorney §4.1 note).
- * The rest of §4.1 follows word for word. FIRST SENTENCE WORDING NEEDS ATTORNEY CONFIRMATION. */
-export function disclosureFor({ kind, price, levelName, resumeAt }) {
-  const base = disclosureText(price);
+/* Restart / repeat: the Attorney's required first sentences (memo §7.3), then the rest of §4.1. */
+export function disclosureFor({ kind, price, levelName, resumeAt = 1 }) {
+  if (kind === "gift") return giftDisclosure({ price, levelName });
   if (kind === "restart") {
-    const what =
-      resumeAt > 1
-        ? `a new 90-day window for ${levelName} that resumes at session ${resumeAt} unless you choose to start from session 1`
-        : `a new 90-day window for ${levelName} that starts at session 1`;
-    return base.replace(`One-time payment of $${price}.`, `One-time payment of $${price} for ${what}.`);
+    const first = resumeAt > 1
+      ? `One-time payment of $2.99 for a new 14-week access window for ${levelName} that resumes at session ${resumeAt} unless you choose to start from session 1.`
+      : `One-time payment of $2.99 for a new 14-week access window for ${levelName} that starts at session 1.`;
+    return `${first} ${DISCLOSURE_REST}`;
   }
   if (kind === "repeat") {
-    return base.replace(`One-time payment of $${price}.`, `One-time payment of $${price} to repeat ${levelName}: a new 90-day window that starts at session 1.`);
+    return `One-time payment of $2.99 to repeat ${levelName}: a new 14-week access window that starts at session 1. ${DISCLOSURE_REST}`;
   }
-  return base;
+  return disclosureText(price);
+}
+
+/* Attorney §4.2 (memo §7.3), word for word. */
+export function giftDisclosure({ price, levelName }) {
+  return (
+    `One-time payment of $${price} for a gift of ${levelName}. This is not a subscription and will not renew or charge you again. ` +
+    "The gift code can be redeemed for at least 5 years from the date of purchase. " +
+    "Once the recipient redeems it, they get 14 weeks of access (the 12-week program plus 2 extra weeks) starting on the redemption date. " +
+    "You can request a full refund within 3 days (72 hours) of purchase only if the code has not been redeemed. " +
+    "Once redeemed, the gift is non-refundable, except where the law requires otherwise. Refunds go to the original payment method. " +
+    "Gift codes have no cash value and can't be resold, except where the law requires otherwise. " +
+    "Gifts may only be given to an adult 18 or older. The recipient must accept the App Terms and Health and safety information personally."
+  );
 }
 
 function esc(t) {

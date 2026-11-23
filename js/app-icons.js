@@ -9,7 +9,6 @@
     "doing-a-5k": "doing-a-5k",
     "whole-food-app": "whole-food-plan",
     "5k-to-half-marathon": "5k-to-half-marathon",
-    "5k-2-pack": "5k-2-pack",
     "75-adaptive": "75-adaptive",
     "75-all-in": "75-all-in",
     "30-days-before-xmas": "30-days-before-xmas"

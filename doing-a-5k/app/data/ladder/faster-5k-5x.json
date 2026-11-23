@@ -1,0 +1,4618 @@
+{
+ "id": "faster-5k",
+ "level": 3,
+ "name": "Faster 5K",
+ "displayName": "Doing a 5K: Faster 5K",
+ "price": 6.99,
+ "entry": "Can run 5K, or 30 minutes, continuously.",
+ "exit": "5K time trial versus week 1.",
+ "summary": "Add speed play, hills and tempo runs for a smoother, quicker 5K.",
+ "cues": "Key sessions are marked with a lightning bolt. Easy and Long days stay conversational.",
+ "spacing": "noBackToBackQ",
+ "daysPerWeek": 5,
+ "weeks": 12,
+ "extraWeeks": 2,
+ "accessDays": 98,
+ "totalSessions": 60,
+ "accessStarts": "purchase (gift: redemption)",
+ "slots": [
+  {
+   "slot": 1,
+   "week": 1,
+   "weekSession": 1,
+   "template": "S1",
+   "title": "⚡ Baseline 5K",
+   "summary": "Count-up timer, tap Finish at 5K (auto-stops 45:00). Comfortably hard, RPE 6 to 7.",
+   "kind": "Trial",
+   "reuse": "Legacy P6 + new 5k-open timer",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "5k-open",
+     "label": "Your 5K, go at your pace",
+     "durationSeconds": 2700,
+     "phase": "main",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Cool-down easy jog",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 180,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "q": true,
+   "fiveK": true,
+   "fiveKEffort": "Comfortably hard, RPE 6 to 7",
+   "checkin": "day1",
+   "mainSeconds": 2700,
+   "totalSeconds": 3900
+  },
+  {
+   "slot": 2,
+   "week": 1,
+   "weekSession": 2,
+   "template": "S2",
+   "title": "Easy",
+   "summary": "25:00 easy.",
+   "kind": "Core",
+   "reuse": "Generic easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1500,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1500,
+   "totalSeconds": 2280
+  },
+  {
+   "slot": 3,
+   "week": 1,
+   "weekSession": 3,
+   "template": "S5",
+   "title": "Recovery",
+   "summary": "20:00 very easy jog, or 25:00 brisk walk or easy cycling.",
+   "kind": "Easy movement",
+   "reuse": "New",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Recovery jog or cross-train",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Very easy, RPE 2 to 3"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1200,
+   "totalSeconds": 1800
+  },
+  {
+   "slot": 4,
+   "week": 1,
+   "weekSession": 4,
+   "template": "S4",
+   "title": "Easy",
+   "summary": "20:00 easy.",
+   "kind": "Easy extra",
+   "reuse": "Generic easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1200,
+   "totalSeconds": 1980
+  },
+  {
+   "slot": 5,
+   "week": 1,
+   "weekSession": 5,
+   "template": "S3",
+   "title": "Long easy",
+   "summary": "30:00 easy.",
+   "kind": "Core",
+   "reuse": "Generic long easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Long easy run",
+     "durationSeconds": 1800,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1800,
+   "totalSeconds": 2580
+  },
+  {
+   "slot": 6,
+   "week": 2,
+   "weekSession": 1,
+   "template": "S1",
+   "title": "⚡ Fartlek intro",
+   "summary": "6 x (0:30 brisk / 1:30 easy jog or walk).",
+   "kind": "Q",
+   "reuse": "B1",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "brisk",
+     "label": "Brisk",
+     "durationSeconds": 30,
+     "phase": "main",
+     "effort": "Brisk, RPE 6 to 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog or walk",
+     "durationSeconds": 90,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "brisk",
+     "label": "Brisk",
+     "durationSeconds": 30,
+     "phase": "main",
+     "effort": "Brisk, RPE 6 to 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog or walk",
+     "durationSeconds": 90,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "brisk",
+     "label": "Brisk",
+     "durationSeconds": 30,
+     "phase": "main",
+     "effort": "Brisk, RPE 6 to 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog or walk",
+     "durationSeconds": 90,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "brisk",
+     "label": "Brisk",
+     "durationSeconds": 30,
+     "phase": "main",
+     "effort": "Brisk, RPE 6 to 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog or walk",
+     "durationSeconds": 90,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "brisk",
+     "label": "Brisk",
+     "durationSeconds": 30,
+     "phase": "main",
+     "effort": "Brisk, RPE 6 to 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog or walk",
+     "durationSeconds": 90,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "brisk",
+     "label": "Brisk",
+     "durationSeconds": 30,
+     "phase": "main",
+     "effort": "Brisk, RPE 6 to 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog or walk",
+     "durationSeconds": 90,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "easy",
+     "label": "Cool-down easy jog",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 180,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "q": true,
+   "mainSeconds": 720,
+   "totalSeconds": 1920
+  },
+  {
+   "slot": 7,
+   "week": 2,
+   "weekSession": 2,
+   "template": "S2",
+   "title": "Easy + strides",
+   "summary": "25:00 easy + 4 strides (0:20 quick / 1:10 walk-jog back).",
+   "kind": "Core",
+   "reuse": "Generic easy + B4/A4 strides",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1500,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1860,
+   "totalSeconds": 2640
+  },
+  {
+   "slot": 8,
+   "week": 2,
+   "weekSession": 3,
+   "template": "S5",
+   "title": "Recovery",
+   "summary": "20:00 very easy jog, or 25:00 brisk walk or easy cycling.",
+   "kind": "Easy movement",
+   "reuse": "New",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Recovery jog or cross-train",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Very easy, RPE 2 to 3"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1200,
+   "totalSeconds": 1800
+  },
+  {
+   "slot": 9,
+   "week": 2,
+   "weekSession": 4,
+   "template": "S4",
+   "title": "Easy + strides",
+   "summary": "20:00 easy + 4 strides (0:20 quick / 1:10 walk-jog back).",
+   "kind": "Easy extra",
+   "reuse": "Generic easy + B4/A4 strides",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1560,
+   "totalSeconds": 2340
+  },
+  {
+   "slot": 10,
+   "week": 2,
+   "weekSession": 5,
+   "template": "S3",
+   "title": "Long easy",
+   "summary": "32:00 easy.",
+   "kind": "Core",
+   "reuse": "Generic long easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Long easy run",
+     "durationSeconds": 1920,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1920,
+   "totalSeconds": 2700
+  },
+  {
+   "slot": 11,
+   "week": 3,
+   "weekSession": 1,
+   "template": "S1",
+   "title": "⚡ Fartlek",
+   "summary": "8 x (0:45 brisk / 1:15 easy jog).",
+   "kind": "Q",
+   "reuse": "B3",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "brisk",
+     "label": "Brisk",
+     "durationSeconds": 45,
+     "phase": "main",
+     "effort": "Brisk, RPE 6 to 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 75,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "brisk",
+     "label": "Brisk",
+     "durationSeconds": 45,
+     "phase": "main",
+     "effort": "Brisk, RPE 6 to 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 75,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "brisk",
+     "label": "Brisk",
+     "durationSeconds": 45,
+     "phase": "main",
+     "effort": "Brisk, RPE 6 to 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 75,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "brisk",
+     "label": "Brisk",
+     "durationSeconds": 45,
+     "phase": "main",
+     "effort": "Brisk, RPE 6 to 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 75,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "brisk",
+     "label": "Brisk",
+     "durationSeconds": 45,
+     "phase": "main",
+     "effort": "Brisk, RPE 6 to 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 75,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "brisk",
+     "label": "Brisk",
+     "durationSeconds": 45,
+     "phase": "main",
+     "effort": "Brisk, RPE 6 to 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 75,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "brisk",
+     "label": "Brisk",
+     "durationSeconds": 45,
+     "phase": "main",
+     "effort": "Brisk, RPE 6 to 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 75,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "brisk",
+     "label": "Brisk",
+     "durationSeconds": 45,
+     "phase": "main",
+     "effort": "Brisk, RPE 6 to 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 75,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "easy",
+     "label": "Cool-down easy jog",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 180,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "q": true,
+   "mainSeconds": 960,
+   "totalSeconds": 2160
+  },
+  {
+   "slot": 12,
+   "week": 3,
+   "weekSession": 2,
+   "template": "S2",
+   "title": "Easy",
+   "summary": "25:00 easy.",
+   "kind": "Core",
+   "reuse": "Generic easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1500,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1500,
+   "totalSeconds": 2280
+  },
+  {
+   "slot": 13,
+   "week": 3,
+   "weekSession": 3,
+   "template": "S5",
+   "title": "Recovery",
+   "summary": "20:00 very easy jog, or 25:00 brisk walk or easy cycling.",
+   "kind": "Easy movement",
+   "reuse": "New",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Recovery jog or cross-train",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Very easy, RPE 2 to 3"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1200,
+   "totalSeconds": 1800
+  },
+  {
+   "slot": 14,
+   "week": 3,
+   "weekSession": 4,
+   "template": "S4",
+   "title": "Easy",
+   "summary": "20:00 easy.",
+   "kind": "Easy extra",
+   "reuse": "Generic easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1200,
+   "totalSeconds": 1980
+  },
+  {
+   "slot": 15,
+   "week": 3,
+   "weekSession": 5,
+   "template": "S3",
+   "title": "Long easy",
+   "summary": "34:00 easy.",
+   "kind": "Core",
+   "reuse": "Generic long easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Long easy run",
+     "durationSeconds": 2040,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 2040,
+   "totalSeconds": 2820
+  },
+  {
+   "slot": 16,
+   "week": 4,
+   "weekSession": 1,
+   "template": "S1",
+   "title": "⚡ Hill intro",
+   "summary": "6 x (0:30 uphill / 1:30 walk-jog down).",
+   "kind": "Q",
+   "reuse": "B5",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "uphill",
+     "label": "Uphill",
+     "durationSeconds": 30,
+     "phase": "main",
+     "effort": "Uphill, RPE 7 to 8, a few words at the top",
+     "cue": "run"
+    },
+    {
+     "type": "downhill-recovery",
+     "label": "Walk-jog down",
+     "durationSeconds": 90,
+     "phase": "main",
+     "effort": "Easy, walk or jog down"
+    },
+    {
+     "type": "uphill",
+     "label": "Uphill",
+     "durationSeconds": 30,
+     "phase": "main",
+     "effort": "Uphill, RPE 7 to 8, a few words at the top",
+     "cue": "run"
+    },
+    {
+     "type": "downhill-recovery",
+     "label": "Walk-jog down",
+     "durationSeconds": 90,
+     "phase": "main",
+     "effort": "Easy, walk or jog down"
+    },
+    {
+     "type": "uphill",
+     "label": "Uphill",
+     "durationSeconds": 30,
+     "phase": "main",
+     "effort": "Uphill, RPE 7 to 8, a few words at the top",
+     "cue": "run"
+    },
+    {
+     "type": "downhill-recovery",
+     "label": "Walk-jog down",
+     "durationSeconds": 90,
+     "phase": "main",
+     "effort": "Easy, walk or jog down"
+    },
+    {
+     "type": "uphill",
+     "label": "Uphill",
+     "durationSeconds": 30,
+     "phase": "main",
+     "effort": "Uphill, RPE 7 to 8, a few words at the top",
+     "cue": "run"
+    },
+    {
+     "type": "downhill-recovery",
+     "label": "Walk-jog down",
+     "durationSeconds": 90,
+     "phase": "main",
+     "effort": "Easy, walk or jog down"
+    },
+    {
+     "type": "uphill",
+     "label": "Uphill",
+     "durationSeconds": 30,
+     "phase": "main",
+     "effort": "Uphill, RPE 7 to 8, a few words at the top",
+     "cue": "run"
+    },
+    {
+     "type": "downhill-recovery",
+     "label": "Walk-jog down",
+     "durationSeconds": 90,
+     "phase": "main",
+     "effort": "Easy, walk or jog down"
+    },
+    {
+     "type": "uphill",
+     "label": "Uphill",
+     "durationSeconds": 30,
+     "phase": "main",
+     "effort": "Uphill, RPE 7 to 8, a few words at the top",
+     "cue": "run"
+    },
+    {
+     "type": "downhill-recovery",
+     "label": "Walk-jog down",
+     "durationSeconds": 90,
+     "phase": "main",
+     "effort": "Easy, walk or jog down"
+    },
+    {
+     "type": "easy",
+     "label": "Cool-down easy jog",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 180,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "q": true,
+   "mainSeconds": 720,
+   "totalSeconds": 1920
+  },
+  {
+   "slot": 17,
+   "week": 4,
+   "weekSession": 2,
+   "template": "S2",
+   "title": "Easy + strides",
+   "summary": "20:00 easy + 4 strides (0:20 quick / 1:10 walk-jog back).",
+   "kind": "Core",
+   "reuse": "Generic easy + B4/A4 strides",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1560,
+   "totalSeconds": 2340
+  },
+  {
+   "slot": 18,
+   "week": 4,
+   "weekSession": 3,
+   "template": "S5",
+   "title": "Recovery",
+   "summary": "20:00 very easy jog, or 25:00 brisk walk or easy cycling.",
+   "kind": "Easy movement",
+   "reuse": "New",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Recovery jog or cross-train",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Very easy, RPE 2 to 3"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1200,
+   "totalSeconds": 1800
+  },
+  {
+   "slot": 19,
+   "week": 4,
+   "weekSession": 4,
+   "template": "S4",
+   "title": "Easy + strides",
+   "summary": "20:00 easy + 4 strides (0:20 quick / 1:10 walk-jog back).",
+   "kind": "Easy extra",
+   "reuse": "Generic easy + B4/A4 strides",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1560,
+   "totalSeconds": 2340
+  },
+  {
+   "slot": 20,
+   "week": 4,
+   "weekSession": 5,
+   "template": "S3",
+   "title": "Long easy",
+   "summary": "30:00 easy.",
+   "kind": "Core",
+   "reuse": "Generic long easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Long easy run",
+     "durationSeconds": 1800,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1800,
+   "totalSeconds": 2580
+  },
+  {
+   "slot": 21,
+   "week": 5,
+   "weekSession": 1,
+   "template": "S1",
+   "title": "⚡ Steady intro",
+   "summary": "3 x (4:00 steady / 2:00 easy jog).",
+   "kind": "Q",
+   "reuse": "B6",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "steady",
+     "label": "Steady",
+     "durationSeconds": 240,
+     "phase": "main",
+     "effort": "Steady, RPE 6, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 120,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "steady",
+     "label": "Steady",
+     "durationSeconds": 240,
+     "phase": "main",
+     "effort": "Steady, RPE 6, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 120,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "steady",
+     "label": "Steady",
+     "durationSeconds": 240,
+     "phase": "main",
+     "effort": "Steady, RPE 6, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 120,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "easy",
+     "label": "Cool-down easy jog",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 180,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "q": true,
+   "mainSeconds": 1080,
+   "totalSeconds": 2280
+  },
+  {
+   "slot": 22,
+   "week": 5,
+   "weekSession": 2,
+   "template": "S2",
+   "title": "Easy",
+   "summary": "25:00 easy.",
+   "kind": "Core",
+   "reuse": "Generic easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1500,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1500,
+   "totalSeconds": 2280
+  },
+  {
+   "slot": 23,
+   "week": 5,
+   "weekSession": 3,
+   "template": "S5",
+   "title": "Recovery",
+   "summary": "20:00 very easy jog, or 25:00 brisk walk or easy cycling.",
+   "kind": "Easy movement",
+   "reuse": "New",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Recovery jog or cross-train",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Very easy, RPE 2 to 3"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1200,
+   "totalSeconds": 1800
+  },
+  {
+   "slot": 24,
+   "week": 5,
+   "weekSession": 4,
+   "template": "S4",
+   "title": "Easy",
+   "summary": "20:00 easy.",
+   "kind": "Easy extra",
+   "reuse": "Generic easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1200,
+   "totalSeconds": 1980
+  },
+  {
+   "slot": 25,
+   "week": 5,
+   "weekSession": 5,
+   "template": "S3",
+   "title": "Long easy",
+   "summary": "36:00 easy.",
+   "kind": "Core",
+   "reuse": "Generic long easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Long easy run",
+     "durationSeconds": 2160,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 2160,
+   "totalSeconds": 2940
+  },
+  {
+   "slot": 26,
+   "week": 6,
+   "weekSession": 1,
+   "template": "S1",
+   "title": "⚡ Fartlek",
+   "summary": "8 x (1:00 brisk / 1:00 easy jog).",
+   "kind": "Q",
+   "reuse": "B8 / A1",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "brisk",
+     "label": "Brisk",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Brisk, RPE 7, short phrases to a few words",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "brisk",
+     "label": "Brisk",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Brisk, RPE 7, short phrases to a few words",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "brisk",
+     "label": "Brisk",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Brisk, RPE 7, short phrases to a few words",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "brisk",
+     "label": "Brisk",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Brisk, RPE 7, short phrases to a few words",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "brisk",
+     "label": "Brisk",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Brisk, RPE 7, short phrases to a few words",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "brisk",
+     "label": "Brisk",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Brisk, RPE 7, short phrases to a few words",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "brisk",
+     "label": "Brisk",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Brisk, RPE 7, short phrases to a few words",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "brisk",
+     "label": "Brisk",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Brisk, RPE 7, short phrases to a few words",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 60,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "easy",
+     "label": "Cool-down easy jog",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 180,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "q": true,
+   "mainSeconds": 960,
+   "totalSeconds": 2160
+  },
+  {
+   "slot": 27,
+   "week": 6,
+   "weekSession": 2,
+   "template": "S2",
+   "title": "Easy + strides",
+   "summary": "25:00 easy + 6 strides (0:20 quick / 1:10 walk-jog back).",
+   "kind": "Core",
+   "reuse": "Generic easy + B4/A4 strides",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1500,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 2040,
+   "totalSeconds": 2820
+  },
+  {
+   "slot": 28,
+   "week": 6,
+   "weekSession": 3,
+   "template": "S5",
+   "title": "Recovery",
+   "summary": "20:00 very easy jog, or 25:00 brisk walk or easy cycling.",
+   "kind": "Easy movement",
+   "reuse": "New",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Recovery jog or cross-train",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Very easy, RPE 2 to 3"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1200,
+   "totalSeconds": 1800
+  },
+  {
+   "slot": 29,
+   "week": 6,
+   "weekSession": 4,
+   "template": "S4",
+   "title": "Easy + strides",
+   "summary": "20:00 easy + 4 strides (0:20 quick / 1:10 walk-jog back).",
+   "kind": "Easy extra",
+   "reuse": "Generic easy + B4/A4 strides",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1560,
+   "totalSeconds": 2340
+  },
+  {
+   "slot": 30,
+   "week": 6,
+   "weekSession": 5,
+   "template": "S3",
+   "title": "Long easy",
+   "summary": "38:00 easy.",
+   "kind": "Core",
+   "reuse": "Generic long easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Long easy run",
+     "durationSeconds": 2280,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 2280,
+   "totalSeconds": 3060
+  },
+  {
+   "slot": 31,
+   "week": 7,
+   "weekSession": 1,
+   "template": "S1",
+   "title": "⚡ Hill repeats",
+   "summary": "8 x (0:45 uphill / 1:30 walk-jog down).",
+   "kind": "Q",
+   "reuse": "B9 / A2",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "uphill",
+     "label": "Uphill",
+     "durationSeconds": 45,
+     "phase": "main",
+     "effort": "Uphill, RPE 8, a few words",
+     "cue": "run"
+    },
+    {
+     "type": "downhill-recovery",
+     "label": "Walk-jog down",
+     "durationSeconds": 90,
+     "phase": "main",
+     "effort": "Easy, walk or jog down"
+    },
+    {
+     "type": "uphill",
+     "label": "Uphill",
+     "durationSeconds": 45,
+     "phase": "main",
+     "effort": "Uphill, RPE 8, a few words",
+     "cue": "run"
+    },
+    {
+     "type": "downhill-recovery",
+     "label": "Walk-jog down",
+     "durationSeconds": 90,
+     "phase": "main",
+     "effort": "Easy, walk or jog down"
+    },
+    {
+     "type": "uphill",
+     "label": "Uphill",
+     "durationSeconds": 45,
+     "phase": "main",
+     "effort": "Uphill, RPE 8, a few words",
+     "cue": "run"
+    },
+    {
+     "type": "downhill-recovery",
+     "label": "Walk-jog down",
+     "durationSeconds": 90,
+     "phase": "main",
+     "effort": "Easy, walk or jog down"
+    },
+    {
+     "type": "uphill",
+     "label": "Uphill",
+     "durationSeconds": 45,
+     "phase": "main",
+     "effort": "Uphill, RPE 8, a few words",
+     "cue": "run"
+    },
+    {
+     "type": "downhill-recovery",
+     "label": "Walk-jog down",
+     "durationSeconds": 90,
+     "phase": "main",
+     "effort": "Easy, walk or jog down"
+    },
+    {
+     "type": "uphill",
+     "label": "Uphill",
+     "durationSeconds": 45,
+     "phase": "main",
+     "effort": "Uphill, RPE 8, a few words",
+     "cue": "run"
+    },
+    {
+     "type": "downhill-recovery",
+     "label": "Walk-jog down",
+     "durationSeconds": 90,
+     "phase": "main",
+     "effort": "Easy, walk or jog down"
+    },
+    {
+     "type": "uphill",
+     "label": "Uphill",
+     "durationSeconds": 45,
+     "phase": "main",
+     "effort": "Uphill, RPE 8, a few words",
+     "cue": "run"
+    },
+    {
+     "type": "downhill-recovery",
+     "label": "Walk-jog down",
+     "durationSeconds": 90,
+     "phase": "main",
+     "effort": "Easy, walk or jog down"
+    },
+    {
+     "type": "uphill",
+     "label": "Uphill",
+     "durationSeconds": 45,
+     "phase": "main",
+     "effort": "Uphill, RPE 8, a few words",
+     "cue": "run"
+    },
+    {
+     "type": "downhill-recovery",
+     "label": "Walk-jog down",
+     "durationSeconds": 90,
+     "phase": "main",
+     "effort": "Easy, walk or jog down"
+    },
+    {
+     "type": "uphill",
+     "label": "Uphill",
+     "durationSeconds": 45,
+     "phase": "main",
+     "effort": "Uphill, RPE 8, a few words",
+     "cue": "run"
+    },
+    {
+     "type": "downhill-recovery",
+     "label": "Walk-jog down",
+     "durationSeconds": 90,
+     "phase": "main",
+     "effort": "Easy, walk or jog down"
+    },
+    {
+     "type": "easy",
+     "label": "Cool-down easy jog",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 180,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "q": true,
+   "mainSeconds": 1080,
+   "totalSeconds": 2280
+  },
+  {
+   "slot": 32,
+   "week": 7,
+   "weekSession": 2,
+   "template": "S2",
+   "title": "Easy",
+   "summary": "28:00 easy.",
+   "kind": "Core",
+   "reuse": "Generic easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1680,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1680,
+   "totalSeconds": 2460
+  },
+  {
+   "slot": 33,
+   "week": 7,
+   "weekSession": 3,
+   "template": "S5",
+   "title": "Recovery",
+   "summary": "20:00 very easy jog, or 25:00 brisk walk or easy cycling.",
+   "kind": "Easy movement",
+   "reuse": "New",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Recovery jog or cross-train",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Very easy, RPE 2 to 3"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1200,
+   "totalSeconds": 1800
+  },
+  {
+   "slot": 34,
+   "week": 7,
+   "weekSession": 4,
+   "template": "S4",
+   "title": "Easy",
+   "summary": "20:00 easy.",
+   "kind": "Easy extra",
+   "reuse": "Generic easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1200,
+   "totalSeconds": 1980
+  },
+  {
+   "slot": 35,
+   "week": 7,
+   "weekSession": 5,
+   "template": "S3",
+   "title": "Long easy",
+   "summary": "40:00 easy.",
+   "kind": "Core",
+   "reuse": "Generic long easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Long easy run",
+     "durationSeconds": 2400,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 2400,
+   "totalSeconds": 3180
+  },
+  {
+   "slot": 36,
+   "week": 8,
+   "weekSession": 1,
+   "template": "S1",
+   "title": "⚡ Steady",
+   "summary": "3 x (5:00 steady / 2:00 easy jog).",
+   "kind": "Q",
+   "reuse": "B7",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "steady",
+     "label": "Steady",
+     "durationSeconds": 300,
+     "phase": "main",
+     "effort": "Steady, RPE 6 to 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 120,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "steady",
+     "label": "Steady",
+     "durationSeconds": 300,
+     "phase": "main",
+     "effort": "Steady, RPE 6 to 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 120,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "steady",
+     "label": "Steady",
+     "durationSeconds": 300,
+     "phase": "main",
+     "effort": "Steady, RPE 6 to 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 120,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "easy",
+     "label": "Cool-down easy jog",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 180,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "q": true,
+   "mainSeconds": 1260,
+   "totalSeconds": 2460
+  },
+  {
+   "slot": 37,
+   "week": 8,
+   "weekSession": 2,
+   "template": "S2",
+   "title": "Easy + strides",
+   "summary": "20:00 easy + 4 strides (0:20 quick / 1:10 walk-jog back).",
+   "kind": "Core",
+   "reuse": "Generic easy + B4/A4 strides",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1560,
+   "totalSeconds": 2340
+  },
+  {
+   "slot": 38,
+   "week": 8,
+   "weekSession": 3,
+   "template": "S5",
+   "title": "Recovery",
+   "summary": "20:00 very easy jog, or 25:00 brisk walk or easy cycling.",
+   "kind": "Easy movement",
+   "reuse": "New",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Recovery jog or cross-train",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Very easy, RPE 2 to 3"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1200,
+   "totalSeconds": 1800
+  },
+  {
+   "slot": 39,
+   "week": 8,
+   "weekSession": 4,
+   "template": "S4",
+   "title": "Easy + strides",
+   "summary": "20:00 easy + 4 strides (0:20 quick / 1:10 walk-jog back).",
+   "kind": "Easy extra",
+   "reuse": "Generic easy + B4/A4 strides",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1560,
+   "totalSeconds": 2340
+  },
+  {
+   "slot": 40,
+   "week": 8,
+   "weekSession": 5,
+   "template": "S3",
+   "title": "Long easy",
+   "summary": "32:00 easy.",
+   "kind": "Core",
+   "reuse": "Generic long easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Long easy run",
+     "durationSeconds": 1920,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1920,
+   "totalSeconds": 2700
+  },
+  {
+   "slot": 41,
+   "week": 9,
+   "weekSession": 1,
+   "template": "S1",
+   "title": "⚡ Tempo",
+   "summary": "2 x (8:00 tempo / 3:00 easy jog).",
+   "kind": "Q",
+   "reuse": "B10",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "tempo",
+     "label": "Tempo",
+     "durationSeconds": 480,
+     "phase": "main",
+     "effort": "Tempo, RPE 6 to 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 180,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "tempo",
+     "label": "Tempo",
+     "durationSeconds": 480,
+     "phase": "main",
+     "effort": "Tempo, RPE 6 to 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 180,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "easy",
+     "label": "Cool-down easy jog",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 180,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "q": true,
+   "mainSeconds": 1320,
+   "totalSeconds": 2520
+  },
+  {
+   "slot": 42,
+   "week": 9,
+   "weekSession": 2,
+   "template": "S2",
+   "title": "Easy",
+   "summary": "25:00 easy.",
+   "kind": "Core",
+   "reuse": "Generic easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1500,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1500,
+   "totalSeconds": 2280
+  },
+  {
+   "slot": 43,
+   "week": 9,
+   "weekSession": 3,
+   "template": "S5",
+   "title": "Recovery",
+   "summary": "20:00 very easy jog, or 25:00 brisk walk or easy cycling.",
+   "kind": "Easy movement",
+   "reuse": "New",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Recovery jog or cross-train",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Very easy, RPE 2 to 3"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1200,
+   "totalSeconds": 1800
+  },
+  {
+   "slot": 44,
+   "week": 9,
+   "weekSession": 4,
+   "template": "S4",
+   "title": "Easy",
+   "summary": "20:00 easy.",
+   "kind": "Easy extra",
+   "reuse": "Generic easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1200,
+   "totalSeconds": 1980
+  },
+  {
+   "slot": 45,
+   "week": 9,
+   "weekSession": 5,
+   "template": "S3",
+   "title": "Long easy",
+   "summary": "38:00 easy.",
+   "kind": "Core",
+   "reuse": "Generic long easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Long easy run",
+     "durationSeconds": 2280,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 2280,
+   "totalSeconds": 3060
+  },
+  {
+   "slot": 46,
+   "week": 10,
+   "weekSession": 1,
+   "template": "S1",
+   "title": "⚡ Cruise intervals",
+   "summary": "4 x (4:00 cruise / 2:00 easy jog).",
+   "kind": "Q",
+   "reuse": "B11",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "tempo",
+     "label": "Cruise",
+     "durationSeconds": 240,
+     "phase": "main",
+     "effort": "Cruise, RPE 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 120,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "tempo",
+     "label": "Cruise",
+     "durationSeconds": 240,
+     "phase": "main",
+     "effort": "Cruise, RPE 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 120,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "tempo",
+     "label": "Cruise",
+     "durationSeconds": 240,
+     "phase": "main",
+     "effort": "Cruise, RPE 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 120,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "tempo",
+     "label": "Cruise",
+     "durationSeconds": 240,
+     "phase": "main",
+     "effort": "Cruise, RPE 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 120,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "easy",
+     "label": "Cool-down easy jog",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 180,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "q": true,
+   "mainSeconds": 1440,
+   "totalSeconds": 2640
+  },
+  {
+   "slot": 47,
+   "week": 10,
+   "weekSession": 2,
+   "template": "S2",
+   "title": "Easy + strides",
+   "summary": "25:00 easy + 6 strides (0:20 quick / 1:10 walk-jog back).",
+   "kind": "Core",
+   "reuse": "Generic easy + B4/A4 strides",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1500,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 2040,
+   "totalSeconds": 2820
+  },
+  {
+   "slot": 48,
+   "week": 10,
+   "weekSession": 3,
+   "template": "S5",
+   "title": "Recovery",
+   "summary": "20:00 very easy jog, or 25:00 brisk walk or easy cycling.",
+   "kind": "Easy movement",
+   "reuse": "New",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Recovery jog or cross-train",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Very easy, RPE 2 to 3"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1200,
+   "totalSeconds": 1800
+  },
+  {
+   "slot": 49,
+   "week": 10,
+   "weekSession": 4,
+   "template": "S4",
+   "title": "Easy + strides",
+   "summary": "20:00 easy + 4 strides (0:20 quick / 1:10 walk-jog back).",
+   "kind": "Easy extra",
+   "reuse": "Generic easy + B4/A4 strides",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1560,
+   "totalSeconds": 2340
+  },
+  {
+   "slot": 50,
+   "week": 10,
+   "weekSession": 5,
+   "template": "S3",
+   "title": "Long easy",
+   "summary": "40:00 easy.",
+   "kind": "Core",
+   "reuse": "Generic long easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Long easy run",
+     "durationSeconds": 2400,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 2400,
+   "totalSeconds": 3180
+  },
+  {
+   "slot": 51,
+   "week": 11,
+   "weekSession": 1,
+   "template": "S1",
+   "title": "⚡ Continuous tempo",
+   "summary": "15:00 continuous tempo, RPE 6 to 7.",
+   "kind": "Q",
+   "reuse": "A7 (shortened to 15:00)",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "tempo",
+     "label": "Tempo",
+     "durationSeconds": 900,
+     "phase": "main",
+     "effort": "Tempo, RPE 6 to 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Cool-down easy jog",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 180,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "q": true,
+   "mainSeconds": 900,
+   "totalSeconds": 2100
+  },
+  {
+   "slot": 52,
+   "week": 11,
+   "weekSession": 2,
+   "template": "S2",
+   "title": "Easy",
+   "summary": "25:00 easy.",
+   "kind": "Core",
+   "reuse": "Generic easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1500,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1500,
+   "totalSeconds": 2280
+  },
+  {
+   "slot": 53,
+   "week": 11,
+   "weekSession": 3,
+   "template": "S5",
+   "title": "Recovery",
+   "summary": "20:00 very easy jog, or 25:00 brisk walk or easy cycling.",
+   "kind": "Easy movement",
+   "reuse": "New",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Recovery jog or cross-train",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Very easy, RPE 2 to 3"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1200,
+   "totalSeconds": 1800
+  },
+  {
+   "slot": 54,
+   "week": 11,
+   "weekSession": 4,
+   "template": "S4",
+   "title": "Easy",
+   "summary": "20:00 easy.",
+   "kind": "Easy extra",
+   "reuse": "Generic easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1200,
+   "totalSeconds": 1980
+  },
+  {
+   "slot": 55,
+   "week": 11,
+   "weekSession": 5,
+   "template": "S3",
+   "title": "Long easy",
+   "summary": "35:00 easy.",
+   "kind": "Core",
+   "reuse": "Generic long easy",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Long easy run",
+     "durationSeconds": 2100,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 2100,
+   "totalSeconds": 2880
+  },
+  {
+   "slot": 56,
+   "week": 12,
+   "weekSession": 1,
+   "template": "S1",
+   "title": "⚡ 5K sharpener",
+   "summary": "5 x (2:00 5k effort / 2:00 easy jog).",
+   "kind": "Q",
+   "reuse": "New",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "tempo",
+     "label": "5K effort",
+     "durationSeconds": 120,
+     "phase": "main",
+     "effort": "5K effort, RPE 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 120,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "tempo",
+     "label": "5K effort",
+     "durationSeconds": 120,
+     "phase": "main",
+     "effort": "5K effort, RPE 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 120,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "tempo",
+     "label": "5K effort",
+     "durationSeconds": 120,
+     "phase": "main",
+     "effort": "5K effort, RPE 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 120,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "tempo",
+     "label": "5K effort",
+     "durationSeconds": 120,
+     "phase": "main",
+     "effort": "5K effort, RPE 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 120,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "tempo",
+     "label": "5K effort",
+     "durationSeconds": 120,
+     "phase": "main",
+     "effort": "5K effort, RPE 7, short phrases",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy jog",
+     "durationSeconds": 120,
+     "phase": "main",
+     "effort": "Easy"
+    },
+    {
+     "type": "easy",
+     "label": "Cool-down easy jog",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 180,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "q": true,
+   "mainSeconds": 1200,
+   "totalSeconds": 2400
+  },
+  {
+   "slot": 57,
+   "week": 12,
+   "weekSession": 2,
+   "template": "S2",
+   "title": "Shakeout + strides",
+   "summary": "15:00 easy + 4 strides (0:20 quick / 1:10 walk-jog back).",
+   "kind": "Core",
+   "reuse": "Generic easy + B4/A4 strides",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 900,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1260,
+   "totalSeconds": 2040
+  },
+  {
+   "slot": 58,
+   "week": 12,
+   "weekSession": 3,
+   "template": "S5",
+   "title": "Recovery",
+   "summary": "20:00 very easy jog, or 25:00 brisk walk or easy cycling.",
+   "kind": "Easy movement",
+   "reuse": "New",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Recovery jog or cross-train",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Very easy, RPE 2 to 3"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1200,
+   "totalSeconds": 1800
+  },
+  {
+   "slot": 59,
+   "week": 12,
+   "weekSession": 4,
+   "template": "S4",
+   "title": "Easy + strides",
+   "summary": "20:00 easy + 4 strides (0:20 quick / 1:10 walk-jog back).",
+   "kind": "Easy extra",
+   "reuse": "Generic easy + B4/A4 strides",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 180,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Easy run",
+     "durationSeconds": 1200,
+     "phase": "main",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "stride",
+     "label": "Stride",
+     "durationSeconds": 20,
+     "phase": "main",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 70,
+     "phase": "main",
+     "effort": "Easy walk"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "mainSeconds": 1560,
+   "totalSeconds": 2340
+  },
+  {
+   "slot": 60,
+   "week": 12,
+   "weekSession": 5,
+   "template": "S3",
+   "title": "⚡ 5K time trial",
+   "summary": "Count-up timer, tap Finish at 5K (auto-stops 45:00). Comfortably hard, RPE 7 late. Compare with week 1.",
+   "kind": "Trial",
+   "reuse": "Legacy P6 + new 5k-open timer",
+   "steps": [
+    {
+     "type": "walk",
+     "label": "Warm-up brisk walk",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Brisk, RPE 3"
+    },
+    {
+     "type": "easy",
+     "label": "Warm-up easy jog",
+     "durationSeconds": 300,
+     "phase": "warmup",
+     "effort": "Easy, RPE 3 to 4, full sentences",
+     "cue": "run"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "stride",
+     "label": "Warm-up stride",
+     "durationSeconds": 15,
+     "phase": "warmup",
+     "effort": "Quick and smooth, RPE 7, not a sprint",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Walk back",
+     "durationSeconds": 45,
+     "phase": "warmup",
+     "effort": "Easy"
+    },
+    {
+     "type": "5k-open",
+     "label": "Your 5K, go at your pace",
+     "durationSeconds": 2700,
+     "phase": "main",
+     "cue": "run"
+    },
+    {
+     "type": "easy",
+     "label": "Cool-down easy jog",
+     "durationSeconds": 300,
+     "phase": "cooldown",
+     "effort": "Easy",
+     "cue": "run"
+    },
+    {
+     "type": "walk",
+     "label": "Cool-down walk",
+     "durationSeconds": 180,
+     "phase": "cooldown",
+     "effort": "Easy walk",
+     "cue": "cooldown"
+    }
+   ],
+   "q": true,
+   "fiveK": true,
+   "fiveKEffort": "Comfortably hard, RPE 7 late",
+   "checkin": "final",
+   "mainSeconds": 2700,
+   "totalSeconds": 3900
+  }
+ ]
+}
