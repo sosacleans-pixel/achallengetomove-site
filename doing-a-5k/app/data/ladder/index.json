@@ -1,25 +1,25 @@
 {
-  "displayNameNote": "PREVIEW: app names come from js/ladder/config.js (Attorney memo §11.1 umbrella placeholder). The 10K level never carries the 5K house name. Access length also comes from config.js (plan + 2 weeks: 20/14/12/11); the accessDays values below are Coach Fit's v6 data and are not used by the app.",
+  "displayNameNote": "App names, prices, access length and timer caps come from js/ladder/config.js (Salim's picks, Nov 22, 2026, 8:38 PM MT). The 10K level never carries the 5K house name.",
   "version": "v6",
-  "status": "Draft for Salim's approval. Nothing live.",
+  "status": "Preview build. Nothing live until launch.",
   "levels": [
     {
       "id": "walk-to-5k",
       "displayName": "A Challenge to Move: Walk to 5K",
-      "price": 4.99,
-      "priceStatus": "proposal"
+      "price": 6.99,
+      "priceStatus": "decided"
     },
     {
       "id": "5k-faster",
       "displayName": "A Challenge to Move: 5K Faster",
       "price": 6.99,
-      "priceStatus": "proposal"
+      "priceStatus": "decided"
     },
     {
       "id": "10k",
       "displayName": "A Challenge to Move: 10K",
       "price": 6.99,
-      "priceStatus": "proposal"
+      "priceStatus": "decided"
     }
   ],
   "daysPerWeekOptions": [
@@ -43,10 +43,10 @@
   "accessDaysByDays": {
     "2": 140,
     "3": 98,
-    "4": 98,
-    "5": 98
+    "4": 84,
+    "5": 77
   },
-  "accessNote": "14 weeks (98 days) decided for 3/4/5 days. 2 days: PROPOSAL 20 weeks (140 days); alternative keeps 98 and relies on the $2.99 repeat.",
+  "accessNote": "Access = plan length + 2 weeks: 20/14/12/11 weeks for 2/3/4/5 days (decided). The exact end date is shown before purchase.",
   "accessStartsSelf": "purchase date",
   "accessStartsGift": "redemption date",
   "giftCodeRedeemableYears": 5,
@@ -59,12 +59,15 @@
   "cantFinishRule": "remaining sessions > sessions still possible before the end date, where possible = one per day and at most (daysPerWeek + 1) per 7 days",
   "openTimers": {
     "5k-open": {
-      "capSeconds": 2700,
+      "capSeconds": {
+        "walk-to-5k": 3600,
+        "5k-faster": 2700
+      },
       "status": "decided"
     },
     "10k-open": {
       "capSeconds": 5400,
-      "status": "proposal"
+      "status": "decided"
     }
   },
   "placementStarts": {
@@ -137,7 +140,7 @@
       "daysPerWeek": 4,
       "weeks": 10,
       "totalSessions": 40,
-      "accessDays": 98
+      "accessDays": 84
     },
     {
       "file": "walk-to-5k-5x.json",
@@ -147,7 +150,7 @@
       "daysPerWeek": 5,
       "weeks": 9,
       "totalSessions": 45,
-      "accessDays": 98
+      "accessDays": 77
     },
     {
       "file": "5k-faster-2x.json",
@@ -177,7 +180,7 @@
       "daysPerWeek": 4,
       "weeks": 10,
       "totalSessions": 40,
-      "accessDays": 98
+      "accessDays": 84
     },
     {
       "file": "5k-faster-5x.json",
@@ -187,7 +190,7 @@
       "daysPerWeek": 5,
       "weeks": 9,
       "totalSessions": 45,
-      "accessDays": 98
+      "accessDays": 77
     },
     {
       "file": "10k-2x.json",
@@ -217,7 +220,7 @@
       "daysPerWeek": 4,
       "weeks": 10,
       "totalSessions": 40,
-      "accessDays": 98
+      "accessDays": 84
     },
     {
       "file": "10k-5x.json",
@@ -227,7 +230,7 @@
       "daysPerWeek": 5,
       "weeks": 9,
       "totalSessions": 45,
-      "accessDays": 98
+      "accessDays": 77
     }
   ]
 }

@@ -9,13 +9,13 @@
  "summary": "Build your long run from 40 minutes to a full 10K, with easy runs, strides and a few steady and tempo sessions.",
  "cues": "Key sessions are marked with a lightning bolt. Long runs stay conversational; walk breaks are always allowed.",
  "spacing": "noBackToBackKey",
- "priceStatus": "proposal (Salim to confirm)",
+ "priceStatus": "decided",
  "daysPerWeek": 2,
  "weeks": 18,
  "totalSessions": 36,
  "coreSessions": 36,
  "accessDays": 140,
- "accessStatus": "PROPOSAL: 20 weeks for the 2-day plan (Salim to decide)",
+ "accessStatus": "decided (plan length + 2 weeks)",
  "accessStarts": "purchase date (gift: redemption date)",
  "slots": [
   {
@@ -2654,7 +2654,7 @@
    "week": 18,
    "weekSession": 2,
    "title": "10K check-in",
-   "summary": "Count-up timer, tap Finish at 10K (auto-stops 90:00, proposal). Comfortably steady, RPE 5 to 6, walk breaks OK.",
+   "summary": "Count-up timer, tap Finish at 10K (auto-stops 90:00). Comfortably steady, RPE 5 to 6, walk breaks OK.",
    "kind": "10K",
    "key": true,
    "reuse": "New + 10k-open timer",
@@ -2693,8 +2693,7 @@
    "tenK": true,
    "openTimer": {
     "distance": "10K",
-    "capSeconds": 5400,
-    "capStatus": "proposal"
+    "capSeconds": 5400
    },
    "tenKEffort": "Comfortably steady, RPE 5 to 6, walk breaks OK",
    "checkin": "final",

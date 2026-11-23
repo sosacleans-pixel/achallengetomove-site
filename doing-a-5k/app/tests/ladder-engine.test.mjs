@@ -263,4 +263,27 @@ assert.equal(E.windowStatus(fz, "5k-faster", addDays(D0, 45)).status, "finished"
   assert.ok(hit > 0, "exercised a non-warning reminder in ES");
 }
 
+// ---- Salim's picks (Nov 22, 2026, 8:38 PM MT) ----
+{
+  const C = await import("../js/ladder/config.js");
+  assert.equal(C.NAME_SCHEME, "umbrella");
+  assert.deepEqual(C.PRICES, { "walk-to-5k": "6.99", "5k-faster": "6.99", "10k": "6.99", restart: "2.99", repeat: "2.99" });
+  assert.deepEqual(C.ACCESS_WEEKS_BY_DAYS, { 2: 20, 3: 14, 4: 12, 5: 11 });
+  assert.equal(C.TIMER_CAPS["5k-open"]["walk-to-5k"], 3600);
+  assert.equal(C.TIMER_CAPS["5k-open"]["5k-faster"], 2700);
+  assert.equal(C.TIMER_CAPS["10k-open"]["10k"], 5400);
+  assert.equal(C.PREVIEW_PLACEHOLDER_NOTE, undefined);
+  const cfgSrc = readFileSync(join(here, "../js/ladder/config.js"), "utf8");
+  assert.ok(!/PREVIEW PLACEHOLDER|placeholders?:|proposal|proposed/i.test(cfgSrc.replace(/LAUNCH_DATES[\s\S]*?\};/, "")), "no placeholder labels left on decided values");
+  assert.equal(tc("cap60"), "Great work, that's 60 minutes on your feet. Log it as done, or edit your time if you finished.");
+  assert.equal(COPY.es.cap60, "Buen trabajo, son 60 minutos en movimiento. Regístralo como hecho, o edita tu tiempo si ya terminaste.");
+  for (const d of [2, 3, 4, 5]) {
+    const w = JSON.parse(readFileSync(join(here, `../data/ladder/walk-to-5k-${d}x.json`), "utf8"));
+    const opens = w.slots.flatMap((x) => x.steps.filter((st) => st.type === "5k-open").map((st) => [x, st]));
+    assert.equal(opens.length, 2);
+    for (const [x, st] of opens) { assert.equal(st.durationSeconds, 3600); assert.match(x.summary, /auto-stops 60:00/); }
+    assert.equal(w.accessDays, C.ACCESS_WEEKS_BY_DAYS[d] * 7);
+  }
+}
+
 console.log("ladder engine: all checks passed");

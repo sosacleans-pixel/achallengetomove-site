@@ -12,7 +12,7 @@ import { todayStatus, projectSchedule, validTrainDays, levelData, isRunning, key
 import { CHECKOUT, buyTrustHtml, disclosureFor, isPreviewCheckout, previewAllowed } from "./checkout.js";
 import { createGift, getGift, updateGift, giftStatus, canRefund, redeemable, markRedeemed, giftReminderDates, giftReminderEmail } from "./gifts.js";
 import { t as copy } from "./copy.js";
-import { NAMES, TIMER_CAPS, PREVIEW_PLACEHOLDER_NOTE } from "./config.js";
+import { NAMES, TIMER_CAPS } from "./config.js";
 
 const E2E = new URLSearchParams(location.search).has("e2e");
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -94,7 +94,7 @@ function shell(content, { title = NAMES.house, nav = true, eyebrow = NAMES.house
   const navBtn = (to, label) => `<button type="button" data-lnav="${to}" class="app-nav-btn ${hash === "#" + to ? "is-active" : ""}">${label}</button>`;
   const hasRun = L.activeLevel && currentRun(L, L.activeLevel) && L.settings;
   return `
-  ${previewAllowed() ? `<p class="ladder-ribbon" role="note">Preview build. Not live. No real payments.${L.previewOffsetDays ? ` Preview date: ${pretty(todayISO())}.` : ""} ${esc(PREVIEW_PLACEHOLDER_NOTE)}</p>` : ""}
+  ${previewAllowed() ? `<p class="ladder-ribbon" role="note">Preview build. Not live. No real payments.${L.previewOffsetDays ? ` Preview date: ${pretty(todayISO())}.` : ""}</p>` : ""}
   <div class="app-screen">
     <header class="app-header">
       <p class="app-eyebrow">${esc(eyebrow)}</p>
@@ -275,7 +275,7 @@ function renderLevels() {
         ${isS ? `<p class="ladder-tag">Suggested</p>` : ""}
         <h2>${esc(DN(id))}</h2>
         <p class="ladder-sub-left">Level ${l.level} · ${CORE_SESSIONS} core sessions</p>
-        <p class="ladder-price">$${CHECKOUT.prices[id].amount} one-time <span class="muted"><small>(preview price)</small></span></p>
+        <p class="ladder-price">$${CHECKOUT.prices[id].amount} one-time</p>
         <p>${esc(LEVEL_SUMMARY[id])}</p>
         <p class="muted"><small>Start: ${esc(l.entry)} Finish: ${esc(l.exit)}</small></p>
         ${actions}

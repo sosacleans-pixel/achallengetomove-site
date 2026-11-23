@@ -9,13 +9,13 @@
  "summary": "Add speed play, hills and tempo runs for a smoother, quicker 5K.",
  "cues": "Key sessions are marked with a lightning bolt. Easy and Long days stay conversational.",
  "spacing": "noBackToBackKey",
- "priceStatus": "proposal (Salim to confirm)",
+ "priceStatus": "decided",
  "daysPerWeek": 5,
  "weeks": 9,
  "totalSessions": 45,
  "coreSessions": 36,
- "accessDays": 98,
- "accessStatus": "decided (14 weeks)",
+ "accessDays": 77,
+ "accessStatus": "decided (plan length + 2 weeks)",
  "accessStarts": "purchase date (gift: redemption date)",
  "slots": [
   {

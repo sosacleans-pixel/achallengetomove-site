@@ -1,8 +1,9 @@
-/* PREVIEW PLACEHOLDERS, all in one place, pending Salim's decisions (Attorney memo §11.10, Coach Fit v6 §0).
- * Nothing here is final. Change a single line to switch.
+/* Running plan settings, all in one place. Decided by Salim on Nov 22, 2026, 8:38 PM MT: the
+ * A Challenge to Move umbrella names, $6.99 per level, $2.99 restart and repeat, access = plan length + 2 weeks,
+ * Walk to 5K 5K-session cap 60:00, 10K check-in cap 90:00. Launch dates are still placeholders (below).
  *
- * Names: the Attorney's recommended umbrella is the preview default. The fallback keeps "Doing a 5K" for the
- * first two levels and uses "Doing a 10K" for the third. Never "Doing a 5K: 10K" (Attorney §11.1). */
+ * Names: umbrella (decided). The "doing" scheme is kept as the Attorney-approved fallback: "Doing a 5K" for the
+ * first two levels and "Doing a 10K" for the third. Never "Doing a 5K: 10K" (Attorney §11.1). */
 export const NAME_SCHEME = "umbrella"; // "umbrella" | "doing"
 
 export const NAME_SCHEMES = {
@@ -116,19 +117,18 @@ for (const k of Object.keys(SITE_STRINGS)) {
 export const SITE = SITE_STRINGS[NAME_SCHEME];
 
 
-/* Access placeholder: plan length + 2 weeks (Attorney §11.2). Exact end date is shown before purchase. */
+/* Access: plan length + 2 weeks (decided; Attorney §11.2). The exact end date is shown before purchase. */
 export const PLAN_WEEKS_BY_DAYS = { 2: 18, 3: 12, 4: 10, 5: 9 };
 export const ACCESS_WEEKS_BY_DAYS = { 2: 20, 3: 14, 4: 12, 5: 11 };
 
-/* Prices placeholder (Coach Fit Q1 recommendation). Restart and repeat stay $2.99. */
+/* Prices (decided): $6.99 per level. Restart and repeat $2.99. */
 export const PRICES = { "walk-to-5k": "6.99", "5k-faster": "6.99", "10k": "6.99", restart: "2.99", repeat: "2.99" };
 
-/* Count-up timer caps, seconds (placeholders: Coach Fit Q3 and Q4). 10K check-in 90:00 (proposal).
- * Walk to 5K 5K sessions: 45:00 decided, 60:00 proposed (set 3600 to switch). 5K Faster trials: 45:00. */
+/* Count-up timer caps, seconds (decided). 10K check-in 90:00. Walk to 5K 5K sessions 60:00.
+ * 5K Faster time trials 45:00. Auto-stop lines are the Attorney's §11.5 copy (cap90, cap60, cap45). */
 export const TIMER_CAPS = {
   "10k-open": { "10k": 5400 },
-  "5k-open": { "walk-to-5k": 2700, "5k-faster": 2700 },
+  "5k-open": { "walk-to-5k": 3600, "5k-faster": 2700 },
 };
 
-export const PREVIEW_PLACEHOLDER_NOTE =
-  "Preview placeholders: level names, prices, access lengths and timer caps are not decided yet.";
+/* Only the launch dates are still open ("as soon as ready"); see LAUNCH_DATES above. */

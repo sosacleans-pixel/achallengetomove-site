@@ -10,7 +10,7 @@ import { t } from "./copy.js";
 export const CHECKOUT = {
   mode: "preview", // "preview" | "stripe" (stripe needs a server endpoint that creates the Checkout Session)
   sessionEndpoint: null, // e.g. a Supabase Edge Function URL, set after approval
-  /* Amounts are preview placeholders from config.js (Coach Fit's proposal). Gifts use the level prices. */
+  /* Amounts come from config.js (decided by Salim). Gifts use the level prices. */
   prices: Object.fromEntries(Object.entries(PRICES).map(([k, amount]) => [k, { amount, stripePriceId: null }])),
 };
 

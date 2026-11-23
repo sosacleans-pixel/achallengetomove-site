@@ -96,7 +96,7 @@ export class WorkoutTimer {
     const elapsed = this.getStepElapsedMs();
     const remaining = step.durationSeconds * 1000 - elapsed;
     if (WorkoutTimer.isOpenStep(step)) {
-      /* Count-up step: durationSeconds is the cap (config.js: 45:00 for 5k-open, 90:00 for 10k-open). Auto-stop at the cap. */
+      /* Count-up step: durationSeconds is the cap (config.js: 60:00 Walk to 5K and 45:00 5K Faster for 5k-open, 90:00 for 10k-open). Auto-stop at the cap. */
       if (remaining <= 0) {
         this.openResult = { stepIndex: this.stepIndex, seconds: step.durationSeconds, capped: true };
         this._finishStep();

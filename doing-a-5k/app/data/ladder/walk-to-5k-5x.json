@@ -3,19 +3,19 @@
  "level": 1,
  "name": "Walk to 5K",
  "displayName": "A Challenge to Move: Walk to 5K",
- "price": 4.99,
+ "price": 6.99,
  "entry": "Can walk briskly for 30 minutes.",
  "exit": "A continuous 5K (about 30 minutes or more of nonstop easy running).",
  "summary": "Walk with short jogs, building to your first continuous 5K.",
  "cues": "Jogs are RPE 4, full sentences. Walks are brisk, RPE 3. Extra days are easy movement, never running.",
  "spacing": "max2RunDaysInARow",
- "priceStatus": "proposal (Salim to confirm)",
+ "priceStatus": "decided",
  "daysPerWeek": 5,
  "weeks": 9,
  "totalSessions": 45,
  "coreSessions": 36,
- "accessDays": 98,
- "accessStatus": "decided (14 weeks)",
+ "accessDays": 77,
+ "accessStatus": "decided (plan length + 2 weeks)",
  "accessStarts": "purchase date (gift: redemption date)",
  "slots": [
   {
@@ -2791,7 +2791,7 @@
    "week": 9,
    "weekSession": 1,
    "title": "Your first continuous 5K",
-   "summary": "Count-up timer, tap Finish at 5K (auto-stops 45:00). Easy and steady, RPE 4 to 5, walk breaks OK.",
+   "summary": "Count-up timer, tap Finish at 5K (auto-stops 60:00). Easy and steady, RPE 4 to 5, walk breaks OK.",
    "kind": "5K",
    "key": true,
    "reuse": "v5 L2 wk10/12 + 5k-open timer",
@@ -2806,7 +2806,7 @@
     {
      "type": "5k-open",
      "label": "Your 5K, go at your pace",
-     "durationSeconds": 2700,
+     "durationSeconds": 3600,
      "phase": "main",
      "cue": "run"
     },
@@ -2822,11 +2822,11 @@
    "fiveK": true,
    "openTimer": {
     "distance": "5K",
-    "capSeconds": 2700
+    "capSeconds": 3600
    },
    "fiveKEffort": "Easy and steady, RPE 4 to 5, walk breaks OK",
-   "mainSeconds": 2700,
-   "totalSeconds": 3300,
+   "mainSeconds": 3600,
+   "totalSeconds": 4200,
    "core": true,
    "coreIndex": 33,
    "anchorWeek": 11,
@@ -2955,7 +2955,7 @@
    "week": 9,
    "weekSession": 5,
    "title": "5K check-in",
-   "summary": "Count-up timer, tap Finish at 5K (auto-stops 45:00). Comfortably steady, RPE 5 to 6.",
+   "summary": "Count-up timer, tap Finish at 5K (auto-stops 60:00). Comfortably steady, RPE 5 to 6.",
    "kind": "5K",
    "key": true,
    "reuse": "v5 L2 wk10/12 + 5k-open timer",
@@ -2970,7 +2970,7 @@
     {
      "type": "5k-open",
      "label": "Your 5K, go at your pace",
-     "durationSeconds": 2700,
+     "durationSeconds": 3600,
      "phase": "main",
      "cue": "run"
     },
@@ -2986,12 +2986,12 @@
    "fiveK": true,
    "openTimer": {
     "distance": "5K",
-    "capSeconds": 2700
+    "capSeconds": 3600
    },
    "fiveKEffort": "Comfortably steady, RPE 5 to 6",
    "checkin": "final",
-   "mainSeconds": 2700,
-   "totalSeconds": 3300,
+   "mainSeconds": 3600,
+   "totalSeconds": 4200,
    "core": true,
    "coreIndex": 36,
    "anchorWeek": 12,

@@ -3,7 +3,7 @@
 Levels: A Challenge to Move: Walk to 5K (walk-to-5k), A Challenge to Move: 5K Faster (5k-faster), A Challenge to Move: 10K (10k).
 Each level = 36 CORE sessions (anchor: 3 days/wk x 12 wk). Days a week sets plan length:
   2/wk = 18 wk, 36 sessions | 3/wk = 12 wk, 36 | 4/wk = 10 wk, 40 (36 core + 4 easy) | 5/wk = 9 wk, 45 (36 core + 9 easy)
-Same step format as PR #1 (type, label, durationSeconds, phase, effort, cue). New: '10k-open' step (count-up, cap 90:00, PROPOSAL).
+Same step format as PR #1 (type, label, durationSeconds, phase, effort, cue). New: '10k-open' step (count-up, cap 90:00).
 Run: python3 gen_ladder_v6.py   (writes 12 level files + index.json + weekly-tables.md, then validates)"""
 import json, os
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -33,8 +33,8 @@ def reps(n,a,b):
     for _ in range(n): out += [dict(a), dict(b)]
     return out
 def strides(n,on=20,back=70): return reps(n, step("stride","Stride",on,STRIDE,"run"), step("walk","Walk-jog back",back,"Easy"))
-def open5k(): return step("5k-open","Your 5K, go at your pace",2700,"","run")       # cap 45:00 (decided)
-def open10k(): return step("10k-open","Your 10K, go at your pace",5400,"","run")   # cap 90:00 (PROPOSAL)
+def open5k(cap=2700): return step("5k-open","Your 5K, go at your pace",cap,"","run")   # cap 60:00 Walk to 5K, 45:00 5K Faster (Salim, Nov 22, 2026, 8:38 PM MT)
+def open10k(): return step("10k-open","Your 10K, go at your pace",5400,"","run")   # cap 90:00 (decided)
 
 def sess(title, summary, warm, main, cool, kind, reuse, key=False, **extra):
     steps = warm+main+cool
@@ -81,8 +81,8 @@ def l1_core(w):
             first = spec=="FIRST5K"
             eff = "Easy and steady, RPE 4 to 5, walk breaks OK" if first else "Comfortably steady, RPE 5 to 6"
             out.append(sess("Your first continuous 5K" if first else "5K check-in",
-                f"Count-up timer, tap Finish at 5K (auto-stops 45:00). {eff}.", wu_walk(), [open5k()], cd_walk(),
-                "5K", "v5 L2 wk10/12 + 5k-open timer", key=True, fiveK=True, openTimer={"distance":"5K","capSeconds":2700}, fiveKEffort=eff,
+                f"Count-up timer, tap Finish at 5K (auto-stops 60:00). {eff}.", wu_walk(), [open5k(3600)], cd_walk(),
+                "5K", "v5 L2 wk10/12 + 5k-open timer", key=True, fiveK=True, openTimer={"distance":"5K","capSeconds":3600}, fiveKEffort=eff,
                 **({} if first else {"checkin":"final"})))
             continue
         main,summ,jt,lj = W(spec)
@@ -157,7 +157,7 @@ def l3_core(w):
     s2=easy_s(L3_E[w],0,"Shakeout" if w==12 else "Easy","New")
     if w==12:
         eff="Comfortably steady, RPE 5 to 6, walk breaks OK"
-        s3=sess("10K check-in",f"Count-up timer, tap Finish at 10K (auto-stops 90:00, proposal). {eff}.",wu_walk_jog(180),[open10k()],cd_walk(),"10K","New + 10k-open timer",key=True,tenK=True,openTimer={"distance":"10K","capSeconds":5400,"capStatus":"proposal"},tenKEffort=eff,checkin="final")
+        s3=sess("10K check-in",f"Count-up timer, tap Finish at 10K (auto-stops 90:00). {eff}.",wu_walk_jog(180),[open10k()],cd_walk(),"10K","New + 10k-open timer",key=True,tenK=True,openTimer={"distance":"10K","capSeconds":5400},tenKEffort=eff,checkin="final")
     else:
         lt = "Long easy" + (" (lighter week)" if w in (4,8,11) else "")
         s3=long_s(L3_L[w],"New"); s3["title"]=lt
@@ -165,7 +165,7 @@ def l3_core(w):
 def l3_extra(_w): return recov_extra(_w)
 
 LEVELS=[
- dict(id="walk-to-5k",level=1,name="Walk to 5K",displayName="A Challenge to Move: Walk to 5K",price=4.99,core=l1_core,extra=l1_extra,
+ dict(id="walk-to-5k",level=1,name="Walk to 5K",displayName="A Challenge to Move: Walk to 5K",price=6.99,core=l1_core,extra=l1_extra,
       entry="Can walk briskly for 30 minutes.",exit="A continuous 5K (about 30 minutes or more of nonstop easy running).",
       summary="Walk with short jogs, building to your first continuous 5K.",cues="Jogs are RPE 4, full sentences. Walks are brisk, RPE 3. Extra days are easy movement, never running.",
       spacing="max2RunDaysInARow"),
@@ -187,7 +187,7 @@ def shape(d):
         cc=[4,4,3,4,4,3,4,4,3,3]; return [["C"]*4 if c==4 else ["C","C","X","C"] for c in cc]
     if d==5: return [["C","C","X","C","C"]]*9   # 9 weeks, 45 sessions: 4 core + 1 easy each week
 WEEKS={2:18,3:12,4:10,5:9}
-ACCESS_PROPOSAL={2:140,3:98,4:98,5:98}   # 2/wk: 18 + 2 weeks (PROPOSAL); others: 14 weeks (decided)
+ACCESS_DAYS={2:140,3:98,4:84,5:77}   # plan length + 2 weeks: 20/14/12/11 weeks (decided)
 
 # Default training days per frequency (0=Mon). The app suggests these; if the user picks other days, the engine
 # re-applies the same rule (no key sessions on consecutive days; Walk to 5K: no 3 run days in a row) inside each week.
@@ -234,21 +234,22 @@ for L in LEVELS:
             for j,s in enumerate(arrange(items,d,L["id"]),1):
                 slots.append({"slot":len(slots)+1,"week":wi,"weekSession":j,**s})
         doc={k:L[k] for k in ("id","level","name","displayName","price","entry","exit","summary","cues","spacing")}
-        doc.update({"priceStatus":"proposal (Salim to confirm)","daysPerWeek":d,"weeks":WEEKS[d],"totalSessions":len(slots),"coreSessions":36,
-                    "accessDays":ACCESS_PROPOSAL[d],"accessStatus":"decided (14 weeks)" if d!=2 else "PROPOSAL: 20 weeks for the 2-day plan (Salim to decide)",
+        doc.update({"priceStatus":"decided","daysPerWeek":d,"weeks":WEEKS[d],"totalSessions":len(slots),"coreSessions":36,
+                    "accessDays":ACCESS_DAYS[d],"accessStatus":"decided (plan length + 2 weeks)",
                     "accessStarts":"purchase date (gift: redemption date)","slots":slots})
         fn=f"{L['id']}-{d}x.json"; json.dump(doc,open(os.path.join(HERE,fn),"w"),indent=1,ensure_ascii=False)
-        index.append({"file":fn,"id":L["id"],"displayName":L["displayName"],"level":L["level"],"daysPerWeek":d,"weeks":WEEKS[d],"totalSessions":len(slots),"accessDays":ACCESS_PROPOSAL[d]})
-json.dump({"version":"v6","status":"Draft for Salim's approval. Nothing live.","levels":[{"id":L["id"],"displayName":L["displayName"],"price":L["price"],"priceStatus":"proposal"} for L in LEVELS],
+        index.append({"file":fn,"id":L["id"],"displayName":L["displayName"],"level":L["level"],"daysPerWeek":d,"weeks":WEEKS[d],"totalSessions":len(slots),"accessDays":ACCESS_DAYS[d]})
+json.dump({"displayNameNote":"App names, prices, access length and timer caps come from js/ladder/config.js (Salim's picks, Nov 22, 2026, 8:38 PM MT). The 10K level never carries the 5K house name.",
+  "version":"v6","status":"Preview build. Nothing live until launch.","levels":[{"id":L["id"],"displayName":L["displayName"],"price":L["price"],"priceStatus":"decided"} for L in LEVELS],
   "daysPerWeekOptions":[2,3,4,5],"weeksByDays":WEEKS,"sessionsByDays":{2:36,3:36,4:40,5:45},
-  "accessDaysByDays":ACCESS_PROPOSAL,"accessNote":"14 weeks (98 days) decided for 3/4/5 days. 2 days: PROPOSAL 20 weeks (140 days); alternative keeps 98 and relies on the $2.99 repeat.",
+  "accessDaysByDays":ACCESS_DAYS,"accessNote":"Access = plan length + 2 weeks: 20/14/12/11 weeks for 2/3/4/5 days (decided). The exact end date is shown before purchase.",
   "accessStartsSelf":"purchase date","accessStartsGift":"redemption date","giftCodeRedeemableYears":5,
   "warningsDaysLeft":[28,14,5],"warningRule":"compute from the actual access end date; never mention $2.99",
   "cantFinishRule":"remaining sessions > sessions still possible before the end date, where possible = one per day and at most (daysPerWeek + 1) per 7 days",
-  "openTimers":{"5k-open":{"capSeconds":2700,"status":"decided"},"10k-open":{"capSeconds":5400,"status":"proposal"}},
+  "openTimers":{"5k-open":{"capSeconds":{"walk-to-5k":3600,"5k-faster":2700},"status":"decided"},"10k-open":{"capSeconds":5400,"status":"decided"}},
   "placementStarts":{"walk-to-5k-from-week-6":{"level":"walk-to-5k","startCoreIndex":16,"when":"Q2 yes and Q3 no, or 12-minute check reaches 12:00"}},
   "restart":{"price":2.99,"offerDaysAfterExpiry":30,"newAccess":"same access length as the plan"},"repeat":{"price":2.99,"newAccess":"same access length as the plan"},
-  "defaultDays":{k:[["Mon","Tue","Wed","Thu","Fri","Sat","Sun"][x] for x in v] for k,v in DEFAULT_DAYS.items()},"spacingRule":"no key sessions on consecutive days; Walk to 5K: no 3 run days in a row (extra days are non-running); the engine re-orders within a week if the user picks other days","files":index},open(os.path.join(HERE,"index.json"),"w"),indent=1)
+  "defaultDays":{k:[["Mon","Tue","Wed","Thu","Fri","Sat","Sun"][x] for x in v] for k,v in DEFAULT_DAYS.items()},"spacingRule":"no key sessions on consecutive days; Walk to 5K: no 3 run days in a row (extra days are non-running); the engine re-orders within a week if the user picks other days","files":index},open(os.path.join(HERE,"index.json"),"w"),indent=2,ensure_ascii=False)
 
 # weekly tables (anchor 3/wk)
 md=[]
@@ -280,7 +281,7 @@ for e in index:
     if d["id"]=="10k": assert len(opens)==1 and opens[0]==(exp,"10k-open")
     for x in s:
         for st in x["steps"]:
-            if st["type"]=="5k-open": assert st["durationSeconds"]==2700 and x.get("fiveK")
+            if st["type"]=="5k-open": assert st["durationSeconds"]==(3600 if d["id"]=="walk-to-5k" else 2700) and x.get("fiveK")
             if st["type"]=="10k-open": assert st["durationSeconds"]==5400 and x.get("tenK")
     # adjacency of key sessions within a week (worst case: consecutive days)
     for w in range(1,d["weeks"]+1):

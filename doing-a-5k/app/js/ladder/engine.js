@@ -1,7 +1,7 @@
 /* Doing a 5K ladder: shared Follow-Up Engine (in-app, offline, preview build). Spec v6.
  * Three levels (walk-to-5k, 5k-faster, 10k), each 36 core sessions. Days a week (2 to 5) picks the file:
  * 36 / 36 / 40 / 45 sessions over 18 / 12 / 10 / 9 weeks; 4 and 5 days add non-core easy extras.
- * A level is finished at core session 36. Access = plan length + 2 weeks (config.js placeholder), from the
+ * A level is finished at core session 36. Access = plan length + 2 weeks (config.js, decided), from the
  * purchase date (gift: redemption). The pointer (next slot) is stored apart from the activity log, so
  * repeats and repairs keep the streak alive but never move it. */
 import { todayISO, addDays, daysBetween, weekday } from "./dates.js";
