@@ -1061,7 +1061,7 @@ function renderGift() {
       <label class="field"><span>Your first name</span><input type="text" name="buyer" maxlength="40"></label>
       <label class="field"><span>Recipient's first name</span><input type="text" name="rname" maxlength="40"></label>
       <label class="field"><span>Recipient's email <span class="muted" id="remail-opt"></span></span><input type="text" name="remail" inputmode="email" maxlength="120" aria-describedby="remail-help"></label>
-      <p class="muted" id="remail-help"><small>We'll use this only to deliver the gift and send redemption reminders.</small></p>
+      <p class="muted" id="remail-help"><small>${uiLang() === "es" ? "Lo usaremos solo para entregar el regalo y enviar recordatorios de canje." : "We'll use this only to deliver the gift and send redemption reminders."}</small></p>
       <label class="check-row"><input type="checkbox" name="share"> I'll share the link myself</label>
       <label class="field"><span>Short message (optional, up to 300 characters)</span><textarea name="msg" maxlength="300" rows="3"></textarea></label>
       <label class="field"><span>Deliver on (leave empty to send now)</span><input type="date" name="when" min="${todayISO()}"></label>
@@ -1167,6 +1167,7 @@ function bindGiftStatus() {
       // Live: the server updates the gift (buyer only, before redemption) and resends on the delivery date.
       try {
         const r = await server.updateGiftRecipient(sid, email, uiLang());
+        if (r.code_rotated) { liveGiftStatus = null; render(location.hash.slice(1)); return; } // new code: reload the receipt
         liveGiftStatus = { ...liveGiftStatus, recipientEmail: r.recipient_email };
         render(location.hash.slice(1));
       } catch (err) { $("#gs-error").textContent = err.code === "signin" ? "Sign in with the email you used at checkout." : err.message; }
@@ -1178,11 +1179,11 @@ function bindGiftStatus() {
   });
 }
 
-/* STOP link from a gift reminder email: #l-stop?g=<gift id>&t=<token>. A tap on the button (not the page load) stops
- * reminders for that one gift, so mail link scanners can't stop them. Copy PENDING ATTORNEY REVIEW. */
+/* STOP link from a gift email: #l-stop?g=<gift id>&t=<token>&l=<lang>. A tap on the button (not the page load) stops
+ * reminders for that one gift, so mail link scanners can't stop them. It never cancels the gift. Copy: Attorney §14.4. */
 const STOP_COPY = {
-  en: { h: "Stop gift reminders", p: "Stop the reminder emails about this gift? Your gift code still works until its redeem-by date.", b: "Stop reminders", done: "Done. We won't send more reminders about this gift.", bad: "This link didn't work. Email coachsalimheyaime@gmail.com and we'll stop the reminders." },
-  es: { h: "Detener los recordatorios del regalo", p: "¿Detener los correos de recordatorio sobre este regalo? Tu código de regalo sigue funcionando hasta su fecha límite para canjearlo.", b: "Detener recordatorios", done: "Listo. No enviaremos más recordatorios sobre este regalo.", bad: "Este enlace no funcionó. Escribe a coachsalimheyaime@gmail.com y detendremos los recordatorios." },
+  en: { h: "Stop gift reminders", p: "Stop the reminder emails about this gift? This does not cancel the gift. Your gift code still works until its redeem-by date.", b: "Stop reminders", done: "Done. We won't send more reminders about this gift. Your gift code is unchanged.", bad: "This link didn't work. Email coachsalimheyaime@gmail.com and we'll stop the reminders." },
+  es: { h: "Detener los recordatorios del regalo", p: "¿Detener los correos de recordatorio sobre este regalo? Esto no cancela el regalo. Tu código de regalo sigue funcionando hasta su fecha límite para canjearlo.", b: "Detener recordatorios", done: "Listo. No enviaremos más recordatorios sobre este regalo. Tu código de regalo no cambia.", bad: "Este enlace no funcionó. Escribe a coachsalimheyaime@gmail.com y detendremos los recordatorios." },
 };
 const stopLang = () => (params().get("l") === "es" ? "es" : params().get("l") === "en" ? "en" : uiLang());
 function renderStop() {

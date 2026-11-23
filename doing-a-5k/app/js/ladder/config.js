@@ -84,30 +84,50 @@ export const LAUNCH_DATES = {
 };
 
 /* CHD policy line 65 (email sign-in), EN and ES, for either name scheme. Shared-date wording is the
- * Attorney's §13.1 text word for word. Separate-date wording (only used when the dates differ) follows the
- * memo's instruction to "use two dates instead" and needs the Attorney's sign-off before use. */
+ * Attorney's §13.1 text word for word, and is used whenever the running-plan dates are the same. When they differ
+ * (Attorney §14.7, approved): levels that share a date are grouped ("Walk to 5K and 5K Faster starting {date1}, 10K
+ * starting {date2}, and the 30-Day Whole Food Plan starting {date3}"), the fallback keeps "Doing a 5K" when Walk to 5K
+ * and 5K Faster share a date, and each date (YYYY-MM-DD) is written in the page's language. Placeholders such as
+ * "[RUNNING PLANS LAUNCH DATE]" pass through unchanged. */
+export function fmtLaunchDate(x, lang = "en") {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(x));
+  if (!m) return x;
+  return new Intl.DateTimeFormat(lang === "es" ? "es-MX" : "en-US", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })
+    .format(new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])));
+}
+function groupByDate(items, lang) {
+  const and = lang === "es" ? " y " : " and ";
+  const groups = [];
+  for (const [name, date] of items) {
+    const g = groups.find((x) => x.date === date);
+    if (g) g.names.push(name); else groups.push({ date, names: [name] });
+  }
+  return groups.map((g) => `${g.names.join(and)} ${lang === "es" ? "a partir del" : "starting"} ${fmtLaunchDate(g.date, lang)}`).join(", ");
+}
 export function chd65(scheme = NAME_SCHEME, lang = "en", d = LAUNCH_DATES) {
   const es = lang === "es";
-  const wf = es ? `el 30-Day Whole Food Plan a partir del ${d.wholeFood}` : `the 30-Day Whole Food Plan starting ${d.wholeFood}`;
-  const on = (x) => (es ? `a partir del ${x}` : `starting ${x}`);
+  const f = (x) => fmtLaunchDate(x, lang);
+  const wf = es ? `el 30-Day Whole Food Plan a partir del ${f(d.wholeFood)}` : `the 30-Day Whole Food Plan starting ${f(d.wholeFood)}`;
+  const on = (x) => (es ? `a partir del ${f(x)}` : `starting ${f(x)}`);
+  const allSame = d["walk-to-5k"] === d["5k-faster"] && d["5k-faster"] === d["10k"];
   if (scheme === "umbrella") {
     const head = es
       ? "El Reto 30 Días Antes de X-mas, los planes para correr de A Challenge to Move (Walk to 5K, 5K Faster y 10K) y el 30-Day Whole Food Plan usan inicio de sesión por correo"
       : "The 30 Days Before X-mas Challenge, the A Challenge to Move running plans (Walk to 5K, 5K Faster and 10K) and the 30-Day Whole Food Plan use email sign-in";
-    const same = d["walk-to-5k"] === d["5k-faster"] && d["5k-faster"] === d["10k"];
-    const runs = same
+    const runs = allSame
       ? `${es ? "los planes para correr" : "the running plans"} ${on(d["10k"])}`
-      : `Walk to 5K ${on(d["walk-to-5k"])}, 5K Faster ${on(d["5k-faster"])}, 10K ${on(d["10k"])}`;
-    return `${head} (${runs}${same ? (es ? " y " : " and ") : (es ? " y " : ", and ")}${wf}):`;
+      : groupByDate([["Walk to 5K", d["walk-to-5k"]], ["5K Faster", d["5k-faster"]], ["10K", d["10k"]]], lang);
+    return `${head} (${runs}${allSame ? (es ? " y " : " and ") : (es ? " y " : ", and ")}${wf}):`;
   }
   const head = es
     ? "El Reto 30 Días Antes de X-mas, Doing a 5K (Walk to 5K y 5K Faster), Doing a 10K y el 30-Day Whole Food Plan usan inicio de sesión por correo"
     : "The 30 Days Before X-mas Challenge, Doing a 5K (Walk to 5K and 5K Faster), Doing a 10K and the 30-Day Whole Food Plan use email sign-in";
   const fiveSame = d["walk-to-5k"] === d["5k-faster"];
-  const five = fiveSame ? `Doing a 5K ${on(d["walk-to-5k"])}` : `Doing a 5K: Walk to 5K ${on(d["walk-to-5k"])}, Doing a 5K: 5K Faster ${on(d["5k-faster"])}`;
-  const runs = fiveSame && d["walk-to-5k"] === d["10k"]
+  const runs = allSame
     ? (es ? `Doing a 5K y Doing a 10K, ambos ${on(d["10k"])}` : `Doing a 5K and Doing a 10K both ${on(d["10k"])}`)
-    : `${five}, Doing a 10K ${on(d["10k"])}`;
+    : groupByDate(fiveSame
+      ? [["Doing a 5K", d["walk-to-5k"]], ["Doing a 10K", d["10k"]]]
+      : [["Doing a 5K: Walk to 5K", d["walk-to-5k"]], ["Doing a 5K: 5K Faster", d["5k-faster"]], ["Doing a 10K", d["10k"]]], lang);
   return `${head} (${runs}, ${es ? "y " : "and "}${wf}):`;
 }
 for (const k of Object.keys(SITE_STRINGS)) {

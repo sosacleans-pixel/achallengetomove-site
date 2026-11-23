@@ -296,4 +296,41 @@ assert.equal(E.windowStatus(fz, "5k-faster", addDays(D0, 45)).status, "finished"
   assert.ok(!/(rk|sk)_(live|test)_/.test(readFileSync(join(here, "../js/ladder/config.js"), "utf8")));
 }
 
+
+// ---- Attorney memo §14 (gift emails, STOP page, privacy/CHD, CHD line 65 separate dates) ----
+{
+  const memo = readFileSync("/workspace/coach-salim/doing-a-5k-ladder-legal-review.md", "utf8");
+  const s14 = memo.slice(memo.indexOf("## 14. Update"));
+  const C = await import("../js/ladder/config.js");
+  const D = { "walk-to-5k": "2027-06-01", "5k-faster": "2027-06-01", "10k": "2027-07-15", wholeFood: "2027-01-04" };
+  assert.ok(C.chd65("umbrella", "en", D).includes("(Walk to 5K and 5K Faster starting June 1, 2027, 10K starting July 15, 2027, and the 30-Day Whole Food Plan starting January 4, 2027):"), "§14.7 grouping, EN dates");
+  assert.ok(C.chd65("umbrella", "es", D).includes("(Walk to 5K y 5K Faster a partir del 1 de junio de 2027, 10K a partir del 15 de julio de 2027 y el 30-Day Whole Food Plan a partir del 4 de enero de 2027):"), "§14.7 ES dates in Spanish");
+  assert.ok(C.chd65("doing", "en", D).includes("(Doing a 5K starting June 1, 2027, Doing a 10K starting July 15, 2027, and the 30-Day"), "fallback keeps Doing a 5K grouped");
+  const D2 = { ...D, "5k-faster": "2027-06-08", "10k": "2027-06-01" };
+  assert.ok(C.chd65("umbrella", "en", D2).includes("(Walk to 5K and 10K starting June 1, 2027, 5K Faster starting June 8, 2027, and"));
+  for (const k of ["umbrella", "doing"]) for (const l of ["en", "es"]) {
+    const same = C.chd65(k, l, { ...D, "10k": "2027-06-01" });
+    assert.ok(same.includes(l === "es" ? "1 de junio de 2027" : "June 1, 2027"));
+    assert.ok(!same.includes("Walk to 5K a partir") && !same.includes("Walk to 5K starting"), "shared-date sentence when the dates match");
+    assert.ok(!/Doing a 5K: 10K/.test(C.chd65(k, l, D2)));
+  }
+  const ui = readFileSync(join(here, "../js/ladder/ui.js"), "utf8");
+  for (const t of ["This does not cancel the gift. Your gift code still works until its redeem-by date.", "Done. We won't send more reminders about this gift. Your gift code is unchanged.",
+    "Esto no cancela el regalo. Tu código de regalo sigue funcionando hasta su fecha límite para canjearlo.", "Listo. No enviaremos más recordatorios sobre este regalo. Tu código de regalo no cambia.",
+    "This link didn't work. Email coachsalimheyaime@gmail.com and we'll stop the reminders.", "Este enlace no funcionó. Escribe a coachsalimheyaime@gmail.com y detendremos los recordatorios.",
+    "Lo usaremos solo para entregar el regalo y enviar recordatorios de canje."]) {
+    assert.ok(s14.includes(t), `in §14: ${t}`); assert.ok(ui.includes(t), `in ui.js: ${t}`);
+  }
+  const strip = (h) => h.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&");
+  const priv = strip(readFileSync(join(here, "../../../privacy/index.html"), "utf8"));
+  const chd = strip(readFileSync(join(here, "../../../privacy/consumer-health-data/index.html"), "utf8"));
+  const quote = (label) => { const i = s14.indexOf(label); const j = s14.indexOf("\n> ", i) + 3; return s14.slice(j, s14.indexOf("\n", j)); };
+  assert.ok(priv.includes(quote("**Privacy page, EN (final):**")), "privacy EN §14.5");
+  assert.ok(priv.includes(quote("**Privacy page, ES (final):**")), "privacy ES §14.5");
+  assert.ok(chd.includes(quote("**CHD page, EN (final), in the purchase-and-gift bullet:**")), "CHD EN §14.5");
+  assert.ok(chd.includes(quote("**CHD page, ES (final):**")), "CHD ES §14.5");
+  assert.ok(!priv.includes("Reminders stop once the code is redeemed or refunded, or after its redeem-by date."), "7:16 PM privacy text replaced");
+  assert.ok(!chd.includes("send redemption reminders. We collect no health data"), "7:16 PM CHD text replaced");
+}
+
 console.log("ladder engine: all checks passed");

@@ -1,4 +1,4 @@
-const CACHE = "doing-a-5k-v16-gift-emails";
+const CACHE = "doing-a-5k-v17-attorney-s14";
 const ASSETS = [
   "./icons/icon.svg",
   "./icons/icon-192.png",
