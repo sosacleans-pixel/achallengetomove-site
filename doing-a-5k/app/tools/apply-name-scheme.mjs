@@ -49,7 +49,7 @@ edit("health-safety/index.html", (s) => appLists(s, esc(SITE.hsListEn), esc(SITE
 
 edit("privacy/consumer-health-data/index.html", (s) => {
   s = sub(s, /including A Challenge to Move: 30 Days Before X-mas Challenge, .*? the 30-Day Whole Food Plan\./, () => SITE.chd53, "CHD 53");
-  s = sub(s, /The 30 Days Before X-mas Challenge, .*?use email sign-in \(.*?\):/, () => SITE.chd65, "CHD 65 (§13.1; ES chd65Es stored, page is English-only)");
+  s = sub(s, /The 30 Days Before X-mas Challenge[ ,].*?use email sign-in \(.*?\):/, () => SITE.chd65, "CHD 65 (§13.1; ES chd65Es stored, page is English-only)");
   return s;
 });
 

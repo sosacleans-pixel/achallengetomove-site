@@ -77,18 +77,17 @@ export const SITE_STRINGS = {
  * facts. One date per running plan level, so the plans can start on different days; when they share a date
  * the approved shared-date wording is used. */
 export const LAUNCH_DATES = {
-  "walk-to-5k": "[RUNNING PLANS LAUNCH DATE]",
-  "5k-faster": "[RUNNING PLANS LAUNCH DATE]",
-  "10k": "[RUNNING PLANS LAUNCH DATE]",
-  wholeFood: "[WHOLE FOOD LAUNCH DATE]",
+  // Go-live day (Salim, Nov 22, 2026 10:50 PM MT: launch as soon as ready). The 30-Day Whole Food Plan is left out of
+  // the sign-in line for now (Salim, 10:53 PM MT): it has no email sign-in yet.
+  "walk-to-5k": "2026-11-22",
+  "5k-faster": "2026-11-22",
+  "10k": "2026-11-22",
 };
 
-/* CHD policy line 65 (email sign-in), EN and ES, for either name scheme. Shared-date wording is the
- * Attorney's §13.1 text word for word, and is used whenever the running-plan dates are the same. When they differ
- * (Attorney §14.7, approved): levels that share a date are grouped ("Walk to 5K and 5K Faster starting {date1}, 10K
- * starting {date2}, and the 30-Day Whole Food Plan starting {date3}"), the fallback keeps "Doing a 5K" when Walk to 5K
- * and 5K Faster share a date, and each date (YYYY-MM-DD) is written in the page's language. Placeholders such as
- * "[RUNNING PLANS LAUNCH DATE]" pass through unchanged. */
+/* CHD policy line 65 (email sign-in), EN and ES, for either name scheme. Running plans only: the 30-Day Whole Food
+ * Plan is left out until it actually uses email sign-in (Salim, Nov 22, 2026 10:53 PM MT). Otherwise the Attorney's
+ * §13.1 wording, PENDING ATTORNEY OK of the Whole Food removal. When the running-plan dates differ (§14.7), levels that
+ * share a date are grouped and each date (YYYY-MM-DD) is written in the page's language; placeholders pass through. */
 export function fmtLaunchDate(x, lang = "en") {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(x));
   if (!m) return x;
@@ -102,33 +101,32 @@ function groupByDate(items, lang) {
     const g = groups.find((x) => x.date === date);
     if (g) g.names.push(name); else groups.push({ date, names: [name] });
   }
-  return groups.map((g) => `${g.names.join(and)} ${lang === "es" ? "a partir del" : "starting"} ${fmtLaunchDate(g.date, lang)}`).join(", ");
+  const parts = groups.map((g) => `${g.names.join(and)} ${lang === "es" ? "a partir del" : "starting"} ${fmtLaunchDate(g.date, lang)}`);
+  return parts.length < 2 ? parts.join("") : `${parts.slice(0, -1).join(", ")}, ${lang === "es" ? "y" : "and"} ${parts[parts.length - 1]}`;
 }
 export function chd65(scheme = NAME_SCHEME, lang = "en", d = LAUNCH_DATES) {
   const es = lang === "es";
-  const f = (x) => fmtLaunchDate(x, lang);
-  const wf = es ? `el 30-Day Whole Food Plan a partir del ${f(d.wholeFood)}` : `the 30-Day Whole Food Plan starting ${f(d.wholeFood)}`;
-  const on = (x) => (es ? `a partir del ${f(x)}` : `starting ${f(x)}`);
+  const on = (x) => (es ? `a partir del ${fmtLaunchDate(x, lang)}` : `starting ${fmtLaunchDate(x, lang)}`);
   const allSame = d["walk-to-5k"] === d["5k-faster"] && d["5k-faster"] === d["10k"];
   if (scheme === "umbrella") {
     const head = es
-      ? "El Reto 30 Días Antes de X-mas, los planes para correr de A Challenge to Move (Walk to 5K, 5K Faster y 10K) y el 30-Day Whole Food Plan usan inicio de sesión por correo"
-      : "The 30 Days Before X-mas Challenge, the A Challenge to Move running plans (Walk to 5K, 5K Faster and 10K) and the 30-Day Whole Food Plan use email sign-in";
+      ? "El Reto 30 Días Antes de X-mas y los planes para correr de A Challenge to Move (Walk to 5K, 5K Faster y 10K) usan inicio de sesión por correo"
+      : "The 30 Days Before X-mas Challenge and the A Challenge to Move running plans (Walk to 5K, 5K Faster and 10K) use email sign-in";
     const runs = allSame
       ? `${es ? "los planes para correr" : "the running plans"} ${on(d["10k"])}`
       : groupByDate([["Walk to 5K", d["walk-to-5k"]], ["5K Faster", d["5k-faster"]], ["10K", d["10k"]]], lang);
-    return `${head} (${runs}${allSame ? (es ? " y " : " and ") : (es ? " y " : ", and ")}${wf}):`;
+    return `${head} (${runs}):`;
   }
   const head = es
-    ? "El Reto 30 Días Antes de X-mas, Doing a 5K (Walk to 5K y 5K Faster), Doing a 10K y el 30-Day Whole Food Plan usan inicio de sesión por correo"
-    : "The 30 Days Before X-mas Challenge, Doing a 5K (Walk to 5K and 5K Faster), Doing a 10K and the 30-Day Whole Food Plan use email sign-in";
+    ? "El Reto 30 Días Antes de X-mas, Doing a 5K (Walk to 5K y 5K Faster) y Doing a 10K usan inicio de sesión por correo"
+    : "The 30 Days Before X-mas Challenge, Doing a 5K (Walk to 5K and 5K Faster) and Doing a 10K use email sign-in";
   const fiveSame = d["walk-to-5k"] === d["5k-faster"];
   const runs = allSame
     ? (es ? `Doing a 5K y Doing a 10K, ambos ${on(d["10k"])}` : `Doing a 5K and Doing a 10K both ${on(d["10k"])}`)
     : groupByDate(fiveSame
       ? [["Doing a 5K", d["walk-to-5k"]], ["Doing a 10K", d["10k"]]]
       : [["Doing a 5K: Walk to 5K", d["walk-to-5k"]], ["Doing a 5K: 5K Faster", d["5k-faster"]], ["Doing a 10K", d["10k"]]], lang);
-  return `${head} (${runs}, ${es ? "y " : "and "}${wf}):`;
+  return `${head} (${runs}):`;
 }
 for (const k of Object.keys(SITE_STRINGS)) {
   SITE_STRINGS[k].chd65 = chd65(k, "en");
@@ -175,4 +173,4 @@ export const TIMER_CAPS = {
   "5k-open": { "walk-to-5k": 3600, "5k-faster": 2700 },
 };
 
-/* Only the launch dates are still open ("as soon as ready"); see LAUNCH_DATES above. */
+/* Launch dates are filled with the go-live day (Nov 22, 2026); see LAUNCH_DATES above. */
