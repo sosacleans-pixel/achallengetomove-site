@@ -29,7 +29,10 @@ assert.equal(S.serverEnabled({ realCheckout: true, supabaseUrl: "https://x.supab
 assert.equal(S.serverEnabled({ realCheckout: true, supabaseUrl: "https://x.supabase.co", supabaseAnonKey: "k" }), true);
 assert.match(C.SERVER.supabaseUrl, /^https:\/\/olncfwohfpgpmygxjpcm\.supabase\.co$/);
 assert.equal(C.SERVER.siteUrl, "https://achallengetomove.com");
-const LC = readFileSync(join(here, "../../../supabase/functions/_shared/ladder-config.ts"), "utf8");
+// The generated server config (written into the private backend repo) has the fixed return URLs and level names.
+const LC = execFileSync(process.execPath, [join(here, "../tools/sync-server-config.mjs"), "--print"], { encoding: "utf8" });
+assert.ok(LC.includes('"10k": "A Challenge to Move: 10K"'));
+assert.ok(LC.includes('"stopUrl": "https://achallengetomove.com/doing-a-5k/app/#l-stop"'));
 assert.ok(LC.includes('"purchase": "https://achallengetomove.com/doing-a-5k/app/#l-paid?session_id={CHECKOUT_SESSION_ID}"'));
 assert.ok(LC.includes('"gift": "https://achallengetomove.com/doing-a-5k/app/#l-gift-status?session_id={CHECKOUT_SESSION_ID}&new=1"'));
 assert.ok(LC.includes('"cancel": "https://achallengetomove.com/doing-a-5k/"'));
@@ -53,6 +56,8 @@ S._setIO({
       { id: "e2", level_id: "5k-faster", kind: "new", days_per_week: 2, train_days: null, start_date: "2026-11-01", access_end: "2027-03-20", start_from: "resume", start_core_index: 1, amount_cents: 699, refunded_at: "2026-11-02T00:00:00Z" },
     ]);
     if (url.endsWith("/functions/v1/ladder-redeem-gift")) return ok({ ok: true, gift: { level_id: "10k", buyer_name: "Gia" } });
+    if (url.endsWith("/functions/v1/ladder-gift-recipient")) return ok({ ok: true, recipient_email: JSON.parse(init.body).recipient_email, sending: "off" });
+    if (url.endsWith("/functions/v1/ladder-gift-stop")) return JSON.parse(init.body).t === "good" ? ok({ ok: true, stopped: true }) : { ok: false, status: 400, json: async () => ({ ok: false, error: "invalid link" }) };
     return { ok: false, status: 404, json: async () => ({ error: "nope" }) };
   },
 });
@@ -87,6 +92,15 @@ assert.equal(E.currentRun(L, "5k-faster"), null);
 L = S.applyEntitlements(L, rows);
 assert.equal(L.levels["10k"].runs.length, 1, "applying twice adds nothing");
 assert.equal((await S.lookupGift("5K-AAAA-AAAA")).buyer_name, "Gia");
+
+// buyer fixes the recipient's email (signed in), STOP link (no sign-in, no anon key)
+const fix = await S.updateGiftRecipient("cs_live_1", " New@Example.com ", "es");
+assert.equal(fix.recipient_email, "new@example.com");
+assert.deepEqual(JSON.parse(calls.at(-1).init.body), { session_id: "cs_live_1", recipient_email: "new@example.com", lang: "es" });
+assert.equal(calls.at(-1).init.headers.Authorization, "Bearer tok2");
+assert.equal((await S.stopGiftReminders("22222222-2222-4222-8222-222222222222", "good")).stopped, true);
+assert.ok(!("Authorization" in calls.at(-1).init.headers) && !("apikey" in calls.at(-1).init.headers));
+await assert.rejects(S.stopGiftReminders("g", "bad"), (e) => e.status === 400);
 
 // server config mirror in sync with config.js
 execFileSync(process.execPath, [join(here, "../tools/sync-server-config.mjs"), "--check"], { stdio: "pipe" });

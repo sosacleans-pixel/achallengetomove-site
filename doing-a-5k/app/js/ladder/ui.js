@@ -1090,7 +1090,7 @@ function bindGift() {
     if (email && !EMAIL_RE.test(email)) { $("#gift-error").textContent = "Check the recipient's email."; return; }
     if (live) {
       try {
-        const url = await server.startCheckout({ levelId, kind: "gift", gift: { buyer_name: form.buyer.value.trim(), recipient_name: form.rname.value.trim(), recipient_email: email, share_myself: share, recipient_adult: form.adult.checked, message: form.msg.value, deliver_on: form.when.value } });
+        const url = await server.startCheckout({ levelId, kind: "gift", gift: { buyer_name: form.buyer.value.trim(), recipient_name: form.rname.value.trim(), recipient_email: email, share_myself: share, recipient_adult: form.adult.checked, message: form.msg.value, deliver_on: form.when.value, lang: uiLang() } });
         location.assign(url);
       } catch (err) { $("#gift-error").textContent = err.message; }
       return;
@@ -1141,7 +1141,7 @@ function renderGiftStatus() {
       <p class="buy-refund"><small>${esc(disclosureFor({ kind: "gift", price: g.price, levelName: DN(g.levelId) }))}</small></p>
       ${canRefund(g) ? "" : `<p class="muted"><small>This gift is no longer refundable.</small></p>`}
       ${g.shareMyself ? `<div class="card ladder-giftcard"><p class="ladder-tag">Share this card</p><p><strong>${esc(g.buyerName)} gave you ${esc(DN(g.levelId))}</strong></p>${g.message ? `<p>"${esc(g.message)}"</p>` : ""}<p>Code: <strong>${esc(g.code)}</strong><br>Redeem by ${prettyFull(g.redeemBy)}</p></div>` : ""}
-      ${!g.redeemedAt && !g.shareMyself && g.mode !== "stripe" ? `<label class="field"><span>Fix the recipient's email</span><input type="text" id="gs-email" value="${esc(g.recipientEmail)}"></label><button type="button" class="btn btn-secondary btn-block" id="gs-save">Save and resend</button>` : ""}
+      ${!g.redeemedAt && !g.refunded && !g.shareMyself ? `<label class="field"><span>Fix the recipient's email</span><input type="text" id="gs-email" inputmode="email" maxlength="120" value="${esc(g.recipientEmail)}"></label><p class="ladder-error" id="gs-error" role="alert"></p><button type="button" class="btn btn-secondary btn-block" id="gs-save">Save and resend</button>` : ""}
       ${reminders.length && !g.redeemedAt ? `<p class="muted"><small>Reminder emails to the recipient before redemption: ${reminders.map(prettyFull).join(", ")}. Then none.</small></p>${g.mode === "stripe" ? "" : reminderPreview(g, link)}` : ""}
       <p class="muted"><small>You'll see Scheduled, Sent or Redeemed here, never the recipient's progress.</small></p>
       <a class="btn btn-secondary btn-block" href="#l-start">Done</a>
@@ -1160,12 +1160,47 @@ function reminderPreview(g, link) {
 function bindGiftStatus() {
   const sid = params().get("session_id");
   if (sid && !isPreviewCheckout() && $("#gs-loading")) loadLiveGiftStatus(sid);
-  $("#gs-save")?.addEventListener("click", () => {
-    const code = params().get("code");
+  $("#gs-save")?.addEventListener("click", async () => {
     const email = $("#gs-email").value.trim();
-    if (!EMAIL_RE.test(email)) return;
+    if (!EMAIL_RE.test(email)) { $("#gs-error").textContent = "Check the recipient's email."; return; }
+    if (sid && !isPreviewCheckout()) {
+      // Live: the server updates the gift (buyer only, before redemption) and resends on the delivery date.
+      try {
+        const r = await server.updateGiftRecipient(sid, email, uiLang());
+        liveGiftStatus = { ...liveGiftStatus, recipientEmail: r.recipient_email };
+        render(location.hash.slice(1));
+      } catch (err) { $("#gs-error").textContent = err.code === "signin" ? "Sign in with the email you used at checkout." : err.message; }
+      return;
+    }
+    const code = params().get("code");
     updateGift(code, { recipientEmail: email, deliverOn: todayISO() });
     render(`l-gift-status?code=${code}`);
+  });
+}
+
+/* STOP link from a gift reminder email: #l-stop?g=<gift id>&t=<token>. A tap on the button (not the page load) stops
+ * reminders for that one gift, so mail link scanners can't stop them. Copy PENDING ATTORNEY REVIEW. */
+const STOP_COPY = {
+  en: { h: "Stop gift reminders", p: "Stop the reminder emails about this gift? Your gift code still works until its redeem-by date.", b: "Stop reminders", done: "Done. We won't send more reminders about this gift.", bad: "This link didn't work. Email coachsalimheyaime@gmail.com and we'll stop the reminders." },
+  es: { h: "Detener los recordatorios del regalo", p: "¿Detener los correos de recordatorio sobre este regalo? Tu código de regalo sigue funcionando hasta su fecha límite para canjearlo.", b: "Detener recordatorios", done: "Listo. No enviaremos más recordatorios sobre este regalo.", bad: "Este enlace no funcionó. Escribe a coachsalimheyaime@gmail.com y detendremos los recordatorios." },
+};
+const stopLang = () => (params().get("l") === "es" ? "es" : params().get("l") === "en" ? "en" : uiLang());
+function renderStop() {
+  const t = STOP_COPY[stopLang()];
+  return shell(`<div class="card ladder-card"><h2>${esc(t.h)}</h2><p id="stop-msg">${esc(t.p)}</p><button type="button" class="btn btn-primary btn-block" id="stop-go">${esc(t.b)}</button></div>`, { title: t.h, nav: false });
+}
+function bindStop() {
+  const t = STOP_COPY[stopLang()];
+  $("#stop-go")?.addEventListener("click", async (e) => {
+    e.target.disabled = true;
+    try {
+      await server.stopGiftReminders(params().get("g") || "", params().get("t") || "");
+      $("#stop-msg").textContent = t.done;
+      e.target.remove();
+    } catch {
+      $("#stop-msg").textContent = t.bad;
+      e.target.disabled = false;
+    }
   });
 }
 
@@ -1396,6 +1431,7 @@ const VIEWS = {
   "l-redeemed": [renderRedeemed, null],
   "l-signin": [renderSignin, bindSignin],
   "l-paid": [renderPaid, bindPaid],
+  "l-stop": [renderStop, bindStop],
 };
 const NEEDS_RUN = new Set(["l-setup", "l-today", "l-session", "l-done", "l-plan", "l-progress", "l-finish", "l-expired", "l-settings", "l-redeemed", "l-receipt"]);
 

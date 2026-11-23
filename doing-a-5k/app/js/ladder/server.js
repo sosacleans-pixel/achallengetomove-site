@@ -137,3 +137,16 @@ export async function redeemGiftOnServer({ code, levelId, days, trainDays, start
   });
   return j.entitlement;
 }
+/* The buyer fixes the recipient's email before redemption (function ladder-gift-recipient). The delivery email goes
+ * again to the new address only when gift email sending is on (server flag, off until Salim's yes). */
+export async function updateGiftRecipient(sessionId, email, lang) {
+  return call(fnUrl("ladder-gift-recipient"), { body: { session_id: sessionId, recipient_email: String(email).trim().toLowerCase(), lang }, auth: "required" });
+}
+/* STOP link from a gift reminder email (#l-stop?g=<gift id>&t=<token>): no sign-in, the signed token is the authorization. */
+export async function stopGiftReminders(g, t) {
+  // Works even while realCheckout is off (no anon key needed: the function does not require a JWT).
+  const r = await io.fetch(fnUrl("ladder-gift-stop"), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ g, t }) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || !j.ok) throw Object.assign(new Error(j.error || `Request failed (${r.status})`), { status: r.status });
+  return j;
+}
