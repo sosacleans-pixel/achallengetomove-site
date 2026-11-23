@@ -39,5 +39,11 @@ export const LADDER = {
   },
   "giftCodeYears": 5,
   "headStartCoreIndex": 16,
-  "timeZone": "America/Denver"
+  "timeZone": "America/Denver",
+  "siteUrl": "https://achallengetomove.com",
+  "returnUrls": {
+    "purchase": "https://achallengetomove.com/doing-a-5k/app/#l-paid?session_id={CHECKOUT_SESSION_ID}",
+    "gift": "https://achallengetomove.com/doing-a-5k/app/#l-gift-status?session_id={CHECKOUT_SESSION_ID}&new=1",
+    "cancel": "https://achallengetomove.com/doing-a-5k/"
+  }
 } as const;

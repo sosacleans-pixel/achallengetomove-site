@@ -9,7 +9,6 @@ export interface Res { status: number; body: Record<string, unknown> }
  * claims it later by signing in with that email) and required for a restart or repeat, which must follow an
  * earlier entitlement for the same level. */
 export async function handleCheckout(body: unknown, user: User | null, d: {
-  siteUrl: string;
   hasEntitlement(userId: string, levelId: string): Promise<boolean>;
   createSession(params: Record<string, string>): Promise<{ id: string; url: string }>;
 }): Promise<Res> {
@@ -20,7 +19,7 @@ export async function handleCheckout(body: unknown, user: User | null, d: {
     if (!user) return { status: 401, body: { ok: false, error: "sign in to restart or repeat" } };
     if (!(await d.hasEntitlement(user.id, r.levelId))) return { status: 403, body: { ok: false, error: "no earlier purchase of this level" } };
   }
-  const params = checkoutParams(r, { siteUrl: d.siteUrl, email: user?.emailConfirmed ? user.email : null, userId: user?.id ?? null });
+  const params = checkoutParams(r, { email: user?.emailConfirmed ? user.email : null, userId: user?.id ?? null });
   const s = await d.createSession(params);
   return { status: 200, body: { ok: true, id: s.id, url: s.url } };
 }
@@ -69,7 +68,7 @@ export async function handleRedeem(body: any, user: User | null, d: {
  * The code is derived from the Checkout Session id with GIFT_CODE_SECRET; only its keyed hash is stored. */
 export async function handleGiftCode(body: any, user: User | null, d: {
   giftSecret: string;
-  giftBySession(sessionId: string): Promise<{ buyer_email: string; buyer_user_id: string | null; code_hash: string; level_id: string; redeem_by: string } | null>;
+  giftBySession(sessionId: string): Promise<{ buyer_email: string; buyer_user_id: string | null; code_hash: string; level_id: string; redeem_by: string; [k: string]: any } | null>;
 }): Promise<Res> {
   if (!user || !user.email || !user.emailConfirmed) return { status: 401, body: { ok: false, error: "sign in with the email you used at checkout" } };
   const sid = String(body?.session_id || "");
@@ -79,5 +78,8 @@ export async function handleGiftCode(body: any, user: User | null, d: {
   if (g.buyer_user_id !== user.id && g.buyer_email !== user.email.toLowerCase()) return { status: 403, body: { ok: false, error: "not your gift" } };
   const code = await giftCodeFor(d.giftSecret, sid);
   if ((await codeHash(d.giftSecret, code)) !== g.code_hash) return { status: 500, body: { ok: false, error: "code mismatch" } };
-  return { status: 200, body: { ok: true, code, level_id: g.level_id, redeem_by: g.redeem_by } };
+  // Everything the gift receipt shows; never who redeemed it or their progress.
+  return { status: 200, body: { ok: true, code, level_id: g.level_id, redeem_by: g.redeem_by, purchased_on: g.purchased_on ?? null,
+    deliver_on: g.deliver_on ?? null, share_myself: !!g.share_myself, recipient_name: g.recipient_name ?? null, recipient_email: g.recipient_email ?? null,
+    buyer_name: g.buyer_name ?? null, message: g.message ?? null, amount_cents: g.amount_cents ?? null, redeemed: !!g.redeemed_at, refunded: !!g.refunded_at } };
 }

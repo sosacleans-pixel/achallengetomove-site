@@ -28,6 +28,11 @@ assert.equal(isPreviewCheckout(), true);
 assert.equal(S.serverEnabled({ realCheckout: true, supabaseUrl: "https://x.supabase.co", supabaseAnonKey: "" }), false, "needs the anon key too");
 assert.equal(S.serverEnabled({ realCheckout: true, supabaseUrl: "https://x.supabase.co", supabaseAnonKey: "k" }), true);
 assert.match(C.SERVER.supabaseUrl, /^https:\/\/olncfwohfpgpmygxjpcm\.supabase\.co$/);
+assert.equal(C.SERVER.siteUrl, "https://achallengetomove.com");
+const LC = readFileSync(join(here, "../../../supabase/functions/_shared/ladder-config.ts"), "utf8");
+assert.ok(LC.includes('"purchase": "https://achallengetomove.com/doing-a-5k/app/#l-paid?session_id={CHECKOUT_SESSION_ID}"'));
+assert.ok(LC.includes('"gift": "https://achallengetomove.com/doing-a-5k/app/#l-gift-status?session_id={CHECKOUT_SESSION_ID}&new=1"'));
+assert.ok(LC.includes('"cancel": "https://achallengetomove.com/doing-a-5k/"'));
 for (const v of Object.values(C.SERVER)) assert.ok(!/service_role|sb_secret_|sk_live|rk_live/.test(String(v)));
 
 // Fake network for the rest (flag forced on inside server.js via its config object).

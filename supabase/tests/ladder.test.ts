@@ -118,17 +118,19 @@ Deno.test("checkout request validation and Stripe params come from config, not t
   const ok = parseCheckoutRequest({ level_id: "walk-to-5k", kind: "new", days_per_week: 3, train_days: [6, 1, 3], start_core_index: 16, price: 1 });
   assert(ok.ok);
   if (!ok.ok) return;
-  const p = checkoutParams(ok.req, { siteUrl: "https://achallengetomove.com/", email: "a@x.com", userId: "u1" });
+  const p = checkoutParams(ok.req, { email: "a@x.com", userId: "u1" });
   assertEquals(p["line_items[0][price]"], LADDER.stripe["walk-to-5k"].purchase);
   assertEquals(p.mode, "payment");
   assertEquals(p["metadata[train_days]"], "1,3,6");
   assertEquals(p["metadata[start_core_index]"], "16");
   assertEquals(p["payment_intent_data[metadata][level_id]"], "walk-to-5k");
   assertEquals(p.success_url, "https://achallengetomove.com/doing-a-5k/app/#l-paid?session_id={CHECKOUT_SESSION_ID}");
+  assertEquals(p.cancel_url, "https://achallengetomove.com/doing-a-5k/");
   assertEquals(p.customer_email, "a@x.com"); assertEquals(p.client_reference_id, "u1");
   assert(!Object.keys(p).some((k) => k.includes("subscription") || k.includes("setup_future_usage")));
   const rs = parseCheckoutRequest({ level_id: "10k", kind: "repeat", days_per_week: 4 });
-  assert(rs.ok && checkoutParams(rs.req, { siteUrl: "https://x" })["line_items[0][price]"] === LADDER.stripe["10k"].restart);
+  assert(rs.ok && checkoutParams(rs.req)["line_items[0][price]"] === LADDER.stripe["10k"].restart);
+  assert(rs.ok && checkoutParams(rs.req).success_url === "https://achallengetomove.com/doing-a-5k/app/#l-paid?session_id={CHECKOUT_SESSION_ID}");
   // head start only for a new Walk to 5K purchase
   const hs = parseCheckoutRequest({ level_id: "10k", kind: "new", days_per_week: 3, start_core_index: 16 });
   assert(hs.ok && hs.req.startCoreIndex === 1);
@@ -139,12 +141,18 @@ Deno.test("checkout request validation and Stripe params come from config, not t
   }
   const g = parseCheckoutRequest({ level_id: "10k", kind: "gift", gift: { buyer_name: "A", recipient_name: "B", share_myself: true, recipient_adult: true, recipient_email: "ignored@x.com" } });
   assert(g.ok && g.req.gift?.recipientEmail === null);
+  if (g.ok) {
+    const gp = checkoutParams(g.req);
+    assertEquals(gp.success_url, "https://achallengetomove.com/doing-a-5k/app/#l-gift-status?session_id={CHECKOUT_SESSION_ID}&new=1");
+    assertEquals(gp.cancel_url, "https://achallengetomove.com/doing-a-5k/");
+    assertEquals(gp["line_items[0][price]"], LADDER.stripe["10k"].purchase);
+  }
 });
 
 const ANA: User = { id: "aaaaaaaa-0000-0000-0000-000000000001", email: "ana@example.com", emailConfirmed: true };
 Deno.test("handleCheckout: restart needs sign-in and an earlier purchase; new purchase may be signed out", async () => {
   const calls: Record<string, string>[] = [];
-  const d = { siteUrl: "https://achallengetomove.com", hasEntitlement: async (_u: string, l: string) => l === "walk-to-5k", createSession: async (p: Record<string, string>) => (calls.push(p), { id: "cs_test_1", url: "https://checkout.stripe.com/c/pay/cs_test_1" }) };
+  const d = { hasEntitlement: async (_u: string, l: string) => l === "walk-to-5k", createSession: async (p: Record<string, string>) => (calls.push(p), { id: "cs_test_1", url: "https://checkout.stripe.com/c/pay/cs_test_1" }) };
   assertEquals((await handleCheckout({ level_id: "10k", kind: "restart", days_per_week: 3 }, null, d)).status, 401);
   assertEquals((await handleCheckout({ level_id: "10k", kind: "restart", days_per_week: 3 }, ANA, d)).status, 403);
   const r = await handleCheckout({ level_id: "walk-to-5k", kind: "restart", days_per_week: 3 }, ANA, d);
@@ -176,7 +184,9 @@ Deno.test("handleRedeem and handleGiftCode", async () => {
   const row = { buyer_email: "giver@example.com", buyer_user_id: null, code_hash: await codeHash(GS, code), level_id: "5k-faster", redeem_by: "2031-11-22" };
   const gc = { giftSecret: GS, giftBySession: async (sid: string) => (sid === "cs_live_c3GiftFaster" ? row : null) };
   const giver: User = { id: "99999999-0000-0000-0000-000000000009", email: "giver@example.com", emailConfirmed: true };
-  assertEquals((await handleGiftCode({ session_id: "cs_live_c3GiftFaster" }, giver, gc)).body.code, code);
+  const gr = await handleGiftCode({ session_id: "cs_live_c3GiftFaster" }, giver, gc);
+  assertEquals(gr.body.code, code); assertEquals(gr.body.redeemed, false);
+  assert(!("redeemed_by_user_id" in gr.body) && !("code_hash" in gr.body));
   assertEquals((await handleGiftCode({ session_id: "cs_live_c3GiftFaster" }, ANA, gc)).status, 403);
   assertEquals((await handleGiftCode({ session_id: "cs_live_c3GiftFaster" }, { ...giver, emailConfirmed: false }, gc)).status, 401);
   assertEquals((await handleGiftCode({ session_id: "cs_live_zzz" }, giver, gc)).status, 404);

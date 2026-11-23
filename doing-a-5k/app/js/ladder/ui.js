@@ -1100,8 +1100,27 @@ function bindGift() {
   });
 }
 
+/* Live (SERVER.realCheckout on): Stripe returns gift buyers to #l-gift-status?session_id=...&new=1; the receipt is
+ * loaded from the server (signed in with the checkout email) and shaped like a local gift. */
+let liveGiftStatus = null;
+async function loadLiveGiftStatus(sid) {
+  if (!(await server.signedIn())) { location.hash = `l-signin?next=${encodeURIComponent(location.hash.slice(1))}`; return; }
+  try {
+    const g = await server.fetchGiftCode(sid);
+    liveGiftStatus = { sid, code: g.code, levelId: g.level_id, mode: "stripe", price: g.amount_cents != null ? (g.amount_cents / 100).toFixed(2) : CHECKOUT.prices[g.level_id].amount,
+      purchasedAt: g.purchased_on, redeemBy: g.redeem_by, deliverOn: g.deliver_on, shareMyself: g.share_myself, recipientName: g.recipient_name,
+      recipientEmail: g.recipient_email || "", buyerName: g.buyer_name, message: g.message, redeemedAt: g.redeemed ? "redeemed" : null, refunded: g.refunded };
+    render(location.hash.slice(1));
+  } catch (err) {
+    const el = $("#gs-loading");
+    if (el) el.textContent = err.status === 404 ? "Your payment is still processing. Refresh in a minute." : err.message;
+  }
+}
 function renderGiftStatus() {
-  const g = getGift(params().get("code"));
+  const sid = params().get("session_id");
+  const live = !isPreviewCheckout() && sid;
+  const g = live ? (liveGiftStatus?.sid === sid ? liveGiftStatus : null) : getGift(params().get("code"));
+  if (live && !g) return shell(`<div class="card ladder-card"><h2>Gift receipt</h2><p id="gs-loading">Loading your gift...</p></div>`, { title: "Gift", nav: false });
   if (!g) return shell(`<div class="card ladder-card"><p>Gift not found.</p></div>`, { nav: false });
   const isNew = params().get("new") === "1";
   const reminders = giftReminderDates(g);
@@ -1122,8 +1141,8 @@ function renderGiftStatus() {
       <p class="buy-refund"><small>${esc(disclosureFor({ kind: "gift", price: g.price, levelName: DN(g.levelId) }))}</small></p>
       ${canRefund(g) ? "" : `<p class="muted"><small>This gift is no longer refundable.</small></p>`}
       ${g.shareMyself ? `<div class="card ladder-giftcard"><p class="ladder-tag">Share this card</p><p><strong>${esc(g.buyerName)} gave you ${esc(DN(g.levelId))}</strong></p>${g.message ? `<p>"${esc(g.message)}"</p>` : ""}<p>Code: <strong>${esc(g.code)}</strong><br>Redeem by ${prettyFull(g.redeemBy)}</p></div>` : ""}
-      ${!g.redeemedAt && !g.shareMyself ? `<label class="field"><span>Fix the recipient's email</span><input type="text" id="gs-email" value="${esc(g.recipientEmail)}"></label><button type="button" class="btn btn-secondary btn-block" id="gs-save">Save and resend</button>` : ""}
-      ${reminders.length && !g.redeemedAt ? `<p class="muted"><small>Reminder emails to the recipient before redemption: ${reminders.map(prettyFull).join(", ")}. Then none.</small></p>${reminderPreview(g, link)}` : ""}
+      ${!g.redeemedAt && !g.shareMyself && g.mode !== "stripe" ? `<label class="field"><span>Fix the recipient's email</span><input type="text" id="gs-email" value="${esc(g.recipientEmail)}"></label><button type="button" class="btn btn-secondary btn-block" id="gs-save">Save and resend</button>` : ""}
+      ${reminders.length && !g.redeemedAt ? `<p class="muted"><small>Reminder emails to the recipient before redemption: ${reminders.map(prettyFull).join(", ")}. Then none.</small></p>${g.mode === "stripe" ? "" : reminderPreview(g, link)}` : ""}
       <p class="muted"><small>You'll see Scheduled, Sent or Redeemed here, never the recipient's progress.</small></p>
       <a class="btn btn-secondary btn-block" href="#l-start">Done</a>
     </div>`, { title: "Gift", nav: false });
@@ -1139,6 +1158,8 @@ function reminderPreview(g, link) {
 }
 
 function bindGiftStatus() {
+  const sid = params().get("session_id");
+  if (sid && !isPreviewCheckout() && $("#gs-loading")) loadLiveGiftStatus(sid);
   $("#gs-save")?.addEventListener("click", () => {
     const code = params().get("code");
     const email = $("#gs-email").value.trim();

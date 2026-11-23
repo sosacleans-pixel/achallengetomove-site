@@ -96,9 +96,8 @@ export function priceFor(levelId: LevelId, kind: Kind): { priceId: string; cents
 
 /* Stripe Checkout Session form params (one-time payment, no subscription, no saved card). The price comes from
  * config, never from the client. Metadata is set server-side, so the webhook can trust it. */
-export function checkoutParams(req: CheckoutRequest, o: { siteUrl: string; email?: string | null; userId?: string | null }): Record<string, string> {
+export function checkoutParams(req: CheckoutRequest, o: { email?: string | null; userId?: string | null } = {}): Record<string, string> {
   const { priceId } = priceFor(req.levelId, req.kind);
-  const app = `${o.siteUrl.replace(/\/$/, "")}/doing-a-5k/app/`;
   const meta: Record<string, string> = {
     app: LADDER.app, level_id: req.levelId, kind: req.kind, price_id: priceId,
     days_per_week: req.kind === "gift" ? "" : String(req.days),
@@ -116,8 +115,10 @@ export function checkoutParams(req: CheckoutRequest, o: { siteUrl: string; email
     mode: "payment",
     "line_items[0][price]": priceId,
     "line_items[0][quantity]": "1",
-    success_url: `${app}#l-paid?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${app}#l-levels`,
+    // Purchases, restarts and repeats return to the app, which unlocks the level with the chosen days and end date;
+    // gifts return to the gift receipt. Cancel goes back to the product page. Fixed in config, not from the client.
+    success_url: req.kind === "gift" ? LADDER.returnUrls.gift : LADDER.returnUrls.purchase,
+    cancel_url: LADDER.returnUrls.cancel,
     allow_promotion_codes: "false",
   };
   if (o.email) p.customer_email = o.email;

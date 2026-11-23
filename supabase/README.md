@@ -16,6 +16,12 @@ functions/_shared/ladder-config.ts  GENERATED from config.js (node doing-a-5k/ap
 tests/                           deno tests with Stripe event fixtures; tests/sql/run.sh = local Postgres RLS tests
 ```
 
+## Where Stripe sends buyers back (fixed in config.js `SERVER.siteUrl`, not from the browser)
+- Purchase, restart, repeat: `https://achallengetomove.com/doing-a-5k/app/#l-paid?session_id={CHECKOUT_SESSION_ID}`. The app
+  (signed in with the checkout email) claims the entitlement and opens the receipt with the chosen days and end date.
+- Gift: `https://achallengetomove.com/doing-a-5k/app/#l-gift-status?session_id={CHECKOUT_SESSION_ID}&new=1` (gift receipt with the code).
+- Cancel: `https://achallengetomove.com/doing-a-5k/` (product page).
+
 ## Data model
 - `ladder_entitlements`: one row per purchase, restart, repeat or redeemed gift: email, user_id, level_id,
   days_per_week, train_days, start_date, access_end (inclusive, plan length + 2 weeks), kind, start_from,
@@ -36,7 +42,7 @@ tests/                           deno tests with Stripe event fixtures; tests/sq
    ```bash
    supabase link --project-ref olncfwohfpgpmygxjpcm
    supabase secrets set GIFT_CODE_SECRET="$(openssl rand -base64 32)"   # never rotate after the first gift: old codes would stop matching
-   supabase secrets set SITE_URL=https://achallengetomove.com ALLOWED_ORIGINS=https://achallengetomove.com,https://www.achallengetomove.com
+   supabase secrets set ALLOWED_ORIGINS=https://achallengetomove.com,https://www.achallengetomove.com
    supabase secrets set STRIPE_SECRET_KEY="$STRIPE_RESTRICTED_KEY"     # restricted key: Checkout Sessions write
    ```
 3. Functions: `supabase functions deploy ladder-checkout ladder-stripe-webhook ladder-redeem-gift ladder-gift-code`

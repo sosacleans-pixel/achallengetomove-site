@@ -143,6 +143,9 @@ export const SERVER = {
   realCheckout: false,
   supabaseUrl: "https://olncfwohfpgpmygxjpcm.supabase.co",
   supabaseAnonKey: "",
+  /* Stripe returns buyers here: purchases, restarts and repeats to the app (level unlocks with the chosen days and
+   * end date), gifts to the gift receipt; Cancel goes back to the product page. */
+  siteUrl: "https://achallengetomove.com",
 };
 
 /* Count-up timer caps, seconds (decided). 10K check-in 90:00. Walk to 5K 5K sessions 60:00.
