@@ -49,7 +49,7 @@ edit("health-safety/index.html", (s) => appLists(s, esc(SITE.hsListEn), esc(SITE
 
 edit("privacy/consumer-health-data/index.html", (s) => {
   s = sub(s, /including A Challenge to Move: 30 Days Before X-mas Challenge, .*? the 30-Day Whole Food Plan\./, () => SITE.chd53, "CHD 53");
-  s = sub(s, /The 30 Days Before X-mas Challenge, .*?use email sign-in \(.*?\):/, () => SITE.chd65, "CHD 65");
+  s = sub(s, /The 30 Days Before X-mas Challenge, .*?use email sign-in \(.*?\):/, () => SITE.chd65, "CHD 65 (§13.1; ES chd65Es stored, page is English-only)");
   return s;
 });
 
@@ -57,6 +57,8 @@ edit("gear/index.html", (s) => {
   s = s.replace(/Gear for [^<|"]*? \| A Challenge to Move/g, `${SITE.gearTitle} | A Challenge to Move`);
   s = sub(s, /<h1>Gear for [^<]*<\/h1>/, `<h1>${esc(SITE.gearTitle)}</h1>`, "gear h1");
   s = sub(s, /(work in )the [^<]*? plans\.(<\/p>)/, (_, a, b) => a + esc(SITE.gearLede) + b, "gear lede");
+  // §13.2: back link text by scheme, href stays /doing-a-5k/. The page is English-only; gearBackEs is stored.
+  s = sub(s, /(<a class="back-link" href="\/doing-a-5k\/">&larr; )[^<]*(<\/a>)/, (_, a, b) => a + esc(SITE.gearBackEn) + b, "gear back link");
   return s;
 });
 

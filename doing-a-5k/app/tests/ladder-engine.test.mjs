@@ -226,4 +226,41 @@ assert.equal(E.windowStatus(fz, "5k-faster", addDays(D0, 45)).status, "finished"
   }
 }
 
+// ---- Attorney memo §13 ----
+{
+  const memo = readFileSync("/workspace/coach-salim/doing-a-5k-ladder-legal-review.md", "utf8");
+  const s13 = memo.slice(memo.indexOf("## 13. Update"));
+  const C = await import("../js/ladder/config.js");
+  for (const k of ["umbrella", "doing"]) for (const l of ["en", "es"]) {
+    const line = C.chd65(k, l);
+    const paren = line.slice(line.lastIndexOf(" (") + 1);
+    assert.ok(s13.includes(paren), `CHD 65 ${k} ${l} parenthetical is §13.1 text`);
+    assert.equal(C.SITE_STRINGS[k][l === "es" ? "chd65Es" : "chd65"], line);
+  }
+  assert.ok(C.chd65("doing", "en").includes("Doing a 5K and Doing a 10K both starting [RUNNING PLANS LAUNCH DATE], and the 30-Day"));
+  const sep = C.chd65("doing", "en", { ...C.LAUNCH_DATES, "10k": "[10K DATE]" });
+  assert.ok(sep.includes("Doing a 5K starting [RUNNING PLANS LAUNCH DATE], Doing a 10K starting [10K DATE]"), "one date per plan");
+  for (const [k, en, es] of [["umbrella", "Back to the 5K and 10K plans", "Volver a los planes de 5K y 10K"], ["doing", "Back to Doing a 5K and Doing a 10K", "Volver a Doing a 5K y Doing a 10K"]]) {
+    assert.equal(C.SITE_STRINGS[k].gearBackEn, en); assert.equal(C.SITE_STRINGS[k].gearBackEs, es);
+  }
+  assert.ok(readFileSync(join(here, "../../../gear/index.html"), "utf8").includes('<a class="back-link" href="/doing-a-5k/">&larr; Back to the 5K and 10K plans</a>'));
+  for (const id of ["streak", "save_used", "easy_day", "on_pace", "paused"]) {
+    assert.ok(s13.includes("`" + E.REMINDERS_ES[id] + "`"), `ES ${id} is §13.3 text`);
+    assert.equal(E.reminderText(id, "es"), E.REMINDERS_ES[id]);
+    assert.equal(E.reminderText(id, "en"), E.REMINDERS[id]);
+  }
+  for (const k of ["finish_fasterHeadTimed", "finish_fasterHead", "finish_tenAsk"]) assert.ok(s13.includes(COPY.es[k]), `ES ${k}`);
+  assert.equal(tc("finish_fasterHeadTimed", { fin: "28:10", base: "33:40" }, "es"), "Tu 5K: 28:10. Primera sesión: 33:40.");
+  // ES pickReminder covers the non-warning reminders too
+  let hit = 0;
+  for (let d = 0; d < 60; d++) {
+    const en = E.pickReminder(s, "walk-to-5k", { today: addDays(D0, d) });
+    const es = E.pickReminder(s, "walk-to-5k", { today: addDays(D0, d), lang: "es" });
+    if (!en) continue;
+    assert.equal(en.id, es.id);
+    if (["streak", "save_used", "easy_day", "on_pace", "paused"].includes(en.id)) { assert.notEqual(en.text, es.text); hit++; }
+  }
+  assert.ok(hit > 0, "exercised a non-warning reminder in ES");
+}
+
 console.log("ladder engine: all checks passed");

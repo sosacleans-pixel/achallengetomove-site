@@ -1,6 +1,6 @@
 /* Customer copy from the Attorney's memo, word for word (EN and ES).
  * §11 (v6: names, access by days a week, 2-day disclosure, 10K safety, timer caps, goal question, end-date
- * screen, restart and repeat), §12 (7:51 PM review: ES restart and warnings, finish screens, Web Manager copy), plus the unchanged approved text (§7.5 and §7.7 EN, §10.1 ES).
+ * screen, restart and repeat), §12 and §13 (7:51 PM review: ES restart and warnings, finish screens, Web Manager copy), plus the unchanged approved text (§7.5 and §7.7 EN, §10.1 ES).
  * Level names are tokens {name:<id>} filled from config.js, so the name pick is a one-line swap there.
  * The terms lead-in names the umbrella on purpose (static terms page). Generated from the memo; do not hand-edit. */
 import { NAMES } from "./config.js";
@@ -64,6 +64,14 @@ export const COPY = {
     "finish_fasterAsk": "Want to go longer? {name:10k} builds your long run, step by step, toward 10K, with long easy runs and steady sessions.",
     "finish_tenHeadTimed": "10K. Done. That's a whole lot of energy and strength you built.",
     "finish_tenHead": "That's a whole lot of energy and strength you built.",
+    "finish_fasterHeadTimed": "Your 5K: {fin}. First session: {base}.",
+    "finish_fasterHead": "Speed, strength and confidence, all built. Nice work.",
+    "finish_tenAsk": "What's next? Run it again with fresh goals, or sharpen your speed.",
+    "remStreak": "🔥 {streak}-day streak, {name}! Today's session is {minutes} minutes. Lace up and keep that energy going.",
+    "remSaveUsed": "Life got busy? Your streak save has you covered. Your {streak}-day streak is safe. One easy session today keeps it rolling.",
+    "remEasyDay": "Easy day today: {minutes} minutes of easy movement. Loosen up and recharge.",
+    "remOnPace": "Week {w}, session {n} of {total}. Right on pace. Keep the rhythm going.",
+    "remPaused": "Looks like these reminders aren't helping right now, so we'll pause them. Your plan is ready whenever you are. Welcome back anytime.",
     "storeDesc": "Three levels: Walk to 5K, 5K Faster and 10K. The 10K level is for people who can already run a 5K. Guided sessions 2 to 5 days a week.",
     "storeNote": "$6.99 per level. One-time payment. Access lasts your plan length plus 2 extra weeks. No subscription.",
     "moreDistance": "Want more distance later? See the 5K to Half Marathon plan (coming soon).",
@@ -135,6 +143,14 @@ export const COPY = {
     "finish_fasterAsk": "¿Quieres ir más lejos? {name:10k} construye tu carrera larga, paso a paso, hacia los 10K, con tiradas fáciles largas y sesiones constantes.",
     "finish_tenHeadTimed": "10K. Listo. Es mucha la energía y la fuerza que construiste.",
     "finish_tenHead": "Es mucha la energía y la fuerza que construiste.",
+    "finish_fasterHeadTimed": "Tu 5K: {fin}. Primera sesión: {base}.",
+    "finish_fasterHead": "Velocidad, fuerza y confianza, todo eso que fuiste construyendo. Buen trabajo.",
+    "finish_tenAsk": "¿Qué sigue? Corre el plan otra vez con metas nuevas, o trabaja tu velocidad.",
+    "remStreak": "🔥 ¡Racha de {streak} días, {name}! La sesión de hoy dura {minutes} minutos. Ponte los tenis y sigue con esa energía.",
+    "remSaveUsed": "¿Se te complicó el día? Tu guardado de racha te cubre. Tu racha de {streak} días está a salvo. Una sesión suave hoy la mantiene en marcha.",
+    "remEasyDay": "Hoy es un día suave: {minutes} minutos de movimiento fácil. Afloja el cuerpo y recarga.",
+    "remOnPace": "Semana {w}, sesión {n} de {total}. Vas al ritmo. Sigue con la misma cadencia.",
+    "remPaused": "Parece que estos recordatorios no te están ayudando ahora, así que los vamos a pausar. Tu plan sigue disponible cuando quieras volver. Vuelve cuando gustes.",
     "storeDesc": "Tres niveles: Walk to 5K, 5K Faster y 10K. El nivel de 10K es para quienes ya pueden correr un 5K. Sesiones guiadas de 2 a 5 días a la semana.",
     "storeNote": "$6.99 por nivel. Pago único. El acceso dura la duración de tu plan más 2 semanas extra. Sin suscripción.",
     "moreDistance": "¿Quieres más distancia más adelante? Mira el plan 5K to Half Marathon (próximamente).",

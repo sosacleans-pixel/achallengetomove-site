@@ -46,10 +46,11 @@ export const SITE_STRINGS = {
     "hsListEn": "the A Challenge to Move running plans (Walk to 5K, 5K Faster and 10K)",
     "hsListEs": "los planes para correr de A Challenge to Move (Walk to 5K, 5K Faster y 10K)",
     "chd53": "including A Challenge to Move: 30 Days Before X-mas Challenge, the A Challenge to Move running plans (Walk to 5K, 5K Faster and 10K) and the 30-Day Whole Food Plan.",
-    "chd65": "The 30 Days Before X-mas Challenge, the A Challenge to Move running plans (Walk to 5K, 5K Faster and 10K) and the 30-Day Whole Food Plan use email sign-in (the running plans starting [RUNNING PLANS LAUNCH DATE] and the 30-Day Whole Food Plan starting [WHOLE FOOD LAUNCH DATE]):",
     "gearTitle": "Gear for the 5K and 10K plans",
     "gearLede": "the A Challenge to Move running plans (Walk to 5K, 5K Faster and 10K) and 5K to Half Marathon plans.",
-    "halfLink": "Not at 5K yet? Start with the A Challenge to Move running plans."
+    "halfLink": "Not at 5K yet? Start with the A Challenge to Move running plans.",
+    "gearBackEn": "Back to the 5K and 10K plans",
+    "gearBackEs": "Volver a los planes de 5K y 10K"
   },
   "doing": {
     "termsListEn": "Doing a 5K (Walk to 5K and 5K Faster), Doing a 10K",
@@ -63,12 +64,55 @@ export const SITE_STRINGS = {
     "hsListEn": "Doing a 5K (Walk to 5K and 5K Faster), Doing a 10K",
     "hsListEs": "Doing a 5K (Walk to 5K y 5K Faster), Doing a 10K",
     "chd53": "including A Challenge to Move: 30 Days Before X-mas Challenge, Doing a 5K (Walk to 5K and 5K Faster), Doing a 10K and the 30-Day Whole Food Plan.",
-    "chd65": "The 30 Days Before X-mas Challenge, Doing a 5K (Walk to 5K and 5K Faster), Doing a 10K and the 30-Day Whole Food Plan use email sign-in (Doing a 5K and Doing a 10K starting [RUNNING PLANS LAUNCH DATE] and the 30-Day Whole Food Plan starting [WHOLE FOOD LAUNCH DATE]):",
     "gearTitle": "Gear for Doing a 5K and Doing a 10K",
     "gearLede": "the Doing a 5K, Doing a 10K and 5K to Half Marathon plans.",
-    "halfLink": "Not at 5K yet? Start with Doing a 5K: Walk to 5K."
+    "halfLink": "Not at 5K yet? Start with Doing a 5K: Walk to 5K.",
+    "gearBackEn": "Back to Doing a 5K and Doing a 10K",
+    "gearBackEs": "Volver a Doing a 5K y Doing a 10K"
   }
 };
+
+/* Email sign-in start dates for the CHD policy (Attorney memo §13.1). Placeholders until Salim supplies the
+ * facts. One date per running plan level, so the plans can start on different days; when they share a date
+ * the approved shared-date wording is used. */
+export const LAUNCH_DATES = {
+  "walk-to-5k": "[RUNNING PLANS LAUNCH DATE]",
+  "5k-faster": "[RUNNING PLANS LAUNCH DATE]",
+  "10k": "[RUNNING PLANS LAUNCH DATE]",
+  wholeFood: "[WHOLE FOOD LAUNCH DATE]",
+};
+
+/* CHD policy line 65 (email sign-in), EN and ES, for either name scheme. Shared-date wording is the
+ * Attorney's §13.1 text word for word. Separate-date wording (only used when the dates differ) follows the
+ * memo's instruction to "use two dates instead" and needs the Attorney's sign-off before use. */
+export function chd65(scheme = NAME_SCHEME, lang = "en", d = LAUNCH_DATES) {
+  const es = lang === "es";
+  const wf = es ? `el 30-Day Whole Food Plan a partir del ${d.wholeFood}` : `the 30-Day Whole Food Plan starting ${d.wholeFood}`;
+  const on = (x) => (es ? `a partir del ${x}` : `starting ${x}`);
+  if (scheme === "umbrella") {
+    const head = es
+      ? "El Reto 30 Días Antes de X-mas, los planes para correr de A Challenge to Move (Walk to 5K, 5K Faster y 10K) y el 30-Day Whole Food Plan usan inicio de sesión por correo"
+      : "The 30 Days Before X-mas Challenge, the A Challenge to Move running plans (Walk to 5K, 5K Faster and 10K) and the 30-Day Whole Food Plan use email sign-in";
+    const same = d["walk-to-5k"] === d["5k-faster"] && d["5k-faster"] === d["10k"];
+    const runs = same
+      ? `${es ? "los planes para correr" : "the running plans"} ${on(d["10k"])}`
+      : `Walk to 5K ${on(d["walk-to-5k"])}, 5K Faster ${on(d["5k-faster"])}, 10K ${on(d["10k"])}`;
+    return `${head} (${runs}${same ? (es ? " y " : " and ") : (es ? " y " : ", and ")}${wf}):`;
+  }
+  const head = es
+    ? "El Reto 30 Días Antes de X-mas, Doing a 5K (Walk to 5K y 5K Faster), Doing a 10K y el 30-Day Whole Food Plan usan inicio de sesión por correo"
+    : "The 30 Days Before X-mas Challenge, Doing a 5K (Walk to 5K and 5K Faster), Doing a 10K and the 30-Day Whole Food Plan use email sign-in";
+  const fiveSame = d["walk-to-5k"] === d["5k-faster"];
+  const five = fiveSame ? `Doing a 5K ${on(d["walk-to-5k"])}` : `Doing a 5K: Walk to 5K ${on(d["walk-to-5k"])}, Doing a 5K: 5K Faster ${on(d["5k-faster"])}`;
+  const runs = fiveSame && d["walk-to-5k"] === d["10k"]
+    ? (es ? `Doing a 5K y Doing a 10K, ambos ${on(d["10k"])}` : `Doing a 5K and Doing a 10K both ${on(d["10k"])}`)
+    : `${five}, Doing a 10K ${on(d["10k"])}`;
+  return `${head} (${runs}, ${es ? "y " : "and "}${wf}):`;
+}
+for (const k of Object.keys(SITE_STRINGS)) {
+  SITE_STRINGS[k].chd65 = chd65(k, "en");
+  SITE_STRINGS[k].chd65Es = chd65(k, "es");
+}
 export const SITE = SITE_STRINGS[NAME_SCHEME];
 
 

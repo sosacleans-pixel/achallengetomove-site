@@ -6,7 +6,7 @@ import {
   CONFIG, LEVEL_IDS, DISPLAY_NAMES, DEFAULT_TRAIN_DAYS, REMINDERS, CORE_SESSIONS, applyIndex, applyLevels, emptyState, loadLadder, saveLadder, resetLadder,
   currentRun, grantPurchase, windowStatus, completeSlot, logRepeat, addLog, saveCheckin, getCheckin, setChdConsent,
   requestDaysPerWeek, fitsAfterChange, totalSessions, weekOf, dpw, accessEnd, accessWeeks, planWeeks,
-  computeStreak, repairOffer, inactiveDays, cantFinish, windowWarning, pickReminder, badges, recap, fill,
+  computeStreak, repairOffer, inactiveDays, cantFinish, windowWarning, pickReminder, reminderText, badges, recap, fill,
 } from "./engine.js";
 import { todayStatus, projectSchedule, validTrainDays, levelData, isRunning, keyDayConflict } from "./scheduler.js";
 import { CHECKOUT, buyTrustHtml, disclosureFor, isPreviewCheckout, previewAllowed } from "./checkout.js";
@@ -535,11 +535,11 @@ function renderToday() {
   const v = { level: DN(levelId), n: run.pointer + 1, minutes: next ? minutesOf(next) : 30 };
   const banners = [];
   const warn = windowWarning(L, levelId);
-  if (warn) banners.push(`<p class="banner ladder-banner">${esc(fill(REMINDERS[`warn_${warn}`], v))}</p>`);
-  if (cantFinish(L, levelId)) banners.push(`<p class="banner ladder-banner">${esc(REMINDERS.cant_finish)}</p>`);
+  if (warn) banners.push(`<p class="banner ladder-banner">${esc(fill(reminderText(`warn_${warn}`, uiLang()), v))}</p>`);
+  if (cantFinish(L, levelId)) banners.push(`<p class="banner ladder-banner">${esc(reminderText("cant_finish", uiLang()))}</p>`);
   const rep = repairOffer(L);
   if (rep) banners.push(`<div class="card ladder-card"><h2>Keep your streak</h2><p>You missed ${pretty(rep.brokenOn)}. Do a short Repair session within 48 hours to bring back your ${rep.prevStreak}-day streak.</p><button type="button" class="btn btn-secondary btn-block" id="do-repair">Start Repair session (15 min easy)</button></div>`);
-  if (inactiveDays(L) >= CONFIG.reminder_stop_after_inactive_days) banners.push(`<p class="banner ladder-banner">${esc(REMINDERS.paused)}</p>`);
+  if (inactiveDays(L) >= CONFIG.reminder_stop_after_inactive_days) banners.push(`<p class="banner ladder-banner">${esc(reminderText("paused", uiLang()))}</p>`);
 
   let card = "";
   if (ts.state === "ready") {
@@ -569,7 +569,7 @@ function renderToday() {
     ? `At ${dpw(L)} days a week you'll finish around ${pretty(finishDate)}, inside your access window.`
     : `At ${dpw(L)} days a week the plan runs past ${prettyFull(run.windowEnd)}. Add an extra day some weeks to catch up.`;
   const rem = pickReminder(L, levelId, { minutes: v.minutes });
-  const remEs = rem && /^(warn_|cant_finish|restart_)/.test(rem.id) ? pickReminder(L, levelId, { minutes: v.minutes, lang: "es" }) : null;
+  const remEs = rem ? pickReminder(L, levelId, { minutes: v.minutes, lang: "es" }) : null;
   const total = totalSessions(L);
   return shell(`
     <p class="today-greet">${L.settings?.name ? `Hi, ${esc(L.settings.name)}` : "Your next session"}</p>
@@ -913,7 +913,7 @@ function finishCopy(levelId, rc, tm, lang = "en") {
     const fin = tm(rc.final?.fiveK);
     const base = tm(rc.first?.fiveK);
     return {
-      head: fin && base ? `Your 5K: ${fin}. First session: ${base}.` : "Speed, strength and confidence, all built. Nice work.",
+      head: fin && base ? copy("finish_fasterHeadTimed", { fin, base }, lang) : c("fasterHead"),
       body: "",
       ask: askHtml([c("fasterAsk")]).replace(/^<strong>([^<]*)<\/strong>/, "$1").replace(/^([^?]+\?)/, "<strong>$1</strong>"),
       next: ["10k"],
@@ -922,17 +922,24 @@ function finishCopy(levelId, rc, tm, lang = "en") {
   return {
     head: c(timed ? "tenHeadTimed" : "tenHead"),
     body: "",
-    ask: "<strong>What's next?</strong> Run it again with fresh goals, or sharpen your speed.",
+    ask: esc(c("tenAsk")).replace(/^([^?¿]*¿?[^?]+\?)/, "<strong>$1</strong>"),
     next: ["5k-faster"],
     notify: true,
   };
 }
 
-function renderFinish() {
+/* The app UI language. The app renders English today; Spanish copy is stored and shown in previews. */
+function uiLang() {
+  return L.settings?.lang === "es" ? "es" : "en";
+}
+
+function renderFinish(lang = uiLang()) {
   const levelId = L.activeLevel;
   const rc = recap(L, levelId, lvl(levelId));
   const tm = (x) => (x && !x.capped ? mmss(x.seconds) : null);
-  const { head, body, ask, next, notify } = finishCopy(levelId, rc, tm);
+  const { head, body, ask, next, notify } = finishCopy(levelId, rc, tm, lang);
+  const other = lang === "es" ? "en" : "es";
+  const alt = previewAllowed() ? finishCopy(levelId, rc, tm, other) : null;
   const markers = levelId === "walk-to-5k"
     ? `<tr><td>Longest nonstop jog</td><td>${esc(rc.first?.longestJog || "not entered")}</td><td>${esc(rc.final?.longestJog || "not entered")}</td></tr>`
     : `<tr><td>${levelId === "10k" ? "10K check-in time" : "5K time"}</td><td>${tm(rc.first?.fiveK) || "not entered"}</td><td>${tm(rc.final?.fiveK) || "not entered"}</td></tr>`;
@@ -948,6 +955,7 @@ function renderFinish() {
       <h2>${esc(head)}</h2>
       ${body ? `<p>${esc(body)}</p>` : ""}
     </div>
+    ${alt ? `<div class="card ladder-reminder" lang="${other}"><p class="ladder-tag">Preview: ${other === "es" ? "Español" : "English"}</p><p><strong>${esc(alt.head)}</strong></p>${alt.body ? `<p>${esc(alt.body)}</p>` : ""}<p><small>${alt.ask}</small></p></div>` : ""}
     <div class="card ladder-card"><h2>Your recap</h2>
       <dl class="ladder-dl">
         <dt>Core sessions</dt><dd>${rc.coreDone}/${CORE_SESSIONS}</dd>
@@ -996,8 +1004,8 @@ function renderExpired() {
   let offer;
   if (ws.restartOpen) {
     offer = `
-      <p>${esc(fill(REMINDERS.restart_day0, v))}</p>
-      ${ws.offerDay >= CONFIG.restart_reminder_day ? `<p class="banner ladder-banner">${esc(fill(REMINDERS.restart_day25, v))}</p>` : ""}
+      <p>${esc(fill(reminderText("restart_day0", uiLang()), v))}</p>
+      ${ws.offerDay >= CONFIG.restart_reminder_day ? `<p class="banner ladder-banner">${esc(fill(reminderText("restart_day25", uiLang()), v))}</p>` : ""}
       <p class="muted"><small>Restart offer open through ${prettyFull(addDays(ws.run.windowEnd, CONFIG.restart_offer_days))}.</small></p>
       <fieldset class="field"><legend>Where do you want to start?</legend>
         <label class="check-row"><input type="radio" name="from" value="resume" ${from === "resume" ? "checked" : ""}> Continue from core session ${n + 1}</label>

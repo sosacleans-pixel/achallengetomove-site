@@ -370,10 +370,14 @@ export const REMINDERS = {
   restart_day25: "Last few days to restart {level} for $2.99. Your legs remember more than you think.",
 };
 
-/* Spanish (Attorney memo §10.1 and §12.1/§12.2): warnings, can't-finish and restart offers. Warnings and
- * can't-finish never mention a price. Streak, save, easy-day, on-pace and pause stay English until Coach Fit's
- * Spanish is approved (spec v6 §10). */
+/* Spanish (Attorney memo §10.1, §12.1/§12.2 and §13.3): every reminder. Warnings and can't-finish never
+ * mention a price. */
 export const REMINDERS_ES = {
+  streak: COPY.es.remStreak,
+  save_used: COPY.es.remSaveUsed,
+  easy_day: COPY.es.remEasyDay,
+  on_pace: COPY.es.remOnPace,
+  paused: COPY.es.remPaused,
   warn_28: COPY.es.warn28,
   warn_14: COPY.es.warn14,
   warn_5: COPY.es.warn5,
@@ -418,17 +422,17 @@ export function pickReminder(s, levelId, { minutes = 30, today = todayISO(), lan
   }
   const inactive = inactiveDays(s, today);
   if (inactive >= CONFIG.reminder_stop_after_inactive_days) {
-    return inactive === CONFIG.reminder_stop_after_inactive_days ? { id: "paused", text: REMINDERS.paused } : null;
+    return inactive === CONFIG.reminder_stop_after_inactive_days ? { id: "paused", text: RT("paused") } : null;
   }
   if (s.log.some((e) => e.date === today)) return null;
-  if (st.savedYesterday) return { id: "save_used", text: fill(REMINDERS.save_used, v) };
+  if (st.savedYesterday) return { id: "save_used", text: fill(RT("save_used"), v) };
   const nextDef = file?.slots[n];
-  if (nextDef && !nextDef.core) return { id: "easy_day", text: fill(REMINDERS.easy_day, v) };
+  if (nextDef && !nextDef.core) return { id: "easy_day", text: fill(RT("easy_day"), v) };
   const weekStart = nextDef && nextDef.weekSession === 1;
   if (n > 0 && weekStart && onPace(s, levelId, today) && s.flags?.lastPaceWeek !== v.w) {
-    return { id: "on_pace", text: fill(REMINDERS.on_pace, { ...v, n: n + 1 }), weekly: v.w };
+    return { id: "on_pace", text: fill(RT("on_pace"), { ...v, n: n + 1 }), weekly: v.w };
   }
-  return { id: "streak", text: fill(REMINDERS.streak, v) };
+  return { id: "streak", text: fill(RT("streak"), v) };
 }
 
 /* ---------- badges + recap ---------- */
