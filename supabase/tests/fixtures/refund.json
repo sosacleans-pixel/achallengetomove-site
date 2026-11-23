@@ -1,0 +1,19 @@
+{
+ "id": "evt_refund",
+ "object": "event",
+ "type": "charge.refunded",
+ "created": 1795413600,
+ "livemode": true,
+ "data": {
+  "object": {
+   "id": "ch_1",
+   "object": "charge",
+   "refunded": true,
+   "amount_refunded": 699,
+   "payment_intent": "pi_3Gift",
+   "metadata": {
+    "app": "achallengetomove-running-plans"
+   }
+  }
+ }
+}

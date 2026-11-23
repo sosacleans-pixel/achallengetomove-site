@@ -12,6 +12,7 @@ import { todayStatus, projectSchedule, validTrainDays, levelData, isRunning, key
 import { CHECKOUT, buyTrustHtml, disclosureFor, isPreviewCheckout, previewAllowed } from "./checkout.js";
 import { createGift, getGift, updateGift, giftStatus, canRefund, redeemable, markRedeemed, giftReminderDates, giftReminderEmail } from "./gifts.js";
 import { t as copy } from "./copy.js";
+import * as server from "./server.js";
 import { NAMES, TIMER_CAPS } from "./config.js";
 
 const E2E = new URLSearchParams(location.search).has("e2e");
@@ -432,8 +433,21 @@ function bindCheckout() {
   const trainDays = (p.get("td") || "").split(",").filter(Boolean).map(Number);
   const startCoreIndex = kind === "new" && p.get("hs") === "1" ? CONFIG.head_start_core_index : 1;
   $("#co-adult")?.addEventListener("change", (e) => { const b = $("#co-buy"); if (b) b.disabled = !e.target.checked; });
-  $("#co-buy")?.addEventListener("click", () => {
-    if (!isPreviewCheckout()) return; // live: the server creates a one-time Checkout Session, then redirects
+  $("#co-buy")?.addEventListener("click", async (e) => {
+    if (!isPreviewCheckout()) {
+      // Live (config SERVER.realCheckout on): the server creates a one-time Checkout Session; we redirect to Stripe.
+      const btn = e.currentTarget;
+      btn.disabled = true;
+      try {
+        const url = await server.startCheckout({ levelId, kind, days, trainDays: trainDays.length === days ? trainDays : null, startFrom: from, startCoreIndex });
+        location.assign(url);
+      } catch (err) {
+        btn.disabled = false;
+        if (err.code === "signin") { location.hash = `l-signin?next=${encodeURIComponent(location.hash.slice(1))}`; return; }
+        showError(btn, err.message);
+      }
+      return;
+    }
     if (!previewAllowed()) return;
     setL(grantPurchase(L, { levelId, kind, price: priceFor(levelId, kind), daysPerWeek: days, trainDays: trainDays.length === days ? trainDays : null, startFrom: from, startCoreIndex, mode: "preview" }));
     location.hash = `l-receipt?level=${levelId}`;
@@ -1063,9 +1077,10 @@ function bindGift() {
   form.querySelectorAll('input[name="level"]').forEach((r) => r.addEventListener("change", () => (location.hash = `l-gift?level=${r.value}`)));
   form.share.addEventListener("change", () => ($("#remail-opt").textContent = form.share.checked ? "(optional)" : ""));
   $("#gift-adult").addEventListener("change", (e) => { const b = $("#gift-buy"); if (b) b.disabled = !e.target.checked; });
-  $("#gift-buy")?.addEventListener("click", (e) => {
+  $("#gift-buy")?.addEventListener("click", async (e) => {
     e.preventDefault();
-    if (!isPreviewCheckout() || !previewAllowed()) return;
+    const live = !isPreviewCheckout();
+    if (!live && !previewAllowed()) return;
     const levelId = form.level.value;
     const share = form.share.checked;
     const email = form.remail.value.trim();
@@ -1073,6 +1088,13 @@ function bindGift() {
     if (!share && !EMAIL_RE.test(email)) { $("#gift-error").textContent = "Add the recipient's email, or choose to share the link yourself."; return; }
     if (!form.adult.checked) { $("#gift-error").textContent = "Confirm the recipient is 18 or older."; return; }
     if (email && !EMAIL_RE.test(email)) { $("#gift-error").textContent = "Check the recipient's email."; return; }
+    if (live) {
+      try {
+        const url = await server.startCheckout({ levelId, kind: "gift", gift: { buyer_name: form.buyer.value.trim(), recipient_name: form.rname.value.trim(), recipient_email: email, share_myself: share, recipient_adult: form.adult.checked, message: form.msg.value, deliver_on: form.when.value } });
+        location.assign(url);
+      } catch (err) { $("#gift-error").textContent = err.message; }
+      return;
+    }
     const g = createGift({ levelId, price: CHECKOUT.prices[levelId].amount, buyerName: form.buyer.value.trim(), recipientName: form.rname.value.trim(), recipientEmail: email, shareMyself: share, message: form.msg.value, deliverOn: form.when.value });
     location.hash = `l-gift-status?code=${g.code}&new=1`;
   });
@@ -1130,9 +1152,10 @@ function bindGiftStatus() {
 function renderRedeem() {
   const p = params();
   const code = (p.get("code") || "").toUpperCase();
-  const g = code ? getGift(code) : null;
+  const g = code ? getGift(code) || (liveGift?.code === code ? liveGift : null) : null;
   if (!g) {
-    return shell(`<form class="card ladder-card" id="code-form"><h2>Redeem a gift</h2><label class="field"><span>Gift code</span><input type="text" name="code" value="${esc(code)}" placeholder="5K-XXXX-XXXX"></label>${code ? `<p class="ladder-error">That code wasn't found.</p>` : ""}<button class="btn btn-primary btn-block" type="submit">Continue</button></form>`, { title: "Gift", nav: false });
+    const looking = code && !isPreviewCheckout() && liveGift?.code !== code;
+    return shell(`<form class="card ladder-card" id="code-form"><h2>Redeem a gift</h2><label class="field"><span>Gift code</span><input type="text" name="code" value="${esc(code)}" placeholder="5K-XXXX-XXXX"></label>${looking ? `<p class="muted" id="rd-lookup">Checking your code...</p>` : code ? `<p class="ladder-error">That code wasn't found.</p>` : ""}<button class="btn btn-primary btn-block" type="submit">Continue</button></form>`, { title: "Gift", nav: false });
   }
   if (!redeemable(g)) {
     const why = g.redeemedAt ? "This gift has already been redeemed." : g.refunded ? "This gift code is no longer active." : todayISO() > g.redeemBy ? "This gift code's redeem-by date has passed." : `This gift becomes available on ${prettyFull(g.deliverOn)}.`;
@@ -1172,7 +1195,22 @@ function renderRedeem() {
     </div>`, { title: "Your gift", nav: false });
 }
 
+let liveGift = null; // live mode: the gift looked up on the server (signed in), shaped like a local gift
+async function lookupLiveGift(code) {
+  try {
+    const g = await server.lookupGift(code);
+    liveGift = { code, levelId: g.level_id, buyerName: g.buyer_name || "Someone", message: g.message || "", redeemBy: g.redeem_by, deliverOn: g.deliver_on, redeemedAt: g.redeemed ? g.redeemed_on || "redeemed" : null, refunded: !!g.refunded, price: null };
+  } catch (err) {
+    if (err.code === "signin") { location.hash = `l-signin?next=${encodeURIComponent(location.hash.slice(1))}`; return; }
+    liveGift = { code: "__none__" };
+    const el = $("#rd-lookup"); if (el) { el.className = "ladder-error"; el.textContent = err.message; }
+    return;
+  }
+  render(location.hash.slice(1));
+}
 function bindRedeem() {
+  const code0 = (params().get("code") || "").toUpperCase();
+  if ($("#rd-lookup")) lookupLiveGift(code0);
   $("#code-form")?.addEventListener("submit", (e) => {
     e.preventDefault();
     location.hash = `l-redeem?code=${encodeURIComponent(e.target.code.value.trim().toUpperCase())}`;
@@ -1195,7 +1233,23 @@ function bindRedeem() {
       location.hash = `l-redeem?${q.toString()}`;
     }));
   }
-  $("#rd-go")?.addEventListener("click", () => {
+  $("#rd-go")?.addEventListener("click", async () => {
+    if (!isPreviewCheckout()) {
+      // Live: the server checks and redeems the code (any device), then this device adds the run.
+      const { n, days, ok } = readDays(form);
+      if (!ok) { $("#rd-error").textContent = `Pick exactly ${n} days.`; return; }
+      const levelId = document.querySelector('input[name="pick"]:checked')?.value || liveGift?.levelId;
+      const startCoreIndex = levelId === "walk-to-5k" && $("#rd-hs")?.checked ? CONFIG.head_start_core_index : 1;
+      try {
+        const ent = await server.redeemGiftOnServer({ code: params().get("code"), levelId, days: n, trainDays: days, startCoreIndex });
+        setL(server.applyEntitlements(L, [ent]));
+        location.hash = `l-redeemed?level=${levelId}`;
+      } catch (err) {
+        if (err.code === "signin") { location.hash = `l-signin?next=${encodeURIComponent(location.hash.slice(1))}`; return; }
+        $("#rd-error").textContent = err.message;
+      }
+      return;
+    }
     const g = getGift(params().get("code"));
     if (!g || !redeemable(g)) return;
     const { n, days, ok } = readDays(form);
@@ -1319,6 +1373,8 @@ const VIEWS = {
   "l-gift-status": [renderGiftStatus, bindGiftStatus],
   "l-redeem": [renderRedeem, bindRedeem],
   "l-redeemed": [renderRedeemed, null],
+  "l-signin": [renderSignin, bindSignin],
+  "l-paid": [renderPaid, bindPaid],
 };
 const NEEDS_RUN = new Set(["l-setup", "l-today", "l-session", "l-done", "l-plan", "l-progress", "l-finish", "l-expired", "l-settings", "l-redeemed", "l-receipt"]);
 
@@ -1338,6 +1394,75 @@ export async function render(hashName) {
   bindNav();
   b?.();
   window.scrollTo(0, 0);
+}
+
+/* ---------------- server checkout: sign-in and return from Stripe (only when SERVER.realCheckout is on) ---------------- */
+const PENDING_KEY = "actm-ladder-pending";
+function showError(el, msg) {
+  let p = el.parentElement.querySelector(".ladder-error");
+  if (!p) { p = document.createElement("p"); p.className = "ladder-error"; p.setAttribute("role", "alert"); el.after(p); }
+  p.textContent = msg;
+}
+export function takeAuthRedirect(raw) {
+  if (!server.serverEnabled()) return false;
+  const next = server.consumeAuthRedirect(raw);
+  if (!next) return false;
+  const pending = localStorage.getItem(PENDING_KEY);
+  localStorage.removeItem(PENDING_KEY);
+  location.replace(`#${pending || next}`);
+  return true;
+}
+function renderSignin() {
+  if (!server.serverEnabled()) { location.hash = "l-start"; return ""; }
+  return shell(`
+    <form class="card ladder-card" id="signin-form">
+      <h2>Sign in</h2>
+      <p>Use the email you used at checkout. We'll email you a sign-in link, so your plan and gifts are on every device.</p>
+      <label class="field"><span>Email</span><input type="email" name="email" autocomplete="email" required></label>
+      <button class="btn btn-primary btn-block" type="submit">Email me a sign-in link</button>
+      <p class="ladder-error" id="signin-msg" role="status"></p>
+    </form>`, { title: "Sign in", nav: false });
+}
+function bindSignin() {
+  const f = $("#signin-form");
+  f?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const next = params().get("next") || "l-paid";
+    localStorage.setItem(PENDING_KEY, next);
+    try {
+      await server.sendMagicLink(f.email.value, `${location.origin}${location.pathname}`);
+      $("#signin-msg").textContent = "Check your email for the sign-in link. You can close this tab.";
+    } catch (err) { $("#signin-msg").textContent = err.message; }
+  });
+}
+function renderPaid() {
+  if (!server.serverEnabled()) { location.hash = "l-start"; return ""; }
+  return shell(`<div class="card ladder-card" id="paid-card"><h2>Thank you</h2><p id="paid-msg">Loading your purchase...</p></div>`, { title: "Payment received", nav: false });
+}
+async function bindPaid() {
+  const sid = params().get("session_id");
+  if (sid) localStorage.setItem("actm-ladder-last-session", sid);
+  const msg = $("#paid-msg");
+  if (!(await server.signedIn())) {
+    location.hash = `l-signin?next=${encodeURIComponent(`l-paid${sid ? `?session_id=${sid}` : ""}`)}`;
+    return;
+  }
+  try {
+    const rows = await server.claimAndFetch();
+    const before = L;
+    setL(server.applyEntitlements(L, rows));
+    const lastSid = sid || localStorage.getItem("actm-ladder-last-session");
+    const mine = rows.find((r) => r.stripe_session_id === lastSid);
+    if (mine) { location.hash = `l-receipt?level=${mine.level_id}`; return; }
+    if (lastSid) {
+      try {
+        const g = await server.fetchGiftCode(lastSid);
+        msg.innerHTML = `Your gift code for ${esc(DN(g.level_id))}: <strong>${esc(g.code)}</strong><br>Redeemable until ${esc(prettyFull(g.redeem_by))}. Share this redeem link: <a class="text-link" href="#l-redeem?code=${esc(g.code)}">redeem</a>.`;
+        return;
+      } catch { /* not a gift, or still processing */ }
+    }
+    msg.textContent = L !== before ? "Your plan is ready." : "Your payment is still processing. Refresh in a minute.";
+  } catch (err) { msg.textContent = err.message; }
 }
 
 export function hasLadder() {

@@ -1,0 +1,23 @@
+{
+ "id": "evt_book",
+ "object": "event",
+ "type": "checkout.session.completed",
+ "created": 1795413600,
+ "livemode": true,
+ "data": {
+  "object": {
+   "id": "cs_live_d4Book",
+   "object": "checkout.session",
+   "mode": "payment",
+   "payment_status": "paid",
+   "amount_total": 1388,
+   "currency": "usd",
+   "customer_details": {
+    "email": "reader@example.com"
+   },
+   "payment_link": "plink_1RvPeaHF4792IyqdeoDckD2m",
+   "metadata": {},
+   "payment_intent": "pi_book"
+  }
+ }
+}

@@ -134,6 +134,17 @@ export const STRIPE_IDS = {
   "10k": { product: "prod_VgAcMkEb8uu2Ls", purchase: "price_1UeoHhHF4792IyqdJG67kNxP", restart: "price_1UeoHhHF4792IyqduId5nVAF" },
 };
 
+/* Server checkout and cross-device access (Supabase project olncfwohfpgpmygxjpcm, the same project as the
+ * 22-Day app's magic-link sign-in). realCheckout stays OFF in the preview: the app keeps its simulated checkout and
+ * device-only access. Turn it on only at launch, on Salim's yes, after the migration is applied, the edge functions
+ * are deployed and the Stripe webhook exists. supabaseAnonKey is the project's PUBLIC anon key (the same one the
+ * 22-Day app ships); it is not a secret, but it stays empty until launch. Never put a secret or service key here. */
+export const SERVER = {
+  realCheckout: false,
+  supabaseUrl: "https://olncfwohfpgpmygxjpcm.supabase.co",
+  supabaseAnonKey: "",
+};
+
 /* Count-up timer caps, seconds (decided). 10K check-in 90:00. Walk to 5K 5K sessions 60:00.
  * 5K Faster time trials 45:00. Auto-stop lines are the Attorney's §11.5 copy (cap90, cap60, cap45). */
 export const TIMER_CAPS = {

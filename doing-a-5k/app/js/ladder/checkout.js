@@ -1,17 +1,20 @@
 /* Ladder checkout (PREVIEW).
  * Live plan: Stripe Checkout in one-time payment mode (mode: "payment"), one fresh checkout for every
  * purchase, restart and repeat. No subscription, no saved card, no automatic charge. Web/Stripe only.
- * Nothing here holds a key. Price IDs stay null until Salim approves and the Stripe test prices exist;
- * while they are null the app only shows a clearly labeled preview checkout that grants local access. */
+ * Nothing here holds a key. The live Stripe price IDs are in config.js (STRIPE_IDS); the server picks the price,
+ * never the browser. While SERVER.realCheckout is off (the preview), the app shows a clearly labeled preview
+ * checkout that grants local access only. */
 
-import { PRICES, NAMES } from "./config.js";
+import { PRICES, NAMES, SERVER, STRIPE_IDS } from "./config.js";
+import { serverEnabled } from "./server.js";
 import { t } from "./copy.js";
 
 export const CHECKOUT = {
-  mode: "preview", // "preview" | "stripe" (stripe needs a server endpoint that creates the Checkout Session)
-  sessionEndpoint: null, // e.g. a Supabase Edge Function URL, set after approval
+  /* "stripe" only when config SERVER.realCheckout is on and the anon key is set (OFF in the preview). */
+  mode: serverEnabled() ? "stripe" : "preview",
+  sessionEndpoint: serverEnabled() ? `${SERVER.supabaseUrl}/functions/v1/ladder-checkout` : null,
   /* Amounts come from config.js (decided by Salim). Gifts use the level prices. */
-  prices: Object.fromEntries(Object.entries(PRICES).map(([k, amount]) => [k, { amount, stripePriceId: null }])),
+  prices: Object.fromEntries(Object.entries(PRICES).map(([k, amount]) => [k, { amount, stripePriceId: STRIPE_IDS[k]?.purchase ?? null }])),
 };
 
 const STRIPE_BADGE_HTML =

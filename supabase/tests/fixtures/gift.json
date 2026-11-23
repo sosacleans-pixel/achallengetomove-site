@@ -1,0 +1,42 @@
+{
+ "id": "evt_gift",
+ "object": "event",
+ "type": "checkout.session.completed",
+ "created": 1795413600,
+ "livemode": true,
+ "data": {
+  "object": {
+   "id": "cs_live_c3GiftFaster",
+   "object": "checkout.session",
+   "mode": "payment",
+   "payment_status": "paid",
+   "status": "complete",
+   "amount_total": 699,
+   "currency": "usd",
+   "client_reference_id": null,
+   "customer_details": {
+    "email": "giver@example.com",
+    "name": null
+   },
+   "customer_email": null,
+   "livemode": true,
+   "payment_intent": "pi_3Gift",
+   "metadata": {
+    "app": "achallengetomove-running-plans",
+    "level_id": "5k-faster",
+    "kind": "gift",
+    "price_id": "price_1UeoHdHF4792IyqdghdBzMB8",
+    "days_per_week": "",
+    "train_days": "",
+    "start_from": "resume",
+    "start_core_index": "1",
+    "gift_buyer_name": "Gia",
+    "gift_recipient_name": "Bo",
+    "gift_recipient_email": "bo@example.com",
+    "gift_share_myself": "0",
+    "gift_deliver_on": "2026-12-25",
+    "gift_message": "Happy holidays"
+   }
+  }
+ }
+}

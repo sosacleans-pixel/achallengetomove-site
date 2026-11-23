@@ -45,7 +45,7 @@ import {
 } from "./storage.js";
 import { WorkoutTimer, SPEECH_CUES } from "./timer.js";
 import { StrengthTimer } from "./strength-timer.js";
-import { render as renderLadder, hasLadder } from "./ladder/ui.js";
+import { render as renderLadder, hasLadder, takeAuthRedirect } from "./ladder/ui.js";
 
 const E2E = new URLSearchParams(location.search).has("e2e");
 
@@ -83,6 +83,7 @@ function speak(text, enabled) {
  * routing: every other hash opens the ladder. The old single-plan code below is unreachable. */
 function route() {
   const raw = location.hash.replace("#", "");
+  if (takeAuthRedirect(raw)) return; // magic-link return (only when the server checkout is on)
   if (raw.startsWith("l-")) {
     activeTimer?.stop();
     renderLadder(raw);
