@@ -19,12 +19,14 @@ const C = await import("../js/ladder/config.js");
 const S = await import("../js/ladder/server.js");
 const { CHECKOUT, isPreviewCheckout } = await import("../js/ladder/checkout.js");
 
-// The flag stays OFF in the preview, so the app keeps the simulated checkout.
-assert.equal(C.SERVER.realCheckout, false);
-assert.equal(C.SERVER.supabaseAnonKey, "");
-assert.equal(S.serverEnabled(), false);
-assert.equal(CHECKOUT.mode, "preview");
-assert.equal(isPreviewCheckout(), true);
+// Live since go-live: real Stripe checkout through the ladder-checkout function.
+assert.equal(C.SERVER.realCheckout, true, "live checkout on (go-live, Nov 22, 2026)");
+{ const role = JSON.parse(Buffer.from(C.SERVER.supabaseAnonKey.split(".")[1], "base64url").toString()).role;
+  assert.equal(role, "anon", "only the PUBLIC anon key ships"); }
+assert.equal(S.serverEnabled(), true);
+assert.equal(CHECKOUT.mode, "stripe");
+assert.equal(isPreviewCheckout(), false);
+assert.equal(CHECKOUT.sessionEndpoint, "https://olncfwohfpgpmygxjpcm.supabase.co/functions/v1/ladder-checkout");
 assert.equal(S.serverEnabled({ realCheckout: true, supabaseUrl: "https://x.supabase.co", supabaseAnonKey: "" }), false, "needs the anon key too");
 assert.equal(S.serverEnabled({ realCheckout: true, supabaseUrl: "https://x.supabase.co", supabaseAnonKey: "k" }), true);
 assert.match(C.SERVER.supabaseUrl, /^https:\/\/olncfwohfpgpmygxjpcm\.supabase\.co$/);

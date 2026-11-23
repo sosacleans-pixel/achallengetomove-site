@@ -153,14 +153,14 @@ export const STRIPE_IDS = {
 };
 
 /* Server checkout and cross-device access (Supabase project olncfwohfpgpmygxjpcm, the same project as the
- * 22-Day app's magic-link sign-in). realCheckout stays OFF in the preview: the app keeps its simulated checkout and
+ * 22-Day app's magic-link sign-in). realCheckout turned ON at go-live (Nov 22, 2026, Salim's yes 10:50 PM MT). OFF = the app keeps its simulated checkout and
  * device-only access. Turn it on only at launch, on Salim's yes, after the migration is applied, the edge functions
  * are deployed and the Stripe webhook exists. supabaseAnonKey is the project's PUBLIC anon key (the same one the
- * 22-Day app ships); it is not a secret, but it stays empty until launch. Never put a secret or service key here. */
+ * 22-Day app ships); it is not a secret. Never put a secret or service key here. */
 export const SERVER = {
-  realCheckout: false,
+  realCheckout: true,
   supabaseUrl: "https://olncfwohfpgpmygxjpcm.supabase.co",
-  supabaseAnonKey: "",
+  supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9sbmNmd29oZnBncG15Z3hqcGNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MzQ0ODgsImV4cCI6MjEwNzMxMDQ4OH0.rcjQ4E2oPVyth1bboHvwRFqUtwAAAkmUw1TGwF20_Uc",
   /* Stripe returns buyers here: purchases, restarts and repeats to the app (level unlocks with the chosen days and
    * end date), gifts to the gift receipt; Cancel goes back to the product page. */
   siteUrl: "https://achallengetomove.com",

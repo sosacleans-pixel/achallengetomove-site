@@ -1,4 +1,4 @@
-const CACHE = "doing-a-5k-v18-chd65-running-only";
+const CACHE = "doing-a-5k-v19-live-checkout";
 const ASSETS = [
   "./icons/icon.svg",
   "./icons/icon-192.png",
