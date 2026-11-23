@@ -286,4 +286,14 @@ assert.equal(E.windowStatus(fz, "5k-faster", addDays(D0, 45)).status, "finished"
   }
 }
 
+// ---- Stripe IDs (IDs only, never keys) ----
+{
+  const C = await import("../js/ladder/config.js");
+  assert.deepEqual(Object.keys(C.STRIPE_IDS), ["walk-to-5k", "5k-faster", "10k"]);
+  for (const v of Object.values(C.STRIPE_IDS)) {
+    assert.match(v.product, /^prod_\w+$/); assert.match(v.purchase, /^price_\w+$/); assert.match(v.restart, /^price_\w+$/);
+  }
+  assert.ok(!/(rk|sk)_(live|test)_/.test(readFileSync(join(here, "../js/ladder/config.js"), "utf8")));
+}
+
 console.log("ladder engine: all checks passed");

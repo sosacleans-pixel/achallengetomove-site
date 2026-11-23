@@ -124,6 +124,16 @@ export const ACCESS_WEEKS_BY_DAYS = { 2: 20, 3: 14, 4: 12, 5: 11 };
 /* Prices (decided): $6.99 per level. Restart and repeat $2.99. */
 export const PRICES = { "walk-to-5k": "6.99", "5k-faster": "6.99", "10k": "6.99", restart: "2.99", repeat: "2.99" };
 
+/* Stripe (live mode, account "Coach Salim Heyaime"), created Nov 22, 2026 with Salim's approval. IDs only, never
+ * keys. One product per level, each with a one-time $6.99 purchase price and its own one-time $2.99 "Restart or
+ * repeat" price (per-level, so every charge carries metadata level_id + kind). No payment links yet: the preview
+ * checkout stays simulated, and the old Doing a 5K $6.99 link is turned off only at launch, on Salim's yes. */
+export const STRIPE_IDS = {
+  "walk-to-5k": { product: "prod_VgActk1X2saGJP", purchase: "price_1UeoHaHF4792IyqdRM6GR7VK", restart: "price_1UeoHbHF4792IyqdhEeCFjbk" },
+  "5k-faster": { product: "prod_VgAc55HHxAjh9A", purchase: "price_1UeoHdHF4792IyqdghdBzMB8", restart: "price_1UeoHeHF4792IyqdCeaNKDys" },
+  "10k": { product: "prod_VgAcMkEb8uu2Ls", purchase: "price_1UeoHhHF4792IyqdJG67kNxP", restart: "price_1UeoHhHF4792IyqduId5nVAF" },
+};
+
 /* Count-up timer caps, seconds (decided). 10K check-in 90:00. Walk to 5K 5K sessions 60:00.
  * 5K Faster time trials 45:00. Auto-stop lines are the Attorney's §11.5 copy (cap90, cap60, cap45). */
 export const TIMER_CAPS = {
