@@ -26,6 +26,8 @@ const LEGAL_LINKS_HTML =
   '<p class="buy-legal"><small><a class="text-link" href="../../purchase-terms/#app-5k-ladder" target="_blank" rel="noopener">Purchase terms</a> · ' +
   '<a class="text-link" href="../../health-safety/" target="_blank" rel="noopener">Health and safety</a></small></p>';
 
+import { ES } from "./copy-es.js";
+
 /* Attorney §4.1 (memo §7.3), word for word, with $[PRICE] filled in. */
 const DISCLOSURE_REST =
   "This is not a subscription and will not renew or charge you again. " +
@@ -42,7 +44,8 @@ export function disclosureText(price) {
 }
 
 /* Restart / repeat: the Attorney's required first sentences (memo §7.3), then the rest of §4.1. */
-export function disclosureFor({ kind, price, levelName, resumeAt = 1 }) {
+export function disclosureFor({ kind, price, levelName, resumeAt = 1, lang = "en" }) {
+  if (lang === "es") return disclosureEs({ kind, price, levelName, resumeAt });
   if (kind === "gift") return giftDisclosure({ price, levelName });
   if (kind === "restart") {
     const first = resumeAt > 1
@@ -91,4 +94,17 @@ export function isPreviewCheckout() {
 export function previewAllowed() {
   const host = location.hostname;
   return host !== "achallengetomove.com" && host !== "www.achallengetomove.com";
+}
+
+/* Spanish versions (Attorney memo §10.1). The restart and repeat first sentences are followed by the rest of the
+ * checkout disclosure from "Esto no es una suscripción..." with the $2.99 price. */
+const ES_REST = ES.checkout.slice(ES.checkout.indexOf("Esto no es una suscripción"));
+export function disclosureEs({ kind, price, levelName, resumeAt = 1 }) {
+  if (kind === "gift") return ES.gift.replace("$[PRICE]", `$${price}`).replace("[LEVEL]", levelName);
+  if (kind === "restart") {
+    const first = resumeAt > 1 ? ES.restartResume.replace("{levelName}", levelName).replace("{n}", resumeAt) : ES.restartStart.replace("{levelName}", levelName);
+    return `${first} ${ES_REST}`;
+  }
+  if (kind === "repeat") return `${ES.repeat.replace("{levelName}", levelName)} ${ES_REST}`;
+  return ES.checkout.replace("$[PRICE]", `$${price}`);
 }

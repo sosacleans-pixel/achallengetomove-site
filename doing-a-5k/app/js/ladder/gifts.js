@@ -86,9 +86,47 @@ export function markRedeemed(code, levelId) {
   return g[code];
 }
 
-/* Transactional reminders to the recipient before redemption (only if the buyer gave an email):
- * 7 days and 30 days after delivery, and 60 days before the redeem-by date. Then none. */
+/* Transactional reminders to the recipient of an unredeemed code (Attorney memo §10.3), only if the buyer gave
+ * the recipient's email: 7 and 30 days after delivery, 1 year after delivery, and 60 days before the redeem-by
+ * date. Skip any date after the redeem-by date, after redemption or refund, or within 14 days of a kept reminder.
+ * Then none. The delivery email itself is the first notice, not a reminder. */
 export function giftReminderDates(gift) {
-  if (!gift.recipientEmail) return [];
-  return [addDays(gift.deliverOn, 7), addDays(gift.deliverOn, 30), addDays(gift.redeemBy, -60)];
+  if (!gift.recipientEmail || gift.shareMyself || gift.refunded) return [];
+  const candidates = [addDays(gift.deliverOn, 7), addDays(gift.deliverOn, 30), addDays(gift.deliverOn, 365), addDays(gift.redeemBy, -60)].sort();
+  const out = [];
+  for (const d of candidates) {
+    if (d > gift.redeemBy) continue;
+    if (gift.redeemedAt && d >= gift.redeemedAt) continue;
+    if (out.length && daysBetween(out[out.length - 1], d) < 14) continue;
+    out.push(d);
+  }
+  return out;
+}
+
+/* Gift reminder email (Attorney memo §10.3, word for word), same body at every reminder point,
+ * plus the STOP footer (gift and privacy copy, item 4). */
+export const GIFT_REMINDER_EMAIL = {
+  en: {
+    subject: "Your gift of {levelName}",
+    body: "Hello {recipientName},\n\nThis is a reminder from Coach Salim Heyaime LLC about a gift of {levelName} from {buyerName}.\n\nYou can redeem your gift code until {redeemByDate}. That date is 5 years from the purchase date. When you redeem it, you get 14 weeks of access, starting on the day you redeem.\n\nYour code: {code}\nRedeem here: {link}\n\nIf you have questions, email coachsalimheyaime@gmail.com.\n\nThank you,\nCoach Salim Heyaime LLC",
+    footer: "Don't want these reminders? Reply STOP or email coachsalimheyaime@gmail.com.",
+  },
+  es: {
+    subject: "Tu regalo de {levelName}",
+    body: "Hola {recipientName}:\n\nEste es un recordatorio de Coach Salim Heyaime LLC sobre un regalo de {levelName} de parte de {buyerName}.\n\nPuedes canjear tu código de regalo hasta el {redeemByDate}. Esa fecha es 5 años a partir de la fecha de compra. Cuando lo canjees, obtienes 14 semanas de acceso, a partir del día en que lo canjees.\n\nTu código: {code}\nCanjéalo aquí: {link}\n\nSi tienes preguntas, escribe a coachsalimheyaime@gmail.com.\n\nGracias,\nCoach Salim Heyaime LLC",
+    footer: "¿No quieres estos recordatorios? Responde STOP o escribe a coachsalimheyaime@gmail.com.",
+  },
+};
+
+/* {redeemByDate} is printed as a full date (weekday, month, day, year), matching the receipt. */
+export function fullDate(iso, lang = "en") {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString(lang === "es" ? "es-MX" : "en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+}
+
+export function giftReminderEmail(gift, { lang = "en", levelName, link }) {
+  const t = GIFT_REMINDER_EMAIL[lang];
+  const v = { recipientName: gift.recipientName, levelName, buyerName: gift.buyerName, redeemByDate: fullDate(gift.redeemBy, lang), code: gift.code, link };
+  const fillT = (x) => x.replace(/\{(\w+)\}/g, (_, k) => v[k] ?? `{${k}}`);
+  return { to: gift.recipientEmail, subject: fillT(t.subject), text: `${fillT(t.body)}\n\n${t.footer}` };
 }

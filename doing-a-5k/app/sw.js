@@ -1,4 +1,4 @@
-const CACHE = "doing-a-5k-v7-ladder";
+const CACHE = "doing-a-5k-v8-ladder";
 const ASSETS = [
   "./icons/icon.svg",
   "./icons/icon-192.png",
@@ -24,6 +24,7 @@ const ASSETS = [
   "./js/ladder/checkout.js",
   "./js/ladder/dates.js",
   "./js/ladder/gifts.js",
+  "./js/ladder/copy-es.js",
   "./data/ladder/index.json",
   "./data/ladder/walk-to-run-3x.json",
   "./data/ladder/walk-to-run-4x.json",

@@ -430,3 +430,6 @@ body.ladder-theme.app-root {
 .ladder-legacy {
   text-align: center;
 }
+
+body.ladder-theme .ladder-email { white-space: pre-wrap; font: inherit; font-size: 0.85rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(160,180,210,0.25); border-radius: 8px; padding: 0.75rem; }
+body.ladder-theme .ladder-email-preview summary { cursor: pointer; color: #b9c6db; font-size: 0.9rem; margin: 0.5rem 0; }

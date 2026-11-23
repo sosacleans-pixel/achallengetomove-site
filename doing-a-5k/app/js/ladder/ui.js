@@ -10,7 +10,7 @@ import {
 } from "./engine.js";
 import { todayStatus, projectSchedule, validTrainDays, levelData, isRunning } from "./scheduler.js";
 import { CHECKOUT, buyTrustHtml, disclosureFor, isPreviewCheckout, previewAllowed } from "./checkout.js";
-import { createGift, getGift, updateGift, giftStatus, canRefund, redeemable, markRedeemed, giftReminderDates } from "./gifts.js";
+import { createGift, getGift, updateGift, giftStatus, canRefund, redeemable, markRedeemed, giftReminderDates, giftReminderEmail } from "./gifts.js";
 
 const E2E = new URLSearchParams(location.search).has("e2e");
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -900,7 +900,8 @@ function renderGift() {
       </fieldset>
       <label class="field"><span>Your first name</span><input type="text" name="buyer" maxlength="40"></label>
       <label class="field"><span>Recipient's first name</span><input type="text" name="rname" maxlength="40"></label>
-      <label class="field"><span>Recipient's email</span><input type="text" name="remail" inputmode="email" maxlength="120"></label>
+      <label class="field"><span>Recipient's email <span class="muted" id="remail-opt"></span></span><input type="text" name="remail" inputmode="email" maxlength="120" aria-describedby="remail-help"></label>
+      <p class="muted" id="remail-help"><small>We'll use this only to deliver the gift and send redemption reminders.</small></p>
       <label class="check-row"><input type="checkbox" name="share"> I'll share the link myself</label>
       <label class="field"><span>Short message (optional, up to 300 characters)</span><textarea name="msg" maxlength="300" rows="3"></textarea></label>
       <label class="field"><span>Deliver on (leave empty to send now)</span><input type="date" name="when" min="${todayISO()}"></label>
@@ -914,6 +915,7 @@ function renderGift() {
 function bindGift() {
   const form = $("#gift-form");
   form.querySelectorAll('input[name="level"]').forEach((r) => r.addEventListener("change", () => (location.hash = `l-gift?level=${r.value}`)));
+  form.share.addEventListener("change", () => ($("#remail-opt").textContent = form.share.checked ? "(optional)" : ""));
   $("#gift-adult").addEventListener("change", (e) => { const b = $("#gift-buy"); if (b) b.disabled = !e.target.checked; });
   $("#gift-buy")?.addEventListener("click", (e) => {
     e.preventDefault();
@@ -924,6 +926,7 @@ function bindGift() {
     if (!form.buyer.value.trim() || !form.rname.value.trim()) { $("#gift-error").textContent = "Add your first name and the recipient's first name."; return; }
     if (!share && !EMAIL_RE.test(email)) { $("#gift-error").textContent = "Add the recipient's email, or choose to share the link yourself."; return; }
     if (!form.adult.checked) { $("#gift-error").textContent = "Confirm the recipient is 18 or older."; return; }
+    if (email && !EMAIL_RE.test(email)) { $("#gift-error").textContent = "Check the recipient's email."; return; }
     const g = createGift({ levelId, price: CHECKOUT.prices[levelId].amount, buyerName: form.buyer.value.trim(), recipientName: form.rname.value.trim(), recipientEmail: email, shareMyself: share, message: form.msg.value, deliverOn: form.when.value });
     location.hash = `l-gift-status?code=${g.code}&new=1`;
   });
@@ -952,10 +955,19 @@ function renderGiftStatus() {
       ${canRefund(g) ? "" : `<p class="muted"><small>This gift is no longer refundable.</small></p>`}
       ${g.shareMyself ? `<div class="card ladder-giftcard"><p class="ladder-tag">Share this card</p><p><strong>${esc(g.buyerName)} gave you ${esc(DN(g.levelId))}</strong></p>${g.message ? `<p>"${esc(g.message)}"</p>` : ""}<p>Code: <strong>${esc(g.code)}</strong><br>Redeem by ${prettyFull(g.redeemBy)}</p></div>` : ""}
       ${!g.redeemedAt && !g.shareMyself ? `<label class="field"><span>Fix the recipient's email</span><input type="text" id="gs-email" value="${esc(g.recipientEmail)}"></label><button type="button" class="btn btn-secondary btn-block" id="gs-save">Save and resend</button>` : ""}
-      ${reminders.length && !g.redeemedAt ? `<p class="muted"><small>Reminder emails to the recipient before redemption: ${reminders.map(prettyFull).join(", ")}. Then none.</small></p>` : ""}
+      ${reminders.length && !g.redeemedAt ? `<p class="muted"><small>Reminder emails to the recipient before redemption: ${reminders.map(prettyFull).join(", ")}. Then none.</small></p>${reminderPreview(g, link)}` : ""}
       <p class="muted"><small>You'll see Scheduled, Sent or Redeemed here, never the recipient's progress.</small></p>
       <a class="btn btn-secondary btn-block" href="#l-start">Done</a>
     </div>`, { title: "Gift", nav: false });
+}
+
+/* Preview of the gift reminder email (sending needs the server and Salim's approval). */
+function reminderPreview(g, link) {
+  const one = (lang) => {
+    const m = giftReminderEmail(g, { lang, levelName: DN(g.levelId), link });
+    return `<p><small><strong>${lang === "es" ? "Asunto" : "Subject"}:</strong> ${esc(m.subject)}</small></p><pre class="ladder-email">${esc(m.text)}</pre>`;
+  };
+  return `<details class="ladder-email-preview"><summary>Reminder email preview (not sent)</summary>${one("en")}<p class="ladder-tag">Español</p>${one("es")}</details>`;
 }
 
 function bindGiftStatus() {
