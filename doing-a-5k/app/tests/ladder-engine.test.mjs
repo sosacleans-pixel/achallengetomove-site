@@ -330,6 +330,16 @@ assert.equal(E.windowStatus(fz, "5k-faster", addDays(D0, 45)).status, "finished"
   assert.ok(chd.includes(quote("**CHD page, EN (final), in the purchase-and-gift bullet:**")), "CHD EN §14.5");
   assert.ok(chd.includes(quote("**CHD page, ES (final):**")), "CHD ES §14.5");
   assert.ok(!priv.includes("Reminders stop once the code is redeemed or refunded, or after its redeem-by date."), "7:16 PM privacy text replaced");
+  // Attorney 10:12 PM: each ES block in lang="es" under "Versión en español", with the same-meaning line in EN and ES
+  for (const f of ["../../../privacy/index.html", "../../../privacy/consumer-health-data/index.html"]) {
+    const h = readFileSync(join(here, f), "utf8");
+    const sec = h.match(/<section lang="es"[^>]*>\s*<h[34][^>]*>Versión en español<\/h[34]>([\s\S]*?)<\/section>/);
+    assert.ok(sec, `${f}: ES section with heading`);
+    assert.ok(/Destinatarios de regalos:|En la compra de un regalo/.test(sec[1]), `${f}: ES text inside the section`);
+    assert.ok(sec[1].includes("Las versiones en inglés y en español de este texto tienen el mismo significado."));
+    assert.ok(sec[1].includes('<span lang="en">The English and Spanish versions of this text have the same meaning.</span>'));
+    assert.equal((h.match(/lang="es"/g) || []).length, 1, `${f}: one ES block`);
+  }
   assert.ok(!chd.includes("send redemption reminders. We collect no health data"), "7:16 PM CHD text replaced");
 }
 
