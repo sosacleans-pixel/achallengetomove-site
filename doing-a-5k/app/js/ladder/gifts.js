@@ -1,6 +1,6 @@
-/* Doing a 5K gifts (PREVIEW). Rules: Attorney memo §7.6 and spec v5 §6.
+/* Running plan gifts (PREVIEW). Rules: Attorney memo §7.6 and §11.2, spec v6 §8.
  * - The code is redeemable for at least 5 years from the purchase date (printed on email, receipt and code record).
- * - The 14-week Access Period starts at redemption.
+ * - The Access Period (plan length + 2 weeks, by the days a week chosen at redemption) starts at redemption.
  * - Refund only within 3 days (72 hours) of purchase and only while unredeemed; a refund deactivates the code.
  * - Recipient 18+, accepts the App Terms and Health and safety personally.
  * In the live build, gift records live on the server (Stripe webhook + Supabase), and the buyer only ever
@@ -103,17 +103,18 @@ export function giftReminderDates(gift) {
   return out;
 }
 
-/* Gift reminder email (Attorney memo §10.3, word for word), same body at every reminder point,
+/* Gift reminder email (Attorney memo §10.3, word for word, except the access sentence: PENDING ATTORNEY REVIEW,
+ * the "14 weeks" sentence was swapped mechanically to the §11.2 plan-length wording), same body at every reminder point,
  * plus the STOP footer (gift and privacy copy, item 4). */
 export const GIFT_REMINDER_EMAIL = {
   en: {
     subject: "Your gift of {levelName}",
-    body: "Hello {recipientName},\n\nThis is a reminder from Coach Salim Heyaime LLC about a gift of {levelName} from {buyerName}.\n\nYou can redeem your gift code until {redeemByDate}. That date is 5 years from the purchase date. When you redeem it, you get 14 weeks of access, starting on the day you redeem.\n\nYour code: {code}\nRedeem here: {link}\n\nIf you have questions, email coachsalimheyaime@gmail.com.\n\nThank you,\nCoach Salim Heyaime LLC",
+    body: "Hello {recipientName},\n\nThis is a reminder from Coach Salim Heyaime LLC about a gift of {levelName} from {buyerName}.\n\nYou can redeem your gift code until {redeemByDate}. That date is 5 years from the purchase date. When you redeem it, you choose how many days a week to train, and you get access for the length of that plan plus 2 extra weeks, starting on the day you redeem.\n\nYour code: {code}\nRedeem here: {link}\n\nIf you have questions, email coachsalimheyaime@gmail.com.\n\nThank you,\nCoach Salim Heyaime LLC",
     footer: "Don't want these reminders? Reply STOP or email coachsalimheyaime@gmail.com.",
   },
   es: {
     subject: "Tu regalo de {levelName}",
-    body: "Hola {recipientName}:\n\nEste es un recordatorio de Coach Salim Heyaime LLC sobre un regalo de {levelName} de parte de {buyerName}.\n\nPuedes canjear tu código de regalo hasta el {redeemByDate}. Esa fecha es 5 años a partir de la fecha de compra. Cuando lo canjees, obtienes 14 semanas de acceso, a partir del día en que lo canjees.\n\nTu código: {code}\nCanjéalo aquí: {link}\n\nSi tienes preguntas, escribe a coachsalimheyaime@gmail.com.\n\nGracias,\nCoach Salim Heyaime LLC",
+    body: "Hola {recipientName}:\n\nEste es un recordatorio de Coach Salim Heyaime LLC sobre un regalo de {levelName} de parte de {buyerName}.\n\nPuedes canjear tu código de regalo hasta el {redeemByDate}. Esa fecha es 5 años a partir de la fecha de compra. Cuando lo canjees, eliges cuántos días a la semana entrenar y obtienes acceso durante la duración de ese plan más 2 semanas extra, a partir del día en que lo canjees.\n\nTu código: {code}\nCanjéalo aquí: {link}\n\nSi tienes preguntas, escribe a coachsalimheyaime@gmail.com.\n\nGracias,\nCoach Salim Heyaime LLC",
     footer: "¿No quieres estos recordatorios? Responde STOP o escribe a coachsalimheyaime@gmail.com.",
   },
 };

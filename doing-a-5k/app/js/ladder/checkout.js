@@ -1,20 +1,17 @@
-/* Doing a 5K ladder checkout (PREVIEW).
+/* Ladder checkout (PREVIEW).
  * Live plan: Stripe Checkout in one-time payment mode (mode: "payment"), one fresh checkout for every
  * purchase, restart and repeat. No subscription, no saved card, no automatic charge. Web/Stripe only.
  * Nothing here holds a key. Price IDs stay null until Salim approves and the Stripe test prices exist;
  * while they are null the app only shows a clearly labeled preview checkout that grants local access. */
 
+import { PRICES, NAMES } from "./config.js";
+import { t } from "./copy.js";
+
 export const CHECKOUT = {
   mode: "preview", // "preview" | "stripe" (stripe needs a server endpoint that creates the Checkout Session)
   sessionEndpoint: null, // e.g. a Supabase Edge Function URL, set after approval
-  prices: {
-    "walk-to-run": { amount: "4.99", stripePriceId: null },
-    "5k": { amount: "6.99", stripePriceId: null },
-    "faster-5k": { amount: "6.99", stripePriceId: null },
-    restart: { amount: "2.99", stripePriceId: null },
-    // Gifts use the level prices above (a separate Stripe price per gift level is optional).
-    repeat: { amount: "2.99", stripePriceId: null },
-  },
+  /* Amounts are preview placeholders from config.js (Coach Fit's proposal). Gifts use the level prices. */
+  prices: Object.fromEntries(Object.entries(PRICES).map(([k, amount]) => [k, { amount, stripePriceId: null }])),
 };
 
 const STRIPE_BADGE_HTML =
@@ -26,50 +23,29 @@ const LEGAL_LINKS_HTML =
   '<p class="buy-legal"><small><a class="text-link" href="../../purchase-terms/#app-5k-ladder" target="_blank" rel="noopener">Purchase terms</a> · ' +
   '<a class="text-link" href="../../health-safety/" target="_blank" rel="noopener">Health and safety</a></small></p>';
 
-import { ES } from "./copy-es.js";
-
-/* Attorney §4.1 (memo §7.3), word for word, with $[PRICE] filled in. */
-const DISCLOSURE_REST =
-  "This is not a subscription and will not renew or charge you again. " +
-  "Your purchase gives you 14 weeks of access to this level (the 12-week program plus 2 extra weeks), starting on the date of purchase. " +
-  "After that, you cannot start new sessions in this window. Your history, badges and streak record stay visible. " +
-  "If the window ends before you finish, you can restart the same level for $2.99 within 30 days, which starts a new 14-week window. " +
-  "After those 30 days, the regular price applies. Repeating a finished level is $2.99 at any time and also starts a new 14-week window. " +
-  "You can request a full refund within 3 days (72 hours) of purchase by emailing coachsalimheyaime@gmail.com. " +
-  "After that, all sales are final, except where the law requires otherwise. Refunds go to the original payment method. " +
-  "A refund ends your access.";
-
-export function disclosureText(price) {
-  return `One-time payment of $${price}. ${DISCLOSURE_REST}`;
+/* Attorney memo §11.2 (checkout and gift) and §11.8 (restart and repeat leads), word for word, EN and ES.
+ * vars: days, planWeeks, accessWeeks, endDate (already formatted). */
+function rest(full) {
+  const i = full.search(/This is not a subscription|Esto no es una suscripción/);
+  return full.slice(i);
 }
 
-/* Restart / repeat: the Attorney's required first sentences (memo §7.3), then the rest of §4.1. */
-export function disclosureFor({ kind, price, levelName, resumeAt = 1, lang = "en" }) {
-  if (lang === "es") return disclosureEs({ kind, price, levelName, resumeAt });
-  if (kind === "gift") return giftDisclosure({ price, levelName });
-  if (kind === "restart") {
-    const first = resumeAt > 1
-      ? `One-time payment of $2.99 for a new 14-week access window for ${levelName} that resumes at session ${resumeAt} unless you choose to start from session 1.`
-      : `One-time payment of $2.99 for a new 14-week access window for ${levelName} that starts at session 1.`;
-    return `${first} ${DISCLOSURE_REST}`;
-  }
-  if (kind === "repeat") {
-    return `One-time payment of $2.99 to repeat ${levelName}: a new 14-week access window that starts at session 1. ${DISCLOSURE_REST}`;
-  }
-  return disclosureText(price);
+export function disclosureFor({ kind, price, levelId, levelName, resumeAt = 1, days, planWeeks, accessWeeks, endDate, lang = "en" }) {
+  const level = levelName || NAMES.levels[levelId];
+  const vars = { price, days, planWeeks, accessWeeks, endDate, levelName: level, n: resumeAt, level };
+  if (kind === "gift") return t("gift", vars, lang);
+  const main = t("checkout", { ...vars, price: kind === "restart" || kind === "repeat" ? PRICES[kind] : price }, lang);
+  if (kind === "restart") return `${t(resumeAt > 1 ? "restartResume" : "restartStart", vars, lang)} ${rest(main)}`;
+  if (kind === "repeat") return `${t("repeat", vars, lang)} ${rest(main)}`;
+  return main;
 }
 
-/* Attorney §4.2 (memo §7.3), word for word. */
-export function giftDisclosure({ price, levelName }) {
-  return (
-    `One-time payment of $${price} for a gift of ${levelName}. This is not a subscription and will not renew or charge you again. ` +
-    "The gift code can be redeemed for at least 5 years from the date of purchase. " +
-    "Once the recipient redeems it, they get 14 weeks of access (the 12-week program plus 2 extra weeks) starting on the redemption date. " +
-    "You can request a full refund within 3 days (72 hours) of purchase only if the code has not been redeemed. " +
-    "Once redeemed, the gift is non-refundable, except where the law requires otherwise. Refunds go to the original payment method. " +
-    "Gift codes have no cash value and can't be resold, except where the law requires otherwise. " +
-    "Gifts may only be given to an adult 18 or older. The recipient must accept the App Terms and Health and safety information personally."
-  );
+export function disclosureText(price, vars = {}) {
+  return disclosureFor({ kind: "new", price, ...vars });
+}
+
+export function giftDisclosure({ price, levelName, lang = "en" }) {
+  return t("gift", { price, level: levelName }, lang);
 }
 
 function esc(t) {
@@ -94,17 +70,4 @@ export function isPreviewCheckout() {
 export function previewAllowed() {
   const host = location.hostname;
   return host !== "achallengetomove.com" && host !== "www.achallengetomove.com";
-}
-
-/* Spanish versions (Attorney memo §10.1). The restart and repeat first sentences are followed by the rest of the
- * checkout disclosure from "Esto no es una suscripción..." with the $2.99 price. */
-const ES_REST = ES.checkout.slice(ES.checkout.indexOf("Esto no es una suscripción"));
-export function disclosureEs({ kind, price, levelName, resumeAt = 1 }) {
-  if (kind === "gift") return ES.gift.replace("$[PRICE]", `$${price}`).replace("[LEVEL]", levelName);
-  if (kind === "restart") {
-    const first = resumeAt > 1 ? ES.restartResume.replace("{levelName}", levelName).replace("{n}", resumeAt) : ES.restartStart.replace("{levelName}", levelName);
-    return `${first} ${ES_REST}`;
-  }
-  if (kind === "repeat") return `${ES.repeat.replace("{levelName}", levelName)} ${ES_REST}`;
-  return ES.checkout.replace("$[PRICE]", `$${price}`);
 }

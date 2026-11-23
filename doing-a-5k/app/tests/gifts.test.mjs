@@ -12,11 +12,11 @@ assert.equal(G.giftStatus(g, "2099-01-02"), "Sent");
 assert.ok(!G.redeemable(g, g.purchasedAt)); // before delivery
 assert.ok(G.redeemable(g, "2099-01-02") === false); // after redeem-by
 assert.ok(G.canRefund(g, g.purchasedAt));
-const now = G.createGift({ levelId: "walk-to-run", price: "4.99", buyerName: "Ana", recipientName: "Mo", shareMyself: true });
+const now = G.createGift({ levelId: "walk-to-5k", price: "4.99", buyerName: "Ana", recipientName: "Mo", shareMyself: true });
 assert.equal(now.recipientEmail, "");
 assert.equal(G.giftReminderDates(now).length, 0);
 assert.ok(G.redeemable(now, now.purchasedAt));
-const red = G.markRedeemed(now.code, "walk-to-run");
+const red = G.markRedeemed(now.code, "walk-to-5k");
 assert.equal(G.giftStatus(red), "Redeemed");
 assert.ok(!G.canRefund(red, red.purchasedAt));
 assert.equal(G.updateGift(now.code, { recipientEmail: "x@y.z" }), null); // locked once redeemed

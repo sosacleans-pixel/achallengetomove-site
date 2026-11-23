@@ -1,16 +1,18 @@
-/* Doing a 5K ladder UI (PREVIEW, spec v5). Routes start with "l-". Nothing here is live.
- * Level names always show with the house name (displayName, e.g. "Doing a 5K: Walk-to-Run"). */
+/* Ladder UI (PREVIEW, Coach Fit spec v6). Routes start with "l-". Nothing here is live.
+ * Level names come from config.js (one-line swap). Legal copy comes from copy.js (Attorney memo, word for word). */
 import { WorkoutTimer, SPEECH_CUES } from "../timer.js";
 import { todayISO, addDays, daysBetween, pretty, prettyFull, mmss, parseMmss, setPreviewOffset } from "./dates.js";
 import {
-  CONFIG, LEVEL_IDS, DISPLAY_NAMES, DEFAULT_TRAIN_DAYS, REMINDERS, applyIndex, emptyState, loadLadder, saveLadder, resetLadder,
+  CONFIG, LEVEL_IDS, DISPLAY_NAMES, DEFAULT_TRAIN_DAYS, REMINDERS, CORE_SESSIONS, applyIndex, applyLevels, emptyState, loadLadder, saveLadder, resetLadder,
   currentRun, grantPurchase, windowStatus, completeSlot, logRepeat, addLog, saveCheckin, getCheckin, setChdConsent,
-  requestDaysPerWeek, totalSessions, weekOf, dpw, accessEnd,
+  requestDaysPerWeek, fitsAfterChange, totalSessions, weekOf, dpw, accessEnd, accessWeeks, planWeeks,
   computeStreak, repairOffer, inactiveDays, cantFinish, windowWarning, pickReminder, badges, recap, fill,
 } from "./engine.js";
-import { todayStatus, projectSchedule, validTrainDays, levelData, isRunning } from "./scheduler.js";
+import { todayStatus, projectSchedule, validTrainDays, levelData, isRunning, keyDayConflict } from "./scheduler.js";
 import { CHECKOUT, buyTrustHtml, disclosureFor, isPreviewCheckout, previewAllowed } from "./checkout.js";
 import { createGift, getGift, updateGift, giftStatus, canRefund, redeemable, markRedeemed, giftReminderDates, giftReminderEmail } from "./gifts.js";
+import { t as copy } from "./copy.js";
+import { NAMES, TIMER_CAPS, PREVIEW_PLACEHOLDER_NOTE } from "./config.js";
 
 const E2E = new URLSearchParams(location.search).has("e2e");
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -36,6 +38,7 @@ async function loadLevels() {
     index.files.map((f) => fetch(`./data/ladder/${f.file}`).then((r) => r.json()).then((j) => [`${j.id}-${j.daysPerWeek}x`, j]))
   );
   LEVELS = Object.fromEntries(entries);
+  applyLevels(LEVELS);
   return LEVELS;
 }
 
@@ -55,21 +58,9 @@ function params() {
   return new URLSearchParams(location.hash.split("?")[1] || "");
 }
 
-/* ---------------- copy: Attorney memo §7.7 (final §4.6, §4.7) word for word; Coach Fit v5 §8 ---------------- */
-const PLACEMENT_SUB =
-  "Three quick questions to suggest a starting level. This is not a medical screening or a medical clearance, and it does not decide whether running is safe for you. You can always start at an easier level.";
-const SAFETY_PARA =
-  "This program is general fitness education from Coach Salim Heyaime LLC, not medical advice. It is for healthy adults 18 and older. Check with your doctor or a qualified healthcare provider before you start, especially if you are new to exercise, returning after time off, pregnant or postpartum, or have a heart, breathing, joint or other health condition. Stop right away if you feel sharp or worsening discomfort, chest pain or pressure, unusual shortness of breath, dizziness, fainting, or an irregular heartbeat, and get medical help if symptoms are severe or don't settle with rest. The Health and safety information and the App Terms, including the Assumption of Risk and the Release of Liability in favor of Coach Salim Heyaime LLC, apply.";
-const Q1_NO =
-  "If brisk walking for 30 minutes is not comfortable right now, this program may not be a fit yet. Check with your doctor before you start. If you still want to begin, Doing a 5K: Walk-to-Run starts with mostly walking, and you can repeat any session as often as you like. This suggestion is not a medical clearance.";
-const RESULT_LINE = (level) =>
-  `Suggested starting point: ${level}. This is only a suggestion, not a medical clearance. You can start at an easier level.`;
-const CHECK12_SAFETY =
-  "This is an optional fitness check, not a medical test or clearance. Adults 18 and older only. Check with your doctor before you try it. Walk and jog at an easy pace. Stop right away if you feel sharp or worsening discomfort, chest pain or pressure, unusual shortness of breath, dizziness, fainting, or an irregular heartbeat. Tap Stop if you need to walk or can't speak in full sentences.";
-const CHD_TEXT =
-  "At the first and last session of a level, you can rate your energy before and after the session. Energy ratings are consumer health data. They stay off unless you opt in, they stay on this device, they never appear in reminders, and you can turn them off anytime in settings. Please also read our Consumer Health Data Privacy Policy.";
-const CHD_BOX =
-  "I want to use optional energy check-ins. I understand they are consumer health data, they stay on this device, and I can turn them off anytime.";
+/* ---------------- copy ----------------
+ * Legal: copy.js (Attorney memo §11 for v6, §7.5 and §7.7 unchanged). Non-legal: Coach Fit v6 §4, §5, §10. */
+const RESULT_LINE = (level) => copy("resultLine", { level });
 /* The existing in-app acknowledgment sentence (js/health-ack.js), used for a gift recipient's personal acceptance. */
 const ACK_SENTENCE =
   'I am 18 or older. I have read the <a class="text-link" href="../../health-safety/" target="_blank" rel="noopener">Health and safety information</a>, and I agree to the <a class="text-link" href="../../purchase-terms/" target="_blank" rel="noopener">App Terms</a>, including the Assumption of Risk and the Release of Liability, which includes claims based on negligence.';
@@ -79,21 +70,32 @@ const QUESTIONS = [
   "Have you run 5K (3.1 miles) or 30 minutes nonstop in the last 2 months?",
 ];
 const LEVEL_SUMMARY = {
-  "walk-to-run": "Walk with short jogs, building to 12 minutes of nonstop running.",
-  "5k": "Build from 12-minute runs to your first 5K.",
-  "faster-5k": "Add speed play, hills and tempo runs for a smoother, quicker 5K.",
+  "walk-to-5k": "Walk with short jogs, building to your first continuous 5K.",
+  "5k-faster": "Add speed play, hills and tempo runs for a smoother, quicker 5K.",
+  "10k": "Build your long run step by step, all the way to 10K.",
 };
-const HIGHER_START = { "5k": "12-minute runs", "faster-5k": "a 5K run" };
-const SETUP_DAYS = "How many days a week? Pick 3, 4 or 5. 3 or more days a week keeps you on pace to finish in 12 weeks, with 2 extra weeks for missed days.";
-const ACCESS_LINE = (id, end) => `Your access to ${DN(id)} runs through ${prettyFull(end)}. No automatic renewal.`;
+const HEAD_START_SUMMARY = "You're starting at week 6, with longer jogs from day one.";
+const HIGHER_START = { "5k-faster": "a 5K run", "10k": "40-minute long runs" };
+const accessThrough = (end) => `Access through ${prettyFull(end)}. No automatic renewal.`;
+
+/* Attorney §11.4: 10K safety block (product page, 10K setup, check-in, Health and safety page). */
+function tenKSafety() {
+  const p = copy("tenKSafety");
+  return `<div class="ladder-safety ladder-10k-safety">${p.map((x) => `<p><small>${esc(x)}</small></p>`).join("")}</div>`;
+}
+
+/* Attorney §11.7 access line, with the exact end date. */
+function accessLineFor(days, start = todayISO()) {
+  return copy("accessLine", { endDate: prettyFull(accessEnd(start, days)), accessWeeks: accessWeeks(days), planWeeks: planWeeks(days) });
+}
 
 /* ---------------- shell ---------------- */
-function shell(content, { title = "Doing a 5K", nav = true, eyebrow = "Doing a 5K" } = {}) {
+function shell(content, { title = NAMES.house, nav = true, eyebrow = NAMES.house } = {}) {
   const hash = location.hash.split("?")[0];
   const navBtn = (to, label) => `<button type="button" data-lnav="${to}" class="app-nav-btn ${hash === "#" + to ? "is-active" : ""}">${label}</button>`;
   const hasRun = L.activeLevel && currentRun(L, L.activeLevel) && L.settings;
   return `
-  ${previewAllowed() ? `<p class="ladder-ribbon" role="note">Preview build. Not live. No real payments.${L.previewOffsetDays ? ` Preview date: ${pretty(todayISO())}.` : ""}</p>` : ""}
+  ${previewAllowed() ? `<p class="ladder-ribbon" role="note">Preview build. Not live. No real payments.${L.previewOffsetDays ? ` Preview date: ${pretty(todayISO())}.` : ""} ${esc(PREVIEW_PLACEHOLDER_NOTE)}</p>` : ""}
   <div class="app-screen">
     <header class="app-header">
       <p class="app-eyebrow">${esc(eyebrow)}</p>
@@ -113,19 +115,22 @@ function bindNav() {
   document.querySelectorAll("[data-lnav]").forEach((b) => b.addEventListener("click", () => (location.hash = b.dataset.lnav)));
 }
 
-function buyBlock({ id, label, kind, levelId, price, resumeAt = 1, disabled = false }) {
+/* opts carries days, so the disclosure shows the exact plan length, access length and end date. */
+function buyBlock({ id, label, kind, levelId, price, resumeAt = 1, disabled = false, days = dpw(L) }) {
   const usable = !isPreviewCheckout() || previewAllowed();
   const btn = usable
     ? `<button type="button" class="btn btn-primary btn-block ladder-buy" id="${id}" ${disabled ? "disabled" : ""}>${esc(label)}</button>`
     : `<button type="button" class="btn btn-primary btn-block ladder-buy" disabled aria-disabled="true">${esc(label)} (checkout coming soon)</button>`;
-  return `<div class="ladder-buy-wrap">${btn}${buyTrustHtml({ kind, price, levelName: DN(levelId), resumeAt })}</div>`;
+  const vars = { days, planWeeks: planWeeks(days), accessWeeks: accessWeeks(days), endDate: prettyFull(accessEnd(todayISO(), days)) };
+  return `<div class="ladder-buy-wrap">${btn}${buyTrustHtml({ kind, price, levelId, resumeAt, ...vars })}</div>`;
 }
 
-function checkoutHref(levelId, kind, from = "resume") {
-  return `#l-checkout?level=${levelId}&kind=${kind}&from=${from}`;
+/* Every self-purchase, restart and repeat goes through the days-a-week screen first. */
+function daysHref(levelId, kind, from = "resume", extra = "") {
+  return `#l-days?level=${levelId}&kind=${kind}&from=${from}${extra}`;
 }
 
-/* ---------------- placement ---------------- */
+/* ---------------- placement (Q1 to Q4) ---------------- */
 function renderStart() {
   const p = params();
   const step = Number(p.get("q") || 1);
@@ -134,27 +139,35 @@ function renderStart() {
   if (p.get("q1") === "no") {
     return shell(`
       <div class="card ladder-card">
-        <h2>Find your starting level.</h2>
-        <p class="ladder-warn">${Q1_NO}</p>
-        <p class="ladder-result">${esc(RESULT_LINE(DN("walk-to-run")))}</p>
-        <a class="btn btn-primary btn-block" href="${gift ? `#l-redeem?code=${encodeURIComponent(gift)}&pick=walk-to-run` : "#l-levels?suggest=walk-to-run"}">Continue with ${esc(DN("walk-to-run"))}</a>
+        <h2>${esc(copy("placementTitle"))}</h2>
+        <p class="ladder-warn">${esc(copy("q1No"))}</p>
+        <p class="ladder-result">${esc(RESULT_LINE(DN("walk-to-5k")))}</p>
+        <a class="btn btn-primary btn-block" href="${gift ? `#l-redeem?code=${encodeURIComponent(gift)}&pick=walk-to-5k` : "#l-levels?suggest=walk-to-5k"}">Continue with ${esc(DN("walk-to-5k"))}</a>
         <a class="btn btn-secondary btn-block" href="#l-start${gift ? `?gift=${encodeURIComponent(gift)}` : ""}">Not now</a>
       </div>`, { title: "Starting level", nav: false });
   }
-  return shell(`
-    <div class="card ladder-card">
-      <h2>Find your starting level.</h2>
-      <p>${PLACEMENT_SUB}</p>
-      <p class="ladder-safety"><small>${SAFETY_PARA}</small></p>
-      <p class="ladder-q-count">Question ${step} of 3</p>
+  const body = step === 4
+    ? `<p class="ladder-q-count">Question 4 of 4</p>
+      <p class="ladder-q">${esc(copy("q4"))}</p>
+      <div class="ladder-yesno">
+        <button type="button" class="btn btn-primary" id="q4-faster">${esc(copy("q4Options")[0])}</button>
+        <button type="button" class="btn btn-secondary" id="q4-farther">${esc(copy("q4Options")[1])}</button>
+      </div>`
+    : `<p class="ladder-q-count">Question ${step} of 4</p>
       <p class="ladder-q">${esc(QUESTIONS[step - 1])}</p>
       <div class="ladder-yesno">
         <button type="button" class="btn btn-primary" id="q-yes">Yes</button>
         <button type="button" class="btn btn-secondary" id="q-no">No</button>
-      </div>
+      </div>`;
+  return shell(`
+    <div class="card ladder-card">
+      <h2>${esc(copy("placementTitle"))}</h2>
+      <p>${esc(copy("placementSub"))}</p>
+      <p class="ladder-safety"><small>${esc(copy("safetyPara"))}</small></p>
+      ${body}
       ${step === 2 ? `<p class="ladder-alt"><a class="text-link" href="#l-check12?x=1${giftQ}">Not sure? Try the 12-minute check</a> (free, before you buy)</p>` : ""}
     </div>
-    ${step === 1 && !gift ? `<p class="ladder-legacy"><small>Buying for someone else? <a class="text-link" href="#l-gift">Give Doing a 5K as a gift</a>. Got a gift code? <a class="text-link" href="#l-redeem">Redeem it</a>.</small></p>` : ""}
+    ${step === 1 && !gift ? `<p class="ladder-legacy"><small>Buying for someone else? <a class="text-link" href="#l-gift">Give a running plan as a gift</a>. Got a gift code? <a class="text-link" href="#l-redeem">Redeem it</a>.</small></p>` : ""}
   `, { title: "Starting level", nav: false });
 }
 
@@ -163,20 +176,20 @@ function bindStart() {
   const step = Number(p.get("q") || 1);
   const gift = p.get("gift");
   const giftQ = gift ? `&gift=${encodeURIComponent(gift)}` : "";
-  $("#q-yes")?.addEventListener("click", () => {
-    if (step < 3) location.hash = `l-start?q=${step + 1}${giftQ}`;
-    else setPlacementAndGo("faster-5k", { q3: "yes" }, gift);
-  });
+  $("#q-yes")?.addEventListener("click", () => (location.hash = `l-start?q=${step + 1}${giftQ}`));
   $("#q-no")?.addEventListener("click", () => {
     if (step === 1) location.hash = `l-start?q1=no${giftQ}`;
-    else if (step === 2) setPlacementAndGo("walk-to-run", { q2: "no" }, gift);
-    else setPlacementAndGo("5k", { q3: "no" }, gift);
+    else if (step === 2) setPlacementAndGo("walk-to-5k", { q2: "no" }, gift);
+    else setPlacementAndGo("walk-to-5k", { q3: "no" }, gift, true);
   });
+  $("#q4-faster")?.addEventListener("click", () => setPlacementAndGo("5k-faster", { q3: "yes", q4: "faster" }, gift));
+  $("#q4-farther")?.addEventListener("click", () => setPlacementAndGo("10k", { q3: "yes", q4: "farther" }, gift));
 }
 
-function setPlacementAndGo(levelId, answers, gift) {
-  setL({ ...L, placement: { suggested: levelId, answers, at: todayISO() } });
-  location.hash = gift ? `l-redeem?code=${encodeURIComponent(gift)}&suggest=${levelId}` : `l-levels?suggest=${levelId}`;
+function setPlacementAndGo(levelId, answers, gift, headStart = false) {
+  setL({ ...L, placement: { suggested: levelId, headStart, answers, at: todayISO() } });
+  const hs = headStart ? "&hs=1" : "";
+  location.hash = gift ? `l-redeem?code=${encodeURIComponent(gift)}&suggest=${levelId}${hs}` : `l-levels?suggest=${levelId}${hs}`;
 }
 
 /* ---------------- 12-minute check (free, counts toward nothing, starts no window) ---------------- */
@@ -194,13 +207,13 @@ function renderCheck12() {
     return shell(`
       <div class="card ladder-card">
         <h2>The 12-minute check</h2>
-        <p class="ladder-safety">${CHECK12_SAFETY}</p>
+        <p class="ladder-safety">${esc(copy("check12"))}</p>
         <ol class="ladder-steps">
           <li>5:00 walk.</li>
           <li>Then an easy jog for up to 12:00. Tap Stop to walk.</li>
           <li>Then a 5:00 walk.</li>
         </ol>
-        <p><small>Under 12:00 suggests ${esc(DN("walk-to-run"))}. 12:00 or more suggests ${esc(DN("5k"))}. The check is free, counts toward nothing and starts no access window.</small></p>
+        <p><small>Under 12:00 suggests ${esc(DN("walk-to-5k"))} from week 1. 12:00 or more suggests ${esc(DN("walk-to-5k"))} from week 6. The check is free, counts toward nothing and starts no access window.</small></p>
         <label class="check-row"><input type="checkbox" id="c12-adult"> I am 18 or older.</label>
         <button type="button" class="btn btn-primary btn-block" id="c12-start" disabled>Start the check</button>
         <a class="btn btn-secondary btn-block" href="#l-start?q=2">Back</a>
@@ -221,7 +234,8 @@ function bindCheck12() {
       const full = E2E ? 4 : 720;
       const jog = t.openResult ? t.openResult.seconds : 0;
       const reached = t.openResult?.capped || jog >= full;
-      setPlacementAndGo(reached ? "5k" : "walk-to-run", { check12: reached ? "12:00+" : mmss(jog) }, gift);
+      // The 12-minute check only routes within Walk to 5K (week 1 or the week-6 head start).
+      setPlacementAndGo("walk-to-5k", { check12: reached ? "12:00+" : mmss(jog) }, gift, reached);
     },
     exitTo: "l-start?q=2",
   });
@@ -229,40 +243,148 @@ function bindCheck12() {
 
 /* ---------------- level choice ---------------- */
 function renderLevels() {
-  const suggest = params().get("suggest") || L.placement?.suggested || "walk-to-run";
+  const p = params();
+  const suggest = p.get("suggest") || L.placement?.suggested || "walk-to-5k";
+  const hs = p.get("hs") === "1";
   const sIdx = LEVEL_IDS.indexOf(suggest);
-  const confirmId = params().get("confirm");
+  const confirmId = p.get("confirm");
   if (confirmId) {
     return shell(`
       <div class="card ladder-card">
         <h2>${esc(DN(confirmId))}</h2>
         <p>This level starts with ${HIGHER_START[confirmId]}. Sure you want to start here?</p>
-        <a class="btn btn-primary btn-block" href="${checkoutHref(confirmId, "new")}">Yes, start here</a>
-        <a class="btn btn-secondary btn-block" href="${checkoutHref(suggest, "new")}">Use ${esc(DN(suggest))}</a>
+        ${confirmId === "10k" ? tenKSafety() : ""}
+        <a class="btn btn-primary btn-block" href="${daysHref(confirmId, "new")}">Yes, start here</a>
+        <a class="btn btn-secondary btn-block" href="${daysHref(suggest, "new", "resume", hs ? "&hs=1" : "")}">Use ${esc(DN(suggest))}</a>
       </div>`, { title: "Starting level", nav: false });
   }
   const cards = LEVEL_IDS.map((id, i) => {
     const l = lvl(id, 3);
     const isS = id === suggest;
-    const href = i > sIdx ? `#l-levels?suggest=${suggest}&confirm=${id}` : checkoutHref(id, "new");
-    const label = i < sIdx ? (suggest === "faster-5k" && id === "5k" ? "Want to build your base first?" : "Start easier here") : `Choose ${DN(id)}`;
+    const harder = i > sIdx;
+    const href = harder ? `#l-levels?suggest=${suggest}${hs ? "&hs=1" : ""}&confirm=${id}` : daysHref(id, "new");
+    let actions;
+    if (isS && hs) {
+      actions = `<a class="btn btn-primary btn-block" href="${daysHref(id, "new", "resume", "&hs=1")}">Start at week 6</a>
+        <a class="btn btn-secondary btn-block" href="${daysHref(id, "new")}">Start at week 1</a>`;
+    } else {
+      const label = i < sIdx ? (suggest === "10k" && id === "5k-faster" ? "Sharpen your 5K first?" : "Start easier here") : `Choose ${DN(id)}`;
+      actions = `<a class="btn ${isS ? "btn-primary" : "btn-secondary"} btn-block" href="${href}">${esc(label)}</a>`;
+    }
     return `
       <div class="card ladder-level ${isS ? "is-suggested" : ""}">
         ${isS ? `<p class="ladder-tag">Suggested</p>` : ""}
         <h2>${esc(DN(id))}</h2>
-        <p class="ladder-sub-left">Level ${l.level} · 12-week level</p>
-        <p class="ladder-price">$${CHECKOUT.prices[id].amount} one-time</p>
+        <p class="ladder-sub-left">Level ${l.level} · ${CORE_SESSIONS} core sessions</p>
+        <p class="ladder-price">$${CHECKOUT.prices[id].amount} one-time <span class="muted"><small>(preview price)</small></span></p>
         <p>${esc(LEVEL_SUMMARY[id])}</p>
         <p class="muted"><small>Start: ${esc(l.entry)} Finish: ${esc(l.exit)}</small></p>
-        <a class="btn ${isS ? "btn-primary" : "btn-secondary"} btn-block" href="${href}">${esc(label)}</a>
+        ${actions}
       </div>`;
   }).join("");
+  const result = suggest === "walk-to-5k" && hs ? copy("headStart") : RESULT_LINE(DN(suggest));
   return shell(`
-    <p class="ladder-result">${esc(RESULT_LINE(DN(suggest)))}</p>
-    <p class="ladder-lede">${esc(LEVEL_SUMMARY[suggest])}</p>
+    <p class="ladder-result">${esc(result)}</p>
+    <p class="ladder-lede">${esc(suggest === "walk-to-5k" && hs ? HEAD_START_SUMMARY : LEVEL_SUMMARY[suggest])}</p>
     ${cards}
-    <p><small>Each level is a 12-week program at 3, 4 or 5 days a week, with 14 weeks of access from purchase (2 extra weeks for missed days).</small></p>
+    <p><small>Train 2, 3, 4 or 5 days a week: 18, 12, 10 or 9 weeks. Your access lasts the length of your plan plus 2 extra weeks. You'll see the exact end date before you buy.</small></p>
   `, { title: "Pick your level", nav: false });
+}
+
+/* ---------------- days a week (before checkout, before gift redemption, and mid-plan) ---------------- */
+function daysOptionsHtml(cur, name = "dpw") {
+  const opts = copy("daysOptions");
+  return CONFIG.days_per_week_options.map((n, i) => `<label class="check-row"><input type="radio" name="${name}" value="${n}" ${n === cur ? "checked" : ""}> ${esc(opts[i])}</label>`).join("");
+}
+
+function whichDaysHtml(days, n) {
+  return `<fieldset class="field"><legend>Which days? <span id="days-hint" class="muted">(pick ${n})</span></legend>
+      <div class="chip-row">${DAY_NAMES.map((d, i) => `<label class="chip"><input type="checkbox" name="day" value="${i}" ${days.includes(i) ? "checked" : ""}> ${d}</label>`).join("")}</div>
+      <p class="muted" id="key-conflict" hidden><small>${esc(copy("keyConflict"))}</small></p>
+    </fieldset>`;
+}
+
+function renderDays() {
+  const p = params();
+  const change = p.get("change") === "1";
+  const levelId = change ? L.activeLevel : p.get("level");
+  if (!DN(levelId)) return shell(`<p>Level not found.</p>`);
+  const kind = p.get("kind") || "new";
+  const cur = Number(p.get("days") || (L.settings?.daysPerWeek || 3));
+  const days = p.get("td") ? p.get("td").split(",").map(Number) : (cur === L.settings?.daysPerWeek && L.settings?.trainDays) || DEFAULT_TRAIN_DAYS[cur];
+  const run = change ? currentRun(L, levelId) : null;
+  let notice;
+  if (change) {
+    const fits = fitsAfterChange(L, cur);
+    notice = `<p class="banner ladder-banner">${esc(copy("midPlanChange", { endDate: prettyFull(run.windowEnd) }))}</p>
+      ${!fits && cur !== dpw(L) ? `<p class="ladder-warn"><small>At ${cur} days a week, the sessions left won't fit before ${prettyFull(run.windowEnd)}.</small></p>` : ""}`;
+  } else {
+    notice = `<p class="ladder-access"><strong>${esc(accessLineFor(cur))}</strong></p>
+      ${cur === 2 ? `<p class="ladder-warn"><small>${esc(copy("twoDay", { endDate: prettyFull(accessEnd(todayISO(), 2)) }))}</small></p>` : ""}`;
+  }
+  return shell(`
+    <form class="card ladder-card" id="days-form">
+      <h2>${esc(copy("daysTitle"))}</h2>
+      <p class="ladder-sub-left">${esc(DN(levelId))}</p>
+      <fieldset class="field">${daysOptionsHtml(cur)}</fieldset>
+      <p class="muted"><small>${esc(copy("daysHelper"))}</small></p>
+      ${whichDaysHtml(days, cur)}
+      ${notice}
+      ${levelId === "10k" && !change ? tenKSafety() : ""}
+      <p class="ladder-error" id="days-error" role="alert"></p>
+      <button type="submit" class="btn btn-primary btn-block">${change ? "Save days a week" : "Continue to checkout"}</button>
+      <a class="btn btn-secondary btn-block" href="${change ? "#l-settings" : kind === "new" ? "#l-levels" : "#l-progress"}">Back</a>
+    </form>`, { title: change ? "Days a week" : "Your plan", nav: change });
+}
+
+function bindDaysForm(form, onDays) {
+  const conflict = () => {
+    const n = Number(form.dpw.value);
+    const picked = [...form.querySelectorAll('input[name="day"]:checked')].map((c) => Number(c.value));
+    const levelId = params().get("change") === "1" ? L.activeLevel : params().get("level") || params().get("pick") || "walk-to-5k";
+    const lv = lvl(levelId, n);
+    $("#key-conflict").hidden = !(lv && keyDayConflict(lv, picked));
+    $("#days-hint").textContent = `(pick ${n})`;
+  };
+  form.querySelectorAll('input[name="dpw"]').forEach((r) =>
+    r.addEventListener("change", () => {
+      const n = Number(form.dpw.value);
+      form.querySelectorAll('input[name="day"]').forEach((c) => (c.checked = DEFAULT_TRAIN_DAYS[n].includes(Number(c.value))));
+      onDays?.(n);
+    })
+  );
+  form.querySelectorAll('input[name="day"]').forEach((c) => c.addEventListener("change", conflict));
+  conflict();
+}
+
+function readDays(form) {
+  const n = Number(form.dpw.value);
+  const days = [...form.querySelectorAll('input[name="day"]:checked')].map((c) => Number(c.value));
+  return { n, days, ok: validTrainDays(days, n) };
+}
+
+function bindDays() {
+  const form = $("#days-form");
+  const p = params();
+  const change = p.get("change") === "1";
+  const keep = (n) => {
+    const q = new URLSearchParams(p);
+    q.set("days", n);
+    q.delete("td");
+    location.hash = `l-days?${q.toString()}`;
+  };
+  bindDaysForm(form, keep);
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const { n, days, ok } = readDays(form);
+    if (!ok) { $("#days-error").textContent = `Pick exactly ${n} days.`; return; }
+    if (change) {
+      setL(requestDaysPerWeek(L, n, days));
+      location.hash = "l-today";
+      return;
+    }
+    location.hash = `l-checkout?level=${p.get("level")}&kind=${p.get("kind") || "new"}&from=${p.get("from") || "resume"}&days=${n}&td=${days.join(",")}${p.get("hs") === "1" ? "&hs=1" : ""}`;
+  });
 }
 
 /* ---------------- checkout (preview) + receipt ---------------- */
@@ -275,14 +397,18 @@ function renderCheckout() {
   const levelId = p.get("level");
   const kind = p.get("kind") || "new";
   const from = p.get("from") || "resume";
+  const days = Number(p.get("days"));
   if (!DN(levelId)) return shell(`<p>Level not found.</p>`);
+  if (!days) { location.hash = daysHref(levelId, kind, from).slice(1); return ""; }
+  const hs = kind === "new" && p.get("hs") === "1";
   const price = priceFor(levelId, kind);
   const prevRun = currentRun(L, levelId);
-  const resumeAt = kind === "restart" && from === "resume" && prevRun ? prevRun.pointer + 1 : 1;
+  const resumeAt = kind === "restart" && from === "resume" && prevRun ? (prevRun.coreDone || 0) + 1 : 1;
+  const plan = `${days} days a week, ${planWeeks(days)} weeks, ${accessWeeks(days)} weeks of access`;
   const what =
-    kind === "new" ? `${DN(levelId)}: 12-week program, 14 weeks of access`
-    : kind === "restart" ? `Restart ${DN(levelId)}: new 14-week access window, ${resumeAt > 1 ? `continue from session ${resumeAt}` : "start from session 1"}`
-    : `Repeat ${DN(levelId)}: new 14-week access window, starts at session 1`;
+    kind === "new" ? `${DN(levelId)}: ${plan}${hs ? ", starting at week 6" : ""}`
+    : kind === "restart" ? `Restart ${DN(levelId)}: ${plan}, ${resumeAt > 1 ? `continue from core session ${resumeAt}` : "start from session 1"}`
+    : `Repeat ${DN(levelId)}: ${plan}, starts at session 1`;
   const label = kind === "new" ? `Buy ${DN(levelId)}, $${price}` : kind === "restart" ? `Restart ${DN(levelId)}, $${price}` : `Repeat ${DN(levelId)}, $${price}`;
   return shell(`
     <div class="card ladder-card">
@@ -290,10 +416,11 @@ function renderCheckout() {
       ${previewAllowed() && isPreviewCheckout() ? `<p class="ladder-preview-note"><strong>Preview checkout.</strong> No payment is taken and no card is asked for. In the live version this button opens a fresh Stripe Checkout page (one-time payment, no saved card, no automatic charge).</p>` : ""}
       <p class="ladder-order">${esc(what)}</p>
       <p class="ladder-price">$${price} one-time</p>
-      <p class="muted"><small>If bought today, access runs through ${prettyFull(accessEnd(todayISO()))}. No automatic renewal.</small></p>
+      <p class="ladder-access"><strong>${esc(accessLineFor(days))}</strong></p>
+      ${days === 2 ? `<p class="ladder-warn"><small>${esc(copy("twoDay", { endDate: prettyFull(accessEnd(todayISO(), 2)) }))}</small></p>` : ""}
       <label class="check-row"><input type="checkbox" id="co-adult"> I am 18 or older.</label>
-      ${buyBlock({ id: "co-buy", label, kind, levelId, price, resumeAt, disabled: true })}
-      <a class="btn btn-secondary btn-block" href="${kind === "new" ? "#l-levels" : "#l-progress"}">Back</a>
+      ${buyBlock({ id: "co-buy", label, kind, levelId, price, resumeAt, disabled: true, days })}
+      <a class="btn btn-secondary btn-block" href="${daysHref(levelId, kind, from, `&days=${days}${hs ? "&hs=1" : ""}`)}">Back</a>
     </div>`, { title: "Checkout", nav: false });
 }
 
@@ -302,11 +429,14 @@ function bindCheckout() {
   const levelId = p.get("level");
   const kind = p.get("kind") || "new";
   const from = p.get("from") || "resume";
+  const days = Number(p.get("days"));
+  const trainDays = (p.get("td") || "").split(",").filter(Boolean).map(Number);
+  const startCoreIndex = kind === "new" && p.get("hs") === "1" ? CONFIG.head_start_core_index : 1;
   $("#co-adult")?.addEventListener("change", (e) => { const b = $("#co-buy"); if (b) b.disabled = !e.target.checked; });
   $("#co-buy")?.addEventListener("click", () => {
     if (!isPreviewCheckout()) return; // live: the server creates a one-time Checkout Session, then redirects
     if (!previewAllowed()) return;
-    setL(grantPurchase(L, { levelId, kind, price: priceFor(levelId, kind), startFrom: from, mode: "preview" }));
+    setL(grantPurchase(L, { levelId, kind, price: priceFor(levelId, kind), daysPerWeek: days, trainDays: trainDays.length === days ? trainDays : null, startFrom: from, startCoreIndex, mode: "preview" }));
     location.hash = `l-receipt?level=${levelId}`;
   });
 }
@@ -316,6 +446,8 @@ function renderReceipt() {
   const run = currentRun(L, levelId);
   if (!run) return shell(`<p>No purchase yet.</p>`);
   const kindLabel = { new: "Purchase", restart: "Restart", repeat: "Repeat", gift: "Gift redeemed" }[run.kind];
+  const days = run.daysPerWeekAtPurchase;
+  const line = copy("accessLine", { endDate: prettyFull(run.windowEnd), accessWeeks: run.accessWeeks, planWeeks: planWeeks(days) });
   return shell(`
     <div class="card ladder-card">
       <h2>Receipt${run.mode === "preview" ? " (preview, no charge)" : ""}</h2>
@@ -323,84 +455,64 @@ function renderReceipt() {
         <dt>Item</dt><dd>${kindLabel}: ${esc(DN(levelId))}</dd>
         <dt>Amount</dt><dd>${run.kind === "gift" ? "Gift" : `$${run.price} one-time`}</dd>
         <dt>${run.kind === "gift" ? "Redeemed" : "Purchased"}</dt><dd>${prettyFull(run.purchasedAt)}</dd>
+        <dt>Plan</dt><dd>${days} days a week, ${planWeeks(days)} weeks</dd>
         <dt>Access ends</dt><dd>${prettyFull(run.windowEnd)}</dd>
         <dt>Renewal</dt><dd>No automatic renewal</dd>
-        <dt>Starts at</dt><dd>Session ${run.pointer + 1}</dd>
+        <dt>Starts at</dt><dd>${run.headStart ? "Week 6, " : ""}Session ${run.pointer + 1}</dd>
       </dl>
-      <p><strong>${esc(ACCESS_LINE(levelId, run.windowEnd))}</strong></p>
-      ${run.kind === "gift" ? "" : `<p class="buy-refund"><small>${esc(disclosureFor({ kind: run.kind, price: run.price, levelName: DN(levelId), resumeAt: run.pointer + 1 }))}</small></p>`}
-      <a class="btn btn-primary btn-block" href="${L.settings ? "#l-today" : "#l-setup"}">${L.settings ? "Go to today" : "Set up your week"}</a>
+      <p><strong>${esc(line)}</strong></p>
+      ${run.kind === "gift" ? "" : `<p class="buy-refund"><small>${esc(disclosureFor({ kind: run.kind, price: run.price, levelId, resumeAt: run.coreDone + 1, days, planWeeks: planWeeks(days), accessWeeks: run.accessWeeks, endDate: prettyFull(run.windowEnd) }))}</small></p>`}
+      <a class="btn btn-primary btn-block" href="${L.settings?.setupDone ? "#l-today" : "#l-setup"}">${L.settings?.setupDone ? "Go to today" : "Finish setting up"}</a>
     </div>`, { title: "You're in", nav: false });
 }
 
-/* ---------------- setup (also the days-a-week change) ---------------- */
+/* ---------------- setup (name, voice, CHD consent; days a week was chosen before checkout) ---------------- */
 function renderSetup() {
   const s = L.settings || {};
-  const cur = s.pendingDpw?.daysPerWeek || s.daysPerWeek || 3;
-  const days = s.pendingDpw?.trainDays || s.trainDays || DEFAULT_TRAIN_DAYS[cur];
-  const run = L.activeLevel ? currentRun(L, L.activeLevel) : null;
-  const midWeek = L.settings && run && run.pointer % dpw(L) !== 0;
+  const levelId = L.activeLevel;
+  const CHD_TEXT = copy("chdText");
   return shell(`
     <form class="card ladder-card" id="setup-form">
       <h2>Your week</h2>
+      <p>${s.daysPerWeek} days a week: ${(s.trainDays || []).map((d) => DAY_NAMES[d]).join(", ")}. <a class="text-link" href="#l-days?change=1">Change</a></p>
       <label class="field"><span>First name (optional)</span><input type="text" name="name" value="${esc(s.name || "")}" maxlength="40"></label>
-      <fieldset class="field"><legend>${SETUP_DAYS}</legend>
-        <div class="radio-row">${[3, 4, 5].map((n) => `<label class="chip"><input type="radio" name="dpw" value="${n}" ${n === cur ? "checked" : ""}> ${n} days</label>`).join("")}</div>
-        ${midWeek ? `<p class="muted"><small>A change to days a week starts with your next program week, at that week's session 1.</small></p>` : ""}
-        ${s.pendingDpw && run ? `<p class="banner ladder-banner">${s.pendingDpw.daysPerWeek} days a week starts with week ${weekOf(L, run.pointer + 1) + 1}.</p>` : ""}
-      </fieldset>
-      <fieldset class="field"><legend>Which days? <span id="days-hint" class="muted"></span></legend>
-        <div class="chip-row">${DAY_NAMES.map((d, i) => `<label class="chip"><input type="checkbox" name="day" value="${i}" ${days.includes(i) ? "checked" : ""}> ${d}</label>`).join("")}</div>
-      </fieldset>
       <label class="check-row"><input type="checkbox" name="voice" ${s.voice === false ? "" : "checked"}> Voice cues during sessions</label>
       <fieldset class="field ladder-chd"><legend>Optional energy check-ins</legend>
-        <p><small>${CHD_TEXT.replace("Consumer Health Data Privacy Policy", '<a class="text-link" href="../../privacy/consumer-health-data/" target="_blank" rel="noopener">Consumer Health Data Privacy Policy</a>')}</small></p>
-        <label class="check-row"><input type="checkbox" name="chd" ${s.chdConsent ? "checked" : ""}> ${CHD_BOX}</label>
+        <p><small>${esc(CHD_TEXT).replace("Consumer Health Data Privacy Policy", '<a class="text-link" href="../../privacy/consumer-health-data/" target="_blank" rel="noopener">Consumer Health Data Privacy Policy</a>')}</small></p>
+        <label class="check-row"><input type="checkbox" name="chd" ${s.chdConsent ? "checked" : ""}> ${esc(copy("chdBox"))}</label>
       </fieldset>
-      <p class="ladder-error" id="setup-error" role="alert"></p>
-      <button type="submit" class="btn btn-primary btn-block">Save my week</button>
-    </form>`, { title: "Set up", nav: !!L.settings });
+      ${levelId === "10k" ? tenKSafety() : ""}
+      <button type="submit" class="btn btn-primary btn-block">Save</button>
+    </form>`, { title: "Set up", nav: !!s.setupDone });
 }
 
 function bindSetup() {
   const form = $("#setup-form");
-  const hint = () => {
-    const n = Number(form.dpw.value);
-    $("#days-hint").textContent = `(pick ${n}${n === 5 ? ", no more than 3 in a row" : ""})`;
-  };
-  form.querySelectorAll('input[name="dpw"]').forEach((r) =>
-    r.addEventListener("change", () => {
-      const n = Number(form.dpw.value);
-      form.querySelectorAll('input[name="day"]').forEach((c) => (c.checked = DEFAULT_TRAIN_DAYS[n].includes(Number(c.value))));
-      hint();
-    })
-  );
-  hint();
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    const n = Number(form.dpw.value);
-    const days = [...form.querySelectorAll('input[name="day"]:checked')].map((c) => Number(c.value));
-    if (!validTrainDays(days, n)) {
-      $("#setup-error").textContent = n === 5 ? "Pick exactly 5 days, with no more than 3 in a row." : `Pick exactly ${n} days.`;
-      return;
-    }
-    const base = { ...(L.settings || { daysPerWeek: n, trainDays: days }), name: form.name.value.trim(), voice: form.voice.checked };
-    let next = { ...L, settings: base };
-    next = L.settings ? requestDaysPerWeek(next, n, days) : { ...next, settings: { ...base, daysPerWeek: n, trainDays: days } };
+    let next = { ...L, settings: { ...L.settings, name: form.name.value.trim(), voice: form.voice.checked, setupDone: true } };
     next = setChdConsent(next, form.chd.checked);
     setL(next);
     location.hash = "l-today";
   });
 }
-
 /* ---------------- today ---------------- */
-/* For the 4 count-up 5K sessions, estimate with a 30-minute 5K instead of the 45:00 cap. */
+/* Count-up sessions (5K or 10K at your pace): the open step and its cap from config.js. */
+function openStepOf(d) {
+  return d?.steps.find((s) => s.type === "5k-open" || s.type === "10k-open") || null;
+}
+function capFor(levelId, type) {
+  return TIMER_CAPS[type]?.[levelId] ?? null;
+}
+/* Estimate count-up sessions with a typical time instead of the cap: 5K about 30 min, 10K about 65 min. */
 function minutesOf(d) {
-  if (!d.fiveK) return Math.round(d.totalSeconds / 60);
-  return Math.round(d.steps.filter((s) => s.type !== "5k-open").reduce((a, s) => a + s.durationSeconds, 0) / 60) + 30;
+  const o = openStepOf(d);
+  if (!o) return Math.round(d.totalSeconds / 60);
+  const rest = d.steps.filter((s) => s !== o).reduce((a, s) => a + s.durationSeconds, 0);
+  return Math.round(rest / 60) + (o.type === "10k-open" ? 65 : 30);
 }
 
-/* v5 titles already carry the ⚡ for key sessions. */
+/* Titles already carry the ⚡ for key sessions. */
 function slotLabel(d) {
   return `Week ${d.week} · Session ${d.slot}: ${esc(d.title)}`;
 }
@@ -408,7 +520,7 @@ function slotLabel(d) {
 function progressLine(run) {
   const total = totalSessions(L);
   const n = Math.min(total, run.pointer + 1);
-  return `Week ${weekOf(L, n)} · Session ${n} of ${total}`;
+  return `Week ${weekOf(L, n)} · Session ${n} of ${total} · ${run.coreDone || 0} of ${CORE_SESSIONS} core sessions done`;
 }
 
 function renderToday() {
@@ -429,7 +541,6 @@ function renderToday() {
   const rep = repairOffer(L);
   if (rep) banners.push(`<div class="card ladder-card"><h2>Keep your streak</h2><p>You missed ${pretty(rep.brokenOn)}. Do a short Repair session within 48 hours to bring back your ${rep.prevStreak}-day streak.</p><button type="button" class="btn btn-secondary btn-block" id="do-repair">Start Repair session (15 min easy)</button></div>`);
   if (inactiveDays(L) >= CONFIG.reminder_stop_after_inactive_days) banners.push(`<p class="banner ladder-banner">${esc(REMINDERS.paused)}</p>`);
-  if (L.settings?.pendingDpw) banners.push(`<p class="banner ladder-banner">${L.settings.pendingDpw.daysPerWeek} days a week starts with week ${weekOf(L, run.pointer + 1) + 1}.</p>`);
 
   let card = "";
   if (ts.state === "ready") {
@@ -439,13 +550,14 @@ function renderToday() {
         <p class="today-date">${pretty(todayISO())}${ts.planned ? "" : " · extra day"}</p>
         <h2 class="today-title">${slotLabel(d)}</h2>
         <p class="today-summary">${esc(d.summary)}</p>
-        <p class="today-meta">${d.fiveK ? "Count-up timer, up to 45:00" : `About ${minutesOf(d)} min`}${isRunning(d) ? "" : " · easy movement day"}</p>
+        <p class="today-meta">${openStepOf(d) ? `Count-up timer, up to ${mmss(capFor(levelId, openStepOf(d).type))}` : `About ${minutesOf(d)} min`}${d.core ? "" : " · easy extra (counts toward your streak, not the 36 core sessions)"}</p>
+        ${d.kind === "10K" ? tenKSafety() : ""}
         <button type="button" class="btn btn-primary btn-block btn-start" id="start-slot">Start session ${d.slot}</button>
         <button type="button" class="btn btn-secondary btn-block" id="manual-slot">Log it (done without the app)</button>
       </div>`;
   } else if (ts.state === "rest") {
-    const msg = ts.reason === "rest-after-3"
-      ? `Rest day. You've run 3 days in a row, so today is for rest. Session ${run.pointer + 1} unlocks tomorrow.`
+    const msg = ts.reason === "rest-after-2"
+      ? `Rest day. You've run 2 days in a row, so today is for rest. Session ${run.pointer + 1} unlocks tomorrow.`
       : `Key sessions are never on back-to-back days. Session ${run.pointer + 1} unlocks tomorrow. An easy repeat from your plan is fine today.`;
     card = `<div class="card today-card"><h2 class="today-title">Planned rest</h2><p>${msg}</p><a class="btn btn-secondary btn-block" href="#l-plan">Repeat a past session</a></div>`;
   } else if (ts.state === "done-today") {
@@ -462,7 +574,7 @@ function renderToday() {
   return shell(`
     <p class="today-greet">${L.settings?.name ? `Hi, ${esc(L.settings.name)}` : "Your next session"}</p>
     <div class="ladder-stats">
-      <div class="stat"><span class="stat-num">${run.pointer}/${total}</span><span class="stat-label">Sessions</span></div>
+      <div class="stat"><span class="stat-num">${run.coreDone || 0}/${CORE_SESSIONS}</span><span class="stat-label">Core sessions</span></div>
       <div class="stat"><span class="stat-num">🔥 ${st.current}</span><span class="stat-label">Streak</span></div>
       <div class="stat"><span class="stat-num">${st.savesBanked}</span><span class="stat-label">Streak saves</span></div>
       <div class="stat"><span class="stat-num">${ws.daysLeft}</span><span class="stat-label">Days of access left</span></div>
@@ -498,8 +610,9 @@ function stepsFor(sess) {
     return [{ type: "walk", label: "Easy walk or very easy jog (RPE 2 to 3)", durationSeconds: E2E ? 2 : 900, phase: "main" }];
   }
   const def = lvl(sess.levelId).slots[sess.slot - 1];
-  if (!E2E) return def.steps;
-  return def.steps.map((s) => ({ ...s, durationSeconds: s.type === "5k-open" ? 4 : 1 }));
+  const steps = def.steps.map((s) => (s.type === "5k-open" || s.type === "10k-open" ? { ...s, durationSeconds: capFor(sess.levelId, s.type) ?? s.durationSeconds } : s));
+  if (!E2E) return steps;
+  return steps.map((s) => ({ ...s, durationSeconds: s.type === "5k-open" || s.type === "10k-open" ? 4 : 1, capSeconds: s.durationSeconds }));
 }
 
 function timerMarkup(steps, { title, stopLabel = "Finish" }) {
@@ -538,12 +651,14 @@ function runTimer(steps, { onDone, onExit, exitTo = "l-today" }) {
     },
     onStepChange: (idx, step) => {
       $("#timer-finish").hidden = !WorkoutTimer.isOpenStep(step);
-      if (t.openResult?.capped && t.openResult.stepIndex === idx - 1 && steps[idx - 1].type === "5k-open") {
+      const prev = steps[idx - 1];
+      if (t.openResult?.capped && t.openResult.stepIndex === idx - 1 && (prev.type === "5k-open" || prev.type === "10k-open")) {
         const n = $("#timer-capnote");
         n.hidden = false;
-        n.textContent = "Great work, that's 45 minutes on your feet. Log it as done, or edit your time if you finished.";
+        n.textContent = capText(prev.capSeconds ?? prev.durationSeconds);
       }
       if (step.type === "5k-open") speak("Your 5K, go at your pace.");
+      if (step.type === "10k-open") speak("Your 10K, go at your pace.");
     },
     onComplete: () => onDone(t),
     onCue: (kind) => speak(SPEECH_CUES[kind] || ""),
@@ -563,6 +678,12 @@ function runTimer(steps, { onDone, onExit, exitTo = "l-today" }) {
     if (onExit && onExit(t)) return;
     location.hash = exitTo;
   });
+}
+
+/* Attorney §11.5 auto-stop lines (45, 60 and 90 minutes). */
+function capText(capSeconds) {
+  const m = Math.round(capSeconds / 60);
+  return copy(m >= 90 ? "cap90" : m >= 60 ? "cap60" : "cap45");
 }
 
 /* Seconds of the main set actually done (for the 80% rule). */
@@ -594,13 +715,13 @@ function bindSession() {
     },
     onExit: (t) => {
       const def = session.slot ? lvl(session.levelId).slots[session.slot - 1] : null;
-      if (def?.fiveK && t.openResult) {
+      if (openStepOf(def) && t.openResult) {
         session.openResult = t.openResult;
         location.hash = "l-done";
         return true;
       }
       const done = mainDone(t, steps);
-      if (!def?.fiveK && mainTotal && done >= 0.8 * mainTotal) {
+      if (!openStepOf(def) && mainTotal && done >= 0.8 * mainTotal) {
         session.partial = true;
         session.seconds = Math.round(done);
         location.hash = "l-done";
@@ -625,15 +746,19 @@ function renderDone() {
   const isRepeat = session.mode === "repeat";
   const r = session.openResult;
   let fiveK = "";
-  if (def.fiveK) {
-    const shown = r ? (r.capped ? "45:00+" : mmss(r.seconds)) : "";
+  const o = openStepOf(def);
+  if (o) {
+    const dist = o.type === "10k-open" ? "10K" : "5K";
+    const cap = capFor(session.levelId, o.type) ?? o.durationSeconds;
+    // Never call a capped run a finished 5K or 10K (Attorney §11.5).
+    const shown = r ? (r.capped ? "" : mmss(r.seconds)) : "";
     fiveK = `
       <div class="ladder-5k">
-        <p class="ladder-5k-label">Your 5K time</p>
-        <p class="ladder-5k-time">${shown || "Not recorded"}</p>
-        ${r?.capped ? `<p>Great work, that's 45 minutes on your feet. Log it as done, or edit your time if you finished.</p>` : ""}
+        <p class="ladder-5k-label">${r?.capped ? "Time on your feet" : `Your ${dist} time`}</p>
+        <p class="ladder-5k-time">${r?.capped ? `${mmss(cap)}` : shown || "Not recorded"}</p>
+        ${r?.capped ? `<p>${esc(capText(cap))}</p>` : ""}
         <button type="button" class="text-link ladder-linkbtn" id="edit-time">Edit time</button>
-        <label class="field" id="edit-wrap" ${shown && session.mode !== "manual" ? "hidden" : ""}><span>5K time (mm:ss)</span><input type="text" id="fivek-input" inputmode="numeric" placeholder="32:10" value="${r && !r.capped ? mmss(r.seconds) : ""}"></label>
+        <label class="field" id="edit-wrap" ${shown && session.mode !== "manual" ? "hidden" : ""}><span>${dist} time (mm:ss)</span><input type="text" id="fivek-input" inputmode="numeric" placeholder="${dist === "10K" ? "68:30" : "32:10"}" value="${r && !r.capped ? mmss(r.seconds) : ""}"></label>
       </div>`;
   }
   const which = CHECKIN_KEY[def.checkin];
@@ -647,7 +772,8 @@ function renderDone() {
       <label class="field"><span>Energy after (1 to 5)</span><select id="ci-ea"><option value="">Skip</option>${opts(5)}</select></label>` : ""}
       ${level.level === 1 ? `<label class="field"><span>Longest you jogged without walking today? (mm:ss)</span><input type="text" id="ci-longest" placeholder="12:00"></label>` : ""}
     </fieldset>` : "";
-  const last = def.slot === level.slots.length;
+  const run = currentRun(L, session.levelId);
+  const last = !isRepeat && def.core && (run?.coreDone || 0) === CORE_SESSIONS - 1;
   return shell(`
     <div class="card ${last && !isRepeat ? "card-celebrate" : ""} ladder-card">
       <h2>${session.partial ? "Most of it counts" : isRepeat ? "Repeat done" : "Session done"}</h2>
@@ -674,7 +800,7 @@ function bindDone() {
     }
     const def = lvl(session.levelId).slots[session.slot - 1];
     let fiveK = null;
-    if (def.fiveK) {
+    if (openStepOf(def)) {
       const typed = $("#fivek-input")?.value?.trim();
       if (typed) {
         const secs = parseMmss(typed);
@@ -682,7 +808,8 @@ function bindDone() {
         fiveK = { seconds: secs, capped: false, edited: !session.openResult || secs !== session.openResult.seconds };
       } else if (session.openResult) fiveK = { ...session.openResult, edited: false };
     }
-    const entry = { seconds: session.seconds || def.totalSeconds, fiveK, partial: !!session.partial, q: !!def.q, running: isRunning(def) };
+    if (fiveK) fiveK.distance = openStepOf(def).type === "10k-open" ? "10K" : "5K";
+    const entry = { seconds: session.seconds || def.totalSeconds, fiveK, partial: !!session.partial, key: !!def.key, running: isRunning(def) };
     if (session.mode === "repeat") {
       setL(logRepeat(L, session.levelId, session.slot, entry));
       session = null;
@@ -725,12 +852,12 @@ function renderPlan() {
     lastWeek = d.week;
     return `${head}<li class="plan-item ladder-plan-item ${done ? "is-done" : ""}">
       <span class="plan-check" aria-hidden="true">${done ? "✓" : d.slot}</span>
-      <div><strong>${esc(d.title)}</strong><br><small>${esc(d.summary)}</small>${!done && date ? `<br><small class="muted">Planned ${pretty(date)}</small>` : ""}</div>
+      <div><strong>${esc(d.title)}</strong>${d.core ? "" : ' <span class="muted"><small>(easy extra)</small></span>'}<br><small>${esc(d.summary)}</small>${!done && date ? `<br><small class="muted">Planned ${pretty(date)}</small>` : ""}</div>
       ${done && open ? `<button type="button" class="btn btn-small btn-secondary ladder-repeat" data-slot="${d.slot}">Repeat</button>` : ""}
     </li>`;
   }).join("");
   return shell(`
-    <p class="ladder-sub">${dpw(L)} days a week · ${totalSessions(L)} sessions over 12 weeks</p>
+    <p class="ladder-sub">${dpw(L)} days a week · ${totalSessions(L)} sessions over ${planWeeks(dpw(L))} weeks (${CORE_SESSIONS} core sessions${totalSessions(L) > CORE_SESSIONS ? ` plus ${totalSessions(L) - CORE_SESSIONS} easy extras` : ""})</p>
     <p class="ladder-sub"><small>${esc(level.cues)}</small></p>
     <ul class="ladder-plan">${items}</ul>
     <p><small>Repeats keep your streak alive but don't count as program sessions or move you to the next session.</small></p>
@@ -763,60 +890,66 @@ function renderProgress() {
     <div class="card ladder-card"><h2>Badges</h2><p>${b.length ? b.map((x) => `<span class="ladder-badge">${esc(x)}</span>`).join(" ") : "Your first badge comes with session 1."}</p>
       <p class="muted"><small>Streak milestones: ${CONFIG.milestones.join(", ")} days in a row. Earn 1 streak save for every 7 days in a row (bank up to 3).</small></p></div>
     <div class="card ladder-card"><h2>Your access</h2>
-      ${purchases.map((p) => `<p><strong>${esc(DN(p.levelId))}</strong> (${p.kind}${p.kind === "gift" ? "" : `, $${p.price}`}${p.mode === "preview" ? ", preview" : ""})<br><small>${esc(ACCESS_LINE(p.levelId, p.windowEnd))}</small></p>`).join("")}
+      ${purchases.map((p) => `<p><strong>${esc(DN(p.levelId))}</strong> (${p.kind}${p.kind === "gift" ? "" : `, $${p.price}`}${p.mode === "preview" ? ", preview" : ""})<br><small>${p.daysPerWeekAtPurchase} days a week. ${esc(accessThrough(p.windowEnd))}</small></p>`).join("")}
       ${ws.status === "active" ? `<p><small>${progressLine(ws.run)} · ${ws.daysLeft} days of access left.</small></p>` : ""}
       ${ws.status === "finished" ? `<a class="btn btn-secondary btn-block" href="#l-finish">See your recap</a>` : ""}
       ${ws.status === "expired" ? `<a class="btn btn-secondary btn-block" href="#l-expired">Pick up where you left off</a>` : ""}
     </div>
   `, { title: "Progress", eyebrow: DN(levelId) });
 }
-
-/* ---------------- finish screens (after the last session of week 12), Coach Fit v5 §8 ---------------- */
-const FINISH = {
-  "walk-to-run": {
-    head: "12 weeks done. You're a runner now.",
-    body: "You went from short jogs to 12 minutes nonstop. That's real energy you built, one week at a time.",
-    ask: "<strong>Ready for the next level?</strong> <em>Doing a 5K: 5K</em> takes you from 12-minute runs to your first 5K, with the same steady approach.",
-    next: "5k",
-  },
-  "5k": {
-    head: "You did a 5K. Let that sink in.",
-    body: "12 weeks of longer runs, stronger legs, and a finish line that's yours.",
-    ask: "<strong>Want to keep the momentum?</strong> <em>Doing a 5K: Faster 5K</em> adds speed play, hills and tempo runs to make your 5K feel smoother and quicker.",
-    next: "faster-5k",
-  },
-};
+/* ---------------- finish screens (after core session 36), Coach Fit v6 §10 ---------------- */
+function finishCopy(levelId, rc, tm) {
+  if (levelId === "walk-to-5k") {
+    return {
+      head: "You ran a 5K. From walking to this. Let that sink in.",
+      body: "Every session built more energy, stronger legs and real confidence.",
+      ask: `<strong>Where to next? Pick your goal:</strong><br><strong>Run it smoother and quicker:</strong> <em>${esc(DN("5k-faster"))}</em> adds speed play, hills and tempo runs.<br><strong>Go the distance:</strong> <em>${esc(DN("10k"))}</em> builds your long run, step by step, to 10K.`,
+      next: ["5k-faster", "10k"],
+    };
+  }
+  if (levelId === "5k-faster") {
+    const fin = tm(rc.final?.fiveK);
+    const base = tm(rc.first?.fiveK);
+    return {
+      head: fin && base ? `Your 5K: ${fin}. First session: ${base}.` : "Speed, strength and confidence, all built. Nice work.",
+      body: "",
+      ask: `<strong>Ready to go longer?</strong> <em>${esc(DN("10k"))}</em> turns that fitness into a full 10K, with long easy runs and steady sessions.`,
+      next: ["10k"],
+    };
+  }
+  return {
+    head: "10K. Done. That's a whole lot of energy and strength you built.",
+    body: "",
+    ask: "<strong>What's next?</strong> Run it again with fresh goals, or sharpen your speed.",
+    next: ["5k-faster"],
+    notify: true,
+  };
+}
 
 function renderFinish() {
   const levelId = L.activeLevel;
   const rc = recap(L, levelId, lvl(levelId));
-  const t = (x) => (x ? (x.capped ? "45:00+" : mmss(x.seconds)) : null);
-  let head, body, ask, nextId = null;
-  if (levelId === "faster-5k") {
-    head = t(rc.final?.fiveK) && t(rc.first?.fiveK) ? `Your 5K: ${t(rc.final.fiveK)}. Week 1: ${t(rc.first.fiveK)}.` : "12 weeks of speed and strength. Nice work.";
-    body = "You built speed, strength and confidence.";
-    ask = "<strong>What's next?</strong> Run it back, or get on the list for <em>5K to Half Marathon</em>.";
-  } else {
-    ({ head, body, ask, next: nextId } = FINISH[levelId]);
-  }
-  const markers = levelId === "walk-to-run"
+  const tm = (x) => (x && !x.capped ? mmss(x.seconds) : null);
+  const { head, body, ask, next, notify } = finishCopy(levelId, rc, tm);
+  const markers = levelId === "walk-to-5k"
     ? `<tr><td>Longest nonstop jog</td><td>${esc(rc.first?.longestJog || "not entered")}</td><td>${esc(rc.final?.longestJog || "not entered")}</td></tr>`
-    : `<tr><td>5K time</td><td>${t(rc.first?.fiveK) || "not entered"}</td><td>${t(rc.final?.fiveK) || "not entered"}</td></tr>`;
+    : `<tr><td>${levelId === "10k" ? "10K check-in time" : "5K time"}</td><td>${tm(rc.first?.fiveK) || "not entered"}</td><td>${tm(rc.final?.fiveK) || "not entered"}</td></tr>`;
   const effort = `<tr><td>How hard it felt (1 to 10)</td><td>${esc(rc.first?.effort || "not entered")}</td><td>${esc(rc.final?.effort || "not entered")}</td></tr>`;
   const energy = L.settings?.chdConsent && (rc.first?.energyAfter || rc.final?.energyAfter)
     ? `<tr><td>Energy after (1 to 5)</td><td>${esc(rc.first?.energyAfter || "")}</td><td>${esc(rc.final?.energyAfter || "")}</td></tr>` : "";
-  const nextBuy = nextId
-    ? buyBlock({ id: "fin-next", label: `Start ${DN(nextId)}, $${CHECKOUT.prices[nextId].amount}`, kind: "new", levelId: nextId, price: CHECKOUT.prices[nextId].amount })
-    : `<a class="btn btn-primary btn-block" href="mailto:coachsalimheyaime@gmail.com?subject=Notify%20me%3A%205K%20to%20Half%20Marathon">Notify me: 5K to Half Marathon</a>`;
+  const nextBuys = next.map((id) => buyBlock({ id: `fin-next-${id}`, label: `Start ${DN(id)}, $${CHECKOUT.prices[id].amount}`, kind: "new", levelId: id, price: CHECKOUT.prices[id].amount })).join("");
+  const repeat = buyBlock({ id: "fin-repeat", label: `Repeat ${DN(levelId)}, $${CHECKOUT.prices.repeat.amount}`, kind: "repeat", levelId, price: CHECKOUT.prices.repeat.amount });
+  const restNext = next.length === 1 ? DN(next[0]) : "Your next level";
   return shell(`
     <div class="card card-celebrate ladder-finisher">
       <p class="ladder-badge ladder-badge--big">${esc(DN(levelId))} Finisher</p>
       <h2>${esc(head)}</h2>
-      <p>${esc(body)}</p>
+      ${body ? `<p>${esc(body)}</p>` : ""}
     </div>
     <div class="card ladder-card"><h2>Your recap</h2>
       <dl class="ladder-dl">
-        <dt>Sessions</dt><dd>${rc.sessions}/${rc.total}</dd>
+        <dt>Core sessions</dt><dd>${rc.coreDone}/${CORE_SESSIONS}</dd>
+        <dt>All sessions</dt><dd>${rc.sessions}/${rc.total}</dd>
         <dt>Calendar days</dt><dd>${rc.calendarDays}</dd>
         <dt>Longest streak</dt><dd>${rc.longestStreak} days</dd>
         <dt>Total minutes</dt><dd>${rc.totalMinutes}</dd>
@@ -827,22 +960,25 @@ function renderFinish() {
     </div>
     <div class="card ladder-card">
       <p>${ask}</p>
-      ${nextBuy}
-      ${buyBlock({ id: "fin-repeat", label: `Repeat ${DN(levelId)}, $${CHECKOUT.prices.repeat.amount}`, kind: "repeat", levelId, price: CHECKOUT.prices.repeat.amount })}
+      ${levelId === "10k" ? repeat + nextBuys : nextBuys + repeat}
+      ${notify ? `<button type="button" class="btn btn-secondary btn-block" id="fin-notify">${L.flags?.notifyHalf ? "You're on the list: 5K to Half Marathon" : "Notify me: 5K to Half Marathon"}</button>` : ""}
       <button type="button" class="btn btn-secondary btn-block" id="fin-rest">Take a rest week first</button>
       <a class="btn btn-small btn-block" href="#l-progress">Not now</a>
     </div>
-    ${L.restWeek ? `<p class="banner ladder-banner">Take the week. Walk, stretch, enjoy the energy. ${esc(nextId ? DN(nextId) : DN(levelId))} is ready when you are.</p>` : ""}
+    ${L.restWeek ? `<p class="banner ladder-banner">Take the week. Walk, stretch, enjoy the energy. ${esc(restNext)} is ready when you are.</p>` : ""}
   `, { title: "Level complete", eyebrow: DN(levelId) });
 }
 
 function bindFinish() {
   const levelId = L.activeLevel;
-  const nextId = FINISH[levelId]?.next;
-  $("#fin-next")?.addEventListener("click", () => (location.hash = checkoutHref(nextId, "new").slice(1)));
-  $("#fin-repeat")?.addEventListener("click", () => (location.hash = checkoutHref(levelId, "repeat").slice(1)));
+  document.querySelectorAll('[id^="fin-next-"]').forEach((b) => b.addEventListener("click", () => (location.hash = daysHref(b.id.slice(9), "new").slice(1))));
+  $("#fin-repeat")?.addEventListener("click", () => (location.hash = daysHref(levelId, "repeat").slice(1)));
+  $("#fin-notify")?.addEventListener("click", () => {
+    setL({ ...L, flags: { ...L.flags, notifyHalf: true } }); // preview: stored on this device only
+    render("l-finish");
+  });
   $("#fin-rest")?.addEventListener("click", () => {
-    setL({ ...L, restWeek: { startedAt: todayISO(), next: nextId || null } });
+    setL({ ...L, restWeek: { startedAt: todayISO() } });
     render("l-finish");
   });
 }
@@ -852,9 +988,9 @@ function renderExpired() {
   const levelId = L.activeLevel;
   const ws = windowStatus(L, levelId);
   if (ws.status !== "expired") { location.hash = "l-today"; return ""; }
-  const n = ws.run.pointer;
+  const n = ws.run.coreDone || 0;
   const from = params().get("from") || "resume";
-  const v = { level: DN(levelId), n };
+  const v = { level: DN(levelId), n, accessWeeks: accessWeeks(dpw(L)) };
   let offer;
   if (ws.restartOpen) {
     offer = `
@@ -862,7 +998,7 @@ function renderExpired() {
       ${ws.offerDay >= CONFIG.restart_reminder_day ? `<p class="banner ladder-banner">${esc(fill(REMINDERS.restart_day25, v))}</p>` : ""}
       <p class="muted"><small>Restart offer open through ${prettyFull(addDays(ws.run.windowEnd, CONFIG.restart_offer_days))}.</small></p>
       <fieldset class="field"><legend>Where do you want to start?</legend>
-        <label class="check-row"><input type="radio" name="from" value="resume" ${from === "resume" ? "checked" : ""}> Continue from session ${n + 1}</label>
+        <label class="check-row"><input type="radio" name="from" value="resume" ${from === "resume" ? "checked" : ""}> Continue from core session ${n + 1}</label>
         <label class="check-row"><input type="radio" name="from" value="start" ${from === "start" ? "checked" : ""}> Start from session 1</label>
       </fieldset>
       ${buyBlock({ id: "ex-restart", label: `Restart ${DN(levelId)}, $${CHECKOUT.prices.restart.amount}`, kind: "restart", levelId, price: CHECKOUT.prices.restart.amount, resumeAt: from === "resume" ? n + 1 : 1 })}`;
@@ -879,24 +1015,24 @@ function bindExpired() {
   document.querySelectorAll('input[name="from"]').forEach((r) => r.addEventListener("change", () => (location.hash = `l-expired?from=${r.value}`)));
   $("#ex-restart")?.addEventListener("click", () => {
     const from = document.querySelector('input[name="from"]:checked')?.value || "resume";
-    location.hash = checkoutHref(levelId, "restart", from).slice(1);
+    location.hash = daysHref(levelId, "restart", from).slice(1);
   });
-  $("#ex-full")?.addEventListener("click", () => (location.hash = checkoutHref(levelId, "new").slice(1)));
+  $("#ex-full")?.addEventListener("click", () => (location.hash = daysHref(levelId, "new").slice(1)));
 }
 
-/* ---------------- gifting: buyer side (Attorney §4.2 / §7.6, spec v5 §6) ---------------- */
+/* ---------------- gifting: buyer side (Attorney §11.2 gift text, §7.6 rules; spec v6 §8) ---------------- */
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
 function renderGift() {
-  const levelId = params().get("level") || "walk-to-run";
+  const levelId = params().get("level") || "walk-to-5k";
   const price = CHECKOUT.prices[levelId].amount;
   return shell(`
     <form class="card ladder-card" id="gift-form">
-      <h2>Give Doing a 5K as a gift</h2>
+      <h2>Give a running plan as a gift</h2>
       ${previewAllowed() && isPreviewCheckout() ? `<p class="ladder-preview-note"><strong>Preview checkout.</strong> No payment is taken and no card is asked for. In the live version this opens a fresh Stripe Checkout page (one-time payment).</p>` : ""}
       <fieldset class="field"><legend>Pick the level</legend>
-        ${LEVEL_IDS.map((id) => `<label class="check-row"><input type="radio" name="level" value="${id}" ${id === levelId ? "checked" : ""}> ${esc(DN(id))}, $${CHECKOUT.prices[id].amount}${id === "walk-to-run" ? " (a safe choice if you're not sure)" : ""}</label>`).join("")}
-        <p class="muted"><small>Not sure? Have them take the placement check. They can switch to a lower level when they redeem, at no cost. There's no partial refund.</small></p>
+        ${LEVEL_IDS.map((id) => `<label class="check-row"><input type="radio" name="level" value="${id}" ${id === levelId ? "checked" : ""}> ${esc(DN(id))}, $${CHECKOUT.prices[id].amount}${id === "walk-to-5k" ? " (a safe choice if you're not sure)" : ""}</label>`).join("")}
+        <p class="muted"><small>Not sure? Have them take the placement check. They can switch to a lower level when they redeem, at no cost. There's no partial refund. They choose 2, 3, 4 or 5 days a week when they redeem.</small></p>
       </fieldset>
       <label class="field"><span>Your first name</span><input type="text" name="buyer" maxlength="40"></label>
       <label class="field"><span>Recipient's first name</span><input type="text" name="rname" maxlength="40"></label>
@@ -995,17 +1131,31 @@ function renderRedeem() {
   const gIdx = LEVEL_IDS.indexOf(g.levelId);
   const suggest = p.get("suggest");
   const pick = p.get("pick") || (suggest && LEVEL_IDS.indexOf(suggest) < gIdx ? suggest : g.levelId);
+  const hs = p.get("hs") === "1" && pick === "walk-to-5k";
+  const cur = Number(p.get("days") || 3);
+  const tdays = p.get("td") ? p.get("td").split(",").map(Number) : DEFAULT_TRAIN_DAYS[cur];
   return shell(`
     <div class="card ladder-card">
       <h2>${esc(g.buyerName)} gave you ${esc(DN(g.levelId))}</h2>
       ${g.message ? `<p class="ladder-gift-msg">"${esc(g.message)}"</p>` : ""}
-      <p class="muted"><small>Redeem by ${prettyFull(g.redeemBy)}. Your 14 weeks of access start when you redeem.</small></p>
+      <p class="muted"><small>Redeem by ${prettyFull(g.redeemBy)}. Your access starts when you redeem and lasts the length of your plan plus 2 extra weeks.</small></p>
       <label class="check-row"><input type="checkbox" id="rd-adult"> I am 18 or older.</label>
       <p><a class="text-link" href="#l-start?gift=${esc(g.code)}">Take the placement check</a> (optional, recommended).</p>
-      ${suggest ? `<p class="ladder-result">${esc(RESULT_LINE(DN(suggest)))}</p>` : ""}
+      ${suggest ? `<p class="ladder-result">${esc(suggest === "walk-to-5k" && hs ? copy("headStart") : RESULT_LINE(DN(suggest)))}</p>` : ""}
       <fieldset class="field"><legend>Level to start</legend>
         ${LEVEL_IDS.slice(0, gIdx + 1).map((id) => `<label class="check-row"><input type="radio" name="pick" value="${id}" ${id === pick ? "checked" : ""}> ${esc(DN(id))}${id === g.levelId ? " (your gift)" : " (switch to a lower level)"}</label>`).join("")}
       </fieldset>
+      ${hs ? `<label class="check-row"><input type="checkbox" id="rd-hs" checked> Start at week 6 (uncheck to start at week 1)</label>` : ""}
+      ${pick === "10k" ? tenKSafety() : ""}
+      <form id="days-form">
+        <h3>${esc(copy("daysTitle"))}</h3>
+        <fieldset class="field">${daysOptionsHtml(cur)}</fieldset>
+        <p class="muted"><small>${esc(copy("daysHelper"))}</small></p>
+        ${whichDaysHtml(tdays, cur)}
+      </form>
+      <p class="ladder-access"><strong>${esc(accessLineFor(cur))}</strong></p>
+      ${cur === 2 ? `<p class="ladder-warn"><small>${esc(copy("twoDayGift", { endDate: prettyFull(accessEnd(todayISO(), 2)) }))}</small></p>` : ""}
+      <p class="ladder-error" id="rd-error" role="alert"></p>
       <p class="ladder-preview-note"><small>In the live app you sign in or create your own account here, so your access window and progress belong to you. In this preview they stay on this device.</small></p>
       <label class="check-row"><input type="checkbox" id="rd-ack"> <span>${ACK_SENTENCE}</span></label>
       <button type="button" class="btn btn-primary btn-block" id="rd-go" disabled>Redeem</button>
@@ -1020,12 +1170,30 @@ function bindRedeem() {
   const gate = () => ($("#rd-go").disabled = !($("#rd-adult").checked && $("#rd-ack").checked));
   $("#rd-adult")?.addEventListener("change", gate);
   $("#rd-ack")?.addEventListener("change", gate);
+  const form = $("#days-form");
+  if (form) {
+    const p = params();
+    bindDaysForm(form, (n) => {
+      const q = new URLSearchParams(p);
+      q.set("days", n);
+      q.delete("td");
+      location.hash = `l-redeem?${q.toString()}`;
+    });
+    document.querySelectorAll('input[name="pick"]').forEach((r) => r.addEventListener("change", () => {
+      const q = new URLSearchParams(p);
+      q.set("pick", r.value);
+      location.hash = `l-redeem?${q.toString()}`;
+    }));
+  }
   $("#rd-go")?.addEventListener("click", () => {
     const g = getGift(params().get("code"));
     if (!g || !redeemable(g)) return;
+    const { n, days, ok } = readDays(form);
+    if (!ok) { $("#rd-error").textContent = `Pick exactly ${n} days.`; return; }
     const levelId = document.querySelector('input[name="pick"]:checked')?.value || g.levelId;
+    const startCoreIndex = levelId === "walk-to-5k" && $("#rd-hs")?.checked ? CONFIG.head_start_core_index : 1;
     markRedeemed(g.code, levelId);
-    setL(grantPurchase(L, { levelId, kind: "gift", price: g.price, mode: g.mode, giftCode: g.code }));
+    setL(grantPurchase(L, { levelId, kind: "gift", price: g.price, daysPerWeek: n, trainDays: days, startCoreIndex, mode: g.mode, giftCode: g.code }));
     location.hash = `l-redeemed?level=${levelId}`;
   });
 }
@@ -1036,9 +1204,9 @@ function renderRedeemed() {
   return shell(`
     <div class="card card-celebrate ladder-card">
       <h2>${esc(DN(levelId))}</h2>
-      <p><strong>Your 14 weeks start today and end on ${prettyFull(run.windowEnd)}.</strong></p>
-      <p>${esc(ACCESS_LINE(levelId, run.windowEnd))}</p>
-      <a class="btn btn-primary btn-block" href="#l-setup">Set up your week</a>
+      <p><strong>Your access starts today and ends on ${prettyFull(run.windowEnd)}.</strong></p>
+      <p>${esc(copy("accessLine", { endDate: prettyFull(run.windowEnd), accessWeeks: run.accessWeeks, planWeeks: planWeeks(run.daysPerWeekAtPurchase) }))}</p>
+      <a class="btn btn-primary btn-block" href="#l-setup">Finish setting up</a>
     </div>`, { title: "Gift redeemed", nav: false });
 }
 
@@ -1057,7 +1225,7 @@ function renderSettings() {
         <button type="button" class="btn btn-small btn-secondary" data-tool="left5">5 days left</button>
         <button type="button" class="btn btn-small btn-secondary" data-tool="left0">Day after expiry</button>
         <button type="button" class="btn btn-small btn-secondary" data-tool="leftm24">Restart offer day 25</button>
-        <button type="button" class="btn btn-small btn-secondary" data-tool="fillweek9">Fill through week 9</button>
+        <button type="button" class="btn btn-small btn-secondary" data-tool="fillhalf">Fill to halfway</button>
         <button type="button" class="btn btn-small btn-secondary" data-tool="filllast">Fill to the last session</button>
         <button type="button" class="btn btn-small btn-secondary" data-tool="today">Back to real date</button>
       </div>
@@ -1067,19 +1235,19 @@ function renderSettings() {
     <div class="card ladder-card">
       <h2>Settings</h2>
       <p>${s ? `${s.daysPerWeek} days a week: ${s.trainDays.map((d) => DAY_NAMES[d]).join(", ")}` : ""}</p>
-      ${s?.pendingDpw ? `<p><small>${s.pendingDpw.daysPerWeek} days a week starts with your next program week.</small></p>` : ""}
       <p><small>Energy check-ins: ${s?.chdConsent ? "on" : "off"}</small></p>
-      <a class="btn btn-secondary btn-block" href="#l-setup">Change days a week, voice and energy check-ins</a>
+      <a class="btn btn-secondary btn-block" href="#l-days?change=1">Change days a week</a>
+      <a class="btn btn-secondary btn-block" href="#l-setup">Name, voice and energy check-ins</a>
       <a class="btn btn-secondary btn-block" href="#l-start">Find your starting level again</a>
-      <a class="btn btn-secondary btn-block" href="#l-gift">Give Doing a 5K as a gift</a>
-      <button type="button" class="btn btn-small btn-block" id="ladder-reset">Clear Doing a 5K data on this device</button>
+      <a class="btn btn-secondary btn-block" href="#l-gift">Give a running plan as a gift</a>
+      <button type="button" class="btn btn-small btn-block" id="ladder-reset">Clear running plan data on this device</button>
     </div>
     ${tools}`, { title: "Settings" });
 }
 
 function bindSettings() {
   $("#ladder-reset")?.addEventListener("click", () => {
-    if (!confirm("Clear your Doing a 5K progress on this device?")) return;
+    if (!confirm("Clear your running plan progress on this device?")) return;
     resetLadder();
     L = emptyState();
     setPreviewOffset(0);
@@ -1101,15 +1269,15 @@ function bindSettings() {
         off = daysBetween(realToday, run.windowEnd) - left + 1; // daysLeft counts today
       } else if (tool.startsWith("fill") && run) {
         const level = lvl(L.activeLevel);
-        const target = tool === "fillweek9" ? 9 * dpw(L) : level.slots.length - 1;
+        const target = tool === "fillhalf" ? Math.floor(level.slots.length / 2) : level.slots.length - 1;
         let s = L;
         for (let i = 0; currentRun(s, L.activeLevel).pointer < target && i < 100; i++) {
           const r = currentRun(s, L.activeLevel);
           const def = level.slots[r.pointer];
           const date = addDays(todayISO(), -(target - r.pointer) * 2);
-          s = addLog(s, { date, levelId: L.activeLevel, runId: r.runId, slot: r.pointer + 1, kind: "slot", seconds: def.totalSeconds, q: !!def.q, running: isRunning(def), preview: true });
+          s = addLog(s, { date, levelId: L.activeLevel, runId: r.runId, slot: r.pointer + 1, kind: "slot", seconds: def.totalSeconds, key: !!def.key, core: !!def.core, running: isRunning(def), preview: true });
           const ls = s.levels[L.activeLevel];
-          s = { ...s, levels: { ...s.levels, [L.activeLevel]: { ...ls, runs: ls.runs.map((x) => (x.runId === r.runId ? { ...x, pointer: x.pointer + 1 } : x)) } } };
+          s = { ...s, levels: { ...s.levels, [L.activeLevel]: { ...ls, runs: ls.runs.map((x) => (x.runId === r.runId ? { ...x, pointer: x.pointer + 1, ...(def.core ? { doneCore: [...(x.doneCore || []), def.coreIndex], coreDone: (x.doneCore || []).length + 1 } : {}) } : x)) } } };
         }
         setL(s);
       }
@@ -1125,6 +1293,7 @@ const VIEWS = {
   "l-start": [renderStart, bindStart],
   "l-check12": [renderCheck12, bindCheck12],
   "l-levels": [renderLevels, null],
+  "l-days": [renderDays, bindDays],
   "l-checkout": [renderCheckout, bindCheckout],
   "l-receipt": [renderReceipt, null],
   "l-setup": [renderSetup, bindSetup],
@@ -1141,7 +1310,7 @@ const VIEWS = {
   "l-redeem": [renderRedeem, bindRedeem],
   "l-redeemed": [renderRedeemed, null],
 };
-const NEEDS_RUN = new Set(["l-today", "l-session", "l-done", "l-plan", "l-progress", "l-finish", "l-expired", "l-settings", "l-redeemed", "l-receipt"]);
+const NEEDS_RUN = new Set(["l-setup", "l-today", "l-session", "l-done", "l-plan", "l-progress", "l-finish", "l-expired", "l-settings", "l-redeemed", "l-receipt"]);
 
 export async function render(hashName) {
   await loadLevels();
@@ -1150,7 +1319,8 @@ export async function render(hashName) {
   const view = hashName.split("?")[0];
   if (view !== "l-session" && view !== "l-check12") activeTimer?.stop();
   if (NEEDS_RUN.has(view) && !(L.activeLevel && currentRun(L, L.activeLevel))) { location.hash = "l-start"; return; }
-  if (["l-today", "l-plan", "l-progress", "l-settings"].includes(view) && !L.settings) { location.hash = "l-setup"; return; }
+  if (["l-today", "l-plan", "l-progress", "l-settings"].includes(view) && !L.settings?.setupDone) { location.hash = "l-setup"; return; }
+  if (view === "l-days" && params().get("change") === "1" && !(L.activeLevel && currentRun(L, L.activeLevel))) { location.hash = "l-start"; return; }
   const [r, b] = VIEWS[view] || VIEWS["l-start"];
   const html = r();
   if (!html) return;

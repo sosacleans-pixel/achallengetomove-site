@@ -1,9 +1,10 @@
-/* Doing a 5K ladder scheduler (spec v5 §1 and §10.3).
- * - Weekly order comes from the level file (template S1, S2, S5, S4, S3; S3 always last).
- * - One new session per calendar day.
- * - Walk-to-Run and 5K: no more than 3 running days in a row ("Easy movement" sessions are not running days).
- * - Faster 5K: key (⚡) sessions are never on back-to-back days, at any frequency.
- * - Days a week changes apply at a week boundary (engine.requestDaysPerWeek).
+/* Ladder scheduler (Coach Fit spec v6 §2 and §13.3).
+ * - Weekly order comes from the level file. One new session per calendar day.
+ * - Every level: key sessions (data flag `key`) are never on consecutive days (noBackToBackKey).
+ * - Walk to 5K: never 3 run days in a row (max2RunDaysInARow); its easy extras are not running days.
+ * - Days a week can change at any time; the engine continues by coreIndex.
+ * - Preview limit: a blocked key session moves to the next free day; it does not swap with a later
+ *   session in the same week yet.
  * Runs on the user's own log, so repeats count for spacing too. */
 import { addDays, weekday, todayISO } from "./dates.js";
 import { DEFAULT_TRAIN_DAYS, currentRun, slotDoneToday, dpw } from "./engine.js";
@@ -13,7 +14,7 @@ export function levelData(s, levelId, LEVELS, daysPerWeek = dpw(s)) {
 }
 
 export function isRunning(slotDef) {
-  return !!slotDef && slotDef.kind !== "Easy movement";
+  return !!slotDef && slotDef.kind !== "Easy extra";
 }
 
 function runDates(s) {
@@ -21,7 +22,7 @@ function runDates(s) {
 }
 
 function qDates(s) {
-  return new Set(s.log.filter((e) => e.kind !== "repair" && e.q).map((e) => e.date));
+  return new Set(s.log.filter((e) => e.kind !== "repair" && e.key).map((e) => e.date));
 }
 
 function trainDays(s) {
@@ -29,10 +30,10 @@ function trainDays(s) {
 }
 
 function spacingBlock(level, slotDef, date, ran, qs) {
-  if (level.spacing === "max3RunDaysInARow" && isRunning(slotDef)) {
-    if (ran.has(addDays(date, -1)) && ran.has(addDays(date, -2)) && ran.has(addDays(date, -3))) return "rest-after-3";
+  if (level.spacing === "max2RunDaysInARow" && isRunning(slotDef)) {
+    if (ran.has(addDays(date, -1)) && ran.has(addDays(date, -2))) return "rest-after-2";
   }
-  if (level.spacing === "noBackToBackQ" && slotDef?.q && qs.has(addDays(date, -1))) return "q-spacing";
+  if (slotDef?.key && qs.has(addDays(date, -1))) return "key-spacing";
   return null;
 }
 
@@ -65,18 +66,28 @@ export function projectSchedule(s, levelId, LEVELS, today = todayISO()) {
     if (spacingBlock(level, slotDef, d, ran, qs)) continue;
     out.push({ slot: idx + 1, date: d });
     if (isRunning(slotDef)) ran.add(d);
-    if (slotDef.q) qs.add(d);
+    if (slotDef.key) qs.add(d);
     idx++;
   }
   return out;
 }
 
-/* Count must match; at 5 a week no 4 picked days in a row (the week wraps). */
+/* Count must match. */
 export function validTrainDays(daysArr, perWeek) {
-  if (daysArr.length !== perWeek) return false;
-  if (perWeek === 5) {
-    const set = new Set(daysArr);
-    for (let i = 0; i < 7; i++) if ([0, 1, 2, 3].every((k) => set.has((i + k) % 7))) return false;
+  return daysArr.length === perWeek;
+}
+
+/* Key-day conflict for the "Which days?" step: with this many key sessions a week, would two land on
+ * consecutive picked days? Keys per week come from the file's first full week. */
+export function keyDayConflict(level, daysArr) {
+  const wk = level.slots.filter((x) => x.week === 2);
+  const keys = wk.map((x) => !!x.key);
+  const days = [...daysArr].sort((a, b) => a - b);
+  if (!keys.length || days.length !== keys.length) return false;
+  for (let i = 0; i < days.length; i++) {
+    const j = (i + 1) % days.length;
+    const gap = (days[j] - days[i] + 7) % 7;
+    if (gap === 1 && keys[i] && keys[j]) return true;
   }
-  return true;
+  return false;
 }

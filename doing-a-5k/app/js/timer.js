@@ -19,13 +19,13 @@ export class WorkoutTimer {
     this.totalSeconds = steps.reduce((a, s) => a + s.durationSeconds, 0);
     this._spokenSteps = new Set();
     /* Ladder additions (preview): actual time spent per step, and the result of an open
-       (count-up) step such as the 5k-open step. Fixed steps behave exactly as before. */
+       (count-up) step such as the 5k-open or 10k-open step. Fixed steps behave exactly as before. */
     this.stepElapsedMs = [];
     this.openResult = null;
   }
 
   static isOpenStep(step) {
-    return !!step && (step.type === "5k-open" || step.open === true);
+    return !!step && (step.type === "5k-open" || step.type === "10k-open" || step.open === true);
   }
 
   /* Count-up steps only: the user taps Finish (or Stop). Saves the time, then moves on. */
@@ -96,7 +96,7 @@ export class WorkoutTimer {
     const elapsed = this.getStepElapsedMs();
     const remaining = step.durationSeconds * 1000 - elapsed;
     if (WorkoutTimer.isOpenStep(step)) {
-      /* Count-up step: durationSeconds is the cap (45:00 for 5k-open). Auto-stop at the cap. */
+      /* Count-up step: durationSeconds is the cap (config.js: 45:00 for 5k-open, 90:00 for 10k-open). Auto-stop at the cap. */
       if (remaining <= 0) {
         this.openResult = { stepIndex: this.stepIndex, seconds: step.durationSeconds, capped: true };
         this._finishStep();

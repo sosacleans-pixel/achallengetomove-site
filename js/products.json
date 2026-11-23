@@ -147,16 +147,17 @@
       "catalogSection": "programs",
       "type": "app",
       "typeLabel": "App",
-      "title": "Doing a 5K",
-      "tagline": "Walk to run, then your first 5K, one 12-week level at a time.",
-      "description": "Three 12-week levels: Doing a 5K: Walk-to-Run, Doing a 5K: 5K and Doing a 5K: Faster 5K. Guided sessions at 3, 4 or 5 days a week.",
+      "title": "5K and 10K plans",
+      "previewNote": "PREVIEW PLACEHOLDER: names, prices and access length pending Salim (Attorney memo §11.10).",
+      "tagline": "Walk to your first 5K, get faster, then go 10K. Train 2 to 5 days a week, one level at a time.",
+      "description": "Three levels: Walk to 5K, 5K Faster and 10K (for people who can already run a 5K). Guided sessions 2 to 5 days a week.",
       "learnMoreHref": "/doing-a-5k/",
       "status": "available",
       "image": {
         "svg": "/icons/logo.svg",
         "width": 512,
         "height": 512,
-        "alt": "Doing a 5K app"
+        "alt": "A Challenge to Move running plans app"
       },
       "actions": [
         {
@@ -181,8 +182,8 @@
           "newTab": false
         }
       ],
-      "price": "From $4.99",
-      "note": "$4.99 or $6.99 per level. One-time payment, 14 weeks of access. No subscription."
+      "price": "$6.99 per level",
+      "note": "$6.99 per level. One-time payment. Access lasts your plan length plus 2 extra weeks. No subscription."
     },
     {
       "id": "5k-to-half-marathon",
