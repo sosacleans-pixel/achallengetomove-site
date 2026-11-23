@@ -1,6 +1,6 @@
 /* Customer copy from the Attorney's memo, word for word (EN and ES).
  * §11 (v6: names, access by days a week, 2-day disclosure, 10K safety, timer caps, goal question, end-date
- * screen, restart and repeat), plus the unchanged approved text (§7.5 and §7.7 EN, §10.1 ES).
+ * screen, restart and repeat), §12 (7:51 PM review: ES restart and warnings, finish screens, Web Manager copy), plus the unchanged approved text (§7.5 and §7.7 EN, §10.1 ES).
  * Level names are tokens {name:<id>} filled from config.js, so the name pick is a one-line swap there.
  * The terms lead-in names the umbrella on purpose (static terms page). Generated from the memo; do not hand-edit. */
 import { NAMES } from "./config.js";
@@ -15,7 +15,7 @@ export const COPY = {
     "termsAccess": "Each level is a one-time purchase at the price shown at checkout. There is no subscription and no automatic renewal, and you will not be charged again. Before you pay (or, for a gift, before the recipient redeems), you choose 2, 3, 4 or 5 days a week. Your purchase gives you a personal, non-transferable license to use that level for the length of your plan plus 2 extra weeks, starting on the date of purchase (the \"Access Period\"): 20 weeks for the 2-day plan, 14 weeks for 3 days, 12 weeks for 4 days, or 11 weeks for 5 days. For a gift, the gift code can be redeemed for at least 5 years from the date of purchase, and the Access Period starts when the recipient redeems the gift code, using the days-a-week choice made at redemption. When the Access Period ends, you cannot start new sessions in that window. Your history, badges and streak record stay visible. If you change days a week during a window, the end date does not change. To continue an unfinished level, you may buy a restart at the then-current restart price if the restart offer is still open, or otherwise at the then-current full price. To repeat a finished level, you may buy a repeat at the then-current repeat price. Each restart or repeat is a new one-time purchase and starts a new Access Period of the length that applies to the days-a-week choice for that purchase. We will never charge you automatically.",
     "midPlanChange": "You can change how many days a week you train. Your access still ends on {end date}. If the new plan is longer than the time you have left, you may not finish in this window.",
     "twoDay": "The 2-day plan runs 18 weeks (36 sessions, 2 days a week). Your access lasts 20 weeks (the plan length plus 2 extra weeks), starting on the date of purchase, and runs through {end date}.",
-    "twoDayGift": "The 2-day plan runs 18 weeks (36 sessions, 2 days a week). Your access lasts 20 weeks (the plan length plus 2 extra weeks), starting on the the day you redeem, and runs through {end date}.",
+    "twoDayGift": "The 2-day plan runs 18 weeks (36 sessions, 2 days a week). Your access lasts 20 weeks (the plan length plus 2 extra weeks), starting on the day you redeem, and runs through {end date}.",
     "tenKSafety": [
       "{name:10k} is general fitness education from Coach Salim Heyaime LLC, not medical advice. It is for healthy adults 18 and older who can already run 5K (3.1 miles) or 30 minutes nonstop. It is not a starting plan for new runners.",
       "Sessions can last up to about 85 minutes, and the 10K check-in can last up to about 103 minutes. Build up gradually, keep your rest and easy days, and don't add extra hard sessions. Walk breaks are always fine.",
@@ -51,7 +51,26 @@ export const COPY = {
     "chdText": "At the first and last session of a level, you can rate your energy before and after the session. Energy ratings are consumer health data. They stay off unless you opt in, they stay on this device, they never appear in reminders, and you can turn them off anytime in settings. Please also read our Consumer Health Data Privacy Policy.",
     "chdBox": "I want to use optional energy check-ins. I understand they are consumer health data, they stay on this device, and I can turn them off anytime.",
     "refundTerms": "You can request a full refund within 3 days (72 hours) of purchase by emailing coachsalimheyaime@gmail.com from, or including, the email you used at checkout. After that, all sales are final, except where the law requires otherwise. Refunds go to the original payment method; your bank may take several business days to post them. When a refund is issued, access ends right away. Gifts can be refunded within 3 days of purchase only if the gift code has not been redeemed; once redeemed, the gift is non-refundable, except where the law requires otherwise. If a payment is disputed or charged back, access is suspended while the dispute is open and ends if the dispute is decided in the payer's favor. Nothing here limits any refund right you have under the law.",
-    "placementTitle": "Find your starting level."
+    "placementTitle": "Find your starting level.",
+    "restartDay0": "Your {level} window closed at session {n}. Your progress and badges stay. Want a fresh {accessWeeks}-week window? Restart {level} for $2.99 and pick up right where you left off.",
+    "finish_walkHeadTimed": "You ran a 5K. From walking to this. Let that sink in.",
+    "finish_walkHead": "From walking to this. Let that sink in.",
+    "finish_walkBody": "Every session built more energy, stronger legs and real confidence.",
+    "finish_walkAsk": [
+      "Where to next? Pick your goal:",
+      "Run it smoother and quicker: {name:5k-faster} adds speed play, hills and tempo runs.",
+      "Go the distance: {name:10k} builds your long run, step by step, toward 10K."
+    ],
+    "finish_fasterAsk": "Want to go longer? {name:10k} builds your long run, step by step, toward 10K, with long easy runs and steady sessions.",
+    "finish_tenHeadTimed": "10K. Done. That's a whole lot of energy and strength you built.",
+    "finish_tenHead": "That's a whole lot of energy and strength you built.",
+    "storeDesc": "Three levels: Walk to 5K, 5K Faster and 10K. The 10K level is for people who can already run a 5K. Guided sessions 2 to 5 days a week.",
+    "storeNote": "$6.99 per level. One-time payment. Access lasts your plan length plus 2 extra weeks. No subscription.",
+    "moreDistance": "Want more distance later? See the 5K to Half Marathon plan (coming soon).",
+    "levelsFooter": "Train 2, 3, 4 or 5 days a week: 18, 12, 10 or 9 weeks. Your access lasts the length of your plan plus 2 extra weeks. You'll see the exact end date before you buy.",
+    "midPlanNoFit": "At {n} days a week, there isn't enough time left to finish the remaining sessions before {date}.",
+    "timeOnFeet": "Time on your feet",
+    "check12Routing": "Under 12:00 suggests {name:walk-to-5k} from week 1. 12:00 or more suggests {name:walk-to-5k} from week 6. The check is free, counts toward nothing and starts no access window."
   },
   "es": {
     "tagline": "Camina hasta tu primer 5K, corre más rápido y luego llega a 10K. Entrena de 2 a 5 días a la semana, un nivel a la vez.",
@@ -96,13 +115,33 @@ export const COPY = {
     "resultLine": "Punto de partida sugerido: {level}. Esto es solo una sugerencia, no una autorización médica. Puedes empezar en un nivel más fácil.",
     "check12": "Esta es una comprobación de condición física opcional, no una prueba médica ni una autorización médica. Solo para adultos de 18 años o más. Consulta a tu médico antes de intentarlo. Camina y trota a un ritmo fácil. Detente de inmediato si sientes molestia aguda o que empeora, dolor u opresión en el pecho, falta de aire inusual, mareo, desmayo o un latido irregular. Toca Detener si necesitas caminar o no puedes hablar en oraciones completas.",
     "cantFinish": "Aviso: no quedan días suficientes para terminar este nivel en este periodo. Sigue avanzando mientras esté abierto. Tu progreso y tus insignias siguen visibles si el periodo se cierra.",
-    "warn28": "En la primera y la última sesión de un nivel, puedes calificar tu energía antes y después de la sesión. Las calificaciones de energía son datos de salud del consumidor. Permanecen desactivadas a menos que las actives; se quedan en este dispositivo; nunca aparecen en los recordatorios; y puedes desactivarlas cuando quieras en la configuración. Lee también nuestra Política de privacidad de datos de salud del consumidor.  Quiero usar las revisiones opcionales de energía. Entiendo que son datos de salud del consumidor, que se quedan en este dispositivo y que puedo desactivarlas cuando quiera.",
-    "warn14": "En la primera y la última sesión de un nivel, puedes calificar tu energía antes y después de la sesión. Las calificaciones de energía son datos de salud del consumidor. Permanecen desactivadas a menos que las actives; se quedan en este dispositivo; nunca aparecen en los recordatorios; y puedes desactivarlas cuando quieras en la configuración. Lee también nuestra Política de privacidad de datos de salud del consumidor.  Quiero usar las revisiones opcionales de energía. Entiendo que son datos de salud del consumidor, que se quedan en este dispositivo y que puedo desactivarlas cuando quiera.",
-    "warn5": "En la primera y la última sesión de un nivel, puedes calificar tu energía antes y después de la sesión. Las calificaciones de energía son datos de salud del consumidor. Permanecen desactivadas a menos que las actives; se quedan en este dispositivo; nunca aparecen en los recordatorios; y puedes desactivarlas cuando quieras en la configuración. Lee también nuestra Política de privacidad de datos de salud del consumidor.  Quiero usar las revisiones opcionales de energía. Entiendo que son datos de salud del consumidor, que se quedan en este dispositivo y que puedo desactivarlas cuando quiera.",
+    "warn28": "Vas en la sesión {n} de tu programa {level}, y te quedan 4 semanas en este periodo de acceso. Las sesiones constantes te ayudan a llegar.",
+    "warn14": "Quedan 2 semanas en tu periodo de {level}, y vas en la sesión {n}. Unas cuantas sesiones a la semana te llevan a la meta. La de hoy dura {minutes} minutos.",
+    "warn5": "Quedan 5 días en tu periodo de {level}. Cada sesión que registres cuenta. Vamos.",
     "chdText": "En la primera y la última sesión de un nivel, puedes calificar tu energía antes y después de la sesión. Las calificaciones de energía son datos de salud del consumidor. Permanecen desactivadas a menos que las actives; se quedan en este dispositivo; nunca aparecen en los recordatorios; y puedes desactivarlas cuando quieras en la configuración. Lee también nuestra Política de privacidad de datos de salud del consumidor.",
     "chdBox": "Quiero usar las revisiones opcionales de energía. Entiendo que son datos de salud del consumidor, que se quedan en este dispositivo y que puedo desactivarlas cuando quiera.",
     "refundTerms": "Puedes pedir un reembolso completo dentro de los 3 días (72 horas) posteriores a la compra escribiendo a coachsalimheyaime@gmail.com desde el correo que usaste en el pago, o incluyéndolo en el mensaje. Después de eso, todas las ventas son definitivas, salvo cuando la ley exija otra cosa. Los reembolsos se hacen al método de pago original; tu banco puede tardar varios días hábiles en reflejarlos. Cuando se emite un reembolso, el acceso termina de inmediato. Los regalos se pueden reembolsar dentro de los 3 días posteriores a la compra solo si el código de regalo no ha sido canjeado; una vez canjeado, el regalo no tiene reembolso, salvo cuando la ley exija otra cosa. Si un pago se disputa o se contracarga, el acceso se suspende mientras la disputa esté abierta y termina si se resuelve a favor de quien pagó. Nada de lo anterior limita cualquier derecho de reembolso que te otorgue la ley.",
-    "placementTitle": "Encuentra tu nivel inicial."
+    "placementTitle": "Encuentra tu nivel inicial.",
+    "restartDay0": "Tu periodo de {level} se cerró en la sesión {n}. Tu progreso y tus insignias se quedan. ¿Quieres un nuevo periodo de {accessWeeks} semanas? Reinicia {level} por $2.99 y sigue desde donde lo dejaste.",
+    "restartDay25": "Últimos días para reiniciar {level} por $2.99. Tus piernas recuerdan más de lo que crees.",
+    "finish_walkHeadTimed": "Corriste un 5K. De caminar a esto. Tómate un momento para sentirlo.",
+    "finish_walkHead": "De caminar a esto. Tómate un momento para sentirlo.",
+    "finish_walkBody": "Cada sesión sumó más energía, piernas más fuertes y confianza de verdad.",
+    "finish_walkAsk": [
+      "¿Qué sigue? Elige tu meta:",
+      "Hazlo más fluido y más rápido: {name:5k-faster} suma juego de velocidad, cuestas y trotes tempo.",
+      "Suma distancia: {name:10k} construye tu carrera larga, paso a paso, hacia los 10K."
+    ],
+    "finish_fasterAsk": "¿Quieres ir más lejos? {name:10k} construye tu carrera larga, paso a paso, hacia los 10K, con tiradas fáciles largas y sesiones constantes.",
+    "finish_tenHeadTimed": "10K. Listo. Es mucha la energía y la fuerza que construiste.",
+    "finish_tenHead": "Es mucha la energía y la fuerza que construiste.",
+    "storeDesc": "Tres niveles: Walk to 5K, 5K Faster y 10K. El nivel de 10K es para quienes ya pueden correr un 5K. Sesiones guiadas de 2 a 5 días a la semana.",
+    "storeNote": "$6.99 por nivel. Pago único. El acceso dura la duración de tu plan más 2 semanas extra. Sin suscripción.",
+    "moreDistance": "¿Quieres más distancia más adelante? Mira el plan 5K to Half Marathon (próximamente).",
+    "levelsFooter": "Entrena 2, 3, 4 o 5 días a la semana: 18, 12, 10 o 9 semanas. Tu acceso dura la duración de tu plan más 2 semanas extra. Verás la fecha exacta de término antes de comprar.",
+    "midPlanNoFit": "Con {n} días a la semana, no queda tiempo suficiente para terminar las sesiones que faltan antes del {date}.",
+    "timeOnFeet": "Tiempo en movimiento",
+    "check12Routing": "Menos de 12:00 sugiere {name:walk-to-5k} desde la semana 1. 12:00 o más sugiere {name:walk-to-5k} desde la semana 6. La comprobación es gratis, no cuenta para el plan y no inicia ningún periodo de acceso."
   }
 };
 

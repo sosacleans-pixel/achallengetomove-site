@@ -6,6 +6,7 @@
  * repeats and repairs keep the streak alive but never move it. */
 import { todayISO, addDays, daysBetween, weekday } from "./dates.js";
 import { NAMES, ACCESS_WEEKS_BY_DAYS, PLAN_WEEKS_BY_DAYS } from "./config.js";
+import { COPY } from "./copy.js";
 
 export const STORAGE_KEY = "doing-a-5k-ladder";
 export const LEVEL_IDS = ["walk-to-5k", "5k-faster", "10k"];
@@ -369,6 +370,22 @@ export const REMINDERS = {
   restart_day25: "Last few days to restart {level} for $2.99. Your legs remember more than you think.",
 };
 
+/* Spanish (Attorney memo §10.1 and §12.1/§12.2): warnings, can't-finish and restart offers. Warnings and
+ * can't-finish never mention a price. Streak, save, easy-day, on-pace and pause stay English until Coach Fit's
+ * Spanish is approved (spec v6 §10). */
+export const REMINDERS_ES = {
+  warn_28: COPY.es.warn28,
+  warn_14: COPY.es.warn14,
+  warn_5: COPY.es.warn5,
+  cant_finish: COPY.es.cantFinish,
+  restart_day0: COPY.es.restartDay0,
+  restart_day25: COPY.es.restartDay25,
+};
+
+export function reminderText(id, lang = "en") {
+  return (lang === "es" && REMINDERS_ES[id]) || REMINDERS[id];
+}
+
 /* On pace = the core sessions done keep up with the plan's weekly rate since the window started. */
 export function onPace(s, levelId, today = todayISO()) {
   const run = currentRun(s, levelId);
@@ -378,7 +395,8 @@ export function onPace(s, levelId, today = todayISO()) {
 }
 
 /* Which ONE message would go out today (max 1 a day across channels). */
-export function pickReminder(s, levelId, { minutes = 30, today = todayISO() } = {}) {
+export function pickReminder(s, levelId, { minutes = 30, today = todayISO(), lang = "en" } = {}) {
+  const RT = (id) => reminderText(id, lang);
   if (!levelId || !currentRun(s, levelId)) return null;
   const ws = windowStatus(s, levelId, today);
   const st = computeStreak(s, today);
@@ -387,16 +405,16 @@ export function pickReminder(s, levelId, { minutes = 30, today = todayISO() } = 
   const total = totalSessions(s, levelId);
   const v = { level: DISPLAY_NAMES[levelId], n, streak: st.current, name: s.settings?.name || "friend", minutes, w: weekOf(s, n + 1, levelId), total, accessWeeks: ws.run.accessWeeks };
   if (ws.status === "expired") {
-    if (ws.offerDay === 1) return { id: "restart_day0", text: fill(REMINDERS.restart_day0, v), offer: true };
-    if (ws.offerDay === CONFIG.restart_reminder_day) return { id: "restart_day25", text: fill(REMINDERS.restart_day25, v), offer: true };
+    if (ws.offerDay === 1) return { id: "restart_day0", text: fill(RT("restart_day0"), v), offer: true };
+    if (ws.offerDay === CONFIG.restart_reminder_day) return { id: "restart_day25", text: fill(RT("restart_day25"), v), offer: true };
     return null;
   }
   if (ws.status !== "active") return null;
   for (const d of CONFIG.warnings_days_left) {
-    if (ws.daysLeft === d) return { id: `warn_${d}`, text: fill(REMINDERS[`warn_${d}`], v), transactional: true };
+    if (ws.daysLeft === d) return { id: `warn_${d}`, text: fill(RT(`warn_${d}`), v), transactional: true };
   }
   if (cantFinish(s, levelId, today) && !s.flags?.[`cantFinishSent:${ws.run.runId}`]) {
-    return { id: "cant_finish", text: REMINDERS.cant_finish, transactional: true, once: `cantFinishSent:${ws.run.runId}` };
+    return { id: "cant_finish", text: RT("cant_finish"), transactional: true, once: `cantFinishSent:${ws.run.runId}` };
   }
   const inactive = inactiveDays(s, today);
   if (inactive >= CONFIG.reminder_stop_after_inactive_days) {

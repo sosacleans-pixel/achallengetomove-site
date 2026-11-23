@@ -1,4 +1,4 @@
-const CACHE = "doing-a-5k-v9-ladder-v6a";
+const CACHE = "doing-a-5k-v10-ladder-v6b";
 const ASSETS = [
   "./icons/icon.svg",
   "./icons/icon-192.png",

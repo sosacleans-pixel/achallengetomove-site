@@ -188,4 +188,42 @@ assert.equal(rc.sessions, 40); assert.equal(rc.coreDone, 36); assert.equal(rc.fi
 assert.ok(E.badges(fz, "5k-faster").includes("A Challenge to Move: 5K Faster Finisher"));
 assert.equal(E.windowStatus(fz, "5k-faster", addDays(D0, 45)).status, "finished");
 
+
+// ---- Attorney memo §12 fixes ----
+{
+  const memo = readFileSync("/workspace/coach-salim/doing-a-5k-ladder-legal-review.md", "utf8");
+  const s12 = memo.slice(memo.indexOf("## 12. Update"));
+  for (const k of ["warn28", "warn14", "warn5", "restartDay0", "restartDay25"]) {
+    assert.ok(s12.includes(COPY.es[k]), `ES ${k} is §12 text`);
+    assert.ok(!/energía/.test(COPY.es[k]), `ES ${k} is not the CHD text`);
+  }
+  for (const k of ["warn28", "warn14", "warn5", "cantFinish"]) assert.ok(!/\$|2\.99/.test(COPY.es[k]), k);
+  assert.ok(!/the the/.test(COPY.en.twoDayGift));
+  assert.ok(!JSON.stringify(COPY).includes("You're starting"));
+  assert.equal(tc("finish_fasterAsk"), "Want to go longer? A Challenge to Move: 10K builds your long run, step by step, toward 10K, with long easy runs and steady sessions.");
+  assert.equal(tc("finish_walkHead"), "From walking to this. Let that sink in.");
+  assert.equal(COPY.es.timeOnFeet, "Tiempo en movimiento");
+  // ES warnings wired into the engine
+  const es = E.pickReminder(s, "walk-to-5k", { today: addDays(D0, 70), lang: "es" });
+  assert.equal(es.id, "warn_28"); assert.match(es.text, /^Vas en la sesión \d+ de tu programa A Challenge to Move: Walk to 5K/);
+  const es0 = E.pickReminder(s, "walk-to-5k", { today: addDays(D0, 98), lang: "es" });
+  assert.match(es0.text, /nuevo periodo de 14 semanas/);
+  assert.equal(E.reminderText("cant_finish", "es"), COPY.es.cantFinish);
+}
+// name scheme: site strings for both options, never the 5K house name on the 10K level
+{
+  const { SITE_STRINGS } = await import("../js/ladder/config.js");
+  assert.deepEqual(Object.keys(SITE_STRINGS).sort(), ["doing", "umbrella"]);
+  for (const v of Object.values(SITE_STRINGS)) for (const x of Object.values(v)) assert.ok(!/Doing a 5K: 10K|[\u2013\u2014]/.test(x));
+  const ack = readFileSync(join(here, "../../../js/health-ack.js"), "utf8");
+  const T = JSON.parse(ack.match(/var T = (\{.*?\});\n/s)[1]);
+  const { createHash } = await import("node:crypto");
+  for (const lang of ["en", "es"]) {
+    const { hash, ...rest } = T[lang];
+    assert.equal(createHash("sha256").update(JSON.stringify(rest)).digest("hex"), hash, `ack hash ${lang}`);
+    assert.ok(T[lang].sections.some((x) => x[0] === "10k"), `ack 10K ${lang}`);
+    assert.ok(!/Doing a 5K, 5K to Half/.test(T[lang].lead));
+  }
+}
+
 console.log("ladder engine: all checks passed");

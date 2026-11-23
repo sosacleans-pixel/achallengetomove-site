@@ -74,7 +74,6 @@ const LEVEL_SUMMARY = {
   "5k-faster": "Add speed play, hills and tempo runs for a smoother, quicker 5K.",
   "10k": "Build your long run step by step, all the way to 10K.",
 };
-const HEAD_START_SUMMARY = "You're starting at week 6, with longer jogs from day one.";
 const HIGHER_START = { "5k-faster": "a 5K run", "10k": "40-minute long runs" };
 const accessThrough = (end) => `Access through ${prettyFull(end)}. No automatic renewal.`;
 
@@ -213,7 +212,7 @@ function renderCheck12() {
           <li>Then an easy jog for up to 12:00. Tap Stop to walk.</li>
           <li>Then a 5:00 walk.</li>
         </ol>
-        <p><small>Under 12:00 suggests ${esc(DN("walk-to-5k"))} from week 1. 12:00 or more suggests ${esc(DN("walk-to-5k"))} from week 6. The check is free, counts toward nothing and starts no access window.</small></p>
+        <p><small>${esc(copy("check12Routing"))}</small></p>
         <label class="check-row"><input type="checkbox" id="c12-adult"> I am 18 or older.</label>
         <button type="button" class="btn btn-primary btn-block" id="c12-start" disabled>Start the check</button>
         <a class="btn btn-secondary btn-block" href="#l-start?q=2">Back</a>
@@ -285,9 +284,9 @@ function renderLevels() {
   const result = suggest === "walk-to-5k" && hs ? copy("headStart") : RESULT_LINE(DN(suggest));
   return shell(`
     <p class="ladder-result">${esc(result)}</p>
-    <p class="ladder-lede">${esc(suggest === "walk-to-5k" && hs ? HEAD_START_SUMMARY : LEVEL_SUMMARY[suggest])}</p>
+    ${suggest === "walk-to-5k" && hs ? "" : `<p class="ladder-lede">${esc(LEVEL_SUMMARY[suggest])}</p>`}
     ${cards}
-    <p><small>Train 2, 3, 4 or 5 days a week: 18, 12, 10 or 9 weeks. Your access lasts the length of your plan plus 2 extra weeks. You'll see the exact end date before you buy.</small></p>
+    <p><small>${esc(copy("levelsFooter"))}</small></p>
   `, { title: "Pick your level", nav: false });
 }
 
@@ -317,7 +316,7 @@ function renderDays() {
   if (change) {
     const fits = fitsAfterChange(L, cur);
     notice = `<p class="banner ladder-banner">${esc(copy("midPlanChange", { endDate: prettyFull(run.windowEnd) }))}</p>
-      ${!fits && cur !== dpw(L) ? `<p class="ladder-warn"><small>At ${cur} days a week, the sessions left won't fit before ${prettyFull(run.windowEnd)}.</small></p>` : ""}`;
+      ${!fits && cur !== dpw(L) ? `<p class="ladder-warn"><small>${esc(copy("midPlanNoFit", { n: cur, date: prettyFull(run.windowEnd) }))}</small></p>` : ""}`;
   } else {
     notice = `<p class="ladder-access"><strong>${esc(accessLineFor(cur))}</strong></p>
       ${cur === 2 ? `<p class="ladder-warn"><small>${esc(copy("twoDay", { endDate: prettyFull(accessEnd(todayISO(), 2)) }))}</small></p>` : ""}`;
@@ -570,6 +569,7 @@ function renderToday() {
     ? `At ${dpw(L)} days a week you'll finish around ${pretty(finishDate)}, inside your access window.`
     : `At ${dpw(L)} days a week the plan runs past ${prettyFull(run.windowEnd)}. Add an extra day some weeks to catch up.`;
   const rem = pickReminder(L, levelId, { minutes: v.minutes });
+  const remEs = rem && /^(warn_|cant_finish|restart_)/.test(rem.id) ? pickReminder(L, levelId, { minutes: v.minutes, lang: "es" }) : null;
   const total = totalSessions(L);
   return shell(`
     <p class="today-greet">${L.settings?.name ? `Hi, ${esc(L.settings.name)}` : "Your next session"}</p>
@@ -584,7 +584,7 @@ function renderToday() {
     ${banners.join("")}
     ${card}
     <p class="ladder-fit"><small>${esc(fit)}</small></p>
-    ${previewAllowed() && rem ? `<div class="card ladder-reminder"><p class="ladder-tag">Reminder preview</p><p>${esc(rem.text)}</p><p class="muted"><small>Max one message a day. Push and email need sign-in and Salim's approval; this preview shows the in-app copy only.${rem.offer ? " Offers go by email only with the marketing opt-in." : ""}</small></p></div>` : ""}
+    ${previewAllowed() && rem ? `<div class="card ladder-reminder"><p class="ladder-tag">Reminder preview</p><p>${esc(rem.text)}</p>${remEs ? `<p lang="es"><small><strong>Español:</strong> ${esc(remEs.text)}</small></p>` : ""}<p class="muted"><small>Max one message a day. Push and email need sign-in and Salim's approval; this preview shows the in-app copy only.${rem.offer ? " Offers go by email only with the marketing opt-in." : ""}</small></p></div>` : ""}
   `, { title: "Today", eyebrow: DN(levelId) });
 }
 
@@ -754,7 +754,7 @@ function renderDone() {
     const shown = r ? (r.capped ? "" : mmss(r.seconds)) : "";
     fiveK = `
       <div class="ladder-5k">
-        <p class="ladder-5k-label">${r?.capped ? "Time on your feet" : `Your ${dist} time`}</p>
+        <p class="ladder-5k-label">${r?.capped ? esc(copy("timeOnFeet")) : `Your ${dist} time`}</p>
         <p class="ladder-5k-time">${r?.capped ? `${mmss(cap)}` : shown || "Not recorded"}</p>
         ${r?.capped ? `<p>${esc(capText(cap))}</p>` : ""}
         <button type="button" class="text-link ladder-linkbtn" id="edit-time">Edit time</button>
@@ -898,14 +898,16 @@ function renderProgress() {
   `, { title: "Progress", eyebrow: DN(levelId) });
 }
 /* ---------------- finish screens (after core session 36), Coach Fit v6 §10 ---------------- */
-function finishCopy(levelId, rc, tm) {
+/* Attorney memo §12.5: only claim "You ran a 5K" or "10K. Done." when an uncapped time was logged. */
+function askHtml(lines) {
+  const bold = (x) => esc(x).replace(/^([^:]+:)/, "<strong>$1</strong>");
+  return lines.map(bold).join("<br>");
+}
+function finishCopy(levelId, rc, tm, lang = "en") {
+  const c = (k) => copy(`finish_${k}`, {}, lang);
+  const timed = !!tm(rc.final?.fiveK);
   if (levelId === "walk-to-5k") {
-    return {
-      head: "You ran a 5K. From walking to this. Let that sink in.",
-      body: "Every session built more energy, stronger legs and real confidence.",
-      ask: `<strong>Where to next? Pick your goal:</strong><br><strong>Run it smoother and quicker:</strong> <em>${esc(DN("5k-faster"))}</em> adds speed play, hills and tempo runs.<br><strong>Go the distance:</strong> <em>${esc(DN("10k"))}</em> builds your long run, step by step, to 10K.`,
-      next: ["5k-faster", "10k"],
-    };
+    return { head: c(timed ? "walkHeadTimed" : "walkHead"), body: c("walkBody"), ask: askHtml(c("walkAsk")), next: ["5k-faster", "10k"] };
   }
   if (levelId === "5k-faster") {
     const fin = tm(rc.final?.fiveK);
@@ -913,12 +915,12 @@ function finishCopy(levelId, rc, tm) {
     return {
       head: fin && base ? `Your 5K: ${fin}. First session: ${base}.` : "Speed, strength and confidence, all built. Nice work.",
       body: "",
-      ask: `<strong>Ready to go longer?</strong> <em>${esc(DN("10k"))}</em> turns that fitness into a full 10K, with long easy runs and steady sessions.`,
+      ask: askHtml([c("fasterAsk")]).replace(/^<strong>([^<]*)<\/strong>/, "$1").replace(/^([^?]+\?)/, "<strong>$1</strong>"),
       next: ["10k"],
     };
   }
   return {
-    head: "10K. Done. That's a whole lot of energy and strength you built.",
+    head: c(timed ? "tenHeadTimed" : "tenHead"),
     body: "",
     ask: "<strong>What's next?</strong> Run it again with fresh goals, or sharpen your speed.",
     next: ["5k-faster"],
