@@ -248,6 +248,11 @@ assert.equal(E.windowStatus(fz, "5k-faster", addDays(D0, 45)).status, "finished"
     assert.ok(h.includes("Last updated: November 22, 2026. · <span lang=\"es\">Última actualización: 22 de noviembre de 2026.</span>") && !h.includes("[PUBLISH DATE]"), f);
   }
   assert.ok(chdPage.includes("<strong>Effective date: November 22, 2026.</strong>"));
+  {
+    const t = readFileSync(join(here, "../../../purchase-terms/index.html"), "utf8");
+    assert.ok(t.includes("For apps that use sign-in, you sign in with a link sent to that email.") && !t.includes("used to redeem the code). You sign in with"), "terms EN sign-in line (Attorney, 10:57 PM MT)");
+    assert.ok(t.includes("En las apps que usan inicio de sesión, entras con un enlace que enviamos a ese correo.") && !t.includes("Inicias sesión con un enlace que te enviamos"), "terms ES sign-in line");
+  }
   for (const [k, en, es] of [["umbrella", "Back to the 5K and 10K plans", "Volver a los planes de 5K y 10K"], ["doing", "Back to Doing a 5K and Doing a 10K", "Volver a Doing a 5K y Doing a 10K"]]) {
     assert.equal(C.SITE_STRINGS[k].gearBackEn, en); assert.equal(C.SITE_STRINGS[k].gearBackEs, es);
   }
