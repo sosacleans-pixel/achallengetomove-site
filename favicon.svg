@@ -1,4 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="A Challenge to Move">
-  <rect width="32" height="32" rx="6" fill="#0E0E0C"/>
-  <text x="16" y="23" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="22" fill="#FFCA10">A</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="A Challenge to Move"><circle cx="16" cy="16" r="15.5" fill="#FFCA10"/><path d="M9.897159090909092 25.0 12.11875 2.0H19.920454545454547L22.102840909090908 25.0H17.751136363636363L17.42443181818182 21.288636363636364H14.653977272727273L14.366477272727273 25.0ZM14.980681818181818 17.616477272727273H17.071590909090908L16.06534090909091 5.920454545454547H15.85625Z" fill="#0E0E0C"/></svg>
