@@ -2,7 +2,7 @@
 
 One icon per program, built by hand as SVG on a 1024 grid: charcoal `#1e1e1e` rounded square (rx 224),
 a thin yellow inner outline, one bold symbol in yellow `#ffc700` with a rust `#bf3404` or cream `#fff7e8` accent,
-and a short cream label. Label digits are outlined paths from Anton (OFL, see `holiday-challenge/fonts/`),
+and a short cream label. Label digits are outlined paths from Anton (OFL),
 so the SVGs need no web font.
 
 Each folder has:
@@ -22,6 +22,5 @@ The site shows `icon.svg` at the top left of each program card on the homepage a
 | 5K 2-Pack | `5k-2-pack/` | two stacked tiles with a 2, `5K` | bundle, no app of its own; store and checkout art only |
 | 75 Adaptive | `75-adaptive/` | bending arrow, `75` | this repo: `75-day/app/icons/75-adaptive-{180,192,512}.png` and `75-adaptive.svg` (the app swaps `#app-apple-icon` by mode in `75-day/app/js/app.js`) |
 | 75 All-In | `75-all-in/` | flame, `75` | this repo: `75-day/app/icons/75-all-in-{180,192,512}.png` and `75-all-in.svg`, plus `75-day/app/manifest.webmanifest` |
-| 30 Days Before X-mas Challenge | `30-days-before-xmas/` | tree with star, `30` | holiday app when it ships; could replace `holiday-challenge/img/30-days-before-xmas.svg` (kept as is for now, still used by the coming-soon page and store image) |
 
 To rebuild: the generator scripts are kept outside the repo in the Web Manager workspace (`/workspace/app-icons/src/`).

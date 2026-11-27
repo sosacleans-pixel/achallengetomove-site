@@ -46,7 +46,7 @@ export const SITE_STRINGS = {
     "termsLeadEs": "Los planes para correr de A Challenge to Move se venden en tres niveles: A Challenge to Move: Walk to 5K, A Challenge to Move: 5K Faster y A Challenge to Move: 10K. La duración del plan depende de cuántos días a la semana entrenes: 18, 12, 10 o 9 semanas. Tu acceso dura la duración de tu plan más 2 semanas extra. Esta sección se aplica a estos planes en lugar del Periodo de acceso de 12 meses y de los términos de regalo y reembolso de arriba, cuando sean distintos.",
     "hsListEn": "the A Challenge to Move running plans (Walk to 5K, 5K Faster and 10K)",
     "hsListEs": "los planes para correr de A Challenge to Move (Walk to 5K, 5K Faster y 10K)",
-    "chd53": "including A Challenge to Move: 30 Days Before X-mas Challenge, the A Challenge to Move running plans (Walk to 5K, 5K Faster and 10K) and the 30-Day Whole Food Plan.",
+    "chd53": "including the A Challenge to Move running plans (Walk to 5K, 5K Faster and 10K) and the 30-Day Whole Food Plan.",
     "gearTitle": "Gear for the 5K and 10K plans",
     "gearLede": "the A Challenge to Move running plans (Walk to 5K, 5K Faster and 10K) and 5K to Half Marathon plans.",
     "halfLink": "Not at 5K yet? Start with the A Challenge to Move running plans.",
@@ -64,7 +64,7 @@ export const SITE_STRINGS = {
     "termsLeadEs": "Doing a 5K y Doing a 10K se venden en tres niveles: Doing a 5K: Walk to 5K, Doing a 5K: 5K Faster y Doing a 10K. La duración del plan depende de cuántos días a la semana entrenes: 18, 12, 10 o 9 semanas. Tu acceso dura la duración de tu plan más 2 semanas extra. Esta sección se aplica a estos planes en lugar del Periodo de acceso de 12 meses y de los términos de regalo y reembolso de arriba, cuando sean distintos.",
     "hsListEn": "Doing a 5K (Walk to 5K and 5K Faster), Doing a 10K",
     "hsListEs": "Doing a 5K (Walk to 5K y 5K Faster), Doing a 10K",
-    "chd53": "including A Challenge to Move: 30 Days Before X-mas Challenge, Doing a 5K (Walk to 5K and 5K Faster), Doing a 10K and the 30-Day Whole Food Plan.",
+    "chd53": "including Doing a 5K (Walk to 5K and 5K Faster), Doing a 10K and the 30-Day Whole Food Plan.",
     "gearTitle": "Gear for Doing a 5K and Doing a 10K",
     "gearLede": "the Doing a 5K, Doing a 10K and 5K to Half Marathon plans.",
     "halfLink": "Not at 5K yet? Start with Doing a 5K: Walk to 5K.",
@@ -110,16 +110,16 @@ export function chd65(scheme = NAME_SCHEME, lang = "en", d = LAUNCH_DATES) {
   const allSame = d["walk-to-5k"] === d["5k-faster"] && d["5k-faster"] === d["10k"];
   if (scheme === "umbrella") {
     const head = es
-      ? "El Reto 30 Días Antes de X-mas y los planes para correr de A Challenge to Move (Walk to 5K, 5K Faster y 10K) usan inicio de sesión por correo"
-      : "The 30 Days Before X-mas Challenge and the A Challenge to Move running plans (Walk to 5K, 5K Faster and 10K) use email sign-in";
+      ? "Los planes para correr de A Challenge to Move (Walk to 5K, 5K Faster y 10K) usan inicio de sesión por correo"
+      : "The A Challenge to Move running plans (Walk to 5K, 5K Faster and 10K) use email sign-in";
     const runs = allSame
       ? `${es ? "los planes para correr" : "the running plans"} ${on(d["10k"])}`
       : groupByDate([["Walk to 5K", d["walk-to-5k"]], ["5K Faster", d["5k-faster"]], ["10K", d["10k"]]], lang);
     return `${head} (${runs}):`;
   }
   const head = es
-    ? "El Reto 30 Días Antes de X-mas, Doing a 5K (Walk to 5K y 5K Faster) y Doing a 10K usan inicio de sesión por correo"
-    : "The 30 Days Before X-mas Challenge, Doing a 5K (Walk to 5K and 5K Faster) and Doing a 10K use email sign-in";
+    ? "Doing a 5K (Walk to 5K y 5K Faster) y Doing a 10K usan inicio de sesión por correo"
+    : "Doing a 5K (Walk to 5K and 5K Faster) and Doing a 10K use email sign-in";
   const fiveSame = d["walk-to-5k"] === d["5k-faster"];
   const runs = allSame
     ? (es ? `Doing a 5K y Doing a 10K, ambos ${on(d["10k"])}` : `Doing a 5K and Doing a 10K both ${on(d["10k"])}`)

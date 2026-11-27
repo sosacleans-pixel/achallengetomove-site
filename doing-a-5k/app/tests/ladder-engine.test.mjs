@@ -232,9 +232,9 @@ assert.equal(E.windowStatus(fz, "5k-faster", addDays(D0, 45)).status, "finished"
   const s13 = memo.slice(memo.indexOf("## 13. Update"));
   const C = await import("../js/ladder/config.js");
   // CHD 65: running plans only (Salim, 10:53 PM MT: Whole Food left out of the sign-in line), go-live date filled.
-  assert.equal(C.chd65("umbrella", "en"), "The 30 Days Before X-mas Challenge and the A Challenge to Move running plans (Walk to 5K, 5K Faster and 10K) use email sign-in (the running plans starting November 22, 2026):");
-  assert.equal(C.chd65("umbrella", "es"), "El Reto 30 Días Antes de X-mas y los planes para correr de A Challenge to Move (Walk to 5K, 5K Faster y 10K) usan inicio de sesión por correo (los planes para correr a partir del 22 de noviembre de 2026):");
-  assert.equal(C.chd65("doing", "en"), "The 30 Days Before X-mas Challenge, Doing a 5K (Walk to 5K and 5K Faster) and Doing a 10K use email sign-in (Doing a 5K and Doing a 10K both starting November 22, 2026):");
+  assert.equal(C.chd65("umbrella", "en"), "The A Challenge to Move running plans (Walk to 5K, 5K Faster and 10K) use email sign-in (the running plans starting November 22, 2026):");
+  assert.equal(C.chd65("umbrella", "es"), "Los planes para correr de A Challenge to Move (Walk to 5K, 5K Faster y 10K) usan inicio de sesión por correo (los planes para correr a partir del 22 de noviembre de 2026):");
+  assert.equal(C.chd65("doing", "en"), "Doing a 5K (Walk to 5K and 5K Faster) and Doing a 10K use email sign-in (Doing a 5K and Doing a 10K both starting November 22, 2026):");
   for (const k of ["umbrella", "doing"]) for (const l of ["en", "es"]) {
     assert.ok(!/Whole Food/.test(C.chd65(k, l)), "no Whole Food sign-in claim");
     assert.equal(C.SITE_STRINGS[k][l === "es" ? "chd65Es" : "chd65"], C.chd65(k, l));
@@ -243,9 +243,9 @@ assert.equal(E.windowStatus(fz, "5k-faster", addDays(D0, 45)).status, "finished"
   assert.ok(sep.includes("(Doing a 5K starting November 22, 2026, and Doing a 10K starting [10K DATE]):"), "one date per plan");
   const chdPage = readFileSync(join(here, "../../../privacy/consumer-health-data/index.html"), "utf8");
   assert.ok(chdPage.includes(C.chd65("umbrella", "en")) && !/Whole Food Plan starting|WHOLE FOOD|\[PUBLISH DATE\]|LAUNCH DATE\]/.test(chdPage));
-  for (const f of ["purchase-terms", "health-safety"]) {
+  for (const [f, en, es] of [["purchase-terms", "November 27, 2026", "27 de noviembre de 2026"], ["health-safety", "November 22, 2026", "22 de noviembre de 2026"]]) {
     const h = readFileSync(join(here, `../../../${f}/index.html`), "utf8");
-    assert.ok(h.includes("Last updated: November 22, 2026. · <span lang=\"es\">Última actualización: 22 de noviembre de 2026.</span>") && !h.includes("[PUBLISH DATE]"), f);
+    assert.ok(h.includes(`Last updated: ${en}. · <span lang="es">Última actualización: ${es}.</span>`) && !h.includes("[PUBLISH DATE]"), f);
   }
   assert.ok(chdPage.includes("<strong>Effective date: November 22, 2026.</strong>"));
   {

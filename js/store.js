@@ -94,7 +94,7 @@
 
     if (product.status === "coming_soon") {
       if (product.notifyHref) {
-        /* Coming-soon page with its own sign-up (e.g. /holiday-challenge/). No price, no buy button. */
+        /* Coming-soon page with its own sign-up. No price, no buy button. */
         parts.push(
           '<a class="btn btn-primary btn-small" href="' +
             escapeHtml(product.notifyHref) +
