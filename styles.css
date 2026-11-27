@@ -2650,3 +2650,24 @@ section {
 .hx-dot {
   color: var(--charcoal);
 }
+
+/* Coach-match: coaching band uses the coach site's forest green, as its specialties band does. */
+.hx-coach {
+  background: var(--rust);
+  color: var(--paper);
+  border-top: 3px solid var(--yellow);
+}
+
+.hx-coach .hx-kicker--dark {
+  color: var(--paper);
+}
+
+.hx-coach .btn-dark {
+  background: var(--charcoal);
+  color: var(--yellow);
+  border-color: var(--charcoal);
+}
+
+.hx-coach .btn-dark:hover {
+  box-shadow: 0 6px 0 var(--yellow);
+}
