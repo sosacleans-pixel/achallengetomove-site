@@ -5,7 +5,7 @@
  * This is the ONLY place the tag lives. While it is empty, links go to the
  * plain product page with no tag parameter.
  */
-const AFFILIATE_TAG = "";
+const AFFILIATE_TAG = "jorgesheyaime-20";
 
 (function () {
   "use strict";
