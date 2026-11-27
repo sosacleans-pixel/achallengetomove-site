@@ -48,8 +48,8 @@ edit("purchase-terms/index.html", (s) => {
 edit("health-safety/index.html", (s) => appLists(s, esc(SITE.hsListEn), esc(SITE.hsListEs)));
 
 edit("privacy/consumer-health-data/index.html", (s) => {
-  s = sub(s, /including A Challenge to Move: 30 Days Before X-mas Challenge, .*? the 30-Day Whole Food Plan\./, () => SITE.chd53, "CHD 53");
-  s = sub(s, /The 30 Days Before X-mas Challenge[ ,].*?use email sign-in \(.*?\):/, () => SITE.chd65, "CHD 65 (§13.1; ES chd65Es stored, page is English-only)");
+  s = sub(s, /including (?:the A Challenge to Move running plans|Doing a 5K).*? the 30-Day Whole Food Plan\./, () => SITE.chd53, "CHD 53");
+  s = sub(s, /(?:The A Challenge to Move running plans|Doing a 5K \(Walk to 5K and 5K Faster\) and Doing a 10K).*?use email sign-in \(.*?\):/, () => SITE.chd65, "CHD 65 (§13.1; ES chd65Es stored, page is English-only)");
   return s;
 });
 

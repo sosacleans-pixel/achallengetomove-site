@@ -12,8 +12,8 @@
     status.textContent = msg;
   }
 
-  // Optional per-form messages (data-msg-invalid / -sending / -ok / -error), e.g. the ES text on
-  // /holiday-challenge/. Forms without them keep the default English messages below.
+  // Optional per-form messages (data-msg-invalid / -sending / -ok / -error), e.g. translated text.
+  // Forms without them keep the default English messages below.
   function msg(key, fallback) {
     return form.getAttribute("data-msg-" + key) || fallback;
   }
@@ -35,7 +35,7 @@
       _honey: honey ? honey.value : ""
     };
     // List tag: a form can name its list and subject with hidden fields (list, lang, _subject),
-    // e.g. the 30 Days Before X-mas Challenge sign-up. The homepage form sends the same fields as before.
+    // e.g. a list-specific sign-up. The homepage form sends the same fields as before.
     ["_subject", "list", "lang"].forEach(function (name) {
       var f = form.querySelector('input[type="hidden"][name="' + name + '"]');
       if (f && f.value) payload[name] = f.value;
@@ -58,8 +58,7 @@
       })
       .then(function () {
         // GA4: sign_up only after FormSubmit confirms success (no email or other personal data sent).
-        // Never on the holiday challenge pages (/holiday-challenge/...): GA stays off there.
-        if (typeof window.gtag === "function" && !/^\/holiday-challenge(\/|$)/i.test(location.pathname)) window.gtag("event", "sign_up", { method: "notify_form" });
+        if (typeof window.gtag === "function") window.gtag("event", "sign_up", { method: "notify_form" });
         form.hidden = true;
         say(msg("ok", "Thank you! You're on the list. We'll email you when new challenges launch."));
         status.focus();
