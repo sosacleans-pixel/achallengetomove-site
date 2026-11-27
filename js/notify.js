@@ -36,7 +36,7 @@
     };
     // List tag: a form can name its list and subject with hidden fields (list, lang, _subject, program),
     // e.g. a list-specific sign-up. The homepage form sends the same fields as before.
-    // A #notify?program= hash from a "Get notified" button can set the subject too.
+    // A ?notify=75-adaptive#notify link from a "Get notified" button can set the subject too.
     ["_subject", "list", "lang", "program"].forEach(function (name) {
       var f = form.querySelector('input[type="hidden"][name="' + name + '"]');
       if (f && f.value) payload[name] = f.value;

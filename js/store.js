@@ -105,7 +105,7 @@
       } else {
         parts.push(
           '<a class="btn btn-primary btn-small" href="' +
-            escapeHtml("/#notify?program=" + (product.id || "")) +
+            escapeHtml("/?notify=" + (product.id || "") + "#notify") +
             '">Get notified</a>'
         );
       }
