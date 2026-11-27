@@ -346,7 +346,7 @@ function estimateFromDraft(p) {
       goal: p.goal || "maintain",
     });
   } catch {
-    return "—";
+    return "n/a";
   }
 }
 
@@ -519,7 +519,7 @@ function renderKitchenClear() {
       </div>
       <div class="kitchen-group-dots" aria-hidden="true">${groupDots}</div>
     </div>
-    ${celebrated ? `<div class="card kitchen-celebrate" id="kitchen-celebrate"><p class="kitchen-celebrate-title">Kitchen cleared!</p><p>You did the prep work — Day 1 will feel easier. Proud of you.</p><a href="#/today" class="btn btn-primary btn-block">Go to Today</a></div>` : ""}
+    ${celebrated ? `<div class="card kitchen-celebrate" id="kitchen-celebrate"><p class="kitchen-celebrate-title">Kitchen cleared!</p><p>You did the prep work, and Day 1 will feel easier. Proud of you.</p><a href="#/today" class="btn btn-primary btn-block">Go to Today</a></div>` : ""}
     <div class="card" id="kitchen-checklist-card" data-all-ids="${escapeAttr(allIds)}">
       <p class="kitchen-group-step muted">Group ${gi + 1} of ${groupCount}</p>
       <h2 class="kitchen-group-title">${escapeHtml(group.title)}</h2>
@@ -529,7 +529,7 @@ function renderKitchenClear() {
       <ul class="kitchen-list">${clearRows}</ul>
       <div class="kitchen-label-section">
         <h3>What to look for on the label</h3>
-        <p class="muted">Tap each line when you know what to watch for — these count toward your progress.</p>
+        <p class="muted">Tap each line when you know what to watch for. These count toward your progress.</p>
         <div class="chip-row kitchen-label-row">${labelChips}</div>
       </div>
       <div class="kitchen-group-nav">
@@ -629,10 +629,10 @@ function renderCheckInForm(checkIn, key) {
   const c = checkIn || {};
   return `
     <div class="field"><label>Water (cups)</label><input type="number" id="ci-water" min="0" max="20" value="${c.water ?? ""}"></div>
-    <div class="field"><label>Energy (1–5)</label><input type="range" id="ci-energy" min="1" max="5" value="${c.energy ?? 3}"></div>
-    <div class="field"><label>Sleep quality (1–5)</label><input type="range" id="ci-sleep" min="1" max="5" value="${c.sleep ?? 3}"></div>
-    <div class="field"><label>Cravings (1–5)</label><input type="range" id="ci-cravings" min="1" max="5" value="${c.cravings ?? 3}"></div>
-    <div class="field"><label>Digestion (1–5)</label><input type="range" id="ci-digestion" min="1" max="5" value="${c.digestion ?? 3}"></div>
+    <div class="field"><label>Energy (1 to 5)</label><input type="range" id="ci-energy" min="1" max="5" value="${c.energy ?? 3}"></div>
+    <div class="field"><label>Sleep quality (1 to 5)</label><input type="range" id="ci-sleep" min="1" max="5" value="${c.sleep ?? 3}"></div>
+    <div class="field"><label>Cravings (1 to 5)</label><input type="range" id="ci-cravings" min="1" max="5" value="${c.cravings ?? 3}"></div>
+    <div class="field"><label>Digestion (1 to 5)</label><input type="range" id="ci-digestion" min="1" max="5" value="${c.digestion ?? 3}"></div>
     <div class="field"><label>Note (optional)</label><textarea id="ci-note">${escapeHtml(c.note || "")}</textarea></div>
     <button type="button" class="btn btn-primary btn-block" id="ci-save" data-key="${key}">Save check-in</button>
   `;
@@ -697,7 +697,7 @@ function renderLog() {
       </div>
       <div class="field"><label>Search foods</label><input type="search" id="log-search" placeholder="e.g. salmon, rice, apple" autocomplete="off" enterkeyhint="search"></div>
       <div class="search-results hidden" id="log-results"></div>
-      <div id="log-selected-hint" class="muted ${pendingLog ? "" : "hidden"}">${pendingLog ? `Selected: <strong>${escapeHtml(pendingLog.food.name)}</strong> — adjust servings below, then tap Add to ${mealLabel(defaultMeal)}.` : ""}</div>
+      <div id="log-selected-hint" class="muted ${pendingLog ? "" : "hidden"}">${pendingLog ? `Selected: <strong>${escapeHtml(pendingLog.food.name)}</strong>. Adjust servings below, then tap Add to ${mealLabel(defaultMeal)}.` : ""}</div>
     </div>
     <div class="card">
       <h2>Custom food</h2>
@@ -746,7 +746,7 @@ function renderMeals() {
     const m = plan?.meals?.[slot];
     if (!m) return "";
     return `<details class="card meal-card" open>
-      <summary>${label}: ${escapeHtml(m.name)} <span class="meal-meta">~${m.calories} cal · P ${m.protein}g · C ${m.carbs ?? "—"}g · F ${m.fat ?? "—"}g</span></summary>
+      <summary>${label}: ${escapeHtml(m.name)} <span class="meal-meta">~${m.calories} cal · P ${m.protein}g · C ${m.carbs ?? "n/a"}g · F ${m.fat ?? "n/a"}g</span></summary>
       <p><strong>Ingredients</strong></p>
       <ul>${m.ingredients.map((i) => (i === "---" ? "" : `<li>${escapeHtml(i)}</li>`)).join("")}</ul>
       <p><strong>Steps</strong></p>
@@ -780,7 +780,7 @@ function renderMeals() {
   return `
     <h1 class="page-title">Your meal plan</h1>
     <div class="card">
-      <div class="field"><label>Program day (1–30)</label>
+      <div class="field"><label>Program day (1 to 30)</label>
         <input type="number" id="meals-day" min="1" max="30" value="${dayNum}">
       </div>
       <p class="muted">${escapeHtml(plan?.themeNote || "")}</p>
@@ -802,7 +802,7 @@ function renderMeals() {
         <button type="button" class="chip grocery-scope ${scope === "month" ? "selected" : ""}" data-scope="month">Full month</button>
       </div>
       ${scope === "week" ? `<div class="field"><label>Week</label><select id="grocery-week">${[1, 2, 3, 4].map((w) => `<option value="${w}" ${w === week ? "selected" : ""}>Week ${w}</option>`).join("")}</select></div>` : ""}
-      <p class="muted" id="grocery-total">${grocery.totalLines} items · ${scope === "week" ? `Week ${week}` : "Days 1–30"}</p>
+      <p class="muted" id="grocery-total">${grocery.totalLines} items · ${scope === "week" ? `Week ${week}` : "Days 1 to 30"}</p>
       ${shopHtml}
       <button type="button" class="btn btn-primary btn-small" id="grocery-get">Get these groceries</button>
       <button type="button" class="btn btn-secondary btn-small" id="grocery-copy">Share / Copy as text</button>
@@ -901,7 +901,7 @@ function selectPendingFood(food) {
   const hint = $("#log-selected-hint");
   if (hint) {
     hint.classList.remove("hidden");
-    hint.innerHTML = `Selected: <strong>${escapeHtml(food.name)}</strong> — adjust servings below, then tap Add.`;
+    hint.innerHTML = `Selected: <strong>${escapeHtml(food.name)}</strong>. Adjust servings below, then tap Add.`;
   }
   $$(".search-pick").forEach((btn) => {
     btn.classList.toggle("selected", btn.dataset.foodId === food.id);
@@ -927,7 +927,7 @@ function commitPendingLog() {
   if (comp) {
     const msg =
       comp.status === "on"
-        ? "On plan — logged!"
+        ? "On plan, logged!"
         : comp.status === "off"
           ? `Off plan: ${comp.reason}`
           : comp.reason;
@@ -990,14 +990,14 @@ function renderFoods() {
       <p class="muted">${fl.enjoy.length} foods on your plan.</p>
       <div class="food-list-scroll" id="enjoy-list"></div>
     </div>
-    ${fl.paused?.length ? `<div class="card"><h2>Removed from your Eat list</h2><ul>${fl.paused.map((p) => `<li><strong>${escapeHtml(p.label)}</strong> — ${escapeHtml(p.reason)}</li>`).join("")}</ul></div>` : ""}
+    ${fl.paused?.length ? `<div class="card"><h2>Removed from your Eat list</h2><ul>${fl.paused.map((p) => `<li><strong>${escapeHtml(p.label)}</strong>: ${escapeHtml(p.reason)}</li>`).join("")}</ul></div>` : ""}
     <div class="food-list-group card">
       <h2>Skip for 30 days</h2>
-      <ul>${fl.avoid.map((a) => `<li><strong>${escapeHtml(a.label)}</strong> — <span class="muted">${escapeHtml(a.detail)}</span></li>`).join("")}</ul>
+      <ul>${fl.avoid.map((a) => `<li><strong>${escapeHtml(a.label)}</strong>: <span class="muted">${escapeHtml(a.detail)}</span></li>`).join("")}</ul>
     </div>
     <div class="food-list-group card">
       <h2>Your extra avoids</h2>
-      ${fl.extraAvoids.length ? `<ul>${fl.extraAvoids.map((e) => `<li><strong>${escapeHtml(e.text)}</strong> — ${escapeHtml(e.reason)}</li>`).join("")}</ul>` : '<p class="muted">None — add allergies in Settings.</p>'}
+      ${fl.extraAvoids.length ? `<ul>${fl.extraAvoids.map((e) => `<li><strong>${escapeHtml(e.text)}</strong>: ${escapeHtml(e.reason)}</li>`).join("")}</ul>` : '<p class="muted">None. Add allergies in Settings.</p>'}
     </div>
   `;
 }
@@ -1056,7 +1056,7 @@ function renderCheckInTrends() {
 
 function renderReintro() {
   if (!reintroUnlocked(state.profile)) {
-    return `<h1 class="page-title">Reintroduction</h1><div class="card"><p>Unlocks after Day 30. You're on day ${programDay(state.profile)} — keep going!</p></div>`;
+    return `<h1 class="page-title">Reintroduction</h1><div class="card"><p>Unlocks after Day 30. You're on day ${programDay(state.profile)}. Keep going!</p></div>`;
   }
   const order = state.reintro.order || [];
   const groups = {
@@ -1081,12 +1081,12 @@ function renderReintro() {
   return `
     <h1 class="page-title">Reintroduction</h1>
     <div class="card">
-      <p>After Day 30, test one food group at a time. Eat it on test day, then log symptoms for 2–3 days (0–3 scale).</p>
-      <p class="health-note">Skip any true allergy — only reintroduce those with your doctor.</p>
+      <p>After Day 30, test one food group at a time. Eat it on test day, then log symptoms for 2 to 3 days (0 to 3 scale).</p>
+      <p class="health-note">Skip any true allergy. Only reintroduce those with your doctor.</p>
     </div>
     <div class="card">
       <h2>Your order</h2>
-      <ol id="reintro-order">${order.map((g) => `<li data-group="${g}">${groups[g] || g}${allergySkip(g) ? " <em>(skipped — allergy)</em>" : ""}</li>`).join("")}</ol>
+      <ol id="reintro-order">${order.map((g) => `<li data-group="${g}">${groups[g] || g}${allergySkip(g) ? " <em>(skipped: allergy)</em>" : ""}</li>`).join("")}</ol>
       <button type="button" class="btn btn-secondary btn-small" id="reintro-shuffle">Move next group down</button>
     </div>
     ${order
@@ -1111,12 +1111,12 @@ function renderReintroControls(group, t) {
       ${["digestion", "energy", "skin", "sleep", "mood", "headache"]
         .map(
           (s) =>
-            `<div class="field"><label>${s} (0–3)</label><input type="range" min="0" max="3" value="0" class="ri-symptom" data-symptom="${s}"></div>`
+            `<div class="field"><label>${s} (0 to 3)</label><input type="range" min="0" max="3" value="0" class="ri-symptom" data-symptom="${s}"></div>`
         )
         .join("")}
       <button type="button" class="btn btn-primary btn-small ri-save-day" data-group="${group}">Save observation day</button>`;
   }
-  return `<button type="button" class="btn btn-primary btn-small ri-start" data-group="${group}">Test day — I ate ${group}</button>`;
+  return `<button type="button" class="btn btn-primary btn-small ri-start" data-group="${group}">Test day: I ate ${group}</button>`;
 }
 
 function renderSettings() {
@@ -1176,10 +1176,10 @@ function bindSuggestedNow() {
       if (!r) return;
       const msg =
         r.lastComp.status === "on"
-          ? `Logged ${r.meal.name} — on plan!`
+          ? `Logged ${r.meal.name}: on plan!`
           : r.lastComp.status === "off"
             ? `Logged with off-plan items: ${r.lastComp.reason}`
-            : `Logged — ${r.lastComp.reason}`;
+            : `Logged: ${r.lastComp.reason}`;
       showToast(msg, r.lastComp.status);
       render();
     });
@@ -1313,7 +1313,7 @@ function bindToday() {
       note: $("#ci-note").value,
     };
     saveState(state);
-    alert("Check-in saved — nice work.");
+    alert("Check-in saved. Nice work.");
   });
 }
 
@@ -1369,7 +1369,7 @@ function bindLog() {
     if (comp) {
       const msg =
         comp.status === "on"
-          ? "On plan — logged!"
+          ? "On plan, logged!"
           : comp.status === "off"
             ? `Off plan: ${comp.reason}`
             : comp.reason;
@@ -1436,10 +1436,10 @@ function bindMeals() {
       if (!r) return;
       const msg =
         r.lastComp.status === "on"
-          ? `Logged ${r.meal.name} — on plan!`
+          ? `Logged ${r.meal.name}: on plan!`
           : r.lastComp.status === "off"
             ? `Logged with off-plan items: ${r.lastComp.reason}`
-            : `Logged — ${r.lastComp.reason}`;
+            : `Logged: ${r.lastComp.reason}`;
       showToast(msg, r.lastComp.status);
       navigate("#/log");
     });
@@ -1492,7 +1492,7 @@ function bindMeals() {
       await navigator.clipboard.writeText(text);
       showToast("Grocery list copied", "on");
     } catch {
-      showToast("Copy failed — try again", "check");
+      showToast("Copy failed, try again", "check");
     }
   });
 }

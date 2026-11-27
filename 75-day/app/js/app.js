@@ -344,7 +344,7 @@ function renderPicker() {
       <button type="button" class="mode-card" data-mode="adaptive" id="mode-adaptive">
         <img src="./icons/75-adaptive-192.png" alt="" width="64" height="64">
         <h2>75 Adaptive</h2>
-        <p class="muted">75 days on your schedule. No restart — build consistency with weekly scores.</p>
+        <p class="muted">75 days on your schedule. No restart. Build consistency with weekly scores.</p>
       </button>
     </div>`;
 }
@@ -454,7 +454,7 @@ function renderOnboardingCommitment() {
     <p class="muted">Read the rules again mentally. This is a promise to yourself.</p>
     <div class="card commitment-card" id="commitment-step">
       <ul class="rules-list compact">${dailyRules(state.mode).map((r) => `<li>${r}</li>`).join("")}</ul>
-      <label class="field">My why (optional — shown on Today)
+      <label class="field">My why (optional, shown on Today)
         <input type="text" id="my-why" maxlength="120" placeholder="I'm doing this because…" value="${state.journey?.myWhy || ""}">
       </label>
       <button type="button" class="btn btn-primary btn-block" id="commit-btn">${label}</button>
@@ -483,7 +483,7 @@ function renderOnboardingStart() {
     <h1 class="page-title">Start date</h1>
     <p class="muted">Starting tomorrow gives you time to prepare (recommended).</p>
     <div class="card">
-      <button type="button" class="btn btn-primary btn-block" data-start="${tomorrow}" id="start-tomorrow">Start tomorrow (${formatShortDate(tomorrow)}) — recommended</button>
+      <button type="button" class="btn btn-primary btn-block" data-start="${tomorrow}" id="start-tomorrow">Start tomorrow (${formatShortDate(tomorrow)}), recommended</button>
       <button type="button" class="btn btn-secondary btn-block" data-start="${today}" id="start-today">Start today (${formatShortDate(today)})</button>
     </div>`;
 }
@@ -517,8 +517,8 @@ function renderOnboardingDay0() {
       </div>
       <label class="field">Weight (optional)<input name="weight" type="number" step="0.1" value="${d0.weight ?? ""}"></label>
       <label class="field">Waist (optional, in/cm)<input name="waist" type="number" step="0.1" value="${d0.waist ?? ""}"></label>
-      <label class="field">Energy (1–10)<input name="energy" type="number" min="1" max="10" required value="${d0.energy ?? ""}"></label>
-      <label class="field">Mood (1–10)<input name="mood" type="number" min="1" max="10" required value="${d0.mood ?? ""}"></label>
+      <label class="field">Energy (1 to 10)<input name="energy" type="number" min="1" max="10" required value="${d0.energy ?? ""}"></label>
+      <label class="field">Mood (1 to 10)<input name="mood" type="number" min="1" max="10" required value="${d0.mood ?? ""}"></label>
       <button type="submit" class="btn btn-primary btn-block">Save baseline &amp; continue</button>
     </form>`;
 }
@@ -679,9 +679,9 @@ function renderHonesty() {
   return `
     <div class="card" id="honesty-screen">
       <h1 class="page-title">Honest check</h1>
-      <p>Did you complete <strong>every</strong> task today — honestly?</p>
-      <button type="button" class="btn btn-primary btn-block" id="honesty-yes">Yes — I earned Day ${dayNum}</button>
-      <button type="button" class="btn btn-secondary btn-block" id="honesty-no">No — I need to restart</button>
+      <p>Did you complete <strong>every</strong> task today, honestly?</p>
+      <button type="button" class="btn btn-primary btn-block" id="honesty-yes">Yes, I earned Day ${dayNum}</button>
+      <button type="button" class="btn btn-secondary btn-block" id="honesty-no">No, I need to restart</button>
     </div>`;
 }
 
@@ -719,7 +719,7 @@ function renderMilestone() {
   return `
     <div class="card card-celebrate" id="milestone-screen">
       <h1 class="page-title">${ms?.title || "Milestone"}</h1>
-      <p>Day ${day} — keep building.</p>
+      <p>Day ${day}: keep building.</p>
       <button type="button" class="btn btn-primary btn-block" id="milestone-ok">Continue</button>
     </div>`;
 }
@@ -744,7 +744,7 @@ function renderWeeklyRecap() {
   return `
     <div class="card" id="weekly-recap">
       <h1 class="page-title">Week recap</h1>
-      <p>Days ${stats.fromDay}–${stats.toDay}</p>
+      <p>Days ${stats.fromDay} to ${stats.toDay}</p>
       <ul class="recap-list">
         <li>Tasks completed: <strong>${stats.taskPct}%</strong></li>
         <li>Workouts: <strong>${stats.workouts}</strong> (${stats.minutes} min)</li>
@@ -868,8 +868,8 @@ function renderReading() {
   const checkin =
     state.mode === "adaptive"
       ? `<h2>Check-in</h2>
-      <label class="field">Energy (1–5)<input type="number" name="energy" min="1" max="5" value="${c.energy ?? ""}"></label>
-      <label class="field">Mood (1–5)<input type="number" name="mood" min="1" max="5" value="${c.mood ?? ""}"></label>
+      <label class="field">Energy (1 to 5)<input type="number" name="energy" min="1" max="5" value="${c.energy ?? ""}"></label>
+      <label class="field">Mood (1 to 5)<input type="number" name="mood" min="1" max="5" value="${c.mood ?? ""}"></label>
       <label class="field">Note<textarea name="note" rows="2">${c.note || ""}</textarea></label>`
       : "";
   return `
@@ -908,7 +908,7 @@ function bindReading() {
 function renderPhotos() {
   return `
     <h1 class="page-title">Progress photos</h1>
-    <p class="muted">On-device only — compressed thumbnails in your browser. Nothing is uploaded.</p>
+    <p class="muted">On-device only: compressed thumbnails in your browser. Nothing is uploaded.</p>
     <label class="btn btn-primary btn-block">
       Take or choose photo
       <input type="file" accept="image/*" capture="environment" id="photo-input" hidden>
@@ -990,8 +990,8 @@ function renderFinish() {
     </div>
     <form class="card" id="finish-rating">
       <h2>Re-rate yourself</h2>
-      <label class="field">Energy (1–10)<input name="energy" type="number" min="1" max="10" value="${d0.finishEnergy ?? ""}"></label>
-      <label class="field">Mood (1–10)<input name="mood" type="number" min="1" max="10" value="${d0.finishMood ?? ""}"></label>
+      <label class="field">Energy (1 to 10)<input name="energy" type="number" min="1" max="10" value="${d0.finishEnergy ?? ""}"></label>
+      <label class="field">Mood (1 to 10)<input name="mood" type="number" min="1" max="10" value="${d0.finishMood ?? ""}"></label>
       <label class="field"><input type="checkbox" name="include-photo" id="include-photo-card"> Add a photo to shareable card (optional)</label>
       <button type="submit" class="btn btn-primary btn-block">Generate completion card</button>
     </form>
@@ -1176,7 +1176,7 @@ function renderRestart() {
       <h1 class="page-title">Fresh start</h1>
       <p>${p?.message || ""}</p>
       <p class="muted">Attempt ${state.attemptNumber || 1} ended at Day ${p?.daysReached || 0}. Best streak: ${state.bestStreak || 0}.</p>
-      <button type="button" class="btn btn-primary btn-block" id="confirm-restart">Begin again — Attempt ${(state.attemptNumber || 1) + 1}</button>
+      <button type="button" class="btn btn-primary btn-block" id="confirm-restart">Begin again, Attempt ${(state.attemptNumber || 1) + 1}</button>
     </div>`;
 }
 

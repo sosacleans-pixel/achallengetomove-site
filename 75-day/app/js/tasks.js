@@ -17,7 +17,7 @@ const ALL_IN_TASKS = [
 const ADAPTIVE_TASKS = [
   { id: "movement", label: "Workout or active recovery", group: "movement" },
   { id: "nutrition", label: "Mostly whole foods (1 flexible meal/week)", group: "fuel" },
-  { id: "alcohol", label: "Limit alcohol — social occasions only", group: "fuel" },
+  { id: "alcohol", label: "Limit alcohol: social occasions only", group: "fuel" },
   { id: "water", label: "Water target", group: "fuel" },
   { id: "reading", label: "10 min reading, learning, or mindfulness", group: "mind" },
   { id: "checkin", label: "Daily check-in", group: "mind" },

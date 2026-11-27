@@ -34,9 +34,10 @@
       _template: "table",
       _honey: honey ? honey.value : ""
     };
-    // List tag: a form can name its list and subject with hidden fields (list, lang, _subject),
+    // List tag: a form can name its list and subject with hidden fields (list, lang, _subject, program),
     // e.g. a list-specific sign-up. The homepage form sends the same fields as before.
-    ["_subject", "list", "lang"].forEach(function (name) {
+    // A #notify?program= hash from a "Get notified" button can set the subject too.
+    ["_subject", "list", "lang", "program"].forEach(function (name) {
       var f = form.querySelector('input[type="hidden"][name="' + name + '"]');
       if (f && f.value) payload[name] = f.value;
     });
@@ -69,4 +70,39 @@
         say(msg("error", "Sorry, something went wrong. Please try again, or email coachsalimheyaime@gmail.com."));
       });
   });
+
+  function applyNotifyPrefill() {
+    var raw = (location.hash || "").replace(/^#/, "");
+    var program = "";
+    if (raw.indexOf("notify") === 0) {
+      var q = raw.indexOf("?");
+      if (q >= 0) {
+        try { program = new URLSearchParams(raw.slice(q + 1)).get("program") || ""; } catch (e) {}
+      }
+    }
+    if (!program) {
+      try { program = new URLSearchParams(location.search).get("notify") || ""; } catch (e) {}
+    }
+    if (!program) return;
+    var names = {
+      "75-all-in": "75 All-In",
+      "75-adaptive": "75 Adaptive",
+      "5k-to-half-marathon": "5K to Half Marathon"
+    };
+    var label = names[program] || program.replace(/-/g, " ");
+    var subjectField = form.querySelector('input[type="hidden"][name="_subject"]');
+    if (subjectField) subjectField.value = "Notify me: " + label;
+    var programField = form.querySelector('input[type="hidden"][name="program"]');
+    if (!programField) {
+      programField = document.createElement("input");
+      programField.type = "hidden";
+      programField.name = "program";
+      form.appendChild(programField);
+    }
+    programField.value = label;
+    var heading = document.getElementById("notify-heading");
+    if (heading) heading.textContent = "Get notified: " + label;
+  }
+  applyNotifyPrefill();
+  window.addEventListener("hashchange", applyNotifyPrefill);
 })();

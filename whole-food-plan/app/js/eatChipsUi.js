@@ -36,7 +36,7 @@ export function renderEatChipsPanel(masterList, selections, idPrefix = "eat") {
   return `
     <div class="card" id="${idPrefix}-eat-panel">
       <h2>Foods you can't or won't eat</h2>
-      <p class="muted">Everything below is on your <strong>Eat</strong> list for the 30-day reset. Uncheck what you need to avoid — we'll build meals and groceries from what's left.</p>
+      <p class="muted">Everything below is on your <strong>Eat</strong> list for the 30-day reset. Uncheck what you need to avoid, and we'll build meals and groceries from what's left.</p>
       <div class="chip-row" style="margin-bottom:0.75rem">${toggles}</div>
       <div class="eat-cat-list">${groups}</div>
     </div>

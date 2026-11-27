@@ -3,7 +3,7 @@ import { macroGroupForItem, getMacroNutrition } from "./macroGroups.js";
 
 const SLOT_ORDER = ["breakfast", "lunch", "snack", "dinner"];
 const THEME_NOTES = {
-  1: "Keep it simple — pantry basics and easy prep.",
+  1: "Keep it simple: pantry basics and easy prep.",
   2: "Build your plate: protein, veggies, smart carbs.",
   3: "Batch-friendly: cook once, eat twice.",
   4: "Real-life meals you can pack or share.",

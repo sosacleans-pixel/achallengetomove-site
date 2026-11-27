@@ -288,7 +288,7 @@ function renderOnboarding() {
       </fieldset>
       <fieldset class="field hidden" id="half-base-field">
         <legend>Running base (half marathon)</legend>
-        <p class="muted">Answer honestly — this picks your <strong>run</strong> plan length. Push-ups pick your strength progression.</p>
+        <p class="muted">Answer honestly: this picks your <strong>run</strong> plan length. Push-ups pick your strength progression.</p>
         <label class="check-row">
           <input type="checkbox" name="base3x4" id="base3x4">
           <span>I have been running about <strong>3 days per week</strong> for at least the <strong>last 4 weeks</strong>.</span>
@@ -299,7 +299,7 @@ function renderOnboarding() {
         </label>
         <label class="check-row">
           <input type="checkbox" name="base30cont" id="base30cont">
-          <span>I can run <strong>30–40 minutes continuously</strong> at easy effort (full sentences).</span>
+          <span>I can run <strong>30 to 40 minutes continuously</strong> at easy effort (full sentences).</span>
         </label>
         <fieldset class="field">
           <legend>Minimum readiness</legend>
@@ -319,7 +319,7 @@ function renderOnboarding() {
         <p class="disclaimer-text">${COACH_DISCLAIMER}</p>
       </details>
       <label class="field" id="race-date-field">
-        <span>Race day (optional — sets your start date backward)</span>
+        <span>Race day (optional: sets your start date backward)</span>
         <input name="race" type="date" value="">
       </label>
       <label class="field">
@@ -481,7 +481,7 @@ function bindOnboarding() {
     let strengthLevel = strengthLevelFromPushUps(pushups);
     if (goal === "half") {
       if (!runningBase.can30RunWalk) {
-        alert("Finish the 5K track first — you need at least 30 minutes of run-walk.");
+        alert("Finish the 5K track first: you need at least 30 minutes of run-walk.");
         return;
       }
       const placement = resolveHalfPlacement(pushups, runningBase);
@@ -758,7 +758,7 @@ function renderStrengthOverview() {
     <div class="card strength-overview-card">
       <span class="strength-badge strength-badge--large" aria-hidden="true">💪</span>
       <h2>${workout.title}</h2>
-      <p class="strength-overview-meta">${halfEquipmentLabel(state.meta)} · about 15–20 min · ${overview.phaseLabel} phase</p>
+      <p class="strength-overview-meta">${halfEquipmentLabel(state.meta)} · about 15 to 20 min · ${overview.phaseLabel} phase</p>
       <div class="strength-outline">
         <p class="strength-outline-block"><strong>Warm-up</strong> · 3 min</p>
         <div class="strength-outline-block">
@@ -962,7 +962,7 @@ function renderStrengthComplete() {
     `
     <div class="card">
       <h2>Strength saved?</h2>
-      <p>${workout?.title ?? "Session"} — optional, but great for your running legs.</p>
+      <p>${workout?.title ?? "Session"}, optional, but great for your running legs.</p>
       <form id="strength-complete-form">
         <button type="submit" class="btn btn-primary btn-block">Mark complete</button>
         <button type="button" id="skip-strength-save" class="btn btn-secondary btn-block">Skip saving</button>
@@ -1085,8 +1085,8 @@ function renderProgress() {
   const meta = state.meta;
   const programName = meta.goal === "half" ? "your half marathon plan" : "Doing a 5K";
   const finish = s.allDone
-    ? `<div class="card card-celebrate"><h2>Finish line</h2><p>You completed ${programName} — ${meta.weeks} weeks, ${s.workoutsDone} runs${s.strengthDone ? ` and ${s.strengthDone} strength sessions` : ""}.</p></div>`
-    : `<p class="muted">Keep going — your finish line is week ${meta.weeks}.</p>`;
+    ? `<div class="card card-celebrate"><h2>Finish line</h2><p>You completed ${programName}: ${meta.weeks} weeks, ${s.workoutsDone} runs${s.strengthDone ? ` and ${s.strengthDone} strength sessions` : ""}.</p></div>`
+    : `<p class="muted">Keep going: your finish line is week ${meta.weeks}.</p>`;
 
   return shell(
     `
