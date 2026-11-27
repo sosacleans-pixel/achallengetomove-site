@@ -72,7 +72,7 @@ function buildMainBlock(progress) {
     const runMin = 12 + Math.floor((progress - 0.78) * 50);
     steps.push({ type: "run", label: "Continuous easy run", durationSeconds: runMin * 60 });
   } else {
-    steps.push({ type: "run", label: "Your 5K — go at your pace", durationSeconds: 30 * 60 });
+    steps.push({ type: "run", label: "Your 5K: go at your pace", durationSeconds: 30 * 60 });
   }
   return steps;
 }

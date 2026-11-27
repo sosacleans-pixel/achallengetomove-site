@@ -58,7 +58,7 @@ export function checkFoodItem(food, profile, foodList) {
     }
     return {
       status: "check",
-      reason: "Packaged or custom item — check the label (5 ingredients or fewer).",
+      reason: "Packaged or custom item: check the label (5 ingredients or fewer).",
       swaps: [],
     };
   }

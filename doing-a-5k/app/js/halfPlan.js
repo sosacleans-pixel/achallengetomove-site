@@ -161,7 +161,7 @@ function runSessionsForWeek(weekData, daysPerWeek) {
 }
 
 function sessionTitle(sess, weekNum) {
-  if (sess.type === "race") return "Half marathon — race day";
+  if (sess.type === "race") return "Half marathon: race day";
   if (sess.type === "long") return `Week ${weekNum} · Long run`;
   if (sess.type === "workout" || sess.type === "strides") {
     return `Week ${weekNum} · ${sess.name || "Workout"}`;

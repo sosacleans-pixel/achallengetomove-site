@@ -4,28 +4,28 @@ export function programIntro(mode) {
   if (mode === "adaptive") {
     return {
       title: "75 Adaptive",
-      body: `Seventy-five days to build strength, clarity, and consistency — on a schedule you can sustain. You will train most days, fuel your body with mostly whole foods, hydrate, learn daily, and check in with yourself. There is no restart: missed tasks are logged, and you keep moving forward.`,
+      body: `Seventy-five days to build strength, clarity, and consistency, on a schedule you can sustain. You will train most days, fuel your body with mostly whole foods, hydrate, learn daily, and check in with yourself. There is no restart: missed tasks are logged, and you keep moving forward.`,
     };
   }
   return {
     title: "75 All-In",
-    body: `Seventy-five consecutive days of discipline: movement, nutrition, hydration, learning, sleep, and honest daily proof. Every task counts every day. If you miss any required task, you begin again at Day 1 — with your best streak and past attempts saved so you can see how far you have come.`,
+    body: `Seventy-five consecutive days of discipline: movement, nutrition, hydration, learning, sleep, and honest daily proof. Every task counts every day. If you miss any required task, you begin again at Day 1, with your best streak and past attempts saved so you can see how far you have come.`,
   };
 }
 
 export function dailyRules(mode) {
   if (mode === "adaptive") {
     return [
-      "One workout at your chosen length on training days; active recovery (walk or stretching) on recovery days — default is daily 45-minute training with one recovery day per week.",
+      "One workout at your chosen length on training days; active recovery (walk or stretching) on recovery days. The default is daily 45-minute training with one recovery day per week.",
       "Balanced eating, aiming for mostly whole foods, with one flexible meal allowed each week.",
-      "Limit alcohol — track drinks; aim for none on weekdays; only at social occasions when you choose.",
+      "Limit alcohol: track drinks, aim for none on weekdays, and only at social occasions when you choose.",
       "Water target based on your body weight (default about 3 liters).",
       "Ten minutes of reading, learning, or mindfulness.",
       "Daily check-in: energy, mood, and a short note.",
     ];
   }
   return [
-    "Two workouts of at least 45 minutes, at least 3 hours apart — only one is normally outdoors (bad-weather exception available on the workout screen).",
+    "Two workouts of at least 45 minutes, at least 3 hours apart. Only one is normally outdoors (bad-weather exception available on the workout screen).",
     "Follow a structured whole-food eating plan with no off-plan meals.",
     "No alcohol.",
     "Drink your water target (default about 3.7 L / 1 gallon, adjustable).",

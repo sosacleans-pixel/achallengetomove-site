@@ -138,8 +138,8 @@ export function triggerRestart(state, failedDate, reason) {
       reason,
       message:
         reason === "honesty"
-          ? "Honesty matters in All-In. Today counts as incomplete — restart at Day 1 when you are ready."
-          : "A missed day means a fresh start — you have learned something. Ready when you are.",
+          ? "Honesty matters in All-In. Today counts as incomplete. Restart at Day 1 when you are ready."
+          : "A missed day means a fresh start. You have learned something. Ready when you are.",
     },
   };
 }

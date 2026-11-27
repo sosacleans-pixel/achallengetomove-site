@@ -84,7 +84,7 @@ export function buildFoodListView(profile, masterList) {
   }));
   const extraAvoids = (profile?.allergies || []).map((a) => ({
     text: a,
-    reason: "Allergy you reported — always avoid",
+    reason: "Allergy you reported: always avoid",
   }));
   return { allowed, paused, skip, extraAvoids };
 }

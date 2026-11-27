@@ -103,11 +103,10 @@
             "</a>"
         );
       } else {
-        const subject = product.notifySubject || "Notify me: new product";
         parts.push(
           '<a class="btn btn-primary btn-small" href="' +
-            escapeHtml(mailtoNotify(subject)) +
-            '">Notify me</a>'
+            escapeHtml("/#notify?program=" + (product.id || "")) +
+            '">Get notified</a>'
         );
       }
       if (product.learnMoreHref) {

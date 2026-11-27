@@ -64,7 +64,6 @@
 
   function renderFooter(product) {
     if (product.status === "coming_soon") {
-      const subject = product.notifySubject || "Notify me: new program";
       const learnMore = product.learnMoreHref
         ? '<a class="text-link learn-more-link" href="' +
           escapeHtml(product.learnMoreHref) +
@@ -77,8 +76,8 @@
         (learnMore ? " program-card-footer--with-link" : "") +
         '">' +
         '<a class="btn btn-primary btn-small" href="' +
-        escapeHtml(mailtoNotify(subject)) +
-        '">Notify me</a>' +
+        escapeHtml(product.notifyHref || ("/#notify?program=" + (product.id || ""))) +
+        '">Get notified</a>' +
         learnMore +
         "</div>"
       );

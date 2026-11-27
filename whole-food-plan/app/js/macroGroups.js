@@ -36,7 +36,7 @@ export const MACRO_GROUPS = [
     label: "Flavor & extras",
     shortLabel: "Extras",
     min: 0,
-    hint: "Herbs, spices, broth, and drinks — optional but helpful.",
+    hint: "Herbs, spices, broth, and drinks: optional but helpful.",
   },
 ];
 
@@ -75,7 +75,7 @@ export function validateMacroGroup(masterList, selections, groupId) {
   if (count >= group.min) return { ok: true };
   return {
     ok: false,
-    message: `Choose at least ${group.min} ${group.label.toLowerCase()} — you have ${count} selected. ${group.hint}`,
+    message: `Choose at least ${group.min} ${group.label.toLowerCase()}: you have ${count} selected. ${group.hint}`,
   };
 }
 

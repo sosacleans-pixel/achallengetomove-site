@@ -5,7 +5,7 @@
 import { getAllowedEatIds } from "./masterFood.js";
 
 const TIPS = [
-  "Read labels for hidden sugar, soy, corn, and wheat — they show up in surprising places.",
+  "Read labels for hidden sugar, soy, corn, and wheat: they show up in surprising places.",
   "Donate unopened items if you can, or box them up and store them out of sight for 30 days.",
   "If you share a kitchen, carve out a \"my shelf\" zone for your reset-friendly foods.",
 ];
@@ -136,7 +136,7 @@ const GROUP_DEFS = [
     labelChecks: [
       { id: "canned_l_sugar", label: "Added sugar" },
       { id: "canned_l_sulfites", label: "Sulfites" },
-      { id: "canned_l_bpa", label: "BPA-lined cans (optional — choose glass or BPA-free when you can)" },
+      { id: "canned_l_bpa", label: "BPA-lined cans (optional: choose glass or BPA-free when you can)" },
       { id: "canned_l_sodium", label: "Very high sodium" },
       { id: "canned_l_cornsoy", label: "Corn and soy derivatives" },
     ],
@@ -169,7 +169,7 @@ export function buildKitchenChecklist(masterList, profile = {}) {
 
   const oils = groups.find((g) => g.id === "oils");
   if (oils && !gheeAllowed(profile, masterList)) {
-    oils.clearItems.push({ id: "oils_ghee", label: "Ghee (dairy — set aside for this reset)" });
+    oils.clearItems.push({ id: "oils_ghee", label: "Ghee (dairy: set aside for this reset)" });
   }
 
   const canned = groups.find((g) => g.id === "canned");
@@ -178,7 +178,7 @@ export function buildKitchenChecklist(masterList, profile = {}) {
     if (!t || !canned) continue;
     canned.clearItems.push({
       id: slug(t),
-      label: `${t} — items you flagged (allergy or intolerance)`,
+      label: `${t}: items you flagged (allergy or intolerance)`,
       isExtra: true,
     });
   }

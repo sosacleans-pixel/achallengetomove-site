@@ -131,7 +131,7 @@ async function copyGroceryList() {
     await navigator.clipboard.writeText(text);
     toastFn("Grocery list copied", "on");
   } catch {
-    toastFn("Copy failed — try again", "check");
+    toastFn("Copy failed, try again", "check");
   }
 }
 

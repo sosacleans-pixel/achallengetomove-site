@@ -23,7 +23,7 @@ export const EXERCISES = {
   },
   gluteBridges: {
     name: "Glute bridges",
-    cue: "Lie on your back, feet flat, lift hips until shoulders–hips–knees line up, squeeze glutes.",
+    cue: "Lie on your back, feet flat, lift hips until shoulders, hips and knees line up, squeeze glutes.",
     easier: "Smaller lift range; feet closer to your body.",
     harder: "Hold the top for 3 seconds each rep.",
   },
@@ -429,7 +429,7 @@ export function generateStrengthWorkouts({
         sessionType,
         weekday: strengthPreferredDays[s],
         title: `Strength ${sessionType} · ${focus}`,
-        summary: `~15–20 min · ${phase} phase`,
+        summary: `~15 to 20 min · ${phase} phase`,
         phase,
         equipment,
         strengthLevel,

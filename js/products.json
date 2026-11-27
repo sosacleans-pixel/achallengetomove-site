@@ -175,7 +175,7 @@
       "title": "75 Adaptive",
       "tagline": "Show up every day, your way.",
       "description": "75 days of daily movement, nutrition and habit tasks flexible to your schedule. No restart if you miss a day.",
-      "status": "checkout_pending",
+      "status": "coming_soon",
       "image": {
         "svg": "/icons/logo.svg",
         "width": 512,
@@ -183,23 +183,9 @@
         "alt": "75 Adaptive app"
       },
       "notifySubject": "Notify me: 75 Adaptive",
-      "actions": [
-        {
-          "kind": "checkout_pending",
-          "label": "Buy app, $9.99",
-          "href": "#stripe-link-pending-75-adaptive",
-          "variant": "primary",
-          "pendingNote": "Checkout link pending"
-        },
-        {
-          "kind": "link",
-          "label": "Program details",
-          "href": "/75-adaptive/",
-          "variant": "secondary",
-          "newTab": false
-        }
-      ],
-      "price": "$9.99"
+      "actions": [],
+      "notifyHref": "/#notify?program=75-adaptive",
+      "notifyLabel": "Get notified"
     },
     {
       "id": "75-all-in",
@@ -210,7 +196,7 @@
       "title": "75 All-In",
       "tagline": "All in. No days off.",
       "description": "75 straight days with every daily task completed. Miss a day and you start the 75 days over.",
-      "status": "checkout_pending",
+      "status": "coming_soon",
       "image": {
         "svg": "/icons/logo.svg",
         "width": 512,
@@ -218,23 +204,9 @@
         "alt": "75 All-In app"
       },
       "notifySubject": "Notify me: 75 All-In",
-      "actions": [
-        {
-          "kind": "checkout_pending",
-          "label": "Buy app, $9.99",
-          "href": "#stripe-link-pending-75-all-in",
-          "variant": "primary",
-          "pendingNote": "Checkout link pending"
-        },
-        {
-          "kind": "link",
-          "label": "Program details",
-          "href": "/75-all-in/",
-          "variant": "secondary",
-          "newTab": false
-        }
-      ],
-      "price": "$9.99"
+      "actions": [],
+      "notifyHref": "/#notify?program=75-all-in",
+      "notifyLabel": "Get notified"
     }
   ]
 }
