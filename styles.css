@@ -1,11 +1,11 @@
 :root {
-  --yellow: #ffc700;
-  --charcoal: #1e1e1e;
-  --rust: #bf3404;
-  --cream: #fff7e8;
-  --paper: #fffdf8;
-  --muted: #5e584c;
-  --line: #e6dcc0;
+  --yellow: #EE9468;
+  --charcoal: #1F3D2B;
+  --rust: #A8431F;
+  --cream: #F6EEDF;
+  --paper: #FFFBF3;
+  --muted: #5B5446;
+  --line: #E2D3B8;
   --max: 1100px;
 }
 
@@ -130,7 +130,7 @@ a {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: rgba(255, 253, 248, 0.75);
+  color: rgba(255, 251, 243, 0.75);
   margin: 0;
 }
 
@@ -166,7 +166,7 @@ a {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   text-decoration: none;
-  color: rgba(255, 253, 248, 0.85);
+  color: rgba(255, 251, 243, 0.85);
   padding: 0.45rem 0.5rem;
   border-radius: 8px;
 }
@@ -296,7 +296,7 @@ a.hub-tile:focus-visible {
 
 .hub-tile-desc {
   font-size: 0.9rem;
-  color: rgba(255, 253, 248, 0.78);
+  color: rgba(255, 251, 243, 0.78);
   margin: 0;
   flex-grow: 1;
 }
@@ -428,7 +428,7 @@ section {
 }
 
 .store-teaser p {
-  color: rgba(255, 253, 248, 0.88);
+  color: rgba(255, 251, 243, 0.88);
   margin: 0 0 1.5rem;
 }
 
@@ -788,7 +788,7 @@ section {
 .program-card--featured {
   grid-column: 1 / -1;
   border-left: 5px solid var(--yellow);
-  box-shadow: 0 4px 14px rgba(30, 30, 30, 0.06);
+  box-shadow: 0 4px 14px rgba(31, 61, 43, 0.06);
   gap: 0;
   height: auto;
 }
@@ -994,7 +994,7 @@ section {
 
 .program-card.featured {
   border-color: var(--charcoal);
-  box-shadow: 0 12px 32px rgba(30, 30, 30, 0.12);
+  box-shadow: 0 12px 32px rgba(31, 61, 43, 0.12);
 }
 
 .program-card h3 {
@@ -1103,7 +1103,7 @@ section {
 
 .steps p {
   margin: 0;
-  color: rgba(255, 253, 248, 0.85);
+  color: rgba(255, 251, 243, 0.85);
 }
 
 .about {
@@ -1192,7 +1192,7 @@ section {
 
 .footer {
   background: var(--charcoal);
-  color: #ddd;
+  color: #E2D3B8;
   text-align: center;
   font-size: 0.9rem;
   padding: 1.75rem 0;
@@ -1529,13 +1529,13 @@ section {
 /* ==========================================================================
    2026-11 refresh: shared header and footer for every page, plus the
    homepage hub layout (body.home-v2, hx-* classes). Brand base: Anton + Lato,
-   yellow #ffc700, charcoal #1e1e1e, rust #bf3404, cream #fff7e8.
+   Palette option 3 (Desert Sage): accent #EE9468, dark #1F3D2B, accent-2 #A8431F, cream #F6EEDF.
    ========================================================================== */
 
 :root {
-  --ink: #141414;
-  --night: #1b1b1b;
-  --yellow-soft: #ffe27a;
+  --ink: #162C1F;
+  --night: #2A4E38;
+  --yellow-soft: #F6BE9E;
 }
 
 /* Shared header: sticky, wraps nav under the brand on small screens */
@@ -1544,7 +1544,7 @@ section {
   top: 0;
   z-index: 50;
   padding: 0.7rem 0;
-  background: rgba(20, 20, 20, 0.97);
+  background: rgba(22, 44, 31, 0.97);
 }
 
 .site-header .wrap {
@@ -1648,8 +1648,8 @@ section {
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at 85% 20%, rgba(255, 199, 0, 0.16), transparent 45%),
-    radial-gradient(circle at 10% 100%, rgba(191, 52, 4, 0.28), transparent 40%),
+    radial-gradient(circle at 85% 20%, rgba(238, 148, 104, 0.16), transparent 45%),
+    radial-gradient(circle at 10% 100%, rgba(168, 67, 31, 0.28), transparent 40%),
     var(--ink);
   color: var(--paper);
   padding: 3.5rem 0 2.5rem !important;
@@ -1662,7 +1662,7 @@ section {
   bottom: -8rem;
   width: 26rem;
   height: 26rem;
-  border: 44px solid rgba(255, 199, 0, 0.08);
+  border: 44px solid rgba(238, 148, 104, 0.08);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -1708,12 +1708,12 @@ section {
   line-height: 1.55;
   max-width: 38rem;
   margin: 0 0 0.85rem;
-  color: rgba(255, 253, 248, 0.95);
+  color: rgba(255, 251, 243, 0.95);
 }
 
 .hx-lede--sub {
   font-size: 1.02rem;
-  color: rgba(255, 253, 248, 0.78);
+  color: rgba(255, 251, 243, 0.78);
 }
 
 .hx-ctas {
@@ -1785,9 +1785,9 @@ section {
   flex-direction: column;
   gap: 0.15rem;
   padding: 1rem 1.1rem;
-  border: 2px solid rgba(255, 253, 248, 0.18);
+  border: 2px solid rgba(255, 251, 243, 0.18);
   border-radius: 16px;
-  background: rgba(255, 253, 248, 0.04);
+  background: rgba(255, 251, 243, 0.04);
   text-decoration: none;
   color: var(--paper);
   transition: border-color 0.15s, background 0.15s, transform 0.15s;
@@ -1796,7 +1796,7 @@ section {
 .hx-pillar:hover,
 .hx-pillar:focus-visible {
   border-color: var(--yellow);
-  background: rgba(255, 199, 0, 0.08);
+  background: rgba(238, 148, 104, 0.08);
   transform: translateY(-2px);
 }
 
@@ -1816,7 +1816,7 @@ section {
 
 .hx-pillar-desc {
   font-size: 0.88rem;
-  color: rgba(255, 253, 248, 0.75);
+  color: rgba(255, 251, 243, 0.75);
 }
 
 /* Yellow band */
@@ -1921,7 +1921,7 @@ section {
 }
 
 .hx-section--dark .hx-section-lede {
-  color: rgba(255, 253, 248, 0.78);
+  color: rgba(255, 251, 243, 0.78);
 }
 
 /* Cards */
@@ -2038,7 +2038,7 @@ section {
 
 .hx-card--dark .hx-card-note,
 .hx-card--dark .hx-card-desc {
-  color: rgba(255, 253, 248, 0.78);
+  color: rgba(255, 251, 243, 0.78);
 }
 
 .hx-card--dark .hx-card-price {
@@ -2074,14 +2074,14 @@ section {
 .hx-levels li {
   padding: 0.55rem 0.8rem;
   border-left: 4px solid var(--yellow);
-  background: rgba(255, 253, 248, 0.06);
+  background: rgba(255, 251, 243, 0.06);
   border-radius: 0 10px 10px 0;
 }
 
 .hx-levels span {
   display: block;
   font-size: 0.85rem;
-  color: rgba(255, 253, 248, 0.7);
+  color: rgba(255, 251, 243, 0.7);
 }
 
 .hx-card--wide .hx-card-wide-body {
@@ -2110,7 +2110,7 @@ section {
 .hx-card--night {
   background: var(--night);
   color: var(--paper);
-  border-color: rgba(255, 253, 248, 0.2);
+  border-color: rgba(255, 251, 243, 0.2);
   box-shadow: none;
 }
 
@@ -2121,7 +2121,7 @@ section {
 }
 
 .hx-card--night .hx-card-desc {
-  color: rgba(255, 253, 248, 0.75);
+  color: rgba(255, 251, 243, 0.75);
 }
 
 .hx-card--night .hx-card-price {
@@ -2135,18 +2135,18 @@ section {
 
 .hx-card--night .btn-checkout-pending {
   background: transparent;
-  color: rgba(255, 253, 248, 0.7);
-  border-color: rgba(255, 253, 248, 0.4);
+  color: rgba(255, 251, 243, 0.7);
+  border-color: rgba(255, 251, 243, 0.4);
 }
 
 .hx-card--night .checkout-pending-note {
-  color: rgba(255, 253, 248, 0.7);
+  color: rgba(255, 251, 243, 0.7);
 }
 
 .hx-refund {
   margin: 2rem 0 0;
   font-size: 0.9rem;
-  color: rgba(255, 253, 248, 0.75);
+  color: rgba(255, 251, 243, 0.75);
 }
 
 .hx-refund .text-link {
@@ -2168,7 +2168,7 @@ section {
   justify-self: center;
   padding: 2.25rem 2.5rem;
   background:
-    radial-gradient(circle at 30% 20%, rgba(255, 199, 0, 0.22), transparent 55%),
+    radial-gradient(circle at 30% 20%, rgba(238, 148, 104, 0.22), transparent 55%),
     var(--charcoal);
   border-radius: 26px;
 }
@@ -2400,7 +2400,7 @@ section {
 }
 
 .hx-footer-col a {
-  color: rgba(255, 253, 248, 0.85);
+  color: rgba(255, 251, 243, 0.85);
 }
 
 .hx-footer-col a:hover {
@@ -2418,7 +2418,7 @@ section {
 
 .hx-footer-fine {
   font-size: 0.82rem;
-  color: rgba(255, 253, 248, 0.65);
+  color: rgba(255, 251, 243, 0.65);
   margin-top: 1.5rem !important;
 }
 
@@ -2515,7 +2515,7 @@ section {
   margin: 0.9rem 0 0;
   font-size: 0.95rem;
   font-weight: 700;
-  color: rgba(255, 253, 248, 0.78);
+  color: rgba(255, 251, 243, 0.78);
 }
 
 .picks-group + .picks-group {
@@ -2644,4 +2644,77 @@ section {
 
 #coachs-picks {
   scroll-margin-top: 4.5rem;
+}
+
+/* Option 3 (Desert Sage): light hero. Preview only. */
+.hx-hero {
+  background:
+    radial-gradient(circle at 85% 20%, rgba(238, 148, 104, 0.28), transparent 45%),
+    radial-gradient(circle at 10% 100%, rgba(31, 61, 43, 0.10), transparent 40%),
+    #F6EEDF;
+  color: var(--charcoal);
+}
+
+.hx-hero::after {
+  border-color: rgba(31, 61, 43, 0.07);
+}
+
+.hx-eyebrow {
+  border-color: var(--rust);
+  color: var(--rust);
+}
+
+.hx-hl {
+  color: var(--rust);
+}
+
+.hx-lede {
+  color: rgba(31, 61, 43, 0.92);
+}
+
+.hx-lede--sub {
+  color: var(--muted);
+}
+
+.hx-hero .btn-ghost {
+  color: var(--charcoal);
+  border-color: var(--charcoal);
+}
+
+.hx-hero .btn-ghost:hover {
+  background: var(--charcoal);
+  color: var(--paper);
+}
+
+.hx-pillar {
+  background: var(--paper);
+  border-color: var(--line);
+  color: var(--charcoal);
+}
+
+.hx-pillar:hover,
+.hx-pillar:focus-visible {
+  border-color: var(--rust);
+  background: var(--paper);
+}
+
+.hx-pillar-num {
+  color: var(--rust);
+}
+
+.hx-pillar-desc {
+  color: var(--muted);
+}
+
+.hx-stack-book {
+  box-shadow: 0 24px 50px rgba(31, 61, 43, 0.28);
+}
+
+.hx-stack-icon {
+  box-shadow: 0 14px 30px rgba(31, 61, 43, 0.28);
+}
+
+.pick-tile-label,
+.hx-dot {
+  color: var(--charcoal);
 }
