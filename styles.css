@@ -2671,3 +2671,16 @@ section {
 .hx-coach .btn-dark:hover {
   box-shadow: 0 6px 0 var(--yellow);
 }
+
+/* Header logo: round badge plus stacked name (one image) */
+.brand img.brand-lockup {
+  width: auto;
+  height: 50px;
+  border-radius: 0;
+}
+
+@media (max-width: 760px) {
+  .brand img.brand-lockup {
+    height: 44px;
+  }
+}
