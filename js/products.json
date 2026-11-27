@@ -184,7 +184,7 @@
       },
       "notifySubject": "Notify me: 75 Adaptive",
       "actions": [],
-      "notifyHref": "/#notify?program=75-adaptive",
+      "notifyHref": "/?notify=75-adaptive#notify",
       "notifyLabel": "Get notified"
     },
     {
@@ -205,7 +205,7 @@
       },
       "notifySubject": "Notify me: 75 All-In",
       "actions": [],
-      "notifyHref": "/#notify?program=75-all-in",
+      "notifyHref": "/?notify=75-all-in#notify",
       "notifyLabel": "Get notified"
     }
   ]

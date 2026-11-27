@@ -76,7 +76,7 @@
         (learnMore ? " program-card-footer--with-link" : "") +
         '">' +
         '<a class="btn btn-primary btn-small" href="' +
-        escapeHtml(product.notifyHref || ("/#notify?program=" + (product.id || ""))) +
+        escapeHtml(product.notifyHref || ("/?notify=" + (product.id || "") + "#notify")) +
         '">Get notified</a>' +
         learnMore +
         "</div>"
